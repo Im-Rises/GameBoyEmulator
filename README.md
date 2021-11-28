@@ -2,13 +2,13 @@
 
 GameBoy Emulator make in C++ with Visual Studio 2019.
 
-##Console specifications
+## Console specifications
 
 
-##Documentations:
+## Documentations:
 https://en.wikipedia.org/wiki/Game_Boy
 
-##Task order:
+## Task order:
 1. CPU implementation
 2. MMU implementation
 
