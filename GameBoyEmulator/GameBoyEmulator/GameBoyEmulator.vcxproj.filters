@@ -18,10 +18,10 @@
     <ClCompile Include="gameBoy.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="Cpu.cpp">
+    <ClCompile Include="Memory.cpp">
       <Filter>Fichiers de ressources</Filter>
     </ClCompile>
-    <ClCompile Include="Memory.cpp">
+    <ClCompile Include="Cpu.cpp">
       <Filter>Fichiers de ressources</Filter>
     </ClCompile>
   </ItemGroup>

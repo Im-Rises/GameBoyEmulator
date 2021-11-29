@@ -14,9 +14,15 @@ private:
 	uint8_t A;					//Accumulator A
 	uint8_t B, C, D, E, H, L;	//Auxiliary registers of the accumulator A, they work by pairs (BC, DE, HL)
 
+	/// <summary>
+	/// Program Counter and Stack Pointer
+	/// </summary>
 	uint16_t pc;				//Program counter
 	uint16_t sp;				//Stack pointer
 
+	/// <summary>
+	/// Flags
+	/// </summary>
 	struct Flag {
 		bool Z;					//Set to 1 when the result of an operation is 0
 		bool N;					//Set to 1 following execution of the substraction instruction, regardless of the result
@@ -28,7 +34,10 @@ public:
 	Cpu();
 	void readOpcode();
 	void executeOpcode(uint8_t opcode);
-	//Continue p85
+
+private:
+	void executeOneByteOpcode();
+	void executeTwoBytesOpcode();
 };
 
 #endif
