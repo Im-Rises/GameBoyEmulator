@@ -8,8 +8,12 @@ class Cpu {
 
 private:
 
+	/// <summary>
+	/// 8 bits registers
+	/// </summary>
 	uint8_t A;					//Accumulator A
-	uint8_t B, C, D, E, H, L;	//Auxiliary registers of the accumulator A
+	uint8_t B, C, D, E, H, L;	//Auxiliary registers of the accumulator A, they work by pairs (BC, DE, HL)
+
 	uint16_t pc;				//Program counter
 	uint16_t sp;				//Stack pointer
 
@@ -23,7 +27,7 @@ private:
 public:
 	Cpu();
 	void readOpcode();
-	void executeOpcode();
+	void executeOpcode(uint8_t opcode);
 	//Continue p85
 };
 
