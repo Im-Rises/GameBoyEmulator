@@ -2,7 +2,7 @@
 
 Cpu::Cpu()
 {
-
+	
 }
 
 void Cpu::readOpcode()

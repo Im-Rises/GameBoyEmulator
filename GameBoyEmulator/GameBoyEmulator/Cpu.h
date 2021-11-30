@@ -2,7 +2,7 @@
 #define DEF_CPU
 
 #include <iostream>
-//using namespace std;
+using namespace std;
 
 class Cpu {
 
@@ -29,6 +29,18 @@ private:
 		bool H;					//Set to 1 when an operation results in carrying from or borrowing to bit 3
 		bool CY;				//Set to 1 when an operation results in carrying from or borrowing to bit 7
 	} F;						//Auxiliary register of the accumulator, consist of 4 flags that are set and reset according to the results of instruction execution
+
+	struct Opcode {
+		string name;
+		uint8_t value;
+		uint8_t cycle;
+	}
+	const opcodeOneByteArray[0XFF] = {
+		{"NOP",0x00,1},{"",0x01,NULL}
+	},
+	const opcodeTwoBytesArray[0XFF] = {
+
+	};
 
 public:
 	Cpu();
