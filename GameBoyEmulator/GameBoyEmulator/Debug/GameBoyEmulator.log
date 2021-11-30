@@ -1,4 +1,6 @@
 ﻿  Cpu.cpp
+E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.h(64,3): warning C4228: extension non standard utilisée : les qualificateurs situés après la virgule dans la liste des déclarateurs sont ignorés
   gameBoy.cpp
+E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.h(64,3): warning C4228: extension non standard utilisée : les qualificateurs situés après la virgule dans la liste des déclarateurs sont ignorés
   Génération de code en cours...
   GameBoyEmulator.vcxproj -> E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\Debug\GameBoyEmulator.exe
