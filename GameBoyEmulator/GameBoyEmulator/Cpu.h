@@ -42,7 +42,7 @@ private:
 		uint8_t value;			//Opcode value
 		uint8_t cycle;			//Opcode cycle
 	}
-	const normalOpcodesArray [256] = {	//Normal ocpodes
+	const normalOpcodesArray[256] = {	//Normal ocpodes
 	{"NOP",0x00,NULL}, {"",0x01,NULL}, {"",0x02,NULL}, {"",0x03,NULL}, {"",0x04,NULL}, {"",0x05,NULL}, {"",0x06,NULL}, {"",0x07,NULL}, {"",0x08,NULL}, {"",0x09,NULL}, {"",0x0A,NULL}, {"",0x0B,NULL}, {"",0x0C,NULL}, {"",0x0D,NULL}, {"",0x0E,NULL}, {"",0x0F,NULL}, {"",0x10,NULL}, {"",0x11,NULL}, {"",0x12,NULL}, {"",0x13,NULL}, {"",0x14,NULL}, {"",0x15,NULL}, {"",0x16,NULL}, {"",0x17,NULL}, {"",0x18,NULL}, {"",0x19,NULL}, {"",0x1A,NULL}, {"",0x1B,NULL}, {"",0x1C,NULL}, {"",0x1D,NULL}, {"",0x1E,NULL}, {"",0x1F,NULL},
 	{"",0x20,NULL}, {"",0x21,NULL}, {"",0x22,NULL}, {"",0x23,NULL}, {"",0x24,NULL}, {"",0x25,NULL}, {"",0x26,NULL}, {"",0x27,NULL}, {"",0x28,NULL}, {"",0x29,NULL}, {"",0x2A,NULL}, {"",0x2B,NULL}, {"",0x2C,NULL}, {"",0x2D,NULL}, {"",0x2E,NULL}, {"",0x2F,NULL}, {"",0x30,NULL}, {"",0x31,NULL}, {"",0x32,NULL}, {"",0x33,NULL}, {"",0x34,NULL}, {"",0x35,NULL}, {"",0x36,NULL}, {"",0x37,NULL}, {"",0x38,NULL}, {"",0x39,NULL}, {"",0x3A,NULL}, {"",0x3B,NULL}, {"",0x3C,NULL}, {"",0x3D,NULL}, {"",0x3E,NULL}, {"",0x3F,NULL},
 	{"",0x40,NULL}, {"",0x41,NULL}, {"",0x42,NULL}, {"",0x43,NULL}, {"",0x44,NULL}, {"",0x45,NULL}, {"",0x46,NULL}, {"",0x47,NULL}, {"",0x48,NULL}, {"",0x49,NULL}, {"",0x4A,NULL}, {"",0x4B,NULL}, {"",0x4C,NULL}, {"",0x4D,NULL}, {"",0x4E,NULL}, {"",0x4F,NULL}, {"",0x50,NULL}, {"",0x51,NULL}, {"",0x52,NULL}, {"",0x53,NULL}, {"",0x54,NULL}, {"",0x55,NULL}, {"",0x56,NULL}, {"",0x57,NULL}, {"",0x58,NULL}, {"",0x59,NULL}, {"",0x5A,NULL}, {"",0x5B,NULL}, {"",0x5C,NULL}, {"",0x5D,NULL}, {"",0x5E,NULL}, {"",0x5F,NULL},
@@ -63,14 +63,24 @@ private:
 	{"",0xE0,NULL}, {"",0xE1,NULL}, {"",0xE2,NULL}, {"",0xE3,NULL}, {"",0xE4,NULL}, {"",0xE5,NULL}, {"",0xE6,NULL}, {"",0xE7,NULL}, {"",0xE8,NULL}, {"",0xE9,NULL}, {"",0xEA,NULL}, {"",0xEB,NULL}, {"",0xEC,NULL}, {"",0xED,NULL}, {"",0xEE,NULL}, {"",0xEF,NULL}, {"",0xF0,NULL}, {"",0xF1,NULL}, {"",0xF2,NULL}, {"",0xF3,NULL}, {"",0xF4,NULL}, {"",0xF5,NULL}, {"",0xF6,NULL}, {"",0xF7,NULL}, {"",0xF8,NULL}, {"",0xF9,NULL}, {"",0xFA,NULL}, {"",0xFB,NULL}, {"",0xFC,NULL}, {"",0xFD,NULL}, {"",0xFE,NULL}, {"",0xFF,NULL},
 	};
 
+
 public:
-	Cpu();
-	void readOpcode();
-	void executeOpcode(uint8_t opcode);
+	Cpu();										//Constructor
+	void readOpcode();							//Read an opcode
+	void executeOpcode(uint8_t opcode);			//Execute an opcode (normal or double)
+	~Cpu();
+
 
 private:
-	void executeOneByteOpcode(uint8_t opcode);
-	void executeTwoBytesOpcode(uint8_t opcode);
+	void executeOneByteOpcode(uint8_t opcode);	//Execute an opcode
+	void executeTwoBytesOpcode(uint8_t opcode);	//Execute a double opcode (when preceded by 0XCB)
+
+
+	/*-----------------------------------------NORMAL OPCODES OPERATIONS------------------------------------------*/
+	void opcodeOperation_LD(uint8_t& register1, uint8_t& register2);
+
+	/*-----------------------------------------CB OPCODES OPERATIONS-----------------------------------------------*/
+	//void opcodeOperation_CB_LD(uint8_t& register1, uint8_t& register2);
 };
 
 #endif

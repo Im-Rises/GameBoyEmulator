@@ -23,6 +23,11 @@ void Cpu::executeOpcode(uint8_t opcode)
 	}
 }
 
+Cpu::~Cpu()
+{
+
+}
+
 void Cpu::executeOneByteOpcode(uint8_t opcode)
 {
 	switch (opcode) {
@@ -50,3 +55,14 @@ void Cpu::executeTwoBytesOpcode(uint8_t opcode)
 	case(0xE0): {break; }case(0xE1): {break; }case(0xE2): {break; }case(0xE3): {break; }case(0xE4): {break; }case(0xE5): {break; }case(0xE6): {break; }case(0xE7): {break; }case(0xE8): {break; }case(0xE9): {break; }case(0xEA): {break; }case(0xEB): {break; }case(0xEC): {break; }case(0xED): {break; }case(0xEE): {break; }case(0xEF): {break; }case(0xF0): {break; }case(0xF1): {break; }case(0xF2): {break; }case(0xF3): {break; }case(0xF4): {break; }case(0xF5): {break; }case(0xF6): {break; }case(0xF7): {break; }case(0xF8): {break; }case(0xF9): {break; }case(0xFA): {break; }case(0xFB): {break; }case(0xFC): {break; }case(0xFD): {break; }case(0xFE): {break; }case(0xFF): {break; }
 	}
 }
+
+
+/*-----------------------------------------NORMAL OPCODES OPERATIONS------------------------------------------*/
+
+void Cpu::opcodeOperation_LD(uint8_t& register1, uint8_t& register2) {
+	register1 = register2;
+}
+
+
+
+/*-----------------------------------------CB OPCODES OPERATIONS-----------------------------------------------*/
