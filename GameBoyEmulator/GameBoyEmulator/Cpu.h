@@ -36,8 +36,8 @@ public:
 	void executeOpcode(uint8_t opcode);
 
 private:
-	void executeOneByteOpcode();
-	void executeTwoBytesOpcode();
+	void executeOneByteOpcode(uint8_t opcode);
+	void executeTwoBytesOpcode(uint8_t opcode);
 };
 
 #endif

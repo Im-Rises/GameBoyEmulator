@@ -146,6 +146,7 @@
   <ItemGroup>
     <ClInclude Include="Cpu.h" />
     <ClInclude Include="Memory.h" />
+    <ClInclude Include="opcodes.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
