@@ -2,7 +2,11 @@
 
 Cpu::Cpu()
 {
-
+	A = 0;
+	B = C = D = E = H = L = 0;
+	pc = 0;
+	sp = USER_PROGRAM_AREA;
+	F.Z = F.N = F.H = F.CY = 0;
 }
 
 void Cpu::readOpcode()
@@ -10,25 +14,12 @@ void Cpu::readOpcode()
 
 }
 
-void Cpu::executeOpcode(uint8_t opcode)
-{
-	if (opcode == 0xCB)
-	{
-		//Advance of 1 in the memory and use CB opcode switch
-		//executeTwoBytesOpcode();
-	}
-	else
-	{
-		executeOneByteOpcode(opcode);
-	}
-}
-
 Cpu::~Cpu()
 {
 
 }
 
-void Cpu::executeOneByteOpcode(uint8_t opcode)
+void Cpu::executeOpcode(uint8_t opcode)
 {
 	/// <summary>
 	/// Opcode issue with number 0x7A and 0x7D because D and L have the same three bits
@@ -41,7 +32,7 @@ void Cpu::executeOneByteOpcode(uint8_t opcode)
 	case(0x03): {break; }
 	case(0x04): {break; }
 	case(0x05): {break; }
-	case(0x06): {opcodeOperation_LD(B); break; }
+	case(0x06): {opcodeOperation_LD_R_d8(B); break; }
 	case(0x07): {break; }
 	case(0x08): {break; }
 	case(0x09): {break; }
@@ -49,7 +40,7 @@ void Cpu::executeOneByteOpcode(uint8_t opcode)
 	case(0x0B): {break; }
 	case(0x0C): {break; }
 	case(0x0D): {break; }
-	case(0x0E): {opcodeOperation_LD(C); break; }
+	case(0x0E): {opcodeOperation_LD_R_d8(C); break; }
 	case(0x0F): {break; }
 	case(0x10): {break; }
 	case(0x11): {break; }
@@ -57,7 +48,7 @@ void Cpu::executeOneByteOpcode(uint8_t opcode)
 	case(0x13): {break; }
 	case(0x14): {break; }
 	case(0x15): {break; }
-	case(0x16): {opcodeOperation_LD(D); break; }
+	case(0x16): {opcodeOperation_LD_R_d8(D); break; }
 	case(0x17): {break; }
 	case(0x18): {break; }
 	case(0x19): {break; }
@@ -65,7 +56,7 @@ void Cpu::executeOneByteOpcode(uint8_t opcode)
 	case(0x1B): {break; }
 	case(0x1C): {break; }
 	case(0x1D): {break; }
-	case(0x1E): {opcodeOperation_LD(E); break; }
+	case(0x1E): {opcodeOperation_LD_R_d8(E); break; }
 	case(0x1F): {break; }
 	case(0x20): {break; }
 	case(0x21): {break; }
@@ -73,7 +64,7 @@ void Cpu::executeOneByteOpcode(uint8_t opcode)
 	case(0x23): {break; }
 	case(0x24): {break; }
 	case(0x25): {break; }
-	case(0x26): {opcodeOperation_LD(H); break; }
+	case(0x26): {opcodeOperation_LD_R_d8(H); break; }
 	case(0x27): {break; }
 	case(0x28): {break; }
 	case(0x29): {break; }
@@ -81,7 +72,7 @@ void Cpu::executeOneByteOpcode(uint8_t opcode)
 	case(0x2B): {break; }
 	case(0x2C): {break; }
 	case(0x2D): {break; }
-	case(0x2E): {opcodeOperation_LD(L); break; }
+	case(0x2E): {opcodeOperation_LD_R_d8(L); break; }
 	case(0x2F): {break; }
 	case(0x30): {break; }
 	case(0x31): {break; }
@@ -97,57 +88,57 @@ void Cpu::executeOneByteOpcode(uint8_t opcode)
 	case(0x3B): {break; }
 	case(0x3C): {break; }
 	case(0x3D): {break; }
-	case(0x3E): {opcodeOperation_LD(A); break; }
+	case(0x3E): {opcodeOperation_LD_R_d8(A); break; }
 	case(0x3F): {break; }
-	case(0x40): {opcodeOperation_LD(B, B); break; }
-	case(0x41): {opcodeOperation_LD(B, C); break; }
-	case(0x42): {opcodeOperation_LD(B, D); break; }
-	case(0x43): {opcodeOperation_LD(B, E); break; }
-	case(0x44): {opcodeOperation_LD(B, H); break; }
-	case(0x45): {opcodeOperation_LD(B, L); break; }
-	case(0x46): {break; }
-	case(0x47): {opcodeOperation_LD(B, A); break; }
-	case(0x48): {opcodeOperation_LD(C, B); break; }
-	case(0x49): {opcodeOperation_LD(C, C); break; }
-	case(0x4A): {opcodeOperation_LD(C, D); break; }
-	case(0x4B): {opcodeOperation_LD(C, E); break; }
-	case(0x4C): {opcodeOperation_LD(C, H); break; }
-	case(0x4D): {opcodeOperation_LD(C, L); break; }
-	case(0x4E): {break; }
-	case(0x4F): {opcodeOperation_LD(C, A); break; }
-	case(0x50): {opcodeOperation_LD(D, B); break; }
-	case(0x51): {opcodeOperation_LD(D, C); break; }
-	case(0x52): {opcodeOperation_LD(D, D); break; }
-	case(0x53): {opcodeOperation_LD(D, E); break; }
-	case(0x54): {opcodeOperation_LD(D, H); break; }
-	case(0x55): {opcodeOperation_LD(D, L); break; }
-	case(0x56): {break; }
-	case(0x57): {opcodeOperation_LD(D, A); break; }
-	case(0x58): {opcodeOperation_LD(E, B); break; }
-	case(0x59): {opcodeOperation_LD(E, C); break; }
-	case(0x5A): {opcodeOperation_LD(E, D); break; }
-	case(0x5B): {opcodeOperation_LD(E, E); break; }
-	case(0x5C): {opcodeOperation_LD(E, H); break; }
-	case(0x5D): {opcodeOperation_LD(E, L); break; }
-	case(0x5E): {break; }
-	case(0x5F): {opcodeOperation_LD(E, A); break; }
-	case(0x60): {opcodeOperation_LD(H, B); break; }
-	case(0x61): {opcodeOperation_LD(H, C); break; }
-	case(0x62): {opcodeOperation_LD(H, D); break; }
-	case(0x63): {opcodeOperation_LD(H, E); break; }
-	case(0x64): {opcodeOperation_LD(H, H); break; }
-	case(0x65): {opcodeOperation_LD(H, L); break; }
-	case(0x66): {break; }
-	case(0x67): {opcodeOperation_LD(H, A); break; }
-	case(0x68): {opcodeOperation_LD(L, B); break; }
-	case(0x69): {opcodeOperation_LD(L, C); break; }
-	case(0x6A): {opcodeOperation_LD(L, D); break; }
-	case(0x6B): {opcodeOperation_LD(L, E); break; }
-	case(0x6C): {opcodeOperation_LD(L, H); break; }
-	case(0x6D): {opcodeOperation_LD(L, L); break; }
-	case(0x6E): {break; }
-	case(0x6F): {opcodeOperation_LD(L, A); break; }
-	case(0x70): {break; }
+	case(0x40): {opcodeOperation_LD_R_R(B, B); break; }
+	case(0x41): {opcodeOperation_LD_R_R(B, C); break; }
+	case(0x42): {opcodeOperation_LD_R_R(B, D); break; }
+	case(0x43): {opcodeOperation_LD_R_R(B, E); break; }
+	case(0x44): {opcodeOperation_LD_R_R(B, H); break; }
+	case(0x45): {opcodeOperation_LD_R_R(B, L); break; }
+	case(0x46): {opcodeOperation_LD_R_RP(B, pairRegisters(H, L)); break; }
+	case(0x47): {opcodeOperation_LD_R_R(B, A); break; }
+	case(0x48): {opcodeOperation_LD_R_R(C, B); break; }
+	case(0x49): {opcodeOperation_LD_R_R(C, C); break; }
+	case(0x4A): {opcodeOperation_LD_R_R(C, D); break; }
+	case(0x4B): {opcodeOperation_LD_R_R(C, E); break; }
+	case(0x4C): {opcodeOperation_LD_R_R(C, H); break; }
+	case(0x4D): {opcodeOperation_LD_R_R(C, L); break; }
+	case(0x4E): {opcodeOperation_LD_R_RP(C, pairRegisters(H, L)); break; }
+	case(0x4F): {opcodeOperation_LD_R_R(C, A); break; }
+	case(0x50): {opcodeOperation_LD_R_R(D, B); break; }
+	case(0x51): {opcodeOperation_LD_R_R(D, C); break; }
+	case(0x52): {opcodeOperation_LD_R_R(D, D); break; }
+	case(0x53): {opcodeOperation_LD_R_R(D, E); break; }
+	case(0x54): {opcodeOperation_LD_R_R(D, H); break; }
+	case(0x55): {opcodeOperation_LD_R_R(D, L); break; }
+	case(0x56): {opcodeOperation_LD_R_RP(D, pairRegisters(H, L)); break; }
+	case(0x57): {opcodeOperation_LD_R_R(D, A); break; }
+	case(0x58): {opcodeOperation_LD_R_R(E, B); break; }
+	case(0x59): {opcodeOperation_LD_R_R(E, C); break; }
+	case(0x5A): {opcodeOperation_LD_R_R(E, D); break; }
+	case(0x5B): {opcodeOperation_LD_R_R(E, E); break; }
+	case(0x5C): {opcodeOperation_LD_R_R(E, H); break; }
+	case(0x5D): {opcodeOperation_LD_R_R(E, L); break; }
+	case(0x5E): {opcodeOperation_LD_R_RP(E, pairRegisters(H, L)); break; }
+	case(0x5F): {opcodeOperation_LD_R_R(E, A); break; }
+	case(0x60): {opcodeOperation_LD_R_R(H, B); break; }
+	case(0x61): {opcodeOperation_LD_R_R(H, C); break; }
+	case(0x62): {opcodeOperation_LD_R_R(H, D); break; }
+	case(0x63): {opcodeOperation_LD_R_R(H, E); break; }
+	case(0x64): {opcodeOperation_LD_R_R(H, H); break; }
+	case(0x65): {opcodeOperation_LD_R_R(H, L); break; }
+	case(0x66): {opcodeOperation_LD_R_RP(H, pairRegisters(H, L)); break; }
+	case(0x67): {opcodeOperation_LD_R_R(H, A); break; }
+	case(0x68): {opcodeOperation_LD_R_R(L, B); break; }
+	case(0x69): {opcodeOperation_LD_R_R(L, C); break; }
+	case(0x6A): {opcodeOperation_LD_R_R(L, D); break; }
+	case(0x6B): {opcodeOperation_LD_R_R(L, E); break; }
+	case(0x6C): {opcodeOperation_LD_R_R(L, H); break; }
+	case(0x6D): {opcodeOperation_LD_R_R(L, L); break; }
+	case(0x6E): {opcodeOperation_LD_R_RP(L, pairRegisters(H, L)); break; }
+	case(0x6F): {opcodeOperation_LD_R_R(L, A); break; }
+	case(0x70): {opcodeOperation_LD_RP_R(pairRegisters(H, L), B); break; }//REPRENDRE ICI
 	case(0x71): {break; }
 	case(0x72): {break; }
 	case(0x73): {break; }
@@ -155,14 +146,14 @@ void Cpu::executeOneByteOpcode(uint8_t opcode)
 	case(0x75): {break; }
 	case(0x76): {break; }
 	case(0x77): {break; }
-	case(0x78): {opcodeOperation_LD(A, B); break; }
-	case(0x79): {opcodeOperation_LD(A, C); break; }
-	case(0x7A): {opcodeOperation_LD(A, D); break; }
-	case(0x7B): {opcodeOperation_LD(A, E); break; }
-	case(0x7C): {opcodeOperation_LD(A, H); break; }
-	case(0x7D): {opcodeOperation_LD(A, L); break; }
-	case(0x7E): {break; }
-	case(0x7F): {opcodeOperation_LD(A, A); break; }
+	case(0x78): {opcodeOperation_LD_R_R(A, B); break; }
+	case(0x79): {opcodeOperation_LD_R_R(A, C); break; }
+	case(0x7A): {opcodeOperation_LD_R_R(A, D); break; }
+	case(0x7B): {opcodeOperation_LD_R_R(A, E); break; }
+	case(0x7C): {opcodeOperation_LD_R_R(A, H); break; }
+	case(0x7D): {opcodeOperation_LD_R_R(A, L); break; }
+	case(0x7E): {opcodeOperation_LD_R_RP(A, pairRegisters(H, L)); break; }
+	case(0x7F): {opcodeOperation_LD_R_R(A, A); break; }
 	case(0x80): {break; }
 	case(0x81): {break; }
 	case(0x82): {break; }
@@ -238,7 +229,7 @@ void Cpu::executeOneByteOpcode(uint8_t opcode)
 	case(0xC8): {break; }
 	case(0xC9): {break; }
 	case(0xCA): {break; }
-	case(0xCB): {break; }
+	case(0xCB): {executeOpcodeFollowingCB(); break; }
 	case(0xCC): {break; }
 	case(0xCD): {break; }
 	case(0xCE): {break; }
@@ -294,9 +285,9 @@ void Cpu::executeOneByteOpcode(uint8_t opcode)
 	}
 }
 
-void Cpu::executeTwoBytesOpcode(uint8_t opcode)
+void Cpu::executeOpcodeFollowingCB()
 {
-	switch (opcode) {
+	switch (memory.getMemoryOfIndex(pc++)) {
 	case(0x00): {break; }
 	case(0x01): {break; }
 	case(0x02): {break; }
@@ -556,16 +547,35 @@ void Cpu::executeTwoBytesOpcode(uint8_t opcode)
 	}
 
 }
+
+
+/*-----------------------------------------SUB FUNCTIONS------------------------------------------*/
+
+uint16_t Cpu::pairRegisters(uint8_t reg1, uint8_t reg2)
+{
+	return ((reg1 << 8) + reg2);
+}
+
 /*-----------------------------------------NORMAL OPCODES OPERATIONS------------------------------------------*/
 
-void Cpu::opcodeOperation_LD(uint8_t& reg1, uint8_t& reg2) {
+void Cpu::opcodeOperation_LD_R_R(uint8_t& reg1, const uint8_t& reg2) {
 	reg1 = reg2;
 }
 
-void Cpu::opcodeOperation_LD(uint8_t& reg)
+void Cpu::opcodeOperation_LD_R_d8(uint8_t& reg)
 {
 	pc++;
-	//reg = memoire[pc]; 
+	reg = memory.getMemoryOfIndex(pc);
+}
+
+void Cpu::opcodeOperation_LD_R_RP(uint8_t& reg, const uint16_t& registersPair)
+{
+	reg = registersPair;
+}
+
+void Cpu::opcodeOperation_LD_RP_R(uint16_t& registersPair, const uint8_t& reg)
+{
+	registersPair = reg;
 }
 
 /*-----------------------------------------CB OPCODES OPERATIONS-----------------------------------------------*/

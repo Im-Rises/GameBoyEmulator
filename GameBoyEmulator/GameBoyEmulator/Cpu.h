@@ -1,6 +1,8 @@
 #ifndef DEF_CPU
 #define DEF_CPU
 
+#include "Memory.h"
+
 #include <iostream>
 using namespace std;
 
@@ -13,7 +15,6 @@ private:
 	/// </summary>
 	uint8_t A;					//Accumulator A
 	uint8_t B, C, D, E, H, L;	//Auxiliary registers of the accumulator A, they work by pairs (BC, DE, HL)
-
 
 	/// <summary>
 	/// Program Counter and Stack Pointer
@@ -36,7 +37,7 @@ private:
 	/// <summary>
 	/// Opcodes arrays with name, value and cycle time 
 	/// </summary>
-
+	/*
 	struct Opcode {				//Opcode structure:
 		string name;			//Opcode name
 		uint8_t value;			//Opcode value
@@ -62,7 +63,8 @@ private:
 	{"",0xC0,NULL}, {"",0xC1,NULL}, {"",0xC2,NULL}, {"",0xC3,NULL}, {"",0xC4,NULL}, {"",0xC5,NULL}, {"",0xC6,NULL}, {"",0xC7,NULL}, {"",0xC8,NULL}, {"",0xC9,NULL}, {"",0xCA,NULL}, {"",0xCB,NULL}, {"",0xCC,NULL}, {"",0xCD,NULL}, {"",0xCE,NULL}, {"",0xCF,NULL}, {"",0xD0,NULL}, {"",0xD1,NULL}, {"",0xD2,NULL}, {"",0xD3,NULL}, {"",0xD4,NULL}, {"",0xD5,NULL}, {"",0xD6,NULL}, {"",0xD7,NULL}, {"",0xD8,NULL}, {"",0xD9,NULL}, {"",0xDA,NULL}, {"",0xDB,NULL}, {"",0xDC,NULL}, {"",0xDD,NULL}, {"",0xDE,NULL}, {"",0xDF,NULL},
 	{"",0xE0,NULL}, {"",0xE1,NULL}, {"",0xE2,NULL}, {"",0xE3,NULL}, {"",0xE4,NULL}, {"",0xE5,NULL}, {"",0xE6,NULL}, {"",0xE7,NULL}, {"",0xE8,NULL}, {"",0xE9,NULL}, {"",0xEA,NULL}, {"",0xEB,NULL}, {"",0xEC,NULL}, {"",0xED,NULL}, {"",0xEE,NULL}, {"",0xEF,NULL}, {"",0xF0,NULL}, {"",0xF1,NULL}, {"",0xF2,NULL}, {"",0xF3,NULL}, {"",0xF4,NULL}, {"",0xF5,NULL}, {"",0xF6,NULL}, {"",0xF7,NULL}, {"",0xF8,NULL}, {"",0xF9,NULL}, {"",0xFA,NULL}, {"",0xFB,NULL}, {"",0xFC,NULL}, {"",0xFD,NULL}, {"",0xFE,NULL}, {"",0xFF,NULL},
 	};
-
+	*/
+	Memory memory;
 
 public:
 	Cpu();										//Constructor
@@ -72,13 +74,16 @@ public:
 
 
 private:
-	void executeOneByteOpcode(uint8_t opcode);	//Execute an opcode
-	void executeTwoBytesOpcode(uint8_t opcode);	//Execute a double opcode (when preceded by 0XCB)
-
+	
+	uint16_t pairRegisters(uint8_t reg1, uint8_t reg2);
 
 	/*-----------------------------------------NORMAL OPCODES OPERATIONS------------------------------------------*/
-	void opcodeOperation_LD(uint8_t& reg1, uint8_t& reg2);
-	void opcodeOperation_LD(uint8_t& reg);
+	void opcodeOperation_LD_R_R(uint8_t& reg1, const uint8_t& reg2);
+	void opcodeOperation_LD_R_d8(uint8_t& reg);
+	void opcodeOperation_LD_R_RP(uint8_t& reg, const uint16_t& registersPair);
+	void opcodeOperation_LD_RP_R(uint16_t& registersPair, const uint8_t& reg);
+	
+	void executeOpcodeFollowingCB();
 	/*-----------------------------------------CB OPCODES OPERATIONS-----------------------------------------------*/
 	//void opcodeOperation_CB_LD(uint8_t& register1, uint8_t& register2);
 };
