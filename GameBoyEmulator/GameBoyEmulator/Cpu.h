@@ -81,32 +81,45 @@ private:
 	/// <summary>
 	/// Registers functions:
 	/// Mnemonic therms:
-	/// - R = register
-	/// - RP = register pair (for example HL)
-	/// - d8 direct 8 bits following in the memory
-	/// - a8 value in the memory address of the 8 following bits
-	/// 
-	/// To modify:
-	/// - Change the name of the functions opcode. In particular to make a difference between (HL) and HL
+	/// - R register
+	/// - aR the value pointed in the memory by the register
+	/// - dR direct value of a register (sometimes written only R)
+	/// - Ro means a register + an offset
+	/// - aRo means the value in the memory pointed by the address of the register + an offset
+	/// - RI means incrementation of the register
+	/// - RD means decrementation of the register
+	/// - PR pair of registers (for example HL)
+	///	- .... aPR, oPR, aPRo, RI, RD work the same for a pair of registers
+	/// - d8 direct 8 bits following in the memory pointed by the pc
+	/// - d16 direct 16 bits following in the memory pointed by the pc and pc+1
+	/// - a8 value in the memory pointed by the 8 following bits pointed by the pc 
+	/// - a16 value in the memory pointed by 16 following bits pointed by the pc and pc+1
 	/// </summary>
-	/// <param name="reg1"></param>
-	/// <param name="reg2"></param>
 
+	//Page 1	(p85)
 	void opcodeOperation_LD_R_R(uint8_t& reg1, const uint8_t& reg2);
 	void opcodeOperation_LD_R_d8(uint8_t& reg);
-	void opcodeOperation_LD_R_RP(uint8_t& reg, const uint8_t regPair1, const uint8_t regPair2);
-	void opcodeOperation_LD_RP_R(const uint8_t& registerPair1, const uint8_t& registerPair2, const uint8_t& reg);
-	void opcodeOperation_LD_RP_d8(uint8_t& registerPair1, uint8_t& registerPair2);
-	void opcodeOperation_LD_A_C(uint8_t& regA, const uint8_t& regC);
-	void opcodeOperation_LD_C_A(const uint8_t& regC, const uint8_t& regA);
-	void opcodeOperation_LD_R_a8(uint8_t& reg);
-	void opcodeOperation_LD_a8_R(const uint8_t& reg);
-	void opcodeOperation_LD_R_a16(uint8_t& reg);
-	void opcodeOperation_LD_a16_R(uint8_t& reg);
-	void opcodeOperation_LD_A_HLI(uint8_t& reg, uint8_t regPair1, uint8_t regPair2);
-	void opcodeOperation_LD_A_HLD(uint8_t& reg, uint8_t regPair1, uint8_t regPair2);
+	void opcodeOperation_LD_R_aPR(uint8_t& reg, const uint8_t regPair1, const uint8_t regPair2);
 
-	//RESUME HERE p88 
+	//Page 2	(p86)
+	void opcodeOperation_LD_aPR_R(const uint8_t& registerPair1, const uint8_t& registerPair2, const uint8_t& reg);
+	void opcodeOperation_LD_aPR_d8(uint8_t& registerPair1, uint8_t& registerPair2);
+	//void opcodeOperation_LD_R_aRP(uint8_t& reg, const uint8_t regPair1, const uint8_t regPair2);
+	void opcodeOperation_LD_R_aRo(uint8_t& reg1, const uint8_t& reg2);
+
+	//Page 3	(p87)
+	void opcodeOperation_LD_aRo_R(const uint8_t& reg1, const uint8_t& reg2);
+	void opcodeOperation_LD_R_a8o(uint8_t& reg);
+	void opcodeOperation_LD_a8o_R(const uint8_t& reg);
+	void opcodeOperation_LD_R_a16(uint8_t& reg);
+
+	//Page 4	(p88)
+	void opcodeOperation_LD_a16_R(const uint8_t& reg);
+	void opcodeOperation_LD_R_aPR_PRI(uint8_t& reg, uint8_t regPair1, uint8_t regPair2);
+	void opcodeOperation_LD_R_aPR_PRD(uint8_t& reg, uint8_t regPair1, uint8_t regPair2);
+	//void opcodeOperation_LD_aPR_R(const uint8_t& registerPair1, const uint8_t& registerPair2, const uint8_t& reg);
+
+	//Page 5 (p99) RESUME HERE
 
 	void executeOpcodeFollowingCB();
 	/*-----------------------------------------CB OPCODES OPERATIONS-----------------------------------------------*/

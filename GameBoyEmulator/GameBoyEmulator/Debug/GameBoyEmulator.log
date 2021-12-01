@@ -1,5 +1,6 @@
 ﻿  Cpu.cpp
-E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(590,50): warning C4333: '>>' : décalage vers la droite trop important, perte de données
+E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(647,13): warning C4244: '=' : conversion de 'uint16_t' en 'uint8_t', perte possible de données
+E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(657,13): warning C4244: '=' : conversion de 'uint16_t' en 'uint8_t', perte possible de données
   gameBoy.cpp
   Génération de code en cours...
   GameBoyEmulator.vcxproj -> E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\Debug\GameBoyEmulator.exe
