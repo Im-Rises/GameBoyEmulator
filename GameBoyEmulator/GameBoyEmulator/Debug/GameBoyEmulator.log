@@ -1,4 +1,5 @@
 ﻿  Cpu.cpp
+E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(590,50): warning C4333: '>>' : décalage vers la droite trop important, perte de données
   gameBoy.cpp
   Génération de code en cours...
   GameBoyEmulator.vcxproj -> E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\Debug\GameBoyEmulator.exe

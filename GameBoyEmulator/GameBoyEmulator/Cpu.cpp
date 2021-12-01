@@ -36,7 +36,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x07): {break; }
 	case(0x08): {break; }
 	case(0x09): {break; }
-	case(0x0A): {break; }
+	case(0x0A): {opcodeOperation_LD_R_RP(A, B, C); break; }
 	case(0x0B): {break; }
 	case(0x0C): {break; }
 	case(0x0D): {break; }
@@ -52,7 +52,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x17): {break; }
 	case(0x18): {break; }
 	case(0x19): {break; }
-	case(0x1A): {break; }
+	case(0x1A): {opcodeOperation_LD_R_RP(A, D, E); break; }
 	case(0x1B): {break; }
 	case(0x1C): {break; }
 	case(0x1D): {break; }
@@ -68,7 +68,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x27): {break; }
 	case(0x28): {break; }
 	case(0x29): {break; }
-	case(0x2A): {break; }
+	case(0x2A): {opcodeOperation_LD_A_HLI(A, H, L); break; }
 	case(0x2B): {break; }
 	case(0x2C): {break; }
 	case(0x2D): {break; }
@@ -80,11 +80,11 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x33): {break; }
 	case(0x34): {break; }
 	case(0x35): {break; }
-	case(0x36): {break; }
+	case(0x36): {opcodeOperation_LD_RP_d8(H, L); break; }
 	case(0x37): {break; }
 	case(0x38): {break; }
 	case(0x39): {break; }
-	case(0x3A): {break; }
+	case(0x3A): {opcodeOperation_LD_A_HLD(A, H, L); break; }
 	case(0x3B): {break; }
 	case(0x3C): {break; }
 	case(0x3D): {break; }
@@ -139,13 +139,13 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x6E): {opcodeOperation_LD_R_RP(L, H, L); break; }
 	case(0x6F): {opcodeOperation_LD_R_R(L, A); break; }
 	case(0x70): {opcodeOperation_LD_RP_R(H, L, B); break; }//RESUME HERE 
-	case(0x71): {break; }
-	case(0x72): {break; }
-	case(0x73): {break; }
-	case(0x74): {break; }
-	case(0x75): {break; }
+	case(0x71): {opcodeOperation_LD_RP_R(H, L, C); break; }
+	case(0x72): {opcodeOperation_LD_RP_R(H, L, D); break; }
+	case(0x73): {opcodeOperation_LD_RP_R(H, L, E); break; }
+	case(0x74): {opcodeOperation_LD_RP_R(H, L, H); break; }
+	case(0x75): {opcodeOperation_LD_RP_R(H, L, L); break; }
 	case(0x76): {break; }
-	case(0x77): {break; }
+	case(0x77): {opcodeOperation_LD_RP_R(H, L, L); break; }
 	case(0x78): {opcodeOperation_LD_R_R(A, B); break; }
 	case(0x79): {opcodeOperation_LD_R_R(A, C); break; }
 	case(0x7A): {opcodeOperation_LD_R_R(A, D); break; }
@@ -250,9 +250,9 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0xDD): {break; }
 	case(0xDE): {break; }
 	case(0xDF): {break; }
-	case(0xE0): {break; }
+	case(0xE0): {opcodeOperation_LD_a8_R(A); break; }
 	case(0xE1): {break; }
-	case(0xE2): {break; }
+	case(0xE2): {opcodeOperation_LD_C_A(C, A); break; }
 	case(0xE3): {break; }
 	case(0xE4): {break; }
 	case(0xE5): {break; }
@@ -260,15 +260,15 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0xE7): {break; }
 	case(0xE8): {break; }
 	case(0xE9): {break; }
-	case(0xEA): {break; }
+	case(0xEA): {opcodeOperation_LD_a16_R(A); break; }
 	case(0xEB): {break; }
 	case(0xEC): {break; }
 	case(0xED): {break; }
 	case(0xEE): {break; }
 	case(0xEF): {break; }
-	case(0xF0): {break; }
+	case(0xF0): {opcodeOperation_LD_R_a8(A); break; }
 	case(0xF1): {break; }
-	case(0xF2): {break; }
+	case(0xF2): {opcodeOperation_LD_A_C(A, C); break; }
 	case(0xF3): {break; }
 	case(0xF4): {break; }
 	case(0xF5): {break; }
@@ -276,7 +276,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0xF7): {break; }
 	case(0xF8): {break; }
 	case(0xF9): {break; }
-	case(0xFA): {break; }
+	case(0xFA): {opcodeOperation_LD_R_a16(A); break; }
 	case(0xFB): {break; }
 	case(0xFC): {break; }
 	case(0xFD): {break; }
@@ -287,6 +287,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 
 void Cpu::executeOpcodeFollowingCB()
 {
+	/*
 	switch (memory.getMemoryOfIndex(pc++)) {
 	case(0x00): {break; }
 	case(0x01): {break; }
@@ -545,7 +546,7 @@ void Cpu::executeOpcodeFollowingCB()
 	case(0xFE): {break; }
 	case(0xFF): {break; }
 	}
-
+	*/
 }
 
 
@@ -580,6 +581,74 @@ void Cpu::opcodeOperation_LD_R_RP(uint8_t& reg, const uint8_t regPair1, const ui
 void Cpu::opcodeOperation_LD_RP_R(const uint8_t& registerPair1, const uint8_t& registerPair2, const uint8_t& reg)
 {
 	memory.setMemoryOfIndex(pairRegisters(registerPair1, registerPair2), reg);
+	pc++;
+}
+
+void Cpu::opcodeOperation_LD_RP_d8(uint8_t& registerPair1, uint8_t& registerPair2)
+{
+	pc++;
+	registerPair1 = memory.getMemoryOfIndex(pc) >> 8;
+	registerPair2 = memory.getMemoryOfIndex(pc);
+	pc++;
+}
+
+void Cpu::opcodeOperation_LD_A_C(uint8_t& regA, const uint8_t& regC)
+{
+	regA = memory.getMemoryOfIndex(0xFF00 + regC);
+	pc++;
+}
+
+void Cpu::opcodeOperation_LD_C_A(const uint8_t& regC, const uint8_t& regA)
+{
+	memory.setMemoryOfIndex(0xFF00 + regC, regA);
+	pc++;
+}
+
+void Cpu::opcodeOperation_LD_R_a8(uint8_t& reg)
+{
+	pc++;
+	reg = memory.getMemoryOfIndex(0xFF00 + memory.getMemoryOfIndex(pc));
+	pc++;
+}
+
+void Cpu::opcodeOperation_LD_a8_R(const uint8_t& reg)
+{
+	pc++;
+	memory.setMemoryOfIndex(0xFF00 + pc, A);
+	pc++;
+}
+
+void Cpu::opcodeOperation_LD_R_a16(uint8_t& reg)
+{
+	pc++;
+	reg = memory.getMemoryOfIndex(((memory.getMemoryOfIndex(pc) << 8) + memory.getMemoryOfIndex(pc + 1)));
+	pc += 2;
+}
+
+void Cpu::opcodeOperation_LD_a16_R(uint8_t& reg)
+{
+	pc++;
+	memory.setMemoryOfIndex(((memory.getMemoryOfIndex(pc) << 8) + memory.getMemoryOfIndex(pc + 1)), reg);
+	pc += 2;
+}
+
+void Cpu::opcodeOperation_LD_A_HLI(uint8_t& reg, uint8_t regPair1, uint8_t regPair2)
+{
+	uint16_t regPairTemp = pairRegisters(regPair1, regPair2);
+	reg = memory.getMemoryOfIndex(regPairTemp);
+	regPairTemp++;
+	regPair1 = regPairTemp >> 8;
+	regPair2 = regPairTemp;
+	pc++;
+}
+
+void Cpu::opcodeOperation_LD_A_HLD(uint8_t& reg, uint8_t regPair1, uint8_t regPair2)
+{
+	uint16_t regPairTemp = pairRegisters(regPair1, regPair2);
+	reg = memory.getMemoryOfIndex(regPairTemp);
+	regPairTemp--;
+	regPair1 = regPairTemp >> 8;
+	regPair2 = regPairTemp;
 	pc++;
 }
 
