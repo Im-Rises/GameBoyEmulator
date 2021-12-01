@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-#define MEMORY_SIZE 0xFFFF + 0x0001	//65535 KB
+#define MEMORY_SIZE (0xFFFF + 0x0001)	//65535 KB
 
 #define INTERRUPT_ADDRESS 0x0
 #define ROM_DATA_AREA 0x100

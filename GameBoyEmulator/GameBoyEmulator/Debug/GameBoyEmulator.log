@@ -1,6 +1,9 @@
 ﻿  Cpu.cpp
-E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(647,13): warning C4244: '=' : conversion de 'uint16_t' en 'uint8_t', perte possible de données
-E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(657,13): warning C4244: '=' : conversion de 'uint16_t' en 'uint8_t', perte possible de données
+E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(655,13): warning C4244: '=' : conversion de 'uint16_t' en 'uint8_t', perte possible de données
+E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(665,13): warning C4244: '=' : conversion de 'uint16_t' en 'uint8_t', perte possible de données
+E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(677,13): warning C4244: '=' : conversion de 'uint16_t' en 'uint8_t', perte possible de données
+E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(687,13): warning C4244: '=' : conversion de 'uint16_t' en 'uint8_t', perte possible de données
+E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(706,19): warning C4244: 'initialisation' : conversion de 'uint16_t' en 'uint8_t', perte possible de données
   gameBoy.cpp
   Génération de code en cours...
   GameBoyEmulator.vcxproj -> E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\Debug\GameBoyEmulator.exe

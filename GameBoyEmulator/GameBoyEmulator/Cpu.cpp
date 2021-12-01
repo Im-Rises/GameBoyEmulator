@@ -4,8 +4,8 @@ Cpu::Cpu()
 {
 	A = 0;
 	B = C = D = E = H = L = 0;
-	pc = 0;
-	sp = USER_PROGRAM_AREA;
+	pc = USER_PROGRAM_AREA;
+	sp = CPU_WORK_RAM_OR_AND_STACK_END;
 	F.Z = F.N = F.H = F.CY = 0;
 }
 
@@ -27,8 +27,8 @@ void Cpu::executeOpcode(uint8_t opcode)
 	/// <param name="opcode"></param>
 	switch (opcode) {
 	case(0x00): {break; }
-	case(0x01): {break; }
-	case(0x02): {opcodeOperation_LD_aPR_R(B, C, A); break; }
+	case(0x01): {opcodeOperation16bits_LD_RP_d16(B, C); break; }
+	case(0x02): {opcodeOperation_LD_aRP_R(B, C, A); break; }
 	case(0x03): {break; }
 	case(0x04): {break; }
 	case(0x05): {break; }
@@ -36,15 +36,15 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x07): {break; }
 	case(0x08): {break; }
 	case(0x09): {break; }
-	case(0x0A): {opcodeOperation_LD_R_aPR(A, B, C); break; }
+	case(0x0A): {opcodeOperation_LD_R_aRP(A, B, C); break; }
 	case(0x0B): {break; }
 	case(0x0C): {break; }
 	case(0x0D): {break; }
 	case(0x0E): {opcodeOperation_LD_R_d8(C); break; }
 	case(0x0F): {break; }
 	case(0x10): {break; }
-	case(0x11): {break; }
-	case(0x12): {opcodeOperation_LD_aPR_R(D, E, A); break; }
+	case(0x11): {opcodeOperation16bits_LD_RP_d16(D, D); break; }
+	case(0x12): {opcodeOperation_LD_aRP_R(D, E, A); break; }
 	case(0x13): {break; }
 	case(0x14): {break; }
 	case(0x15): {break; }
@@ -52,15 +52,15 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x17): {break; }
 	case(0x18): {break; }
 	case(0x19): {break; }
-	case(0x1A): {opcodeOperation_LD_R_aPR(A, D, E); break; }
+	case(0x1A): {opcodeOperation_LD_R_aRP(A, D, E); break; }
 	case(0x1B): {break; }
 	case(0x1C): {break; }
 	case(0x1D): {break; }
 	case(0x1E): {opcodeOperation_LD_R_d8(E); break; }
 	case(0x1F): {break; }
 	case(0x20): {break; }
-	case(0x21): {break; }
-	case(0x22): {break; }
+	case(0x21): {opcodeOperation16bits_LD_RP_d16(H, L); break; }
+	case(0x22): {opcodeOperation_LD_aRP_R_RPI(H, L, A); break; }
 	case(0x23): {break; }
 	case(0x24): {break; }
 	case(0x25): {break; }
@@ -68,23 +68,23 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x27): {break; }
 	case(0x28): {break; }
 	case(0x29): {break; }
-	case(0x2A): {opcodeOperation_LD_R_aPR_PRI(A, H, L); break; }
+	case(0x2A): {opcodeOperation_LD_R_aRP_RPI(A, H, L); break; }
 	case(0x2B): {break; }
 	case(0x2C): {break; }
 	case(0x2D): {break; }
 	case(0x2E): {opcodeOperation_LD_R_d8(L); break; }
 	case(0x2F): {break; }
 	case(0x30): {break; }
-	case(0x31): {break; }
+	case(0x31): {opcodeOperation16bits_LD_RP_d16(sp); break; }
 	case(0x32): {break; }
 	case(0x33): {break; }
 	case(0x34): {break; }
 	case(0x35): {break; }
-	case(0x36): {opcodeOperation_LD_aPR_d8(H, L); break; }
+	case(0x36): {opcodeOperation_LD_aRP_d8(H, L); break; }
 	case(0x37): {break; }
 	case(0x38): {break; }
 	case(0x39): {break; }
-	case(0x3A): {opcodeOperation_LD_R_aPR_PRD(A, H, L); break; }
+	case(0x3A): {opcodeOperation_LD_R_aRP_RPD(A, H, L); break; }
 	case(0x3B): {break; }
 	case(0x3C): {break; }
 	case(0x3D): {break; }
@@ -96,7 +96,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x43): {opcodeOperation_LD_R_R(B, E); break; }
 	case(0x44): {opcodeOperation_LD_R_R(B, H); break; }
 	case(0x45): {opcodeOperation_LD_R_R(B, L); break; }
-	case(0x46): {opcodeOperation_LD_R_aPR(B, H, L); break; }
+	case(0x46): {opcodeOperation_LD_R_aRP(B, H, L); break; }
 	case(0x47): {opcodeOperation_LD_R_R(B, A); break; }
 	case(0x48): {opcodeOperation_LD_R_R(C, B); break; }
 	case(0x49): {opcodeOperation_LD_R_R(C, C); break; }
@@ -104,7 +104,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x4B): {opcodeOperation_LD_R_R(C, E); break; }
 	case(0x4C): {opcodeOperation_LD_R_R(C, H); break; }
 	case(0x4D): {opcodeOperation_LD_R_R(C, L); break; }
-	case(0x4E): {opcodeOperation_LD_R_aPR(C, H, L); break; }
+	case(0x4E): {opcodeOperation_LD_R_aRP(C, H, L); break; }
 	case(0x4F): {opcodeOperation_LD_R_R(C, A); break; }
 	case(0x50): {opcodeOperation_LD_R_R(D, B); break; }
 	case(0x51): {opcodeOperation_LD_R_R(D, C); break; }
@@ -112,7 +112,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x53): {opcodeOperation_LD_R_R(D, E); break; }
 	case(0x54): {opcodeOperation_LD_R_R(D, H); break; }
 	case(0x55): {opcodeOperation_LD_R_R(D, L); break; }
-	case(0x56): {opcodeOperation_LD_R_aPR(D, H, L); break; }
+	case(0x56): {opcodeOperation_LD_R_aRP(D, H, L); break; }
 	case(0x57): {opcodeOperation_LD_R_R(D, A); break; }
 	case(0x58): {opcodeOperation_LD_R_R(E, B); break; }
 	case(0x59): {opcodeOperation_LD_R_R(E, C); break; }
@@ -120,7 +120,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x5B): {opcodeOperation_LD_R_R(E, E); break; }
 	case(0x5C): {opcodeOperation_LD_R_R(E, H); break; }
 	case(0x5D): {opcodeOperation_LD_R_R(E, L); break; }
-	case(0x5E): {opcodeOperation_LD_R_aPR(E, H, L); break; }
+	case(0x5E): {opcodeOperation_LD_R_aRP(E, H, L); break; }
 	case(0x5F): {opcodeOperation_LD_R_R(E, A); break; }
 	case(0x60): {opcodeOperation_LD_R_R(H, B); break; }
 	case(0x61): {opcodeOperation_LD_R_R(H, C); break; }
@@ -128,7 +128,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x63): {opcodeOperation_LD_R_R(H, E); break; }
 	case(0x64): {opcodeOperation_LD_R_R(H, H); break; }
 	case(0x65): {opcodeOperation_LD_R_R(H, L); break; }
-	case(0x66): {opcodeOperation_LD_R_aPR(H, H, L); break; }
+	case(0x66): {opcodeOperation_LD_R_aRP(H, H, L); break; }
 	case(0x67): {opcodeOperation_LD_R_R(H, A); break; }
 	case(0x68): {opcodeOperation_LD_R_R(L, B); break; }
 	case(0x69): {opcodeOperation_LD_R_R(L, C); break; }
@@ -136,23 +136,23 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x6B): {opcodeOperation_LD_R_R(L, E); break; }
 	case(0x6C): {opcodeOperation_LD_R_R(L, H); break; }
 	case(0x6D): {opcodeOperation_LD_R_R(L, L); break; }
-	case(0x6E): {opcodeOperation_LD_R_aPR(L, H, L); break; }
+	case(0x6E): {opcodeOperation_LD_R_aRP(L, H, L); break; }
 	case(0x6F): {opcodeOperation_LD_R_R(L, A); break; }
-	case(0x70): {opcodeOperation_LD_aPR_R(H, L, B); break; }//RESUME HERE 
-	case(0x71): {opcodeOperation_LD_aPR_R(H, L, C); break; }
-	case(0x72): {opcodeOperation_LD_aPR_R(H, L, D); break; }
-	case(0x73): {opcodeOperation_LD_aPR_R(H, L, E); break; }
-	case(0x74): {opcodeOperation_LD_aPR_R(H, L, H); break; }
-	case(0x75): {opcodeOperation_LD_aPR_R(H, L, L); break; }
+	case(0x70): {opcodeOperation_LD_aRP_R(H, L, B); break; }//RESUME HERE 
+	case(0x71): {opcodeOperation_LD_aRP_R(H, L, C); break; }
+	case(0x72): {opcodeOperation_LD_aRP_R(H, L, D); break; }
+	case(0x73): {opcodeOperation_LD_aRP_R(H, L, E); break; }
+	case(0x74): {opcodeOperation_LD_aRP_R(H, L, H); break; }
+	case(0x75): {opcodeOperation_LD_aRP_R(H, L, L); break; }
 	case(0x76): {break; }
-	case(0x77): {opcodeOperation_LD_aPR_R(H, L, A); break; }
+	case(0x77): {opcodeOperation_LD_aRP_R(H, L, A); break; }
 	case(0x78): {opcodeOperation_LD_R_R(A, B); break; }
 	case(0x79): {opcodeOperation_LD_R_R(A, C); break; }
 	case(0x7A): {opcodeOperation_LD_R_R(A, D); break; }
 	case(0x7B): {opcodeOperation_LD_R_R(A, E); break; }
 	case(0x7C): {opcodeOperation_LD_R_R(A, H); break; }
 	case(0x7D): {opcodeOperation_LD_R_R(A, L); break; }
-	case(0x7E): {opcodeOperation_LD_R_aPR(A, H, L); break; }
+	case(0x7E): {opcodeOperation_LD_R_aRP(A, H, L); break; }
 	case(0x7F): {opcodeOperation_LD_R_R(A, A); break; }
 	case(0x80): {break; }
 	case(0x81): {break; }
@@ -219,11 +219,11 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0xBE): {break; }
 	case(0xBF): {break; }
 	case(0xC0): {break; }
-	case(0xC1): {break; }
+	case(0xC1): {opcodeOperation16bits_POP_RP(B, C); break; }
 	case(0xC2): {break; }
 	case(0xC3): {break; }
 	case(0xC4): {break; }
-	case(0xC5): {break; }
+	case(0xC5): {opcodeOperation16bits_PUSH_RP(B, C); break; }
 	case(0xC6): {break; }
 	case(0xC7): {break; }
 	case(0xC8): {break; }
@@ -235,11 +235,11 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0xCE): {break; }
 	case(0xCF): {break; }
 	case(0xD0): {break; }
-	case(0xD1): {break; }
+	case(0xD1): {opcodeOperation16bits_POP_RP(D, E); break; }
 	case(0xD2): {break; }
 	case(0xD3): {break; }
 	case(0xD4): {break; }
-	case(0xD5): {break; }
+	case(0xD5): {opcodeOperation16bits_PUSH_RP(D, E); break; }
 	case(0xD6): {break; }
 	case(0xD7): {break; }
 	case(0xD8): {break; }
@@ -251,11 +251,11 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0xDE): {break; }
 	case(0xDF): {break; }
 	case(0xE0): {opcodeOperation_LD_a8o_R(A); break; }
-	case(0xE1): {break; }
+	case(0xE1): {opcodeOperation16bits_POP_RP(H, L); break; }
 	case(0xE2): {opcodeOperation_LD_aRo_R(C, A); break; }
 	case(0xE3): {break; }
 	case(0xE4): {break; }
-	case(0xE5): {break; }
+	case(0xE5): {opcodeOperation16bits_PUSH_RP(H, L); break; }
 	case(0xE6): {break; }
 	case(0xE7): {break; }
 	case(0xE8): {break; }
@@ -267,15 +267,15 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0xEE): {break; }
 	case(0xEF): {break; }
 	case(0xF0): {opcodeOperation_LD_R_a8o(A); break; }
-	case(0xF1): {break; }
+	case(0xF1): {opcodeOperation16bits_POP_RP(A, F); break; }
 	case(0xF2): {opcodeOperation_LD_R_aRo(A, C); break; }
 	case(0xF3): {break; }
 	case(0xF4): {break; }
-	case(0xF5): {break; }
+	case(0xF5): {opcodeOperation16bits_PUSH_RP(A, F); break; }
 	case(0xF6): {break; }
 	case(0xF7): {break; }
-	case(0xF8): {break; }
-	case(0xF9): {break; }
+	case(0xF8): {opcodeOpearation16bits_LDHL_SP_e(); break; }
+	case(0xF9): {opcodeOperation16bits_LD_RP_RP(sp, H, L); break; }
 	case(0xFA): {opcodeOperation_LD_R_a16(A); break; }
 	case(0xFB): {break; }
 	case(0xFC): {break; }
@@ -552,13 +552,21 @@ void Cpu::executeOpcodeFollowingCB()
 
 /*-----------------------------------------SUB FUNCTIONS------------------------------------------*/
 
-uint16_t Cpu::pairRegisters(uint8_t reg1, uint8_t reg2)
+uint16_t Cpu::pairRegisters(const uint8_t reg1, const uint8_t reg2)const
 {
 	return ((reg1 << 8) + reg2);
 }
 
+uint8_t Cpu::flagToByte(const Flag& flag)const
+{
+	uint8_t temp = (flag.Z << 7) + (flag.N << 6) + (flag.H << 5) + (flag.CY << 4);
+	return temp;
+}
+
 
 /*-----------------------------------------NORMAL OPCODES OPERATIONS------------------------------------------*/
+
+/*-------------------------------------8bits TRANSFER AND INPUT/OUTPUT INSTRUCTIONS---------------------------------------*/
 
 //Page 1
 void Cpu::opcodeOperation_LD_R_R(uint8_t& reg1, const uint8_t& reg2) {
@@ -573,7 +581,7 @@ void Cpu::opcodeOperation_LD_R_d8(uint8_t& reg)
 	pc++;
 }
 
-void Cpu::opcodeOperation_LD_R_aPR(uint8_t& reg, const uint8_t regPair1, const uint8_t regPair2)
+void Cpu::opcodeOperation_LD_R_aRP(uint8_t& reg, const uint8_t regPair1, const uint8_t regPair2)
 {
 	reg = memory.getMemoryOfIndex(pairRegisters(regPair1, regPair2));
 	pc++;
@@ -581,13 +589,13 @@ void Cpu::opcodeOperation_LD_R_aPR(uint8_t& reg, const uint8_t regPair1, const u
 
 
 //Page 2
-void Cpu::opcodeOperation_LD_aPR_R(const uint8_t& registerPair1, const uint8_t& registerPair2, const uint8_t& reg)
+void Cpu::opcodeOperation_LD_aRP_R(const uint8_t& registerPair1, const uint8_t& registerPair2, const uint8_t& reg)
 {
 	memory.setMemoryOfIndex(pairRegisters(registerPair1, registerPair2), reg);
 	pc++;
 }
 
-void Cpu::opcodeOperation_LD_aPR_d8(uint8_t& registerPair1, uint8_t& registerPair2)
+void Cpu::opcodeOperation_LD_aRP_d8(uint8_t& registerPair1, uint8_t& registerPair2)
 {
 	pc++;
 	memory.setMemoryOfIndex(memory.getMemoryOfIndex(pairRegisters(H, L)), memory.getMemoryOfIndex(pc));
@@ -638,26 +646,146 @@ void Cpu::opcodeOperation_LD_a16_R(const uint8_t& reg)
 	pc += 2;
 }
 
-void Cpu::opcodeOperation_LD_R_aPR_PRI(uint8_t& reg, uint8_t regPair1, uint8_t regPair2)
+void Cpu::opcodeOperation_LD_R_aRP_RPI(uint8_t& reg, uint8_t regPair1, uint8_t regPair2)
 {
-	uint16_t regPairTemp = pairRegisters(regPair1, regPair2);
-	reg = memory.getMemoryOfIndex(regPairTemp);
-	regPairTemp++;
-	regPair1 = regPairTemp >> 8;
-	regPair2 = regPairTemp;
+	uint16_t registersPairTemp = pairRegisters(regPair1, regPair2);
+	reg = memory.getMemoryOfIndex(registersPairTemp);
+	registersPairTemp++;
+	regPair1 = registersPairTemp >> 8;
+	regPair2 = registersPairTemp;
 	pc++;
 }
 
-void Cpu::opcodeOperation_LD_R_aPR_PRD(uint8_t& reg, uint8_t regPair1, uint8_t regPair2)
+void Cpu::opcodeOperation_LD_R_aRP_RPD(uint8_t& reg, uint8_t regPair1, uint8_t regPair2)
 {
-	uint16_t regPairTemp = pairRegisters(regPair1, regPair2);
-	reg = memory.getMemoryOfIndex(regPairTemp);
-	regPairTemp--;
-	regPair1 = regPairTemp >> 8;
-	regPair2 = regPairTemp;
+	uint16_t registersPairTemp = pairRegisters(regPair1, regPair2);
+	reg = memory.getMemoryOfIndex(registersPairTemp);
+	registersPairTemp--;
+	regPair1 = registersPairTemp >> 8;
+	regPair2 = registersPairTemp;
 	pc++;
 }
 
 
+//Page 5
+void Cpu::opcodeOperation_LD_aRP_R_RPI(uint8_t& regPair1, uint8_t& regPair2, const uint8_t& reg)
+{
+	uint16_t registersPairTemp = pairRegisters(regPair1, regPair2);
+	memory.setMemoryOfIndex(registersPairTemp, reg);
+	registersPairTemp++;
+	regPair1 = (registersPairTemp >> 8);
+	regPair2 = registersPairTemp;
+	pc++;
+}
+
+void Cpu::opcodeOperation_LD_aRP_R_RPD(uint8_t& regPair1, uint8_t& regPair2, const uint8_t& reg)
+{
+	uint16_t registersPairTemp = pairRegisters(regPair1, regPair2);
+	memory.setMemoryOfIndex(registersPairTemp, reg);
+	registersPairTemp--;
+	regPair1 = (registersPairTemp >> 8);
+	regPair2 = registersPairTemp;
+	pc++;
+}
+
+
+/*-------------------------------------16bits TRANSFER INSTRUCTIONS---------------------------------------*/
+
+//Page 6 
+void Cpu::opcodeOperation16bits_LD_RP_d16(uint8_t& regPair1, uint8_t& regPair2)
+{
+	pc++;
+	regPair1 = memory.getMemoryOfIndex(pc + 1);
+	regPair2 = memory.getMemoryOfIndex(pc);
+	pc += 2;
+}
+
+void Cpu::opcodeOperation16bits_LD_RP_d16(uint16_t& registersPair)
+{
+	uint8_t regPair1 = registersPair >> 8;
+	uint8_t regpair2 = registersPair;
+	opcodeOperation16bits_LD_RP_d16(regPair1, regpair2);
+	registersPair = (regPair1 << 8) + regpair2;
+	pc += 2;
+}
+
+//void Cpu::opcodeOperation16bits_LD_RP_RP(uint8_t& regPairA1, uint8_t& regPairA2, const uint8_t& regPairB1, const uint8_t& regPairB2)
+//{
+//	regPairA1 = regPairB1;
+//	regPairA2 = regPairB2;
+//}
+
+void Cpu::opcodeOperation16bits_LD_RP_RP(uint16_t& registersPair, const uint8_t& regPairB1, const uint8_t& regPairB2)
+{
+	registersPair = (regPairB1 << 8);
+	registersPair = regPairB2;
+	pc++;
+}
+
+void Cpu::opcodeOperation16bits_PUSH_RP(const uint8_t& regPair1, const uint8_t& regPair2)
+{
+	memory.setMemoryOfIndex(sp - 1, regPair1);
+	memory.setMemoryOfIndex(sp - 2, regPair2);
+	sp -= 2;
+	pc++;
+}
+
+void Cpu::opcodeOperation16bits_PUSH_RP(const uint8_t& regPair1, const Flag& flag)
+{
+	uint8_t flagTemp = flagToByte(flag);
+	opcodeOperation16bits_PUSH_RP(regPair1, flagTemp);
+}
+
+
+//Page 7
+void Cpu::opcodeOperation16bits_POP_RP(uint8_t& regPair1, uint8_t& regPair2)
+{
+	regPair2 = memory.getMemoryOfIndex(sp);
+	regPair1 = memory.getMemoryOfIndex(sp + 1);
+	sp += 2;
+	pc++;
+}
+
+void Cpu::opcodeOperation16bits_POP_RP(uint8_t& regPair1, Flag& flagPair)
+{
+	uint8_t temp = memory.getMemoryOfIndex(sp);
+	flagPair.Z = (temp >> 7) & 0x1;
+	flagPair.N = (temp >> 6) & 0x1;
+	flagPair.H = (temp >> 5) & 0x1;
+	flagPair.CY = (temp >> 4) & 0x1;
+	regPair1 = memory.getMemoryOfIndex(sp + 1);
+	sp += 2;
+	pc++;
+}
+
+void Cpu::opcodeOpearation16bits_LDHL_SP_e()
+{
+	uint8_t e = memory.getMemoryOfIndex(pc + 1);
+
+	if (e & 0x10000000)
+	{
+		sp -= e;
+	}
+	else
+	{
+		sp += e;
+	}
+
+	if (e & 0x10000000)
+		F.CY = 1;
+	else
+		F.CY = 0;
+
+	if (e & 0x00001000)
+		F.H = 1;
+	else
+		F.H = 0;
+
+	F.N = 0;
+	F.Z = 0;
+
+	pc++;
+}
 
 /*-----------------------------------------CB OPCODES OPERATIONS-----------------------------------------------*/
+
