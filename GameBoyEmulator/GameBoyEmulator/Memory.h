@@ -51,6 +51,7 @@ public:
 	Memory();
 
 	uint8_t getMemoryOfIndex(uint16_t index);
+	void setMemoryOfIndex(uint16_t index, uint8_t value);
 
 };
 

@@ -12,3 +12,8 @@ uint8_t Memory::getMemoryOfIndex(uint16_t index)
 {
 	return memoryArray[index];
 }
+
+void Memory::setMemoryOfIndex(uint16_t index, uint8_t value)
+{
+	memoryArray[index] = value;
+}

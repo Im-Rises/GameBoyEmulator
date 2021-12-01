@@ -1,6 +1,4 @@
 ﻿  Cpu.cpp
-E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(141,61): error C2664: 'void Cpu::opcodeOperation_LD_RP_R(uint16_t &,const uint8_t &)' : impossible de convertir l'argument 1 de 'uint16_t' en 'uint16_t &'
-E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.h(84,7): message : voir la déclaration de 'Cpu::opcodeOperation_LD_RP_R'
-E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(573,8): warning C4244: '=' : conversion de 'const uint16_t' en 'uint8_t', perte possible de données
   gameBoy.cpp
   Génération de code en cours...
+  GameBoyEmulator.vcxproj -> E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\Debug\GameBoyEmulator.exe
