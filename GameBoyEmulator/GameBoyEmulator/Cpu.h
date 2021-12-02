@@ -91,6 +91,7 @@ private:
 	/// - RD means decrementation of the register
 	/// - RP registers pair (for example HL)
 	///	- .... aRP, oRP, aRPowork the same for a pair of registers
+	/// - X can be a register a d8
 	/// - d8 direct 8 bits following in the memory pointed by the pc
 	/// - d16 direct 16 bits following in the memory pointed by the pc and pc+1
 	/// - a8 value in the memory pointed by the 8 following bits pointed by the pc 
@@ -144,17 +145,21 @@ private:
 
 
 	/*-------------------------------------8bits ARITHMETIC AND LOGICAL OPERATION INSTRUCTIONS---------------------------------------*/
-
+	
+	//RESUME HERE
+	
 	//Page 8	(p92)
 	void operationOpcode_ADD_R_R(uint8_t& reg1, const uint8_t& reg2);
 	void operationOpcode_ADD_R_d8(uint8_t& reg1);
 	void operationOpcode_ADD_R_aRP(uint8_t& reg, const uint8_t& regPair1, const uint8_t& regPair2);
-	void operationOpcode_ADC_A_R(const uint8_t& reg);
-	void operationOpcode_ADC_A_d8();
+	
+	void operationOpcode_ADC_A_R_CY(const uint8_t& reg);
+	void operationOpcode_ADC_A_d8_CY();
 	void operationOpcode_ADC_A_aHL(const uint8_t& regPair1, const uint8_t& regPair2);
-	uint8_t operationOpcode_ADD_SubFunctionFlag(uint8_t& reg, const uint8_t& value);//TO BE CHECKED
+	
+	uint8_t operationOpcode_ADD_SubFunctionFlag(const uint8_t& reg, const uint8_t& value);
 
-	//Page 10	(p93)
+	//Page 9	(p93)	//RESUME HERE
 	void operationOpcode_SUB_A_R(const uint8_t& reg);
 	void operationOpcode_SUB_A_d8();
 	void operationOpcode_SUB_A_aHL(const uint8_t& regPair1, const uint8_t& regPair2);
