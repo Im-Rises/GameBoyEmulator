@@ -152,7 +152,7 @@ private:
 	void operationOpcode_ADC_A_R(const uint8_t& reg);
 	void operationOpcode_ADC_A_d8();
 	void operationOpcode_ADC_A_aHL(const uint8_t& regPair1, const uint8_t& regPair2);
-	void operationOpcode_ADD_SubFunctionFlag(const uint8_t& reg);//TO BE CHECKED
+	uint8_t operationOpcode_ADD_SubFunctionFlag(uint8_t& reg, const uint8_t& value);//TO BE CHECKED
 
 	//Page 10	(p93)
 	void operationOpcode_SUB_A_R(const uint8_t& reg);

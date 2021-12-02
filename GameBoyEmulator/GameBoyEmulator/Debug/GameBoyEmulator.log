@@ -1,2 +1,5 @@
 ﻿  gameBoy.cpp
+E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\gameBoy.cpp(26,44): warning C4805: '^' : mélange risqué de type 'int' et de type 'bool' dans l'opération
+E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\gameBoy.cpp(27,53): warning C4805: '&' : mélange risqué de type 'uint8_t' et de type 'bool' dans l'opération
+E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\gameBoy.cpp(27,76): warning C4805: '&' : mélange risqué de type 'uint8_t' et de type 'bool' dans l'opération
   GameBoyEmulator.vcxproj -> E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\Debug\GameBoyEmulator.exe

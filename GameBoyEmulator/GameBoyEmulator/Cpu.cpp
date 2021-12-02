@@ -796,7 +796,7 @@ void Cpu::opcodeOperation16bits_LD_a8_SP()
 void Cpu::operationOpcode_ADD_R_R(uint8_t& reg1, const uint8_t& reg2)
 {
 	reg1 += reg2;
-	operationOpcode_ADD_SubFunctionFlag(reg1);
+	//operationOpcode_ADD_SubFunctionFlag(reg1);
 	pc++;
 }
 
@@ -804,21 +804,22 @@ void Cpu::operationOpcode_ADD_R_d8(uint8_t& reg)
 {
 	pc++;
 	reg += memory.getMemoryOfIndex(pc);
-	operationOpcode_ADD_SubFunctionFlag(reg);
+	//operationOpcode_ADD_SubFunctionFlag(reg);
 	pc++;
 }
 
+//-------------------------------------RESUME HERE--------------------------------------//
 void Cpu::operationOpcode_ADD_R_aRP(uint8_t& reg, const uint8_t& regPair1, const uint8_t& regPair2)
 {
 	reg += memory.getMemoryOfIndex(pairRegisters(regPair1, regPair2));
-	operationOpcode_ADD_SubFunctionFlag(reg);
+	//operationOpcode_ADD_SubFunctionFlag(reg);
 	pc++;
 }
 
 void Cpu::operationOpcode_ADC_A_R(const uint8_t& reg)
 {
 	A += reg + F.CY;
-	operationOpcode_ADD_SubFunctionFlag(A);
+	//operationOpcode_ADD_SubFunctionFlag(A);
 	pc++;
 }
 
@@ -826,29 +827,56 @@ void Cpu::operationOpcode_ADC_A_d8()
 {
 	pc++;
 	A += memory.getMemoryOfIndex(pc) + F.CY;
-	operationOpcode_ADD_SubFunctionFlag(A);
+	//operationOpcode_ADD_SubFunctionFlag(A);
 	pc++;
 }
 
 void Cpu::operationOpcode_ADC_A_aHL(const uint8_t& regPair1, const uint8_t& regPair2)
 {
 	A += memory.getMemoryOfIndex(pairRegisters(regPair1, regPair2)) + F.CY;
-	operationOpcode_ADD_SubFunctionFlag(A);
+	//operationOpcode_ADD_SubFunctionFlag(A);
 	pc++;
 }
 
-void Cpu::operationOpcode_ADD_SubFunctionFlag(const uint8_t& reg)
+uint8_t Cpu::operationOpcode_ADD_SubFunctionFlag(uint8_t& reg, const uint8_t& value)
 {
-	//NOT WORKING
-	if ((reg >> 7) & 0x1)
-		F.CY = 1;
-	else
-		F.CY = 0;
+	int value1Temp = reg;
+	int value2Temp = value;
 
-	if (((reg >> 3) & 0x1))
-		F.H = 1;
-	else
-		F.H = 0;
+	uint8_t calcResult = 0;
+	bool carry = 0;
+	bool carryBit3 = 0;
+	bool carryBit7 = 0;
+	uint8_t additionValue = 0;
+
+	for (int i = 0; i < 8; i++)
+	{
+		value1Temp = (reg >> i) & 0b00000001;
+		value2Temp = (value >> i) & 0b00000001;
+
+		calcResult = (value1Temp ^ value2Temp) ^ carry;
+		carry = (value1Temp & value2Temp) | (value1Temp & carry) | (value2Temp & carry);
+
+		if ((i == 3) && carry)
+		{
+
+		}
+		else
+		{
+
+		}
+
+		if ((i == 7) && carry)
+		{
+
+		}
+		else
+		{
+
+		}
+
+		additionValue += calcResult << i;
+	}
 
 	//WORK
 	F.N = 0;
@@ -857,6 +885,8 @@ void Cpu::operationOpcode_ADD_SubFunctionFlag(const uint8_t& reg)
 		F.Z = 1;
 	else
 		F.Z = 0;
+
+	return additionValue;
 }
 
 //Page 9
