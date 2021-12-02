@@ -10,7 +10,4 @@ https://en.wikipedia.org/wiki/Game_Boy
 
 ## Task order:
 1. CPU implementation
-2. MMU implementation
-3. Video
-4. Sound
 
