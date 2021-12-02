@@ -78,7 +78,7 @@ private:
 	uint8_t flagToByte(const Flag& flag)const;
 
 	/*-----------------------------------------NORMAL OPCODES OPERATIONS------------------------------------------*/
-	
+
 	/// <summary>
 	/// Registers functions:
 	/// Mnemonic therms:
@@ -132,7 +132,6 @@ private:
 	void opcodeOperation16bits_LD_RP_d16(uint8_t& regPair1, uint8_t& regPair2);
 	void opcodeOperation16bits_LD_RP_d16(uint16_t& registersPair);
 
-	//void opcodeOperation16bits_LD_RP_RP(uint8_t& regPairA1, uint8_t& regPairA2, const uint8_t& regPairB1, const uint8_t& regPairB2);
 	void opcodeOperation16bits_LD_RP_RP(uint16_t& registersPair, const uint8_t& regPairB1, const uint8_t& regPairB2);
 	void opcodeOperation16bits_PUSH_RP(const uint8_t& regPair1, const uint8_t& regPair2);
 	void opcodeOperation16bits_PUSH_RP(const uint8_t& regPair1, const Flag& flag);
@@ -140,13 +139,30 @@ private:
 	//Page 7	(p91)
 	void opcodeOperation16bits_POP_RP(uint8_t& regPair1, uint8_t& regPair2);
 	void opcodeOperation16bits_POP_RP(uint8_t& regPair1, Flag& flag);
-	void opcodeOpearation16bits_LDHL_SP_e();//TO BE CHECKED
+	void opcodeOperation16bits_LDHL_SP_e();
+	void opcodeOperation16bits_LD_a8_SP();
 
 
-	void executeOpcodeFollowingCB();
+	/*-------------------------------------8bits ARITHMETIC AND LOGICAL OPERATION INSTRUCTIONS---------------------------------------*/
+
+	//Page 8	(p92)
+	void operationOpcode_ADD_R_R(uint8_t& reg1, const uint8_t& reg2);
+	void operationOpcode_ADD_R_d8(uint8_t& reg1);
+	void operationOpcode_ADD_R_aRP(uint8_t& reg, const uint8_t& regPair1, const uint8_t& regPair2);
+	void operationOpcode_ADC_A_R(const uint8_t& reg);
+	void operationOpcode_ADC_A_d8();
+	void operationOpcode_ADC_A_aHL(const uint8_t& regPair1, const uint8_t& regPair2);
+	void operationOpcode_ADD_SubFunctionFlag(const uint8_t& reg);//TO BE CHECKED
+
+	//Page 10	(p93)
+	void operationOpcode_SUB_A_R(const uint8_t& reg);
+	void operationOpcode_SUB_A_d8();
+	void operationOpcode_SUB_A_aHL(const uint8_t& regPair1, const uint8_t& regPair2);
+	void operationOpcode_SUB_SubFunctionFlag(const uint8_t& reg);//TO BE CHECKED
+
 
 	/*-----------------------------------------CB OPCODES OPERATIONS-----------------------------------------------*/
-	//void opcodeOperation_CB_LD(uint8_t& register1, uint8_t& register2);
+	void executeOpcodeFollowingCB();
 };
 
 #endif
