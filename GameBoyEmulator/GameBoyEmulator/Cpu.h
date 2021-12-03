@@ -140,30 +140,58 @@ private:
 	//Page 7	(p91)
 	void opcodeOperation16bits_POP_RP(uint8_t& regPair1, uint8_t& regPair2);
 	void opcodeOperation16bits_POP_RP(uint8_t& regPair1, Flag& flag);
-	void opcodeOperation16bits_LDHL_SP_e();
+	void opcodeOperation16bits_LDHL_SP_e();//TO BE CHECKED (issue possible with while casting)
 	void opcodeOperation16bits_LD_a8_SP();
 
 
 	/*-------------------------------------8bits ARITHMETIC AND LOGICAL OPERATION INSTRUCTIONS---------------------------------------*/
-	
-	//RESUME HERE
 	
 	//Page 8	(p92)
 	void operationOpcode_ADD_R_R(uint8_t& reg1, const uint8_t& reg2);
 	void operationOpcode_ADD_R_d8(uint8_t& reg1);
 	void operationOpcode_ADD_R_aRP(uint8_t& reg, const uint8_t& regPair1, const uint8_t& regPair2);
 	
-	void operationOpcode_ADC_A_R_CY(const uint8_t& reg);
-	void operationOpcode_ADC_A_d8_CY();
-	void operationOpcode_ADC_A_aHL(const uint8_t& regPair1, const uint8_t& regPair2);
-	
-	uint8_t operationOpcode_ADD_SubFunctionFlag(const uint8_t& reg, const uint8_t& value);
+	void operationOpcode_ADC_A_R_CY(const uint8_t& reg);//TO BE CHECKED, PERHAPS IT IS NEEDED TO VERIFY IF F.CY=1 IF IT IS THAN WE DO THE SDC A,F.CY
+	void operationOpcode_ADC_A_d8_CY();//TO BE CHECKED, PERHAPS IT IS NEEDED TO VERIFY IF F.CY=1 IF IT IS THAN WE DO THE SDC A,F.CY
+	void operationOpcode_ADC_A_aHL_CY(const uint8_t& regPair1, const uint8_t& regPair2);//TO BE CHECKED, PERHAPS IT IS NEEDED TO VERIFY IF F.CY=1 IF IT IS THAN WE DO THE SDC A,F.CY
 
-	//Page 9	(p93)	//RESUME HERE
+	uint8_t operationOpcode_ADD_ADC_subFunctionFlag(const uint8_t& reg, const uint8_t& value);
+	int binaryAddition(const int& numberOfBits, const int& value1, const int& value2, bool& carryBit3, bool& carryBit7);
+
+
+	//Page 9	(p93)
 	void operationOpcode_SUB_A_R(const uint8_t& reg);
 	void operationOpcode_SUB_A_d8();
 	void operationOpcode_SUB_A_aHL(const uint8_t& regPair1, const uint8_t& regPair2);
-	void operationOpcode_SUB_SubFunctionFlag(const uint8_t& reg);//TO BE CHECKED
+	
+	void operationOpcode_SBC_A_R_CY(const uint8_t& reg);//TO BE CHECKED, PERHAPS IT IS NEEDED TO VERIFY IF F.CY=1 IF IT IS THAN WE DO THE SBC A,F.CY
+	void operationOpcode_SBC_A_d8_CY();//TO BE CHECKED, PERHAPS IT IS NEEDED TO VERIFY IF F.CY=1 IF IT IS THAN WE DO THE SBC A,F.CY
+	void operationOpcode_SBC_A_aHL_CY(const uint8_t& regPair1, const uint8_t& regPair2);//TO BE CHECKED, PERHAPS IT IS NEEDED TO VERIFY IF F.CY=1 IF IT IS THAN WE DO THE SBC A,F.CY
+
+	uint8_t operationOpcode_SUB_SBC_subFunctionFlag(const uint8_t& reg, const uint8_t& value);
+	int binarySubstraction(const int& numberOfBits, const int& value1, const int& value2, bool& carryBit3, bool& carryBit7);
+
+
+	//Page 10	(p94)
+	void operationOpcode_AND_R_R(uint8_t& reg1, const uint8_t& reg2);
+	void operationOpcode_AND_R_d8(uint8_t& reg1);
+	void operationOpcode_AND_R_aHL(uint8_t& reg, const uint8_t& regPair1, const uint8_t& regPair2);
+
+	void operationOpcode_OR_R_R(uint8_t& reg1, const uint8_t& reg2);
+	void operationOpcode_OR_R_d8(uint8_t& reg1);
+	void operationOpcode_OR_R_aHL(uint8_t& reg, const uint8_t& regPair1, const uint8_t& regPair2);
+
+	void operationOpcode_XOR_R_R(uint8_t& reg1, const uint8_t& reg2);
+	void operationOpcode_XOR_R_d8(uint8_t& reg1);
+	void operationOpcode_XOR_R_aHL(uint8_t& reg, const uint8_t& regPair1, const uint8_t& regPair2);
+
+
+	//Page 11	(p95)
+	void operationOpcode_CP_R_R(const uint8_t& reg1, const uint8_t& reg2);
+	void operationOpcode_CP_R_d8(const uint8_t& reg1);
+	void operationOpcode_CP_R_aHL(const uint8_t& reg, const uint8_t& regPair1, const uint8_t& regPair2);
+
+	bool operationOpcode_CP_subFunctionFlag(const uint8_t& reg1, const uint8_t& reg2);
 
 
 	/*-----------------------------------------CB OPCODES OPERATIONS-----------------------------------------------*/

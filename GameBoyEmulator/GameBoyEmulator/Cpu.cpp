@@ -168,7 +168,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x8B): {operationOpcode_ADC_A_R_CY(E); break; }
 	case(0x8C): {operationOpcode_ADC_A_R_CY(H); break; }
 	case(0x8D): {operationOpcode_ADC_A_R_CY(L); break; }
-	case(0x8E): {operationOpcode_ADC_A_aHL(H, L); break; }
+	case(0x8E): {operationOpcode_ADC_A_aHL_CY(H, L); break; }
 	case(0x8F): {operationOpcode_ADC_A_R_CY(A); break; }
 	case(0x90): {operationOpcode_SUB_A_R(B); break; }
 	case(0x91): {operationOpcode_SUB_A_R(C); break; }
@@ -178,47 +178,47 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x95): {operationOpcode_SUB_A_R(L); break; }
 	case(0x96): {operationOpcode_SUB_A_aHL(H, L); break; }
 	case(0x97): {operationOpcode_SUB_A_R(A); break; }
-	case(0x98): {break; }
-	case(0x99): {break; }
-	case(0x9A): {break; }
-	case(0x9B): {break; }
-	case(0x9C): {break; }
-	case(0x9D): {break; }
-	case(0x9E): {break; }
-	case(0x9F): {break; }
-	case(0xA0): {break; }
-	case(0xA1): {break; }
-	case(0xA2): {break; }
-	case(0xA3): {break; }
-	case(0xA4): {break; }
-	case(0xA5): {break; }
-	case(0xA6): {break; }
-	case(0xA7): {break; }
-	case(0xA8): {break; }
-	case(0xA9): {break; }
-	case(0xAA): {break; }
-	case(0xAB): {break; }
-	case(0xAC): {break; }
-	case(0xAD): {break; }
-	case(0xAE): {break; }
-	case(0xAF): {break; }
-	case(0xB0): {break; }
-	case(0xB1): {break; }
-	case(0xB2): {break; }
-	case(0xB3): {break; }
-	case(0xB4): {break; }
-	case(0xB5): {break; }
-	case(0xB6): {break; }
-	case(0xB7): {break; }
-	case(0xB8): {break; }
-	case(0xB9): {break; }
-	case(0xBA): {break; }
-	case(0xBB): {break; }
-	case(0xBC): {break; }
-	case(0xBD): {break; }
-	case(0xBE): {break; }
-	case(0xBF): {break; }
-	case(0xC0): {break; }
+	case(0x98): {operationOpcode_SBC_A_R_CY(B); break; }
+	case(0x99): {operationOpcode_SBC_A_R_CY(C); break; }
+	case(0x9A): {operationOpcode_SBC_A_R_CY(D); break; }
+	case(0x9B): {operationOpcode_SBC_A_R_CY(E); break; }
+	case(0x9C): {operationOpcode_SBC_A_R_CY(H); break; }
+	case(0x9D): {operationOpcode_SBC_A_R_CY(L); break; }
+	case(0x9E): {operationOpcode_SBC_A_aHL_CY(H, L); break; }
+	case(0x9F): {operationOpcode_SBC_A_R_CY(A); break; }
+	case(0xA0): {operationOpcode_AND_R_R(A, B); break; }
+	case(0xA1): {operationOpcode_AND_R_R(A, C); break; }
+	case(0xA2): {operationOpcode_AND_R_R(A, D); break; }
+	case(0xA3): {operationOpcode_AND_R_R(A, E); break; }
+	case(0xA4): {operationOpcode_AND_R_R(A, H); break; }
+	case(0xA5): {operationOpcode_AND_R_R(A, L); break; }
+	case(0xA6): {operationOpcode_AND_R_aHL(A, H, L); break; }
+	case(0xA7): {operationOpcode_AND_R_R(A, A); break; }
+	case(0xA8): {operationOpcode_XOR_R_R(A, B); break; }
+	case(0xA9): {operationOpcode_XOR_R_R(A, C); break; }
+	case(0xAA): {operationOpcode_XOR_R_R(A, D); break; }
+	case(0xAB): {operationOpcode_XOR_R_R(A, E); break; }
+	case(0xAC): {operationOpcode_XOR_R_R(A, H); break; }
+	case(0xAD): {operationOpcode_XOR_R_R(A, L); break; }
+	case(0xAE): {operationOpcode_XOR_R_aHL(A, H, L); break; }
+	case(0xAF): {operationOpcode_XOR_R_R(A, A); break; }
+	case(0xB0): {operationOpcode_OR_R_R(A, B); break; }
+	case(0xB1): {operationOpcode_OR_R_R(A, C); break; }
+	case(0xB2): {operationOpcode_OR_R_R(A, D); break; }
+	case(0xB3): {operationOpcode_OR_R_R(A, E); break; }
+	case(0xB4): {operationOpcode_OR_R_R(A, H); break; }
+	case(0xB5): {operationOpcode_OR_R_R(A, L); break; }
+	case(0xB6): {operationOpcode_OR_R_aHL(A, H, L); break; }
+	case(0xB7): {operationOpcode_OR_R_R(A, A); break; }
+	case(0xB8): {operationOpcode_CP_R_R(A, B); break; }
+	case(0xB9): {operationOpcode_CP_R_R(A, C); break; }
+	case(0xBA): {operationOpcode_CP_R_R(A, D); break; }
+	case(0xBB): {operationOpcode_CP_R_R(A, E); break; }
+	case(0xBC): {operationOpcode_CP_R_R(A, H); break; }
+	case(0xBD): {operationOpcode_CP_R_R(A, L); break; }
+	case(0xBE): {operationOpcode_CP_R_aHL(A, H, L); break; }
+	case(0xBF): {operationOpcode_CP_R_R(A, A); break; }
+	case(0xC0): {operationOpcode_CP_R_R(A, B); break; }
 	case(0xC1): {opcodeOperation16bits_POP_RP(B, C); break; }
 	case(0xC2): {break; }
 	case(0xC3): {break; }
@@ -232,7 +232,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0xCB): {executeOpcodeFollowingCB(); break; }
 	case(0xCC): {break; }
 	case(0xCD): {break; }
-	case(0xCE): {operationOpcode_ADC_A_d8(); break; }
+	case(0xCE): {operationOpcode_ADC_A_d8_CY(); break; }
 	case(0xCF): {break; }
 	case(0xD0): {break; }
 	case(0xD1): {opcodeOperation16bits_POP_RP(D, E); break; }
@@ -256,7 +256,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0xE3): {break; }
 	case(0xE4): {break; }
 	case(0xE5): {opcodeOperation16bits_PUSH_RP(H, L); break; }
-	case(0xE6): {break; }
+	case(0xE6): {operationOpcode_AND_R_d8(A); break; }
 	case(0xE7): {break; }
 	case(0xE8): {break; }
 	case(0xE9): {break; }
@@ -264,7 +264,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0xEB): {break; }
 	case(0xEC): {break; }
 	case(0xED): {break; }
-	case(0xEE): {break; }
+	case(0xEE): {operationOpcode_XOR_R_d8(A); break; }
 	case(0xEF): {break; }
 	case(0xF0): {opcodeOperation_LD_R_a8o(A); break; }
 	case(0xF1): {opcodeOperation16bits_POP_RP(A, F); break; }
@@ -272,7 +272,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0xF3): {break; }
 	case(0xF4): {break; }
 	case(0xF5): {opcodeOperation16bits_PUSH_RP(A, F); break; }
-	case(0xF6): {break; }
+	case(0xF6): {operationOpcode_OR_R_d8(A); break; }
 	case(0xF7): {break; }
 	case(0xF8): {opcodeOperation16bits_LDHL_SP_e(); break; }
 	case(0xF9): {opcodeOperation16bits_LD_RP_RP(sp, H, L); break; }
@@ -280,7 +280,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0xFB): {break; }
 	case(0xFC): {break; }
 	case(0xFD): {break; }
-	case(0xFE): {break; }
+	case(0xFE): {operationOpcode_CP_R_d8(A); break; }
 	case(0xFF): {break; }
 	}
 }
@@ -758,19 +758,19 @@ void Cpu::opcodeOperation16bits_LDHL_SP_e()
 
 	//Temporariry variables
 	uint16_t value1Temp = sp;
-	int16_t value2Temp = e;
+	int8_t value2Temp = e;
 	bool carryTemp = 0;
 	uint8_t calcResultTemp = 0;
 
 	//Variables to use after calculs
 	bool carryBit11 = 0;
 	bool carryBit13 = 0;
-	uint8_t additionValue = 0;
+	uint16_t additionValue = 0;
 
 	for (int i = 0; i < 16; i++)
 	{
-		value1Temp = (sp >> i) & 0b00000001;
-		value2Temp = (e >> i) & 0b00000001;
+		value1Temp = (sp >> i) & 0b1;
+		value2Temp = (e >> i) & 0b1;
 
 		calcResultTemp = (value1Temp ^ value2Temp) ^ carryTemp;
 		carryTemp = (value1Temp & value2Temp) | (value1Temp & carryTemp) | (value2Temp & carryTemp);
@@ -784,21 +784,13 @@ void Cpu::opcodeOperation16bits_LDHL_SP_e()
 		additionValue += calcResultTemp << i;
 	}
 
-	sp = additionValue;
+	H = additionValue >> 8;
+	L = additionValue & 0xFF;
 
 	F.Z = 0;
-
-	if (carryBit11)
-		F.H = 1;
-	else
-		F.H = 0;
-
+	F.H = carryBit11;
 	F.N = 0;
-
-	if (carryBit13)
-		F.CY = 1;
-	else
-		F.CY = 0;
+	F.CY = carryBit13;
 
 	pc++;
 }
@@ -817,59 +809,76 @@ void Cpu::opcodeOperation16bits_LD_a8_SP()
 //Page 8
 void Cpu::operationOpcode_ADD_R_R(uint8_t& reg1, const uint8_t& reg2)
 {
-	reg1 = operationOpcode_ADD_SubFunctionFlag(reg1, reg2);
+	reg1 = operationOpcode_ADD_ADC_subFunctionFlag(reg1, reg2);
 	pc++;
 }
 
 void Cpu::operationOpcode_ADD_R_d8(uint8_t& reg)
 {
 	pc++;
-	reg = operationOpcode_ADD_SubFunctionFlag(reg, memory.getMemoryOfIndex(pc));
+	reg = operationOpcode_ADD_ADC_subFunctionFlag(reg, memory.getMemoryOfIndex(pc));
 	pc++;
 }
 
 void Cpu::operationOpcode_ADD_R_aRP(uint8_t& reg, const uint8_t& regPair1, const uint8_t& regPair2)
 {
-	reg = operationOpcode_ADD_SubFunctionFlag(reg, memory.getMemoryOfIndex(pairRegisters(regPair1, regPair2)));
+	reg = operationOpcode_ADD_ADC_subFunctionFlag(reg, memory.getMemoryOfIndex(pairRegisters(regPair1, regPair2)));
 	pc++;
 }
 
 void Cpu::operationOpcode_ADC_A_R_CY(const uint8_t& reg)
 {
-	A = operationOpcode_ADD_SubFunctionFlag(A, operationOpcode_ADD_SubFunctionFlag(reg, (F.CY << 4)));
+	A = operationOpcode_ADD_ADC_subFunctionFlag(A, F.CY);
+	A = operationOpcode_ADD_ADC_subFunctionFlag(A, reg);
 	pc++;
 }
 
 void Cpu::operationOpcode_ADC_A_d8_CY()
 {
 	pc++;
-	A = operationOpcode_ADD_SubFunctionFlag(A, operationOpcode_ADD_SubFunctionFlag(memory.getMemoryOfIndex(pc), (F.CY << 4)));
+	A = operationOpcode_ADD_ADC_subFunctionFlag(A, F.CY);
+	A = operationOpcode_ADD_ADC_subFunctionFlag(A, memory.getMemoryOfIndex(pc));
 	pc++;
 }
 
-void Cpu::operationOpcode_ADC_A_aHL(const uint8_t& regPair1, const uint8_t& regPair2)
+void Cpu::operationOpcode_ADC_A_aHL_CY(const uint8_t& regPair1, const uint8_t& regPair2)
 {
-	A = operationOpcode_ADD_SubFunctionFlag(A, operationOpcode_ADD_SubFunctionFlag(memory.getMemoryOfIndex(pairRegisters(regPair1, regPair2)), (F.CY << 4)));
+	A = operationOpcode_ADD_ADC_subFunctionFlag(A, F.CY);
+	A = operationOpcode_ADD_ADC_subFunctionFlag(A, memory.getMemoryOfIndex(pairRegisters(regPair1, regPair2)));
 	pc++;
 }
 
-uint8_t Cpu::operationOpcode_ADD_SubFunctionFlag(const uint8_t& reg, const uint8_t& value)
-{
-	//Temporariry variables
-	int value1Temp = reg;
-	int value2Temp = value;
-	bool carryTemp = 0;
-	uint8_t calcResultTemp = 0;
 
+
+uint8_t Cpu::operationOpcode_ADD_ADC_subFunctionFlag(const uint8_t& reg, const uint8_t& value)
+{
 	//Variables to use after calculs
 	bool carryBit3 = 0;
 	bool carryBit7 = 0;
-	uint8_t additionValue = 0;
+	uint8_t additionValue = binaryAddition(8, reg, value, carryBit3, carryBit7);
 
-	for (int i = 0; i < 8; i++)
+	F.Z = !reg;
+	F.H = carryBit3;
+	F.N = 0;
+	F.CY = carryBit7;
+
+	return additionValue;
+}
+
+
+int Cpu::binaryAddition(const int& numberOfBits, const int& value1, const int& value2, bool& carryBit3, bool& carryBit7)
+{
+	int value1Temp = value1;
+	int value2Temp = value2;
+	bool carryTemp = 0;
+	int calcResultTemp = 0;
+
+	int additionValue = 0;
+
+	for (int i = 0; i < numberOfBits; i++)
 	{
-		value1Temp = (reg >> i) & 0b00000001;
-		value2Temp = (value >> i) & 0b00000001;
+		value1Temp = (value1 >> i) & 0b1;
+		value2Temp = (value2 >> i) & 0b1;
 
 		calcResultTemp = (value1Temp ^ value2Temp) ^ carryTemp;
 		carryTemp = (value1Temp & value2Temp) | (value1Temp & carryTemp) | (value2Temp & carryTemp);
@@ -883,53 +892,244 @@ uint8_t Cpu::operationOpcode_ADD_SubFunctionFlag(const uint8_t& reg, const uint8
 		additionValue += calcResultTemp << i;
 	}
 
-	if (!reg)
-		F.Z = 1;
-	else
-		F.Z = 0;
-
-	if (carryBit3)
-		F.H = 1;
-	else
-		F.H = 0;
-
-	F.N = 0;
-
-	if (carryBit7)
-		F.CY = 1;
-	else
-		F.CY = 1;
-
 	return additionValue;
 }
 
-//Page 9	//RESUME HERE
+
+
+//Page 9	
 
 void Cpu::operationOpcode_SUB_A_R(const uint8_t& reg)
 {
-	//A -= reg;
-	//operationOpcode_SUB_SubFunctionFlag(A);
+	A = operationOpcode_SUB_SBC_subFunctionFlag(A, reg);
 	pc++;
 }
 
 void Cpu::operationOpcode_SUB_A_d8()
 {
 	pc++;
-	//A -= memory.getMemoryOfIndex(pc);
-	//operationOpcode_SUB_SubFunctionFlag(A);
+	A = operationOpcode_SUB_SBC_subFunctionFlag(A, memory.getMemoryOfIndex(pc));
 	pc++;
 }
 
 void Cpu::operationOpcode_SUB_A_aHL(const uint8_t& regPair1, const uint8_t& regPair2)
 {
-	//A -= memory.getMemoryOfIndex(pairRegisters(regPair1, regPair2));
-	//operationOpcode_SUB_SubFunctionFlag(A);
+	A = operationOpcode_SUB_SBC_subFunctionFlag(A, memory.getMemoryOfIndex(pairRegisters(regPair1, regPair2)));
 	pc++;
 }
 
-void Cpu::operationOpcode_SUB_SubFunctionFlag(const uint8_t& reg)
+
+void Cpu::operationOpcode_SBC_A_R_CY(const uint8_t& reg)
 {
-	//NOT WORKING
+	A = operationOpcode_SUB_SBC_subFunctionFlag(A, F.CY);
+	A = operationOpcode_SUB_SBC_subFunctionFlag(A, reg);
+}
+
+void Cpu::operationOpcode_SBC_A_d8_CY()
+{
+	pc++;
+	A = operationOpcode_SUB_SBC_subFunctionFlag(A, F.CY);
+	A = operationOpcode_SUB_SBC_subFunctionFlag(A, memory.getMemoryOfIndex(pc));
+	pc++;
+}
+
+void Cpu::operationOpcode_SBC_A_aHL_CY(const uint8_t& regPair1, const uint8_t& regPair2)
+{
+	A = operationOpcode_SUB_SBC_subFunctionFlag(A, F.CY);
+	A = operationOpcode_SUB_SBC_subFunctionFlag(A, memory.getMemoryOfIndex(pairRegisters(regPair1, regPair2)));
+}
+
+
+
+uint8_t Cpu::operationOpcode_SUB_SBC_subFunctionFlag(const uint8_t& reg, const uint8_t& value)
+{
+	//Variables to use after calculs
+	bool borrowBit3 = 0;
+	bool borrowBit7 = 0;
+	uint8_t subStractionValue = binarySubstraction(8, reg, value, borrowBit3, borrowBit7);
+
+	F.Z = !reg;
+	F.H = borrowBit3;
+	F.N = 1;
+	F.CY = borrowBit7;
+
+	return subStractionValue;
+}
+
+
+int Cpu::binarySubstraction(const int& numberOfBits, const int& value1, const int& value2, bool& borrowBit3, bool& borrowBit7)
+{
+	int value1Temp = value1;
+	int value2Temp = value2;
+	bool carryTemp = 0;
+	int calcResultTemp = 0;
+
+	int substractionValue = 0;
+
+	for (int i = 0; i < numberOfBits; i++)
+	{
+		value1Temp = (value1 >> i) & 0b1;
+		value2Temp = (value2 >> i) & 0b1;
+
+		calcResultTemp = (value1Temp ^ value2Temp) ^ carryTemp;
+		carryTemp = ((!(value1Temp ^ value2Temp)) & carryTemp) || (((!value1Temp) & value2Temp) & (!carryTemp));
+
+		if ((i == 3) && carryTemp)
+			borrowBit3 = 1;
+
+		if ((i == 7) && carryTemp)
+			borrowBit7 = 1;
+
+		substractionValue += calcResultTemp << i;
+	}
+
+	return substractionValue;
+}
+
+
+
+//Page 10
+
+void Cpu::operationOpcode_AND_R_R(uint8_t& reg1, const uint8_t& reg2)
+{
+	reg1 &= reg2;
+
+	F.Z = (reg1 == 0);
+	F.H = 1;
+	F.N = 0;
+	F.CY = 0;
+
+	pc++;
+}
+
+void Cpu::operationOpcode_AND_R_d8(uint8_t& reg1)
+{
+	pc++;
+	reg1 &= memory.getMemoryOfIndex(pc);
+	F.Z = (reg1 == 0);
+	F.H = 1;
+	F.N = 0;
+	F.CY = 0;
+	pc++;
+}
+
+void Cpu::operationOpcode_AND_R_aHL(uint8_t& reg, const uint8_t& regPair1, const uint8_t& regPair2)
+{
+	reg &= memory.getMemoryOfIndex(pairRegisters(regPair1, regPair2));
+	F.Z = (reg == 0);
+	F.H = 1;
+	F.N = 0;
+	F.CY = 0;
+	pc++;
+}
+
+
+void Cpu::operationOpcode_OR_R_R(uint8_t& reg1, const uint8_t& reg2)
+{
+	reg1 |= reg2;
+	F.Z = (reg1 == 0);
+	F.H = 0;
+	F.N = 0;
+	F.CY = 0;
+	pc++;
+}
+
+void Cpu::operationOpcode_OR_R_d8(uint8_t& reg1)
+{
+	pc++;
+	reg1 |= memory.getMemoryOfIndex(pc);
+	F.Z = (reg1 == 0);
+	F.H = 0;
+	F.N = 0;
+	F.CY = 0;
+	pc++;
+}
+
+void Cpu::operationOpcode_OR_R_aHL(uint8_t& reg, const uint8_t& regPair1, const uint8_t& regPair2)
+{
+	reg |= memory.getMemoryOfIndex(pairRegisters(regPair1, regPair2));
+	F.Z = (reg == 0);
+	F.H = 0;
+	F.N = 0;
+	F.CY = 0;
+	pc++;
+}
+
+
+void Cpu::operationOpcode_XOR_R_R(uint8_t& reg1, const uint8_t& reg2)
+{
+	reg1 ^= reg2;
+	F.Z = (reg1 == 0);
+	F.H = 0;
+	F.N = 0;
+	F.CY = 0;
+	pc++;
+}
+
+void Cpu::operationOpcode_XOR_R_d8(uint8_t& reg1)
+{
+	pc++;
+	reg1 ^= memory.getMemoryOfIndex(pc);
+	F.Z = (reg1 == 0);
+	F.H = 0;
+	F.N = 0;
+	F.CY = 0;
+	pc++;
+}
+
+void Cpu::operationOpcode_XOR_R_aHL(uint8_t& reg, const uint8_t& regPair1, const uint8_t& regPair2)
+{
+	reg ^= memory.getMemoryOfIndex(pairRegisters(regPair1, regPair2));
+	F.Z = (reg == 0);
+	F.H = 0;
+	F.N = 0;
+	F.CY = 0;
+	pc++;
+}
+
+
+//Page 11
+void Cpu::operationOpcode_CP_R_R(const uint8_t& reg1, const uint8_t& reg2)
+{
+	operationOpcode_CP_subFunctionFlag(reg1, reg2);
+	pc++;
+}
+
+void Cpu::operationOpcode_CP_R_d8(const uint8_t& reg1)
+{
+	pc++;
+	operationOpcode_CP_subFunctionFlag(reg1, memory.getMemoryOfIndex(pc));
+	pc++;
+}
+
+void Cpu::operationOpcode_CP_R_aHL(const uint8_t& reg, const uint8_t& regPair1, const uint8_t& regPair2)
+{
+	operationOpcode_CP_subFunctionFlag(reg, memory.getMemoryOfIndex(pairRegisters(regPair1, regPair2)));
+	pc++;
+}
+
+bool Cpu::operationOpcode_CP_subFunctionFlag(const uint8_t& reg1, const uint8_t& reg2)
+{
+	if (reg1 > reg2)
+	{
+		F.Z = 0;
+		F.H = 1;
+		F.CY = 0;
+	}
+	else if (reg1 < reg2)
+	{
+		F.Z = 0;
+		F.H = 0;
+		F.CY = 1;
+	}
+	else
+	{
+		F.Z = 1;
+		F.H = 0;
+		F.CY = 0;
+	}
+
+	F.N = 1;
 }
 
 /*-----------------------------------------CB OPCODES OPERATIONS-----------------------------------------------*/
