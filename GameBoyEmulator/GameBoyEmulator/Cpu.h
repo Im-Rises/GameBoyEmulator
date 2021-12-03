@@ -190,21 +190,22 @@ private:
 	void operationOpcode_CP_R_R(const uint8_t& reg1, const uint8_t& reg2);
 	void operationOpcode_CP_R_d8(const uint8_t& reg1);
 	void operationOpcode_CP_R_aHL(const uint8_t& reg, const uint8_t& regPair1, const uint8_t& regPair2);
-
 	void operationOpcode_CP_subFunctionFlag(const uint8_t& reg1, const uint8_t& reg2);
 
-	//RESUME HERE (NOT WORKING, NEEDS TO IMPLEMENTS THE H LFAG with the carry or borrownig to bit 3
+
 	void operationOpcode_INC_R(uint8_t& reg);
 	void operationOpcode_INC_aHL(const uint8_t& regPair1, const uint8_t& regPair2);
 	void operationOpcode_INC_subFunctionFlag(uint8_t& reg);
-
 
 	void operationOpcode_DEC_R(uint8_t& reg);
 	void operationOpcode_DEC_aHL(const uint8_t& regPair1, const uint8_t& regPair2);
 	void operationOpcode_DEC_subFunctionFlag(uint8_t& reg);
 
 
+
+	/*-------------------------------------16bits ARITHMETIC OPERATION INSTRUCTIONS---------------------------------------*/
 	//Page 12	(p96)
+	//RESUME HERE 
 
 	/*-----------------------------------------CB OPCODES OPERATIONS-----------------------------------------------*/
 	void executeOpcodeFollowingCB();

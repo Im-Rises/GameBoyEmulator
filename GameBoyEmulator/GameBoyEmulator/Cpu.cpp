@@ -30,8 +30,8 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x01): {opcodeOperation16bits_LD_RP_d16(B, C); break; }
 	case(0x02): {opcodeOperation_LD_aRP_R(B, C, A); break; }
 	case(0x03): {break; }
-	case(0x04): {break; }
-	case(0x05): {break; }
+	case(0x04): {operationOpcode_INC_R(B); break; }
+	case(0x05): {operationOpcode_DEC_R(B); break; }
 	case(0x06): {opcodeOperation_LD_R_d8(B); break; }
 	case(0x07): {break; }
 	case(0x08): {opcodeOperation16bits_LD_a8_SP(); break; }
@@ -39,15 +39,15 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x0A): {opcodeOperation_LD_R_aRP(A, B, C); break; }
 	case(0x0B): {break; }
 	case(0x0C): {operationOpcode_INC_R(C); break; }
-	case(0x0D): {break; }
+	case(0x0D): {operationOpcode_DEC_R(C); break; }
 	case(0x0E): {opcodeOperation_LD_R_d8(C); break; }
 	case(0x0F): {break; }
 	case(0x10): {break; }
 	case(0x11): {opcodeOperation16bits_LD_RP_d16(D, D); break; }
 	case(0x12): {opcodeOperation_LD_aRP_R(D, E, A); break; }
 	case(0x13): {break; }
-	case(0x14): {break; }
-	case(0x15): {break; }
+	case(0x14): {operationOpcode_INC_R(D); break; }
+	case(0x15): {operationOpcode_DEC_R(D); break; }
 	case(0x16): {opcodeOperation_LD_R_d8(D); break; }
 	case(0x17): {break; }
 	case(0x18): {break; }
@@ -55,15 +55,15 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x1A): {opcodeOperation_LD_R_aRP(A, D, E); break; }
 	case(0x1B): {break; }
 	case(0x1C): {operationOpcode_INC_R(E); break; }
-	case(0x1D): {break; }
+	case(0x1D): {operationOpcode_DEC_R(E); break; }
 	case(0x1E): {opcodeOperation_LD_R_d8(E); break; }
 	case(0x1F): {break; }
 	case(0x20): {break; }
 	case(0x21): {opcodeOperation16bits_LD_RP_d16(H, L); break; }
 	case(0x22): {opcodeOperation_LD_aRP_R_RPI(H, L, A); break; }
 	case(0x23): {break; }
-	case(0x24): {break; }
-	case(0x25): {break; }
+	case(0x24): {operationOpcode_INC_R(H); break; }
+	case(0x25): {operationOpcode_DEC_R(H); break; }
 	case(0x26): {opcodeOperation_LD_R_d8(H); break; }
 	case(0x27): {break; }
 	case(0x28): {break; }
@@ -71,7 +71,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x2A): {opcodeOperation_LD_R_aRP_RPI(A, H, L); break; }
 	case(0x2B): {break; }
 	case(0x2C): {operationOpcode_INC_R(L); break; }
-	case(0x2D): {break; }
+	case(0x2D): {operationOpcode_DEC_R(L); break; }
 	case(0x2E): {opcodeOperation_LD_R_d8(L); break; }
 	case(0x2F): {break; }
 	case(0x30): {break; }
@@ -79,7 +79,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x32): {break; }
 	case(0x33): {break; }
 	case(0x34): {operationOpcode_INC_aHL(H, L); break; }
-	case(0x35): {break; }
+	case(0x35): {operationOpcode_DEC_aHL(H, L); break; }
 	case(0x36): {opcodeOperation_LD_aRP_d8(H, L); break; }
 	case(0x37): {break; }
 	case(0x38): {break; }
@@ -87,7 +87,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x3A): {opcodeOperation_LD_R_aRP_RPD(A, H, L); break; }
 	case(0x3B): {break; }
 	case(0x3C): {operationOpcode_INC_R(A); break; }
-	case(0x3D): {break; }
+	case(0x3D): {operationOpcode_DEC_R(A); break; }
 	case(0x3E): {opcodeOperation_LD_R_d8(A); break; }
 	case(0x3F): {break; }
 	case(0x40): {opcodeOperation_LD_R_R(B, B); break; }
@@ -1157,9 +1157,10 @@ void Cpu::operationOpcode_INC_subFunctionFlag(uint8_t& reg)
 	}
 	else
 	{
-		reg++;
+		bool carryBit3 = false, carryBit7 = false;
+		reg = binaryAddition(8, reg, 1, carryBit3, carryBit7);
 		F.Z = 0;
-		F.H = 0;
+		F.H = carryBit3;
 	}
 
 	F.N = 0;
@@ -1197,7 +1198,10 @@ void Cpu::operationOpcode_DEC_subFunctionFlag(uint8_t& reg)
 	}
 	else
 	{
-		reg--;
+		bool borrowBit3 = false, borrowBit7 = false;
+		reg = binarySubstraction(8, reg, 1, borrowBit3, borrowBit7);
+		F.Z = 0;
+		F.H = borrowBit3;
 	}
 
 	F.N = 1;
