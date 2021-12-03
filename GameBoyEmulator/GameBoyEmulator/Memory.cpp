@@ -8,7 +8,7 @@ Memory::Memory()
 	}
 }
 
-uint8_t Memory::getMemoryOfIndex(uint16_t index)
+uint8_t Memory::getMemoryOfIndex(const uint16_t index)const
 {
 	return memoryArray[index];
 }

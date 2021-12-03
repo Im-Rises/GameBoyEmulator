@@ -50,7 +50,7 @@ private:
 public:
 	Memory();
 
-	uint8_t getMemoryOfIndex(uint16_t index);
+	uint8_t getMemoryOfIndex(const uint16_t index)const;
 	void setMemoryOfIndex(uint16_t index, uint8_t value);
 
 };

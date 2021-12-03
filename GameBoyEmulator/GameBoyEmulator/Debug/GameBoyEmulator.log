@@ -6,4 +6,7 @@ E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmu
 E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(884,57): warning C4805: '&' : mélange risqué de type 'int' et de type 'bool' dans l'opération
 E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(884,84): warning C4805: '&' : mélange risqué de type 'int' et de type 'bool' dans l'opération
 E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(974,48): warning C4805: '^' : mélange risqué de type 'int' et de type 'bool' dans l'opération
+E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(1150,65): warning C4227: anachronisme utilisé : qualificateurs de référence ignorés
+  gameBoy.cpp
+  Génération de code en cours...
   GameBoyEmulator.vcxproj -> E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\Debug\GameBoyEmulator.exe

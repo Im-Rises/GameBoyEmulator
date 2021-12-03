@@ -38,7 +38,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x09): {break; }
 	case(0x0A): {opcodeOperation_LD_R_aRP(A, B, C); break; }
 	case(0x0B): {break; }
-	case(0x0C): {break; }
+	case(0x0C): {operationOpcode_INC_R(C); break; }
 	case(0x0D): {break; }
 	case(0x0E): {opcodeOperation_LD_R_d8(C); break; }
 	case(0x0F): {break; }
@@ -54,7 +54,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x19): {break; }
 	case(0x1A): {opcodeOperation_LD_R_aRP(A, D, E); break; }
 	case(0x1B): {break; }
-	case(0x1C): {break; }
+	case(0x1C): {operationOpcode_INC_R(E); break; }
 	case(0x1D): {break; }
 	case(0x1E): {opcodeOperation_LD_R_d8(E); break; }
 	case(0x1F): {break; }
@@ -70,7 +70,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x29): {break; }
 	case(0x2A): {opcodeOperation_LD_R_aRP_RPI(A, H, L); break; }
 	case(0x2B): {break; }
-	case(0x2C): {break; }
+	case(0x2C): {operationOpcode_INC_R(L); break; }
 	case(0x2D): {break; }
 	case(0x2E): {opcodeOperation_LD_R_d8(L); break; }
 	case(0x2F): {break; }
@@ -78,7 +78,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x31): {opcodeOperation16bits_LD_RP_d16(sp); break; }
 	case(0x32): {break; }
 	case(0x33): {break; }
-	case(0x34): {break; }
+	case(0x34): {operationOpcode_INC_aHL(H, L); break; }
 	case(0x35): {break; }
 	case(0x36): {opcodeOperation_LD_aRP_d8(H, L); break; }
 	case(0x37): {break; }
@@ -86,7 +86,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x39): {break; }
 	case(0x3A): {opcodeOperation_LD_R_aRP_RPD(A, H, L); break; }
 	case(0x3B): {break; }
-	case(0x3C): {break; }
+	case(0x3C): {operationOpcode_INC_R(A); break; }
 	case(0x3D): {break; }
 	case(0x3E): {opcodeOperation_LD_R_d8(A); break; }
 	case(0x3F): {break; }
@@ -1108,7 +1108,7 @@ void Cpu::operationOpcode_CP_R_aHL(const uint8_t& reg, const uint8_t& regPair1, 
 	pc++;
 }
 
-bool Cpu::operationOpcode_CP_subFunctionFlag(const uint8_t& reg1, const uint8_t& reg2)
+void Cpu::operationOpcode_CP_subFunctionFlag(const uint8_t& reg1, const uint8_t& reg2)
 {
 	if (reg1 > reg2)
 	{
@@ -1127,6 +1127,77 @@ bool Cpu::operationOpcode_CP_subFunctionFlag(const uint8_t& reg1, const uint8_t&
 		F.Z = 1;
 		F.H = 0;
 		F.CY = 0;
+	}
+
+	F.N = 1;
+}
+
+
+void Cpu::operationOpcode_INC_R(uint8_t& reg)
+{
+	operationOpcode_INC_subFunctionFlag(reg);
+	pc++;
+}
+
+void Cpu::operationOpcode_INC_aHL(const uint8_t& regPair1, const uint8_t& regPair2)
+{
+	//operationOpcode_INC_subFunctionFlag(memory.getMemoryOfIndex(pairRegisters(regPair1, regPair2)));//C++ initial value of reference to non-const must be an lvalue
+	uint8_t memTemp = memory.getMemoryOfIndex(pairRegisters(regPair1, regPair2));
+	operationOpcode_INC_subFunctionFlag(memTemp);
+	pc++;
+}
+
+void Cpu::operationOpcode_INC_subFunctionFlag(uint8_t& reg)
+{
+	if (reg == 0xFF)
+	{
+		reg = 0;
+		F.Z = 1;
+		F.H = 1;
+	}
+	else
+	{
+		reg++;
+		F.Z = 0;
+		F.H = 0;
+	}
+
+	F.N = 0;
+}
+
+
+
+void Cpu::operationOpcode_DEC_R(uint8_t& reg)
+{
+	operationOpcode_DEC_subFunctionFlag(reg);
+	pc++;
+}
+
+void Cpu::operationOpcode_DEC_aHL(const uint8_t& regPair1, const uint8_t& regPair2)
+{
+	//operationOpcode_INC_subFunctionFlag(memory.getMemoryOfIndex(pairRegisters(regPair1, regPair2)));//C++ initial value of reference to non-const must be an lvalue
+	uint8_t memTemp = memory.getMemoryOfIndex(pairRegisters(regPair1, regPair2));
+	operationOpcode_DEC_subFunctionFlag(memTemp);
+	pc++;
+}
+
+void Cpu::operationOpcode_DEC_subFunctionFlag(uint8_t& reg)
+{
+	if (reg == 0x00)
+	{
+		reg = 0xFF;
+		F.Z = 0;
+		F.H = 1;
+	}
+	else if (reg == 0x01)
+	{
+		reg--;
+		F.Z = 1;
+		F.H = 0;
+	}
+	else
+	{
+		reg--;
 	}
 
 	F.N = 1;
