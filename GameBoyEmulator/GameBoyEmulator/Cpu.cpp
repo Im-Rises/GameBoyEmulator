@@ -288,7 +288,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 void Cpu::executeOpcodeFollowingCB()
 {
 	pc++;
-	switch (memory.getMemoryOfIndex(pc)) {
+	switch (memory.read(pc)) {
 	case(0x00): {operationOpcode_RLC_R(B); break; }
 	case(0x01): {operationOpcode_RLC_R(C); break; }
 	case(0x02): {operationOpcode_RLC_R(D); break; }
@@ -321,38 +321,38 @@ void Cpu::executeOpcodeFollowingCB()
 	case(0x1D): {operationOpcode_RR_R(L); break; }
 	case(0x1E): {operationOpcode_RR_aHL(); break; }
 	case(0x1F): {operationOpcode_RR_R(A); break; }
-	case(0x20): {break; }
-	case(0x21): {break; }
-	case(0x22): {break; }
-	case(0x23): {break; }
-	case(0x24): {break; }
-	case(0x25): {break; }
-	case(0x26): {break; }
-	case(0x27): {break; }
-	case(0x28): {break; }
-	case(0x29): {break; }
-	case(0x2A): {break; }
-	case(0x2B): {break; }
-	case(0x2C): {break; }
-	case(0x2D): {break; }
-	case(0x2E): {break; }
-	case(0x2F): {break; }
-	case(0x30): {break; }
-	case(0x31): {break; }
-	case(0x32): {break; }
-	case(0x33): {break; }
-	case(0x34): {break; }
-	case(0x35): {break; }
-	case(0x36): {break; }
-	case(0x37): {break; }
-	case(0x38): {break; }
-	case(0x39): {break; }
-	case(0x3A): {break; }
-	case(0x3B): {break; }
-	case(0x3C): {break; }
-	case(0x3D): {break; }
-	case(0x3E): {break; }
-	case(0x3F): {break; }
+	case(0x20): {operationOpcode_SLA_R(B); break; }
+	case(0x21): {operationOpcode_SLA_R(C); break; }
+	case(0x22): {operationOpcode_SLA_R(D); break; }
+	case(0x23): {operationOpcode_SLA_R(E); break; }
+	case(0x24): {operationOpcode_SLA_R(H); break; }
+	case(0x25): {operationOpcode_SLA_R(L); break; }
+	case(0x26): {operationOpcode_SLA_aHL(); break; }
+	case(0x27): {operationOpcode_SLA_R(A); break; }
+	case(0x28): {operationOpcode_SRA_R(B); break; }
+	case(0x29): {operationOpcode_SRA_R(C); break; }
+	case(0x2A): {operationOpcode_SRA_R(D); break; }
+	case(0x2B): {operationOpcode_SRA_R(E); break; }
+	case(0x2C): {operationOpcode_SRA_R(H); break; }
+	case(0x2D): {operationOpcode_SRA_R(L); break; }
+	case(0x2E): {operationOpcode_SRA_aHL(); break; }
+	case(0x2F): {operationOpcode_SRA_R(A); break; }
+	case(0x30): {operationOpcode_SWAP_R(B); break; }
+	case(0x31): {operationOpcode_SWAP_R(C); break; }
+	case(0x32): {operationOpcode_SWAP_R(D); break; }
+	case(0x33): {operationOpcode_SWAP_R(E); break; }
+	case(0x34): {operationOpcode_SWAP_R(H); break; }
+	case(0x35): {operationOpcode_SWAP_R(L); break; }
+	case(0x36): {operationOpcode_SWAP_aHL(); break; }
+	case(0x37): {operationOpcode_SWAP_R(A); break; }
+	case(0x38): {operationOpcode_SRL_R(B); break; }
+	case(0x39): {operationOpcode_SRL_R(C); break; }
+	case(0x3A): {operationOpcode_SRL_R(D); break; }
+	case(0x3B): {operationOpcode_SRL_R(E); break; }
+	case(0x3C): {operationOpcode_SRL_R(H); break; }
+	case(0x3D): {operationOpcode_SRL_R(L); break; }
+	case(0x3E): {operationOpcode_SRL_aHL(); break; }
+	case(0x3F): {operationOpcode_SRL_R(A); break; }
 	case(0x40): {break; }
 	case(0x41): {break; }
 	case(0x42): {break; }
@@ -576,13 +576,13 @@ void Cpu::opcodeOperation_LD_R_R(uint8_t& reg1, const uint8_t& reg2) {
 void Cpu::opcodeOperation_LD_R_d8(uint8_t& reg)
 {
 	pc++;
-	reg = memory.getMemoryOfIndex(pc);
+	reg = memory.read(pc);
 	pc++;
 }
 
 void Cpu::opcodeOperation_LD_R_aRP(uint8_t& reg, const uint8_t regPair1, const uint8_t regPair2)
 {
-	reg = memory.getMemoryOfIndex(pairRegisters(regPair1, regPair2));
+	reg = memory.read(pairRegisters(regPair1, regPair2));
 	pc++;
 }
 
@@ -590,20 +590,20 @@ void Cpu::opcodeOperation_LD_R_aRP(uint8_t& reg, const uint8_t regPair1, const u
 //Page 2
 void Cpu::opcodeOperation_LD_aRP_R(const uint8_t& registerPair1, const uint8_t& registerPair2, const uint8_t& reg)
 {
-	memory.setMemoryOfIndex(pairRegisters(registerPair1, registerPair2), reg);
+	memory.write(pairRegisters(registerPair1, registerPair2), reg);
 	pc++;
 }
 
 void Cpu::opcodeOperation_LD_aRP_d8(uint8_t& registerPair1, uint8_t& registerPair2)
 {
 	pc++;
-	memory.setMemoryOfIndex(memory.getMemoryOfIndex(pairRegisters(H, L)), memory.getMemoryOfIndex(pc));
+	memory.write(memory.read(pairRegisters(H, L)), memory.read(pc));
 	pc++;
 }
 
 void Cpu::opcodeOperation_LD_R_aRo(uint8_t& reg1, const uint8_t& reg2)
 {
-	reg1 = memory.getMemoryOfIndex(0xFF00 + reg2);
+	reg1 = memory.read(0xFF00 + reg2);
 	pc++;
 }
 
@@ -611,28 +611,28 @@ void Cpu::opcodeOperation_LD_R_aRo(uint8_t& reg1, const uint8_t& reg2)
 //Page 3
 void Cpu::opcodeOperation_LD_aRo_R(const uint8_t& reg1, const uint8_t& reg2)
 {
-	memory.setMemoryOfIndex((0xFF00 + reg1), reg2);
+	memory.write((0xFF00 + reg1), reg2);
 	pc++;
 }
 
 void Cpu::opcodeOperation_LD_R_a8o(uint8_t& reg)
 {
 	pc++;
-	reg = memory.getMemoryOfIndex(0xFF00 + memory.getMemoryOfIndex(pc));
+	reg = memory.read(0xFF00 + memory.read(pc));
 	pc++;
 }
 
 void Cpu::opcodeOperation_LD_a8o_R(const uint8_t& reg)
 {
 	pc++;
-	memory.setMemoryOfIndex(0xFF00 + pc, A);
+	memory.write(0xFF00 + pc, A);
 	pc++;
 }
 
 void Cpu::opcodeOperation_LD_R_a16(uint8_t& reg)
 {
 	pc++;
-	reg = memory.getMemoryOfIndex(((memory.getMemoryOfIndex(pc) << 8) + memory.getMemoryOfIndex(pc + 1)));
+	reg = memory.read(((memory.read(pc) << 8) + memory.read(pc + 1)));
 	pc += 2;
 }
 
@@ -641,14 +641,14 @@ void Cpu::opcodeOperation_LD_R_a16(uint8_t& reg)
 void Cpu::opcodeOperation_LD_a16_R(const uint8_t& reg)
 {
 	pc++;
-	memory.setMemoryOfIndex(((memory.getMemoryOfIndex(pc) << 8) + memory.getMemoryOfIndex(pc + 1)), reg);
+	memory.write(((memory.read(pc) << 8) + memory.read(pc + 1)), reg);
 	pc += 2;
 }
 
 void Cpu::opcodeOperation_LD_R_aRP_RPI(uint8_t& reg, uint8_t regPair1, uint8_t regPair2)
 {
 	uint16_t registersPairTemp = pairRegisters(regPair1, regPair2);
-	reg = memory.getMemoryOfIndex(registersPairTemp);
+	reg = memory.read(registersPairTemp);
 	registersPairTemp++;
 	regPair1 = registersPairTemp >> 8;
 	regPair2 = registersPairTemp & 0xFF;//HERE CONVERSION ISSUE
@@ -658,7 +658,7 @@ void Cpu::opcodeOperation_LD_R_aRP_RPI(uint8_t& reg, uint8_t regPair1, uint8_t r
 void Cpu::opcodeOperation_LD_R_aRP_RPD(uint8_t& reg, uint8_t regPair1, uint8_t regPair2)
 {
 	uint16_t registersPairTemp = pairRegisters(regPair1, regPair2);
-	reg = memory.getMemoryOfIndex(registersPairTemp);
+	reg = memory.read(registersPairTemp);
 	registersPairTemp--;
 	regPair1 = registersPairTemp >> 8;
 	regPair2 = registersPairTemp & 0xFF;//HERE CONVERSION ISSUE
@@ -670,7 +670,7 @@ void Cpu::opcodeOperation_LD_R_aRP_RPD(uint8_t& reg, uint8_t regPair1, uint8_t r
 void Cpu::opcodeOperation_LD_aRP_R_RPI(uint8_t& regPair1, uint8_t& regPair2, const uint8_t& reg)
 {
 	uint16_t registersPairTemp = pairRegisters(regPair1, regPair2);
-	memory.setMemoryOfIndex(registersPairTemp, reg);
+	memory.write(registersPairTemp, reg);
 	registersPairTemp++;
 	regPair1 = (registersPairTemp >> 8);
 	regPair2 = registersPairTemp & 0xFF;//HERE CONVERSION ISSUE
@@ -680,7 +680,7 @@ void Cpu::opcodeOperation_LD_aRP_R_RPI(uint8_t& regPair1, uint8_t& regPair2, con
 void Cpu::opcodeOperation_LD_aRP_R_RPD(uint8_t& regPair1, uint8_t& regPair2, const uint8_t& reg)
 {
 	uint16_t registersPairTemp = pairRegisters(regPair1, regPair2);
-	memory.setMemoryOfIndex(registersPairTemp, reg);
+	memory.write(registersPairTemp, reg);
 	registersPairTemp--;
 	regPair1 = (registersPairTemp >> 8);
 	regPair2 = registersPairTemp & 0xFF;//HERE CONVERSION ISSUE
@@ -694,8 +694,8 @@ void Cpu::opcodeOperation_LD_aRP_R_RPD(uint8_t& regPair1, uint8_t& regPair2, con
 void Cpu::opcodeOperation16bits_LD_RP_d16(uint8_t& regPair1, uint8_t& regPair2)
 {
 	pc++;
-	regPair1 = memory.getMemoryOfIndex(pc + 1);
-	regPair2 = memory.getMemoryOfIndex(pc);
+	regPair1 = memory.read(pc + 1);
+	regPair2 = memory.read(pc);
 	pc += 2;
 }
 
@@ -717,8 +717,8 @@ void Cpu::opcodeOperation16bits_LD_RP_RP(uint16_t& registersPair, const uint8_t&
 
 void Cpu::opcodeOperation16bits_PUSH_RP(const uint8_t& regPair1, const uint8_t& regPair2)
 {
-	memory.setMemoryOfIndex(sp - 1, regPair1);
-	memory.setMemoryOfIndex(sp - 2, regPair2);
+	memory.write(sp - 1, regPair1);
+	memory.write(sp - 2, regPair2);
 	sp -= 2;
 	pc++;
 }
@@ -733,27 +733,27 @@ void Cpu::opcodeOperation16bits_PUSH_RP(const uint8_t& regPair1, const Flag& fla
 //Page 7
 void Cpu::opcodeOperation16bits_POP_RP(uint8_t& regPair1, uint8_t& regPair2)
 {
-	regPair2 = memory.getMemoryOfIndex(sp);
-	regPair1 = memory.getMemoryOfIndex(sp + 1);
+	regPair2 = memory.read(sp);
+	regPair1 = memory.read(sp + 1);
 	sp += 2;
 	pc++;
 }
 
 void Cpu::opcodeOperation16bits_POP_RP(uint8_t& regPair1, Flag& flagPair)
 {
-	uint8_t temp = memory.getMemoryOfIndex(sp);
+	uint8_t temp = memory.read(sp);
 	flagPair.Z = (temp >> 7) & 0x1;
 	flagPair.N = (temp >> 6) & 0x1;
 	flagPair.H = (temp >> 5) & 0x1;
 	flagPair.CY = (temp >> 4) & 0x1;
-	regPair1 = memory.getMemoryOfIndex(sp + 1);
+	regPair1 = memory.read(sp + 1);
 	sp += 2;
 	pc++;
 }
 
 void Cpu::opcodeOperation16bits_LDHL_SP_e()
 {
-	int8_t e = memory.getMemoryOfIndex(pc + 1);//Is casting working (from uint8_t to int8_t)
+	int8_t e = memory.read(pc + 1);//Is casting working (from uint8_t to int8_t)
 
 	//Temporariry variables
 	uint16_t value1Temp = sp;
@@ -797,8 +797,8 @@ void Cpu::opcodeOperation16bits_LDHL_SP_e()
 void Cpu::opcodeOperation16bits_LD_a8_SP()
 {
 	pc++;
-	memory.setMemoryOfIndex(memory.getMemoryOfIndex(pc), sp & 0xFF);;//HERE CONVERSION ISSUE
-	memory.setMemoryOfIndex(memory.getMemoryOfIndex(pc + 1), (sp >> 8));
+	memory.write(memory.read(pc), sp & 0xFF);;//HERE CONVERSION ISSUE
+	memory.write(memory.read(pc + 1), (sp >> 8));
 	pc += 2;
 }
 
@@ -815,13 +815,13 @@ void Cpu::operationOpcode_ADD_R_R(uint8_t& reg1, const uint8_t& reg2)
 void Cpu::operationOpcode_ADD_R_d8(uint8_t& reg)
 {
 	pc++;
-	reg = operationOpcode_ADD_ADC_subFunctionFlag(reg, memory.getMemoryOfIndex(pc));
+	reg = operationOpcode_ADD_ADC_subFunctionFlag(reg, memory.read(pc));
 	pc++;
 }
 
 void Cpu::operationOpcode_ADD_R_aRP(uint8_t& reg, const uint8_t& regPair1, const uint8_t& regPair2)
 {
-	reg = operationOpcode_ADD_ADC_subFunctionFlag(reg, memory.getMemoryOfIndex(pairRegisters(regPair1, regPair2)));
+	reg = operationOpcode_ADD_ADC_subFunctionFlag(reg, memory.read(pairRegisters(regPair1, regPair2)));
 	pc++;
 }
 
@@ -836,14 +836,14 @@ void Cpu::operationOpcode_ADC_A_d8_CY()
 {
 	pc++;
 	A = operationOpcode_ADD_ADC_subFunctionFlag(A, F.CY);
-	A = operationOpcode_ADD_ADC_subFunctionFlag(A, memory.getMemoryOfIndex(pc));
+	A = operationOpcode_ADD_ADC_subFunctionFlag(A, memory.read(pc));
 	pc++;
 }
 
 void Cpu::operationOpcode_ADC_A_aHL_CY(const uint8_t& regPair1, const uint8_t& regPair2)
 {
 	A = operationOpcode_ADD_ADC_subFunctionFlag(A, F.CY);
-	A = operationOpcode_ADD_ADC_subFunctionFlag(A, memory.getMemoryOfIndex(pairRegisters(regPair1, regPair2)));
+	A = operationOpcode_ADD_ADC_subFunctionFlag(A, memory.read(pairRegisters(regPair1, regPair2)));
 	pc++;
 }
 
@@ -907,13 +907,13 @@ void Cpu::operationOpcode_SUB_A_R(const uint8_t& reg)
 void Cpu::operationOpcode_SUB_A_d8()
 {
 	pc++;
-	A = operationOpcode_SUB_SBC_subFunctionFlag(A, memory.getMemoryOfIndex(pc));
+	A = operationOpcode_SUB_SBC_subFunctionFlag(A, memory.read(pc));
 	pc++;
 }
 
 void Cpu::operationOpcode_SUB_A_aHL(const uint8_t& regPair1, const uint8_t& regPair2)
 {
-	A = operationOpcode_SUB_SBC_subFunctionFlag(A, memory.getMemoryOfIndex(pairRegisters(regPair1, regPair2)));
+	A = operationOpcode_SUB_SBC_subFunctionFlag(A, memory.read(pairRegisters(regPair1, regPair2)));
 	pc++;
 }
 
@@ -928,14 +928,14 @@ void Cpu::operationOpcode_SBC_A_d8_CY()
 {
 	pc++;
 	A = operationOpcode_SUB_SBC_subFunctionFlag(A, F.CY);
-	A = operationOpcode_SUB_SBC_subFunctionFlag(A, memory.getMemoryOfIndex(pc));
+	A = operationOpcode_SUB_SBC_subFunctionFlag(A, memory.read(pc));
 	pc++;
 }
 
 void Cpu::operationOpcode_SBC_A_aHL_CY(const uint8_t& regPair1, const uint8_t& regPair2)
 {
 	A = operationOpcode_SUB_SBC_subFunctionFlag(A, F.CY);
-	A = operationOpcode_SUB_SBC_subFunctionFlag(A, memory.getMemoryOfIndex(pairRegisters(regPair1, regPair2)));
+	A = operationOpcode_SUB_SBC_subFunctionFlag(A, memory.read(pairRegisters(regPair1, regPair2)));
 }
 
 
@@ -1004,7 +1004,7 @@ void Cpu::operationOpcode_AND_R_R(uint8_t& reg1, const uint8_t& reg2)
 void Cpu::operationOpcode_AND_R_d8(uint8_t& reg1)
 {
 	pc++;
-	reg1 &= memory.getMemoryOfIndex(pc);
+	reg1 &= memory.read(pc);
 	F.Z = (reg1 == 0);
 	F.H = 1;
 	F.N = 0;
@@ -1014,7 +1014,7 @@ void Cpu::operationOpcode_AND_R_d8(uint8_t& reg1)
 
 void Cpu::operationOpcode_AND_R_aHL(uint8_t& reg, const uint8_t& regPair1, const uint8_t& regPair2)
 {
-	reg &= memory.getMemoryOfIndex(pairRegisters(regPair1, regPair2));
+	reg &= memory.read(pairRegisters(regPair1, regPair2));
 	F.Z = (reg == 0);
 	F.H = 1;
 	F.N = 0;
@@ -1036,7 +1036,7 @@ void Cpu::operationOpcode_OR_R_R(uint8_t& reg1, const uint8_t& reg2)
 void Cpu::operationOpcode_OR_R_d8(uint8_t& reg1)
 {
 	pc++;
-	reg1 |= memory.getMemoryOfIndex(pc);
+	reg1 |= memory.read(pc);
 	F.Z = (reg1 == 0);
 	F.H = 0;
 	F.N = 0;
@@ -1046,7 +1046,7 @@ void Cpu::operationOpcode_OR_R_d8(uint8_t& reg1)
 
 void Cpu::operationOpcode_OR_R_aHL(uint8_t& reg, const uint8_t& regPair1, const uint8_t& regPair2)
 {
-	reg |= memory.getMemoryOfIndex(pairRegisters(regPair1, regPair2));
+	reg |= memory.read(pairRegisters(regPair1, regPair2));
 	F.Z = (reg == 0);
 	F.H = 0;
 	F.N = 0;
@@ -1068,7 +1068,7 @@ void Cpu::operationOpcode_XOR_R_R(uint8_t& reg1, const uint8_t& reg2)
 void Cpu::operationOpcode_XOR_R_d8(uint8_t& reg1)
 {
 	pc++;
-	reg1 ^= memory.getMemoryOfIndex(pc);
+	reg1 ^= memory.read(pc);
 	F.Z = (reg1 == 0);
 	F.H = 0;
 	F.N = 0;
@@ -1078,7 +1078,7 @@ void Cpu::operationOpcode_XOR_R_d8(uint8_t& reg1)
 
 void Cpu::operationOpcode_XOR_R_aHL(uint8_t& reg, const uint8_t& regPair1, const uint8_t& regPair2)
 {
-	reg ^= memory.getMemoryOfIndex(pairRegisters(regPair1, regPair2));
+	reg ^= memory.read(pairRegisters(regPair1, regPair2));
 	F.Z = (reg == 0);
 	F.H = 0;
 	F.N = 0;
@@ -1097,13 +1097,13 @@ void Cpu::operationOpcode_CP_R_R(const uint8_t& reg1, const uint8_t& reg2)
 void Cpu::operationOpcode_CP_R_d8(const uint8_t& reg1)
 {
 	pc++;
-	operationOpcode_CP_subFunctionFlag(reg1, memory.getMemoryOfIndex(pc));
+	operationOpcode_CP_subFunctionFlag(reg1, memory.read(pc));
 	pc++;
 }
 
 void Cpu::operationOpcode_CP_R_aHL(const uint8_t& reg, const uint8_t& regPair1, const uint8_t& regPair2)
 {
-	operationOpcode_CP_subFunctionFlag(reg, memory.getMemoryOfIndex(pairRegisters(regPair1, regPair2)));
+	operationOpcode_CP_subFunctionFlag(reg, memory.read(pairRegisters(regPair1, regPair2)));
 	pc++;
 }
 
@@ -1140,8 +1140,8 @@ void Cpu::operationOpcode_INC_R(uint8_t& reg)
 
 void Cpu::operationOpcode_INC_aHL(const uint8_t& regPair1, const uint8_t& regPair2)
 {
-	//operationOpcode_INC_subFunctionFlag(memory.getMemoryOfIndex(pairRegisters(regPair1, regPair2)));//C++ initial value of reference to non-const must be an lvalue
-	uint8_t memTemp = memory.getMemoryOfIndex(pairRegisters(regPair1, regPair2));
+	//operationOpcode_INC_subFunctionFlag(memory.read(pairRegisters(regPair1, regPair2)));//C++ initial value of reference to non-const must be an lvalue
+	uint8_t memTemp = memory.read(pairRegisters(regPair1, regPair2));
 	operationOpcode_INC_subFunctionFlag(memTemp);
 	pc++;
 }
@@ -1175,8 +1175,8 @@ void Cpu::operationOpcode_DEC_R(uint8_t& reg)
 
 void Cpu::operationOpcode_DEC_aHL(const uint8_t& regPair1, const uint8_t& regPair2)
 {
-	//operationOpcode_INC_subFunctionFlag(memory.getMemoryOfIndex(pairRegisters(regPair1, regPair2)));//C++ initial value of reference to non-const must be an lvalue
-	uint8_t memTemp = memory.getMemoryOfIndex(pairRegisters(regPair1, regPair2));
+	//operationOpcode_INC_subFunctionFlag(memory.read(pairRegisters(regPair1, regPair2)));//C++ initial value of reference to non-const must be an lvalue
+	uint8_t memTemp = memory.read(pairRegisters(regPair1, regPair2));
 	operationOpcode_DEC_subFunctionFlag(memTemp);
 	pc++;
 }
@@ -1230,7 +1230,7 @@ void Cpu::operationOpcode16bits_ADD_SP_e()
 	pc++;
 	bool carryBit11 = 0;
 	bool carryBit15 = 0;
-	uint16_t e = memory.getMemoryOfIndex(pc);
+	uint16_t e = memory.read(pc);
 	sp = binaryAddition16bits(sp, e, carryBit11, carryBit15);
 	F.H = carryBit11;
 	F.CY = carryBit15;
@@ -1374,7 +1374,7 @@ void Cpu::operationOpcode_RLC_R(uint8_t& reg)
 
 void Cpu::operationOpcode_RLC_aHL()
 {
-	uint8_t temp = memory.getMemoryOfIndex(pairRegisters(H, L));
+	uint8_t temp = memory.read(pairRegisters(H, L));
 	F.H = 0;
 	F.N = 0;
 	F.Z = 0;
@@ -1382,7 +1382,7 @@ void Cpu::operationOpcode_RLC_aHL()
 	temp <<= 1;
 	temp &= 0b11111110;
 	temp |= F.CY;
-	memory.setMemoryOfIndex(pairRegisters(H, L), temp);
+	memory.write(pairRegisters(H, L), temp);
 	pc++;
 }
 
@@ -1402,7 +1402,7 @@ void Cpu::operationOpcode_RL_R(uint8_t& reg)
 
 void Cpu::operationOpcode_RL_aHL()
 {
-	uint8_t temp = memory.getMemoryOfIndex(pairRegisters(H, L));
+	uint8_t temp = memory.read(pairRegisters(H, L));
 	F.H = 0;
 	F.N = 0;
 	bool oldCarry = F.CY;
@@ -1410,7 +1410,7 @@ void Cpu::operationOpcode_RL_aHL()
 	temp <<= 1;
 	temp &= 0b11111110;
 	temp |= oldCarry;
-	memory.setMemoryOfIndex(pairRegisters(H, L), temp);
+	memory.write(pairRegisters(H, L), temp);
 	F.Z = (temp == 0);
 	pc++;
 }
@@ -1431,7 +1431,7 @@ void Cpu::operationOpcode_RRC_R(uint8_t& reg)
 
 void Cpu::operationOpcode_RRC_aHL()
 {
-	uint8_t temp = memory.getMemoryOfIndex(pairRegisters(H, L));
+	uint8_t temp = memory.read(pairRegisters(H, L));
 	F.H = 0;
 	F.N = 0;
 	F.Z = 0;
@@ -1439,7 +1439,7 @@ void Cpu::operationOpcode_RRC_aHL()
 	temp >>= 1;
 	temp &= 0b01111111;
 	temp |= (F.CY << 7);
-	memory.setMemoryOfIndex(pairRegisters(H, L), temp);
+	memory.write(pairRegisters(H, L), temp);
 	F.Z = (temp == 0);
 	pc++;
 }
@@ -1460,7 +1460,7 @@ void Cpu::operationOpcode_RR_R(uint8_t& reg)
 
 void Cpu::operationOpcode_RR_aHL()
 {
-	uint8_t temp = memory.getMemoryOfIndex(pairRegisters(H, L));
+	uint8_t temp = memory.read(pairRegisters(H, L));
 	F.H = 0;
 	F.N = 0;
 	F.Z = 0;
@@ -1469,7 +1469,94 @@ void Cpu::operationOpcode_RR_aHL()
 	temp >>= 1;
 	temp &= 0b01111111;
 	temp |= (oldCarry << 7);
-	memory.setMemoryOfIndex(pairRegisters(H, L), temp);
+	memory.write(pairRegisters(H, L), temp);
 	F.Z = (temp == 0);
 	pc++;
+}
+
+
+//Page 16
+
+void Cpu::operationOpcode_SLA_R(uint8_t& reg)
+{
+	F.H = 0;
+	F.N = 0;
+	F.CY = reg >> 7;
+	reg <<= 1;
+	reg &= 0b11111110;
+	F.Z = (reg == 0);
+	pc++;
+}
+
+void Cpu::operationOpcode_SLA_aHL()
+{
+	uint8_t temp = memory.read(pairRegisters(H, L));
+	operationOpcode_SLA_R(temp);
+	memory.write(pairRegisters(H, L), temp);
+}
+
+
+void Cpu::operationOpcode_SRA_R(uint8_t& reg)
+{
+	F.H = 0;
+	F.N = 0;
+	F.CY = reg & 0x1;
+	bool bit7 = reg >> 7;
+	reg >>= 1;
+	reg &= 0b01111111;
+	reg |= (bit7 << 7);
+	F.Z = (reg == 0);
+	pc++;
+}
+
+void Cpu::operationOpcode_SRA_aHL()
+{
+	uint8_t temp = memory.read(pairRegisters(H, L));
+	operationOpcode_SRA_R(temp);
+	memory.write(pairRegisters(H, L), temp);
+}
+
+
+//Page 17
+void Cpu::operationOpcode_SRL_R(uint8_t& reg)
+{
+	F.H = 0;
+	F.N = 0;
+	F.CY = reg & 0x1;
+	reg >>= 1;
+	reg &= 0b01111111;
+	F.Z = (reg == 0);
+	pc++;
+}
+
+void Cpu::operationOpcode_SRL_aHL()
+{
+	uint8_t temp = memory.read(pairRegisters(H, L));
+	operationOpcode_SRL_R(temp);
+	memory.write(pairRegisters(H, L), temp);
+}
+
+void Cpu::operationOpcode_SWAP_R(uint8_t& reg)
+{
+	F.CY = 0;
+	F.H = 0;
+	F.N = 0;
+	uint8_t nibbleL = reg & 0x0F;
+	reg >>= 4;
+	reg &= 0x0F;
+	reg |= (nibbleL << 4);
+	F.Z = (reg == 0);
+	pc++;
+}
+void Cpu::operationOpcode_SWAP_aHL()
+{
+	uint8_t temp = memory.read(pairRegisters(H, L));
+	operationOpcode_SWAP_R(temp);
+	memory.write(pairRegisters(H, L), temp);
+}
+
+//Page 18
+void Cpu::operationOpcode_BIT_R(const uint8_t& reg)
+{
+
 }

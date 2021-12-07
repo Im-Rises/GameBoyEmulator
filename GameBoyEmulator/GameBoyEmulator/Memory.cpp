@@ -8,12 +8,12 @@ Memory::Memory()
 	}
 }
 
-uint8_t Memory::getMemoryOfIndex(const uint16_t index)const
+uint8_t Memory::read(const uint16_t index)const
 {
 	return memoryArray[index];
 }
 
-void Memory::setMemoryOfIndex(uint16_t index, uint8_t value)
+void Memory::write(uint16_t index, uint8_t value)
 {
 	memoryArray[index] = value;
 }

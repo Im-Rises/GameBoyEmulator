@@ -228,9 +228,6 @@ private:
 
 
 
-
-	/*-----------------------------------------CB OPCODES OPERATIONS-----------------------------------------------*/
-
 	//Page 14	(p99)
 	void operationOpcode_RLC_R(uint8_t& reg);
 	void operationOpcode_RLC_aHL();
@@ -244,8 +241,24 @@ private:
 	void operationOpcode_RR_aHL();
 
 	//Page 16	(p101)
-	void operationOpcode_SLA_R();
+	void operationOpcode_SLA_R(uint8_t& reg);
 	void operationOpcode_SLA_aHL();
+
+	void operationOpcode_SRA_R(uint8_t& reg);
+	void operationOpcode_SRA_aHL();
+
+	//Page 17	(p102)
+	void operationOpcode_SRL_R(uint8_t& reg);
+	void operationOpcode_SRL_aHL();
+
+	void operationOpcode_SWAP_R(uint8_t& reg);
+	void operationOpcode_SWAP_aHL();
+
+	/*-------------------------------------BIT OPERATIONS---------------------------------------*/
+
+	//Page 16	(p103)
+	void operationOpcode_BIT_R(const uint8_t& reg);
+
 };
 
 #endif
