@@ -258,6 +258,12 @@ private:
 
 	//Page 16	(p103)
 	void operationOpcode_BIT_R(const uint8_t& reg);
+	void operationOpcode_BIT_aHL();
+	void operationOpcode_SET_R(uint8_t& reg);
+
+	//Page 17	(p104)
+	void operationOpcode_SET_aHL();
+
 
 };
 
