@@ -69,7 +69,8 @@ private:
 public:
 	Cpu();										//Constructor
 	void readOpcode();							//Read an opcode
-	void executeOpcode(uint8_t opcode);			//Execute an opcode (normal or double)
+	void executeOpcode(uint8_t opcode);			//Execute an opcode
+	void executeOpcodeFollowingCB();			//Execute an opcode on two bytes (following the CB opcode) 
 	~Cpu();
 
 private:
@@ -219,15 +220,32 @@ private:
 
 	/*-------------------------------------ROTATE SHIFT INSTRUCTION---------------------------------------*/
 	//Page 13	(p98)
-	//RESUME HERE
+	//TO CHECK, THERE MIGHT BE ERRORS IN THE EXAMPLES, SO THE OCPODES ARE POSSIBILY NOT WELL IMPLEMENTED
 	void operationOpcode_RLCA();
 	void operationOpcode_RLA();
 	void operationOpcode_RRCA();
 	void operationOpcode_RRA();
 
 
+
+
 	/*-----------------------------------------CB OPCODES OPERATIONS-----------------------------------------------*/
-	void executeOpcodeFollowingCB();
+
+	//Page 14	(p99)
+	void operationOpcode_RLC_R(uint8_t& reg);
+	void operationOpcode_RLC_aHL();
+	void operationOpcode_RL_R(uint8_t& reg);
+	void operationOpcode_RL_aHL();
+
+	//Page 15	(p100)
+	void operationOpcode_RRC_R(uint8_t& reg);
+	void operationOpcode_RRC_aHL();
+	void operationOpcode_RR_R(uint8_t& reg);
+	void operationOpcode_RR_aHL();
+
+	//Page 16	(p101)
+	void operationOpcode_SLA_R();
+	void operationOpcode_SLA_aHL();
 };
 
 #endif

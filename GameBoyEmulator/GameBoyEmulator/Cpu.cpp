@@ -41,7 +41,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x0C): {operationOpcode_INC_R(C); break; }
 	case(0x0D): {operationOpcode_DEC_R(C); break; }
 	case(0x0E): {opcodeOperation_LD_R_d8(C); break; }
-	case(0x0F): {operationOpcode_RLA(); break; }
+	case(0x0F): {operationOpcode_RRCA(); break; }
 	case(0x10): {break; }
 	case(0x11): {opcodeOperation16bits_LD_RP_d16(D, D); break; }
 	case(0x12): {opcodeOperation_LD_aRP_R(D, E, A); break; }
@@ -49,7 +49,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x14): {operationOpcode_INC_R(D); break; }
 	case(0x15): {operationOpcode_DEC_R(D); break; }
 	case(0x16): {opcodeOperation_LD_R_d8(D); break; }
-	case(0x17): {break; }
+	case(0x17): {operationOpcode_RLA(); break; }
 	case(0x18): {break; }
 	case(0x19): {operationOpcode16bits_ADD_HL_RP(pairRegisters(D, E)); break; }
 	case(0x1A): {opcodeOperation_LD_R_aRP(A, D, E); break; }
@@ -57,7 +57,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x1C): {operationOpcode_INC_R(E); break; }
 	case(0x1D): {operationOpcode_DEC_R(E); break; }
 	case(0x1E): {opcodeOperation_LD_R_d8(E); break; }
-	case(0x1F): {break; }
+	case(0x1F): {operationOpcode_RRA(); break; }
 	case(0x20): {break; }
 	case(0x21): {opcodeOperation16bits_LD_RP_d16(H, L); break; }
 	case(0x22): {opcodeOperation_LD_aRP_R_RPI(H, L, A); break; }
@@ -287,40 +287,40 @@ void Cpu::executeOpcode(uint8_t opcode)
 
 void Cpu::executeOpcodeFollowingCB()
 {
-	/*
-	switch (memory.getMemoryOfIndex(pc++)) {
-	case(0x00): {break; }
-	case(0x01): {break; }
-	case(0x02): {break; }
-	case(0x03): {break; }
-	case(0x04): {break; }
-	case(0x05): {break; }
-	case(0x06): {break; }
-	case(0x07): {break; }
-	case(0x08): {break; }
-	case(0x09): {break; }
-	case(0x0A): {break; }
-	case(0x0B): {break; }
-	case(0x0C): {break; }
-	case(0x0D): {break; }
-	case(0x0E): {break; }
-	case(0x0F): {break; }
-	case(0x10): {break; }
-	case(0x11): {break; }
-	case(0x12): {break; }
-	case(0x13): {break; }
-	case(0x14): {break; }
-	case(0x15): {break; }
-	case(0x16): {break; }
-	case(0x17): {break; }
-	case(0x18): {break; }
-	case(0x19): {break; }
-	case(0x1A): {break; }
-	case(0x1B): {break; }
-	case(0x1C): {break; }
-	case(0x1D): {break; }
-	case(0x1E): {break; }
-	case(0x1F): {break; }
+	pc++;
+	switch (memory.getMemoryOfIndex(pc)) {
+	case(0x00): {operationOpcode_RLC_R(B); break; }
+	case(0x01): {operationOpcode_RLC_R(C); break; }
+	case(0x02): {operationOpcode_RLC_R(D); break; }
+	case(0x03): {operationOpcode_RLC_R(E); break; }
+	case(0x04): {operationOpcode_RLC_R(H); break; }
+	case(0x05): {operationOpcode_RLC_R(L); break; }
+	case(0x06): {operationOpcode_RLC_aHL(); break; }
+	case(0x07): {operationOpcode_RLC_R(A); break; }
+	case(0x08): {operationOpcode_RRC_R(B); break; }
+	case(0x09): {operationOpcode_RRC_R(C); break; }
+	case(0x0A): {operationOpcode_RRC_R(D); break; }
+	case(0x0B): {operationOpcode_RRC_R(E); break; }
+	case(0x0C): {operationOpcode_RRC_R(H); break; }
+	case(0x0D): {operationOpcode_RRC_R(L); break; }
+	case(0x0E): {operationOpcode_RRC_aHL(); break; }
+	case(0x0F): {operationOpcode_RRC_R(A); break; }
+	case(0x10): {operationOpcode_RL_R(B); break; }
+	case(0x11): {operationOpcode_RL_R(C); break; }
+	case(0x12): {operationOpcode_RL_R(D); break; }
+	case(0x13): {operationOpcode_RL_R(E); break; }
+	case(0x14): {operationOpcode_RL_R(H); break; }
+	case(0x15): {operationOpcode_RL_R(L); break; }
+	case(0x16): {operationOpcode_RL_aHL(); break; }
+	case(0x17): {operationOpcode_RL_R(A); break; }
+	case(0x18): {operationOpcode_RR_R(B); break; }
+	case(0x19): {operationOpcode_RR_R(C); break; }
+	case(0x1A): {operationOpcode_RR_R(D); break; }
+	case(0x1B): {operationOpcode_RR_R(E); break; }
+	case(0x1C): {operationOpcode_RR_R(H); break; }
+	case(0x1D): {operationOpcode_RR_R(L); break; }
+	case(0x1E): {operationOpcode_RR_aHL(); break; }
+	case(0x1F): {operationOpcode_RR_R(A); break; }
 	case(0x20): {break; }
 	case(0x21): {break; }
 	case(0x22): {break; }
@@ -546,7 +546,6 @@ void Cpu::executeOpcodeFollowingCB()
 	case(0xFE): {break; }
 	case(0xFF): {break; }
 	}
-	*/
 }
 
 
@@ -1306,46 +1305,171 @@ int Cpu::binaryAddition16bits(const int& value1, const int& value2, bool& carryB
 //Page 13	(p98)
 
 
-void Cpu::operationOpcode_RLCA()//NOT WORKING
-{
-	F.H = 0;
-	F.N = 0;
-	F.Z = 0;
-	F.CY = A >> 7;
-	A = A | F.CY;
-	A <<= 1;
-	pc++;
-}
-
-void Cpu::operationOpcode_RLA()//NOT WORKING
+void Cpu::operationOpcode_RLCA()
 {
 	F.H = 0;
 	F.N = 0;
 	F.Z = 0;
 	F.CY = A >> 7;
 	A <<= 1;
-	A += F.CY;
+	A &= 0b11111110;
+	A |= F.CY;
+	pc++;
+}
+
+void Cpu::operationOpcode_RLA()
+{
+	F.H = 0;
+	F.N = 0;
+	F.Z = 0;
+	bool oldCarry = F.CY;
+	F.CY = A >> 7;
+	A <<= 1;
+	A &= 0b11111110;
+	A |= oldCarry;
 	pc++;
 }
 
 
-void Cpu::operationOpcode_RRCA()//NOT WORKING
+void Cpu::operationOpcode_RRCA()
 {
 	F.H = 0;
 	F.N = 0;
 	F.Z = 0;
 	F.CY = A & 0x1;
 	A >>= 1;
-	A += (F.CY << 7);
+	A &= 0b01111111;
+	A |= (F.CY << 7);
 	pc++;
 }
 
-void Cpu::operationOpcode_RRA()//NOT WORKING
+void Cpu::operationOpcode_RRA()
 {
 	F.H = 0;
 	F.N = 0;
 	F.Z = 0;
+	bool oldCarry = F.CY;
 	F.CY = A & 0x1;
 	A >>= 1;
+	A &= 0b01111111;
+	A |= (oldCarry << 7);
+	pc++;
+}
+
+
+/*-----------------------------------------CB OPCODES OPERATIONS-----------------------------------------------*/
+
+//Page 14	(p99)
+void Cpu::operationOpcode_RLC_R(uint8_t& reg)
+{
+	F.H = 0;
+	F.N = 0;
+	F.Z = 0;
+	F.CY = reg >> 7;
+	reg <<= 1;
+	reg &= 0b11111110;
+	reg |= F.CY;
+	pc++;
+}
+
+void Cpu::operationOpcode_RLC_aHL()
+{
+	uint8_t temp = memory.getMemoryOfIndex(pairRegisters(H, L));
+	F.H = 0;
+	F.N = 0;
+	F.Z = 0;
+	F.CY = temp >> 7;
+	temp <<= 1;
+	temp &= 0b11111110;
+	temp |= F.CY;
+	memory.setMemoryOfIndex(pairRegisters(H, L), temp);
+	pc++;
+}
+
+
+void Cpu::operationOpcode_RL_R(uint8_t& reg)
+{
+	F.H = 0;
+	F.N = 0;
+	bool oldCarry = F.CY;
+	F.CY = reg >> 7;
+	reg <<= 1;
+	reg &= 0b11111110;
+	reg |= oldCarry;
+	F.Z = (reg == 0);
+	pc++;
+}
+
+void Cpu::operationOpcode_RL_aHL()
+{
+	uint8_t temp = memory.getMemoryOfIndex(pairRegisters(H, L));
+	F.H = 0;
+	F.N = 0;
+	bool oldCarry = F.CY;
+	F.CY = temp >> 7;
+	temp <<= 1;
+	temp &= 0b11111110;
+	temp |= oldCarry;
+	memory.setMemoryOfIndex(pairRegisters(H, L), temp);
+	F.Z = (temp == 0);
+	pc++;
+}
+
+
+//Page 15
+void Cpu::operationOpcode_RRC_R(uint8_t& reg)
+{
+	F.H = 0;
+	F.N = 0;
+	F.CY = reg & 0x1;
+	reg >>= 1;
+	reg &= 0b01111111;
+	reg |= (F.CY << 7);
+	F.Z = (reg == 0);
+	pc++;
+}
+
+void Cpu::operationOpcode_RRC_aHL()
+{
+	uint8_t temp = memory.getMemoryOfIndex(pairRegisters(H, L));
+	F.H = 0;
+	F.N = 0;
+	F.Z = 0;
+	F.CY = temp & 0x1;
+	temp >>= 1;
+	temp &= 0b01111111;
+	temp |= (F.CY << 7);
+	memory.setMemoryOfIndex(pairRegisters(H, L), temp);
+	F.Z = (temp == 0);
+	pc++;
+}
+
+void Cpu::operationOpcode_RR_R(uint8_t& reg)
+{
+	F.H = 0;
+	F.N = 0;
+	F.Z = 0;
+	bool oldCarry = F.CY;
+	F.CY = reg & 0x1;
+	reg >>= 1;
+	reg &= 0b01111111;
+	reg |= (oldCarry << 7);
+	F.Z = (reg == 0);
+	pc++;
+}
+
+void Cpu::operationOpcode_RR_aHL()
+{
+	uint8_t temp = memory.getMemoryOfIndex(pairRegisters(H, L));
+	F.H = 0;
+	F.N = 0;
+	F.Z = 0;
+	bool oldCarry = F.CY;
+	F.CY = temp & 0x1;
+	temp >>= 1;
+	temp &= 0b01111111;
+	temp |= (oldCarry << 7);
+	memory.setMemoryOfIndex(pairRegisters(H, L), temp);
+	F.Z = (temp == 0);
 	pc++;
 }
