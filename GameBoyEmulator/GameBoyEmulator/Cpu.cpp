@@ -29,31 +29,31 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x00): {break; }
 	case(0x01): {opcodeOperation16bits_LD_RP_d16(B, C); break; }
 	case(0x02): {opcodeOperation_LD_aRP_R(B, C, A); break; }
-	case(0x03): {break; }
+	case(0x03): {operationOpcode16bits_INC_RP(B, C); break; }
 	case(0x04): {operationOpcode_INC_R(B); break; }
 	case(0x05): {operationOpcode_DEC_R(B); break; }
 	case(0x06): {opcodeOperation_LD_R_d8(B); break; }
-	case(0x07): {break; }
+	case(0x07): {operationOpcode_RLCA(); break; }
 	case(0x08): {opcodeOperation16bits_LD_a8_SP(); break; }
-	case(0x09): {break; }
+	case(0x09): {operationOpcode16bits_ADD_HL_RP(pairRegisters(B, C)); break; }
 	case(0x0A): {opcodeOperation_LD_R_aRP(A, B, C); break; }
-	case(0x0B): {break; }
+	case(0x0B): {operationOpcode16bits_DEC_RP(B, C); break; }
 	case(0x0C): {operationOpcode_INC_R(C); break; }
 	case(0x0D): {operationOpcode_DEC_R(C); break; }
 	case(0x0E): {opcodeOperation_LD_R_d8(C); break; }
-	case(0x0F): {break; }
+	case(0x0F): {operationOpcode_RLA(); break; }
 	case(0x10): {break; }
 	case(0x11): {opcodeOperation16bits_LD_RP_d16(D, D); break; }
 	case(0x12): {opcodeOperation_LD_aRP_R(D, E, A); break; }
-	case(0x13): {break; }
+	case(0x13): {operationOpcode16bits_INC_RP(D, E); break; }
 	case(0x14): {operationOpcode_INC_R(D); break; }
 	case(0x15): {operationOpcode_DEC_R(D); break; }
 	case(0x16): {opcodeOperation_LD_R_d8(D); break; }
 	case(0x17): {break; }
 	case(0x18): {break; }
-	case(0x19): {break; }
+	case(0x19): {operationOpcode16bits_ADD_HL_RP(pairRegisters(D, E)); break; }
 	case(0x1A): {opcodeOperation_LD_R_aRP(A, D, E); break; }
-	case(0x1B): {break; }
+	case(0x1B): {operationOpcode16bits_DEC_RP(D, E); break; }
 	case(0x1C): {operationOpcode_INC_R(E); break; }
 	case(0x1D): {operationOpcode_DEC_R(E); break; }
 	case(0x1E): {opcodeOperation_LD_R_d8(E); break; }
@@ -61,15 +61,15 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x20): {break; }
 	case(0x21): {opcodeOperation16bits_LD_RP_d16(H, L); break; }
 	case(0x22): {opcodeOperation_LD_aRP_R_RPI(H, L, A); break; }
-	case(0x23): {break; }
+	case(0x23): {operationOpcode16bits_INC_RP(H, L); break; }
 	case(0x24): {operationOpcode_INC_R(H); break; }
 	case(0x25): {operationOpcode_DEC_R(H); break; }
 	case(0x26): {opcodeOperation_LD_R_d8(H); break; }
 	case(0x27): {break; }
 	case(0x28): {break; }
-	case(0x29): {break; }
+	case(0x29): {operationOpcode16bits_ADD_HL_RP(pairRegisters(H, L)); break; }
 	case(0x2A): {opcodeOperation_LD_R_aRP_RPI(A, H, L); break; }
-	case(0x2B): {break; }
+	case(0x2B): {operationOpcode16bits_DEC_RP(H, L); break; }
 	case(0x2C): {operationOpcode_INC_R(L); break; }
 	case(0x2D): {operationOpcode_DEC_R(L); break; }
 	case(0x2E): {opcodeOperation_LD_R_d8(L); break; }
@@ -77,15 +77,15 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x30): {break; }
 	case(0x31): {opcodeOperation16bits_LD_RP_d16(sp); break; }
 	case(0x32): {break; }
-	case(0x33): {break; }
+	case(0x33): {operationOpcode16bits_INC_RP(sp); break; }
 	case(0x34): {operationOpcode_INC_aHL(H, L); break; }
 	case(0x35): {operationOpcode_DEC_aHL(H, L); break; }
 	case(0x36): {opcodeOperation_LD_aRP_d8(H, L); break; }
 	case(0x37): {break; }
 	case(0x38): {break; }
-	case(0x39): {break; }
+	case(0x39): {operationOpcode16bits_ADD_HL_RP(sp); break; }
 	case(0x3A): {opcodeOperation_LD_R_aRP_RPD(A, H, L); break; }
-	case(0x3B): {break; }
+	case(0x3B): {operationOpcode16bits_DEC_RP(sp); break; }
 	case(0x3C): {operationOpcode_INC_R(A); break; }
 	case(0x3D): {operationOpcode_DEC_R(A); break; }
 	case(0x3E): {opcodeOperation_LD_R_d8(A); break; }
@@ -258,7 +258,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0xE5): {opcodeOperation16bits_PUSH_RP(H, L); break; }
 	case(0xE6): {operationOpcode_AND_R_d8(A); break; }
 	case(0xE7): {break; }
-	case(0xE8): {break; }
+	case(0xE8): {operationOpcode16bits_ADD_SP_e(); break; }
 	case(0xE9): {break; }
 	case(0xEA): {opcodeOperation_LD_a16_R(A); break; }
 	case(0xEB): {break; }
@@ -1207,5 +1207,145 @@ void Cpu::operationOpcode_DEC_subFunctionFlag(uint8_t& reg)
 	F.N = 1;
 }
 
-/*-----------------------------------------CB OPCODES OPERATIONS-----------------------------------------------*/
 
+/*-------------------------------------16bits ARITHMETIC OPERATION INSTRUCTIONS---------------------------------------*/
+
+//Page 12
+
+void Cpu::operationOpcode16bits_ADD_HL_RP(const uint16_t& regsPair)
+{
+	uint16_t regsPairHL = (H << 8) + L;
+	bool carryBit11 = 0;
+	bool carryBit15 = 0;
+	regsPairHL = binaryAddition16bits(regsPairHL, regsPair, carryBit11, carryBit15);
+	H = regsPairHL >> 8;
+	L = regsPairHL & 0b00001111;
+	F.H = carryBit11;
+	F.N = 0;
+	F.CY = carryBit15;
+	pc++;
+}
+
+void Cpu::operationOpcode16bits_ADD_SP_e()
+{
+	pc++;
+	bool carryBit11 = 0;
+	bool carryBit15 = 0;
+	uint16_t e = memory.getMemoryOfIndex(pc);
+	sp = binaryAddition16bits(sp, e, carryBit11, carryBit15);
+	F.H = carryBit11;
+	F.CY = carryBit15;
+	F.N = 0;
+	F.Z = 0;
+	pc++;
+}
+
+void Cpu::operationOpcode16bits_INC_RP(uint8_t& regPair1, uint8_t& regPair2)
+{
+	uint16_t regsPair = pairRegisters(regPair1, regPair2);
+	regsPair++;
+	regPair1 = regsPair >> 8;
+	regPair2 = regsPair & 0b00001111;
+	pc++;
+}
+
+void Cpu::operationOpcode16bits_INC_RP(uint16_t& regsPair)
+{
+	regsPair++;
+	pc++;
+}
+
+void Cpu::operationOpcode16bits_DEC_RP(uint8_t& regPair1, uint8_t& regPair2)
+{
+	uint16_t regsPair = pairRegisters(regPair1, regPair2);
+	regsPair--;
+	regPair1 = regsPair >> 8;
+	regPair2 = regsPair & 0b00001111;
+	pc++;
+}
+
+void Cpu::operationOpcode16bits_DEC_RP(uint16_t& regsPair)
+{
+	regsPair--;
+	pc++;
+}
+
+
+int Cpu::binaryAddition16bits(const int& value1, const int& value2, bool& carryBit11, bool& carryBit15)
+{
+	int value1Temp = value1;
+	int value2Temp = value2;
+	bool carryTemp = 0;
+	int calcResultTemp = 0;
+
+	int additionValue = 0;
+
+	for (int i = 0; i < 16; i++)
+	{
+		value1Temp = (value1 >> i) & 0b1;
+		value2Temp = (value2 >> i) & 0b1;
+
+		calcResultTemp = (value1Temp ^ value2Temp) ^ carryTemp;
+		carryTemp = (value1Temp & value2Temp) | (value1Temp & carryTemp) | (value2Temp & carryTemp);
+
+		if ((i == 11) && carryTemp)
+			carryBit11 = 1;
+
+		if ((i == 15) && carryTemp)
+			carryBit15 = 1;
+
+		additionValue += calcResultTemp << i;
+	}
+
+	return additionValue;
+}
+
+
+
+/*-------------------------------------ROTATE SHIFT INSTRUCTION---------------------------------------*/
+//Page 13	(p98)
+
+
+void Cpu::operationOpcode_RLCA()//NOT WORKING
+{
+	F.H = 0;
+	F.N = 0;
+	F.Z = 0;
+	F.CY = A >> 7;
+	A = A | F.CY;
+	A <<= 1;
+	pc++;
+}
+
+void Cpu::operationOpcode_RLA()//NOT WORKING
+{
+	F.H = 0;
+	F.N = 0;
+	F.Z = 0;
+	F.CY = A >> 7;
+	A <<= 1;
+	A += F.CY;
+	pc++;
+}
+
+
+void Cpu::operationOpcode_RRCA()//NOT WORKING
+{
+	F.H = 0;
+	F.N = 0;
+	F.Z = 0;
+	F.CY = A & 0x1;
+	A >>= 1;
+	A += (F.CY << 7);
+	pc++;
+}
+
+void Cpu::operationOpcode_RRA()//NOT WORKING
+{
+	F.H = 0;
+	F.N = 0;
+	F.Z = 0;
+	F.CY = A & 0x1;
+	A >>= 1;
+	pc++;
+}

@@ -6,7 +6,7 @@
 
 int main(int argc, char* argv[])
 {
-	std::cout << "Nintedo GameBoy emulator" << std::endl;
+	std::cout << "Nintendo GameBoy Emulator" << std::endl;
 
 	//Cpu cpu;
 

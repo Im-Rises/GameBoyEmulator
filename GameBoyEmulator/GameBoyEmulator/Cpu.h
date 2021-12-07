@@ -198,14 +198,33 @@ private:
 	void operationOpcode_INC_subFunctionFlag(uint8_t& reg);
 
 	void operationOpcode_DEC_R(uint8_t& reg);
+
+	//Page 12	(p96)
 	void operationOpcode_DEC_aHL(const uint8_t& regPair1, const uint8_t& regPair2);
+
 	void operationOpcode_DEC_subFunctionFlag(uint8_t& reg);
 
 
-
 	/*-------------------------------------16bits ARITHMETIC OPERATION INSTRUCTIONS---------------------------------------*/
-	//Page 12	(p96)
-	//RESUME HERE 
+	//Page 12	(p97)
+	void operationOpcode16bits_ADD_HL_RP(const uint16_t& regsPair);
+	void operationOpcode16bits_ADD_SP_e();
+	void operationOpcode16bits_INC_RP(uint8_t& regPair1, uint8_t& regPair2);
+	void operationOpcode16bits_INC_RP(uint16_t& regsPair);
+	void operationOpcode16bits_DEC_RP(uint8_t& regPair1, uint8_t& regPair2);
+	void operationOpcode16bits_DEC_RP(uint16_t& regsPair);
+
+	int binaryAddition16bits(const int& value1, const int& value2, bool& carryBit3, bool& carryBit7);
+
+
+	/*-------------------------------------ROTATE SHIFT INSTRUCTION---------------------------------------*/
+	//Page 13	(p98)
+	//RESUME HERE
+	void operationOpcode_RLCA();
+	void operationOpcode_RLA();
+	void operationOpcode_RRCA();
+	void operationOpcode_RRA();
+
 
 	/*-----------------------------------------CB OPCODES OPERATIONS-----------------------------------------------*/
 	void executeOpcodeFollowingCB();
