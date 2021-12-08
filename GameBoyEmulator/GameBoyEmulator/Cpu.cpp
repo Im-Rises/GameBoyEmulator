@@ -1,7 +1,8 @@
 #include "Cpu.h"
 
-Cpu::Cpu()
+Cpu::Cpu(const Memory* m)
 {
+	
 	A = 0;
 	B = C = D = E = H = L = 0;
 	pc = USER_PROGRAM_AREA;
@@ -9,15 +10,29 @@ Cpu::Cpu()
 	F.Z = F.N = F.H = F.CY = 0;
 }
 
-void Cpu::readOpcode()
-{
-
-}
-
 Cpu::~Cpu()
 {
 
 }
+
+void Cpu::loadRom(const string& romPath)
+{
+	memory.loadRom(romPath);
+}
+
+void Cpu::start()
+{
+	while (true)
+	{
+		readOpcode();
+	}
+}
+
+void Cpu::readOpcode()
+{
+	executeOpcode(memory.read(pc));
+}
+
 
 void Cpu::executeOpcode(uint8_t opcode)
 {
@@ -282,6 +297,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0xFD): {break; }
 	case(0xFE): {operationOpcode_CP_R_d8(A); break; }
 	case(0xFF): {operationOpcode_RST(); break; }
+	default: {cout << "Error opcode unknown" << endl; break; }
 	}
 }
 
@@ -545,6 +561,7 @@ void Cpu::executeOpcodeFollowingCB()
 	case(0xFD): {operationOpcode_SET_R(L); break; }
 	case(0xFE): {operationOpcode_SET_aHL(); break; }
 	case(0xFF): {operationOpcode_SET_R(A); break; }
+	default: {cout << "Error opcode after CB unknown" << endl; break; }
 	}
 }
 

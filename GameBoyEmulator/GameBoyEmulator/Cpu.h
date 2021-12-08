@@ -39,10 +39,12 @@ private:
 	} F;						//Auxiliary register of the accumulator, consist of 4 flags that are set and reset according to the results of instruction execution
 
 
+	int cycle;
+	//MAY BE USELESS, SOME OPCODES LIKE THE CONDITION CAN TAKE MORE OR LESS CYCLES DEPENDING ON WHAT HAPPEN
 	/// <summary>
 	/// Opcodes arrays with name, value and cycle time 
 	/// </summary>
-
+	/*
 	const struct Opcode {				//Opcode structure:
 		string name;			//Opcode name
 		uint8_t value;			//Opcode value
@@ -68,17 +70,21 @@ private:
 	{"",0xC0,NULL}, {"",0xC1,NULL}, {"",0xC2,NULL}, {"",0xC3,NULL}, {"",0xC4,NULL}, {"",0xC5,NULL}, {"",0xC6,NULL}, {"",0xC7,NULL}, {"",0xC8,NULL}, {"",0xC9,NULL}, {"",0xCA,NULL}, {"",0xCB,NULL}, {"",0xCC,NULL}, {"",0xCD,NULL}, {"",0xCE,NULL}, {"",0xCF,NULL}, {"",0xD0,NULL}, {"",0xD1,NULL}, {"",0xD2,NULL}, {"",0xD3,NULL}, {"",0xD4,NULL}, {"",0xD5,NULL}, {"",0xD6,NULL}, {"",0xD7,NULL}, {"",0xD8,NULL}, {"",0xD9,NULL}, {"",0xDA,NULL}, {"",0xDB,NULL}, {"",0xDC,NULL}, {"",0xDD,NULL}, {"",0xDE,NULL}, {"",0xDF,NULL},
 	{"",0xE0,NULL}, {"",0xE1,NULL}, {"",0xE2,NULL}, {"",0xE3,NULL}, {"",0xE4,NULL}, {"",0xE5,NULL}, {"",0xE6,NULL}, {"",0xE7,NULL}, {"",0xE8,NULL}, {"",0xE9,NULL}, {"",0xEA,NULL}, {"",0xEB,NULL}, {"",0xEC,NULL}, {"",0xED,NULL}, {"",0xEE,NULL}, {"",0xEF,NULL}, {"",0xF0,NULL}, {"",0xF1,NULL}, {"",0xF2,NULL}, {"",0xF3,NULL}, {"",0xF4,NULL}, {"",0xF5,NULL}, {"",0xF6,NULL}, {"",0xF7,NULL}, {"",0xF8,NULL}, {"",0xF9,NULL}, {"",0xFA,NULL}, {"",0xFB,NULL}, {"",0xFC,NULL}, {"",0xFD,NULL}, {"",0xFE,NULL}, {"",0xFF,NULL},
 	};
+	*/
 
-	Memory memory;
+	Memory *memory=nullptr;
 
 public:
-	Cpu();										//Constructor
+	Cpu(const Memory *memory);					//Constructor
+	~Cpu();
+	void loadRom(const string& romPath);
+	void start();
+
+private:
+
 	void readOpcode();							//Read an opcode
 	void executeOpcode(uint8_t opcode);			//Execute an opcode
 	void executeOpcodeFollowingCB();			//Execute an opcode on two bytes (following the CB opcode) 
-	~Cpu();
-
-private:
 
 	uint16_t pairRegisters(const uint8_t reg1, const uint8_t reg2)const;
 	uint8_t flagToByte(const Flag& flag)const;

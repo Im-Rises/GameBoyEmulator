@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="gameBoy.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
     <ClCompile Include="Memory.cpp">
       <Filter>Fichiers de ressources</Filter>
     </ClCompile>
@@ -27,8 +24,11 @@
     <ClCompile Include="Lcd.cpp">
       <Filter>Fichiers de ressources</Filter>
     </ClCompile>
-    <ClCompile Include="Cartridge.cpp">
-      <Filter>Fichiers de ressources</Filter>
+    <ClCompile Include="Main.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="GameBoycpp.cpp">
+      <Filter>Fichiers d%27en-tête</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -41,8 +41,8 @@
     <ClInclude Include="Lcd.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="Cartridge.h">
-      <Filter>Fichiers d%27en-tête</Filter>
+    <ClInclude Include="GameBoy.h">
+      <Filter>Fichiers de ressources</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

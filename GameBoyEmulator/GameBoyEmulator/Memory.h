@@ -53,7 +53,7 @@ public:
 
 	uint8_t read(const uint16_t index)const;
 	void write(const uint16_t& index, uint8_t value);
-	void loadRom(const string& romPath);
+	bool loadRom(const string& romPath);
 };
 
 #endif

@@ -18,15 +18,26 @@ void Memory::write(const uint16_t& index, uint8_t value)
 	memoryArray[index] = value;
 }
 
-void Memory::loadRom(const string& romPath)
+bool Memory::loadRom(const string& romPath)
 {
+	bool loadRomBool = false;
 	std::ifstream input(romPath, std::ios::binary);
-	input.seekg(0, ios::end);
-	int romSize = input.tellg();
-	input.seekg(0, ios::beg);
-	for (int i = (0 + USER_PROGRAM_AREA); (i < romSize) && (i < RAM_CHARACTER_DATA_BANK_0_DMG); i++)
+	if (input)
 	{
-		memoryArray[i] = input.get();
+		input.seekg(0, ios::end);
+		int romSize = input.tellg();
+		input.seekg(0, ios::beg);
+		for (int i = (0 + ROM_DATA_AREA); (i < romSize) && (i < RAM_CHARACTER_DATA_BANK_0_DMG); i++)
+		{
+			memoryArray[i] = input.get();
+		}
+		input.close();
+		loadRomBool = true;
 	}
-	input.close();
+	else
+	{
+		cout << "Can't open file" << endl;
+		loadRomBool = false;
+	}
+	return loadRomBool;
 }
