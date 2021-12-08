@@ -21,7 +21,7 @@
     <ClCompile Include="Cpu.cpp">
       <Filter>Fichiers de ressources</Filter>
     </ClCompile>
-    <ClCompile Include="Lcd.cpp">
+    <ClCompile Include="Ppu.cpp">
       <Filter>Fichiers de ressources</Filter>
     </ClCompile>
     <ClCompile Include="Main.cpp">
@@ -38,7 +38,7 @@
     <ClInclude Include="Memory.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="Lcd.h">
+    <ClInclude Include="Ppu.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="GameBoy.h">

@@ -1,13 +1,15 @@
 #include "Cpu.h"
 
-Cpu::Cpu(const Memory* m)
+//Cpu::Cpu(Memory* memory)
+Cpu::Cpu()
 {
-	
+	//this->memory = memory;
 	A = 0;
 	B = C = D = E = H = L = 0;
 	pc = USER_PROGRAM_AREA;
 	sp = CPU_WORK_RAM_OR_AND_STACK_END;
 	F.Z = F.N = F.H = F.CY = 0;
+	cycles = 0;
 }
 
 Cpu::~Cpu()
@@ -30,7 +32,8 @@ void Cpu::start()
 
 void Cpu::readOpcode()
 {
-	executeOpcode(memory.read(pc));
+	//Do sometinh here//Wait the number of cycle following the value of variable "cycles"
+	executeOpcode(memory.read(pc));//Execute opcode
 }
 
 
@@ -252,7 +255,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0xD0): {operationOpcode_RET_cc(); break; }
 	case(0xD1): {opcodeOperation16bits_POP_RP(D, E); break; }
 	case(0xD2): {operationOpcode_JP_cc(); break; }
-	case(0xD3): {break; }
+	case(0xD3): {cout << "Opcode not implemented 0xD3" << endl; break; }
 	case(0xD4): {operationOpcode_CALL_cc(); break; }
 	case(0xD5): {opcodeOperation16bits_PUSH_RP(D, E); break; }
 	case(0xD6): {operationOpcode_SUB_A_d8(); break; }
@@ -260,32 +263,32 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0xD8): {operationOpcode_RET_cc(); break; }
 	case(0xD9): {operationOpcode_RETI(); break; }
 	case(0xDA): {operationOpcode_JP_cc(); break; }
-	case(0xDB): {break; }
+	case(0xDB): {cout << "Opcode not implemented 0xDB at pc = 0x" << hex << pc << endl; break; }
 	case(0xDC): {operationOpcode_CALL_cc(); break; }
-	case(0xDD): {break; }
+	case(0xDD): {cout << "Opcode not implemented 0xDD at pc = 0x" << hex << pc << endl; break; }
 	case(0xDE): {operationOpcode_SBC_A_d8_CY(); break; }
 	case(0xDF): {operationOpcode_RST(); break; }
 	case(0xE0): {opcodeOperation_LD_a8o_R(A); break; }
 	case(0xE1): {opcodeOperation16bits_POP_RP(H, L); break; }
 	case(0xE2): {opcodeOperation_LD_aRo_R(C, A); break; }
-	case(0xE3): {break; }
-	case(0xE4): {break; }
+	case(0xE3): {cout << "Opcode not implemented 0xE3 at pc = 0x" << hex << pc << endl; break; }
+	case(0xE4): {cout << "Opcode not implemented 0xE4 at pc = 0x" << hex << pc << endl; break; }
 	case(0xE5): {opcodeOperation16bits_PUSH_RP(H, L); break; }
 	case(0xE6): {operationOpcode_AND_R_d8(A); break; }
 	case(0xE7): {operationOpcode_RST(); break; }
 	case(0xE8): {operationOpcode16bits_ADD_SP_e(); break; }
 	case(0xE9): {operationOpcode_JP_HL(); break; }
 	case(0xEA): {opcodeOperation_LD_a16_R(A); break; }
-	case(0xEB): {break; }
-	case(0xEC): {break; }
-	case(0xED): {break; }
+	case(0xEB): {cout << "Opcode not implemented 0xEB at pc = 0x" << hex << pc << endl; break; }
+	case(0xEC): {cout << "Opcode not implemented 0xEC at pc = 0x" << hex << pc << endl; break; }
+	case(0xED): {cout << "Opcode not implemented 0xED at pc = 0x" << hex << pc << endl; break; }
 	case(0xEE): {operationOpcode_XOR_R_d8(A); break; }
 	case(0xEF): {operationOpcode_RST(); break; }
 	case(0xF0): {opcodeOperation_LD_R_a8o(A); break; }
 	case(0xF1): {opcodeOperation16bits_POP_RP(A, F); break; }
 	case(0xF2): {opcodeOperation_LD_R_aRo(A, C); break; }
 	case(0xF3): {break; }
-	case(0xF4): {break; }
+	case(0xF4): {cout << "Opcode not implemented 0xF4 at pc = 0x" << hex << pc << endl; break; }
 	case(0xF5): {opcodeOperation16bits_PUSH_RP(A, F); break; }
 	case(0xF6): {operationOpcode_OR_R_d8(A); break; }
 	case(0xF7): {operationOpcode_RST(); break; }
@@ -293,11 +296,11 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0xF9): {opcodeOperation16bits_LD_RP_RP(sp, H, L); break; }
 	case(0xFA): {opcodeOperation_LD_R_a16(A); break; }
 	case(0xFB): {break; }
-	case(0xFC): {break; }
-	case(0xFD): {break; }
+	case(0xFC): {cout << "Opcode not implemented 0xFC at pc = 0x" << hex << pc << endl; break; }
+	case(0xFD): {cout << "Opcode not implemented 0xFD at pc = 0x" << hex << pc << endl; break; }
 	case(0xFE): {operationOpcode_CP_R_d8(A); break; }
 	case(0xFF): {operationOpcode_RST(); break; }
-	default: {cout << "Error opcode unknown" << endl; break; }
+	default: {cout << "Error opcode unknown at pc = 0x" << hex << pc << endl; break; }
 	}
 }
 

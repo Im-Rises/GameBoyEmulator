@@ -141,14 +141,14 @@
   <ItemGroup>
     <ClCompile Include="Cpu.cpp" />
     <ClCompile Include="GameBoycpp.cpp" />
-    <ClCompile Include="Lcd.cpp" />
+    <ClCompile Include="Ppu.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Memory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cpu.h" />
     <ClInclude Include="GameBoy.h" />
-    <ClInclude Include="Lcd.h" />
+    <ClInclude Include="Ppu.h" />
     <ClInclude Include="Memory.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
