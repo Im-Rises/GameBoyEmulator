@@ -15,4 +15,7 @@ E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmu
 E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(1404,11): warning C4805: '|=' : mélange risqué de type 'uint8_t' et de type 'bool' dans l'opération
 E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(1418,9): warning C4805: '|=' : mélange risqué de type 'uint8_t' et de type 'bool' dans l'opération
 E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(1432,10): warning C4805: '|=' : mélange risqué de type 'uint8_t' et de type 'bool' dans l'opération
+  Memory.cpp
+E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Memory.cpp(28,15): warning C4244: 'initialisation' : conversion de 'std::streamoff' en 'int', perte possible de données
+  Génération de code en cours...
   GameBoyEmulator.vcxproj -> E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\Debug\GameBoyEmulator.exe

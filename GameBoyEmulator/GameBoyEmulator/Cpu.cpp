@@ -60,7 +60,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x0D): {operationOpcode_DEC_R(C); break; }
 	case(0x0E): {opcodeOperation_LD_R_d8(C); break; }
 	case(0x0F): {operationOpcode_RRCA(); break; }
-	case(0x10): {break; }
+	case(0x10): {cout << "Opcode not implemented for the moment at pc = " << hex << pc << endl; break; }
 	case(0x11): {opcodeOperation16bits_LD_RP_d16(D, D); break; }
 	case(0x12): {opcodeOperation_LD_aRP_R(D, E, A); break; }
 	case(0x13): {operationOpcode16bits_INC_RP(D, E); break; }
@@ -99,7 +99,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x34): {operationOpcode_INC_aHL(H, L); break; }
 	case(0x35): {operationOpcode_DEC_aHL(H, L); break; }
 	case(0x36): {opcodeOperation_LD_aRP_d8(H, L); break; }
-	case(0x37): {break; }
+	case(0x37): {cout << "Opcode not implemented for the moment at pc = " << hex << pc << endl; break; }
 	case(0x38): {operationOpcode_JR_cc(); break; }
 	case(0x39): {operationOpcode16bits_ADD_HL_RP(sp); break; }
 	case(0x3A): {opcodeOperation_LD_R_aRP_RPD(A, H, L); break; }
@@ -107,7 +107,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x3C): {operationOpcode_INC_R(A); break; }
 	case(0x3D): {operationOpcode_DEC_R(A); break; }
 	case(0x3E): {opcodeOperation_LD_R_d8(A); break; }
-	case(0x3F): {break; }
+	case(0x3F): {cout << "Opcode not implemented for the moment at pc = " << hex << pc << endl; break; }
 	case(0x40): {opcodeOperation_LD_R_R(B, B); break; }
 	case(0x41): {opcodeOperation_LD_R_R(B, C); break; }
 	case(0x42): {opcodeOperation_LD_R_R(B, D); break; }
@@ -162,7 +162,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x73): {opcodeOperation_LD_aRP_R(H, L, E); break; }
 	case(0x74): {opcodeOperation_LD_aRP_R(H, L, H); break; }
 	case(0x75): {opcodeOperation_LD_aRP_R(H, L, L); break; }
-	case(0x76): {break; }
+	case(0x76): {cout << "Opcode not implemented for the moment at pc = " << hex << pc << endl; break; }
 	case(0x77): {opcodeOperation_LD_aRP_R(H, L, A); break; }
 	case(0x78): {opcodeOperation_LD_R_R(A, B); break; }
 	case(0x79): {opcodeOperation_LD_R_R(A, C); break; }
@@ -287,7 +287,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0xF0): {opcodeOperation_LD_R_a8o(A); break; }
 	case(0xF1): {opcodeOperation16bits_POP_RP(A, F); break; }
 	case(0xF2): {opcodeOperation_LD_R_aRo(A, C); break; }
-	case(0xF3): {break; }
+	case(0xF3): {cout << "Opcode not implemented for the moment at pc = " << hex << pc << endl; break; }
 	case(0xF4): {cout << "Opcode not implemented 0xF4 at pc = 0x" << hex << pc << endl; break; }
 	case(0xF5): {opcodeOperation16bits_PUSH_RP(A, F); break; }
 	case(0xF6): {operationOpcode_OR_R_d8(A); break; }
@@ -295,7 +295,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0xF8): {opcodeOperation16bits_LDHL_SP_e(); break; }
 	case(0xF9): {opcodeOperation16bits_LD_RP_RP(sp, H, L); break; }
 	case(0xFA): {opcodeOperation_LD_R_a16(A); break; }
-	case(0xFB): {break; }
+	case(0xFB): {cout << "Opcode not implemented for the moment at pc = " << hex << pc << endl; break; }
 	case(0xFC): {cout << "Opcode not implemented 0xFC at pc = 0x" << hex << pc << endl; break; }
 	case(0xFD): {cout << "Opcode not implemented 0xFD at pc = 0x" << hex << pc << endl; break; }
 	case(0xFE): {operationOpcode_CP_R_d8(A); break; }

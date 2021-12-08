@@ -27,7 +27,7 @@ bool Memory::loadRom(const string& romPath)
 		input.seekg(0, ios::end);
 		int romSize = input.tellg();
 		input.seekg(0, ios::beg);
-		for (int i = (0 + ROM_DATA_AREA); (i < romSize) && (i < RAM_CHARACTER_DATA_BANK_0_DMG); i++)
+		for (int i = 0; (i < romSize) && (i < RAM_CHARACTER_DATA_BANK_0_DMG); i++)
 		{
 			memoryArray[i] = input.get();
 		}
