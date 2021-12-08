@@ -26,7 +26,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	/// </summary>
 	/// <param name="opcode"></param>
 	switch (opcode) {
-	case(0x00): {break; }
+	case(0x00): {operationOpcode_NOP(); break; }
 	case(0x01): {opcodeOperation16bits_LD_RP_d16(B, C); break; }
 	case(0x02): {opcodeOperation_LD_aRP_R(B, C, A); break; }
 	case(0x03): {operationOpcode16bits_INC_RP(B, C); break; }
@@ -50,7 +50,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x15): {operationOpcode_DEC_R(D); break; }
 	case(0x16): {opcodeOperation_LD_R_d8(D); break; }
 	case(0x17): {operationOpcode_RLA(); break; }
-	case(0x18): {break; }
+	case(0x18): {operationOpcode_JR(); break; }
 	case(0x19): {operationOpcode16bits_ADD_HL_RP(pairRegisters(D, E)); break; }
 	case(0x1A): {opcodeOperation_LD_R_aRP(A, D, E); break; }
 	case(0x1B): {operationOpcode16bits_DEC_RP(D, E); break; }
@@ -58,31 +58,31 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x1D): {operationOpcode_DEC_R(E); break; }
 	case(0x1E): {opcodeOperation_LD_R_d8(E); break; }
 	case(0x1F): {operationOpcode_RRA(); break; }
-	case(0x20): {break; }
+	case(0x20): {operationOpcode_JR_cc(); break; }
 	case(0x21): {opcodeOperation16bits_LD_RP_d16(H, L); break; }
 	case(0x22): {opcodeOperation_LD_aRP_R_RPI(H, L, A); break; }
 	case(0x23): {operationOpcode16bits_INC_RP(H, L); break; }
 	case(0x24): {operationOpcode_INC_R(H); break; }
 	case(0x25): {operationOpcode_DEC_R(H); break; }
 	case(0x26): {opcodeOperation_LD_R_d8(H); break; }
-	case(0x27): {break; }
-	case(0x28): {break; }
+	case(0x27): {operationOpcode_DAA(); break; }
+	case(0x28): {operationOpcode_JR_cc(); break; }
 	case(0x29): {operationOpcode16bits_ADD_HL_RP(pairRegisters(H, L)); break; }
 	case(0x2A): {opcodeOperation_LD_R_aRP_RPI(A, H, L); break; }
 	case(0x2B): {operationOpcode16bits_DEC_RP(H, L); break; }
 	case(0x2C): {operationOpcode_INC_R(L); break; }
 	case(0x2D): {operationOpcode_DEC_R(L); break; }
 	case(0x2E): {opcodeOperation_LD_R_d8(L); break; }
-	case(0x2F): {break; }
-	case(0x30): {break; }
+	case(0x2F): {operationOpcode_CPL(); break; }
+	case(0x30): {operationOpcode_JR_cc(); break; }
 	case(0x31): {opcodeOperation16bits_LD_RP_d16(sp); break; }
-	case(0x32): {break; }
+	case(0x32): {opcodeOperation_LD_aRP_R_RPD(H, L, A); break; }
 	case(0x33): {operationOpcode16bits_INC_RP(sp); break; }
 	case(0x34): {operationOpcode_INC_aHL(H, L); break; }
 	case(0x35): {operationOpcode_DEC_aHL(H, L); break; }
 	case(0x36): {opcodeOperation_LD_aRP_d8(H, L); break; }
 	case(0x37): {break; }
-	case(0x38): {break; }
+	case(0x38): {operationOpcode_JR_cc(); break; }
 	case(0x39): {operationOpcode16bits_ADD_HL_RP(sp); break; }
 	case(0x3A): {opcodeOperation_LD_R_aRP_RPD(A, H, L); break; }
 	case(0x3B): {operationOpcode16bits_DEC_RP(sp); break; }
@@ -218,38 +218,38 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0xBD): {operationOpcode_CP_R_R(A, L); break; }
 	case(0xBE): {operationOpcode_CP_R_aHL(A, H, L); break; }
 	case(0xBF): {operationOpcode_CP_R_R(A, A); break; }
-	case(0xC0): {operationOpcode_CP_R_R(A, B); break; }
+	case(0xC0): {operationOpcode_RET_cc(); break; }
 	case(0xC1): {opcodeOperation16bits_POP_RP(B, C); break; }
-	case(0xC2): {break; }
-	case(0xC3): {break; }
-	case(0xC4): {break; }
+	case(0xC2): {operationOpcode_JP_cc(); break; }
+	case(0xC3): {operationOpcode_JP_d16(); break; }
+	case(0xC4): {operationOpcode_CALL_cc(); break; }
 	case(0xC5): {opcodeOperation16bits_PUSH_RP(B, C); break; }
 	case(0xC6): {operationOpcode_ADD_R_d8(A); break; }
-	case(0xC7): {break; }
-	case(0xC8): {break; }
-	case(0xC9): {break; }
-	case(0xCA): {break; }
+	case(0xC7): {operationOpcode_RST(); break; }
+	case(0xC8): {operationOpcode_RET_cc(); break; }
+	case(0xC9): {operationOpcode_RET(); break; }
+	case(0xCA): {operationOpcode_JP_cc(); break; }
 	case(0xCB): {executeOpcodeFollowingCB(); break; }
-	case(0xCC): {break; }
-	case(0xCD): {break; }
+	case(0xCC): {operationOpcode_CALL_cc(); break; }
+	case(0xCD): {operationOpcode_CALL(); break; }
 	case(0xCE): {operationOpcode_ADC_A_d8_CY(); break; }
-	case(0xCF): {break; }
-	case(0xD0): {break; }
+	case(0xCF): {operationOpcode_RST(); break; }
+	case(0xD0): {operationOpcode_RET_cc(); break; }
 	case(0xD1): {opcodeOperation16bits_POP_RP(D, E); break; }
-	case(0xD2): {break; }
+	case(0xD2): {operationOpcode_JP_cc(); break; }
 	case(0xD3): {break; }
-	case(0xD4): {break; }
+	case(0xD4): {operationOpcode_CALL_cc(); break; }
 	case(0xD5): {opcodeOperation16bits_PUSH_RP(D, E); break; }
 	case(0xD6): {operationOpcode_SUB_A_d8(); break; }
-	case(0xD7): {break; }
-	case(0xD8): {break; }
-	case(0xD9): {break; }
-	case(0xDA): {break; }
+	case(0xD7): {operationOpcode_RST(); break; }
+	case(0xD8): {operationOpcode_RET_cc(); break; }
+	case(0xD9): {operationOpcode_RETI(); break; }
+	case(0xDA): {operationOpcode_JP_cc(); break; }
 	case(0xDB): {break; }
-	case(0xDC): {break; }
+	case(0xDC): {operationOpcode_CALL_cc(); break; }
 	case(0xDD): {break; }
-	case(0xDE): {break; }
-	case(0xDF): {break; }
+	case(0xDE): {operationOpcode_SBC_A_d8_CY(); break; }
+	case(0xDF): {operationOpcode_RST(); break; }
 	case(0xE0): {opcodeOperation_LD_a8o_R(A); break; }
 	case(0xE1): {opcodeOperation16bits_POP_RP(H, L); break; }
 	case(0xE2): {opcodeOperation_LD_aRo_R(C, A); break; }
@@ -257,15 +257,15 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0xE4): {break; }
 	case(0xE5): {opcodeOperation16bits_PUSH_RP(H, L); break; }
 	case(0xE6): {operationOpcode_AND_R_d8(A); break; }
-	case(0xE7): {break; }
+	case(0xE7): {operationOpcode_RST(); break; }
 	case(0xE8): {operationOpcode16bits_ADD_SP_e(); break; }
-	case(0xE9): {break; }
+	case(0xE9): {operationOpcode_JP_HL(); break; }
 	case(0xEA): {opcodeOperation_LD_a16_R(A); break; }
 	case(0xEB): {break; }
 	case(0xEC): {break; }
 	case(0xED): {break; }
 	case(0xEE): {operationOpcode_XOR_R_d8(A); break; }
-	case(0xEF): {break; }
+	case(0xEF): {operationOpcode_RST(); break; }
 	case(0xF0): {opcodeOperation_LD_R_a8o(A); break; }
 	case(0xF1): {opcodeOperation16bits_POP_RP(A, F); break; }
 	case(0xF2): {opcodeOperation_LD_R_aRo(A, C); break; }
@@ -273,7 +273,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0xF4): {break; }
 	case(0xF5): {opcodeOperation16bits_PUSH_RP(A, F); break; }
 	case(0xF6): {operationOpcode_OR_R_d8(A); break; }
-	case(0xF7): {break; }
+	case(0xF7): {operationOpcode_RST(); break; }
 	case(0xF8): {opcodeOperation16bits_LDHL_SP_e(); break; }
 	case(0xF9): {opcodeOperation16bits_LD_RP_RP(sp, H, L); break; }
 	case(0xFA): {opcodeOperation_LD_R_a16(A); break; }
@@ -281,7 +281,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0xFC): {break; }
 	case(0xFD): {break; }
 	case(0xFE): {operationOpcode_CP_R_d8(A); break; }
-	case(0xFF): {break; }
+	case(0xFF): {operationOpcode_RST(); break; }
 	}
 }
 
@@ -417,70 +417,70 @@ void Cpu::executeOpcodeFollowingCB()
 	case(0x7D): {operationOpcode_BIT_R(L); break; }
 	case(0x7E): {operationOpcode_BIT_aHL(); break; }
 	case(0x7F): {operationOpcode_BIT_R(A); break; }
-	case(0x80): {break; }
-	case(0x81): {break; }
-	case(0x82): {break; }
-	case(0x83): {break; }
-	case(0x84): {break; }
-	case(0x85): {break; }
-	case(0x86): {break; }
-	case(0x87): {break; }
-	case(0x88): {break; }
-	case(0x89): {break; }
-	case(0x8A): {break; }
-	case(0x8B): {break; }
-	case(0x8C): {break; }
-	case(0x8D): {break; }
-	case(0x8E): {break; }
-	case(0x8F): {break; }
-	case(0x90): {break; }
-	case(0x91): {break; }
-	case(0x92): {break; }
-	case(0x93): {break; }
-	case(0x94): {break; }
-	case(0x95): {break; }
-	case(0x96): {break; }
-	case(0x97): {break; }
-	case(0x98): {break; }
-	case(0x99): {break; }
-	case(0x9A): {break; }
-	case(0x9B): {break; }
-	case(0x9C): {break; }
-	case(0x9D): {break; }
-	case(0x9E): {break; }
-	case(0x9F): {break; }
-	case(0xA0): {break; }
-	case(0xA1): {break; }
-	case(0xA2): {break; }
-	case(0xA3): {break; }
-	case(0xA4): {break; }
-	case(0xA5): {break; }
-	case(0xA6): {break; }
-	case(0xA7): {break; }
-	case(0xA8): {break; }
-	case(0xA9): {break; }
-	case(0xAA): {break; }
-	case(0xAB): {break; }
-	case(0xAC): {break; }
-	case(0xAD): {break; }
-	case(0xAE): {break; }
-	case(0xAF): {break; }
-	case(0xB0): {break; }
-	case(0xB1): {break; }
-	case(0xB2): {break; }
-	case(0xB3): {break; }
-	case(0xB4): {break; }
-	case(0xB5): {break; }
-	case(0xB6): {break; }
-	case(0xB7): {break; }
-	case(0xB8): {break; }
-	case(0xB9): {break; }
-	case(0xBA): {break; }
-	case(0xBB): {break; }
-	case(0xBC): {break; }
-	case(0xBD): {break; }
-	case(0xBE): {break; }
-	case(0xBF): {break; }
+	case(0x80): {operationOpcode_RES_R(B); break; }
+	case(0x81): {operationOpcode_RES_R(C); break; }
+	case(0x82): {operationOpcode_RES_R(D); break; }
+	case(0x83): {operationOpcode_RES_R(E); break; }
+	case(0x84): {operationOpcode_RES_R(H); break; }
+	case(0x85): {operationOpcode_RES_R(L); break; }
+	case(0x86): {operationOpcode_RES_aHL(); break; }
+	case(0x87): {operationOpcode_RES_R(A); break; }
+	case(0x88): {operationOpcode_RES_R(B); break; }
+	case(0x89): {operationOpcode_RES_R(C); break; }
+	case(0x8A): {operationOpcode_RES_R(D); break; }
+	case(0x8B): {operationOpcode_RES_R(E); break; }
+	case(0x8C): {operationOpcode_RES_R(H); break; }
+	case(0x8D): {operationOpcode_RES_R(L); break; }
+	case(0x8E): {operationOpcode_RES_aHL(); break; }
+	case(0x8F): {operationOpcode_RES_R(A); break; }
+	case(0x90): {operationOpcode_RES_R(B); break; }
+	case(0x91): {operationOpcode_RES_R(C); break; }
+	case(0x92): {operationOpcode_RES_R(D); break; }
+	case(0x93): {operationOpcode_RES_R(E); break; }
+	case(0x94): {operationOpcode_RES_R(H); break; }
+	case(0x95): {operationOpcode_RES_R(L); break; }
+	case(0x96): {operationOpcode_RES_aHL(); break; }
+	case(0x97): {operationOpcode_RES_R(A); break; }
+	case(0x98): {operationOpcode_RES_R(B); break; }
+	case(0x99): {operationOpcode_RES_R(C); break; }
+	case(0x9A): {operationOpcode_RES_R(D); break; }
+	case(0x9B): {operationOpcode_RES_R(E); break; }
+	case(0x9C): {operationOpcode_RES_R(H); break; }
+	case(0x9D): {operationOpcode_RES_R(L); break; }
+	case(0x9E): {operationOpcode_RES_aHL(); break; }
+	case(0x9F): {operationOpcode_RES_R(A); break; }
+	case(0xA0): {operationOpcode_RES_R(B); break; }
+	case(0xA1): {operationOpcode_RES_R(C); break; }
+	case(0xA2): {operationOpcode_RES_R(D); break; }
+	case(0xA3): {operationOpcode_RES_R(E); break; }
+	case(0xA4): {operationOpcode_RES_R(H); break; }
+	case(0xA5): {operationOpcode_RES_R(L); break; }
+	case(0xA6): {operationOpcode_RES_aHL(); break; }
+	case(0xA7): {operationOpcode_RES_R(A); break; }
+	case(0xA8): {operationOpcode_RES_R(B); break; }
+	case(0xA9): {operationOpcode_RES_R(C); break; }
+	case(0xAA): {operationOpcode_RES_R(D); break; }
+	case(0xAB): {operationOpcode_RES_R(E); break; }
+	case(0xAC): {operationOpcode_RES_R(H); break; }
+	case(0xAD): {operationOpcode_RES_R(L); break; }
+	case(0xAE): {operationOpcode_RES_aHL(); break; }
+	case(0xAF): {operationOpcode_RES_R(A); break; }
+	case(0xB0): {operationOpcode_RES_R(B); break; }
+	case(0xB1): {operationOpcode_RES_R(C); break; }
+	case(0xB2): {operationOpcode_RES_R(D); break; }
+	case(0xB3): {operationOpcode_RES_R(E); break; }
+	case(0xB4): {operationOpcode_RES_R(H); break; }
+	case(0xB5): {operationOpcode_RES_R(L); break; }
+	case(0xB6): {operationOpcode_RES_aHL(); break; }
+	case(0xB7): {operationOpcode_RES_R(A); break; }
+	case(0xB8): {operationOpcode_RES_R(B); break; }
+	case(0xB9): {operationOpcode_RES_R(C); break; }
+	case(0xBA): {operationOpcode_RES_R(D); break; }
+	case(0xBB): {operationOpcode_RES_R(E); break; }
+	case(0xBC): {operationOpcode_RES_R(H); break; }
+	case(0xBD): {operationOpcode_RES_R(L); break; }
+	case(0xBE): {operationOpcode_RES_aHL(); break; }
+	case(0xBF): {operationOpcode_RES_R(A); break; }
 	case(0xC0): {operationOpcode_SET_R(B); break; }
 	case(0xC1): {operationOpcode_SET_R(C); break; }
 	case(0xC2): {operationOpcode_SET_R(D); break; }
@@ -1588,3 +1588,421 @@ void Cpu::operationOpcode_SET_aHL()
 	uint8_t temp = memory.read(pairRegisters(H, L));
 	operationOpcode_SET_R(temp);
 }
+
+
+void Cpu::operationOpcode_RES_R(uint8_t& reg)
+{
+	pc++;
+	uint8_t date8Bits = memory.read(pc);//Get the data byte
+	uint8_t indexBit = (date8Bits & 0b00111000) >> 3;//Get index of bit to set in register
+	uint8_t masque = (0b11111110 << indexBit);//Set the bit pointed by the index calculated previously
+	for (int i = 0; i < indexBit; i++)//Set the bits put to 0 during the bit shifting above
+	{
+		masque += (0x1 << i);
+	}
+	reg &= masque;
+	pc++;
+}
+
+void Cpu::operationOpcode_RES_aHL()
+{
+	uint8_t temp = memory.read(pairRegisters(H, L));
+	operationOpcode_SET_R(temp);
+}
+
+/*-------------------------------------JUMP INSTRUCTIONS---------------------------------------*/
+//Page 18
+
+void Cpu::operationOpcode_JP_d16()
+{
+	pc++;
+	pc = (memory.read(pc + 1) << 8) + (memory.read(pc));
+}
+
+void Cpu::operationOpcode_JP_cc()
+{
+	uint8_t opcode = memory.read(pc);
+	uint8_t condition = ((opcode & 0b00011000) >> 3);
+	pc++;
+	uint8_t lowByte = memory.read(pc);
+	pc++;
+	uint8_t highByte = memory.read(pc);
+
+	switch (condition)
+	{
+	case(0b00)://NZ
+	{
+		if (!F.Z)
+		{
+			pc = (highByte << 8) + lowByte;
+		}
+		else
+		{
+			pc++;
+		}
+		break;
+	}
+	case(0b01)://Z
+	{
+		if (F.Z)
+		{
+			pc = (highByte << 8) + lowByte;
+		}
+		else
+		{
+			pc++;
+		}
+		break;
+	}
+	case(0b10)://NC
+	{
+		if (!F.CY)
+		{
+			pc = (highByte << 8) + lowByte;
+		}
+		else
+		{
+			pc++;
+		}
+		break;
+	}
+	case(0b11)://C
+	{
+		if (F.CY)
+		{
+			pc = (highByte << 8) + lowByte;
+		}
+		else
+		{
+			pc++;
+		}
+		break;
+	}
+	}
+}
+
+void Cpu::operationOpcode_JR()
+{
+	pc++;
+	int8_t e = memory.read(pc);
+	pc += e + 2;
+}
+
+
+void Cpu::operationOpcode_JR_cc()
+{
+	uint8_t opcode = memory.read(pc);
+	uint8_t condition = ((opcode & 0b00011000) >> 3);
+	pc++;
+	int8_t e = memory.read(pc);
+
+	switch (condition)
+	{
+	case(0b00)://NZ
+	{
+		if (!F.Z)
+		{
+			pc += e + 2;
+		}
+		else
+		{
+			pc++;
+		}
+		break;
+	}
+	case(0b01)://Z
+	{
+		if (F.Z)
+		{
+			pc += e + 2;
+		}
+		else
+		{
+			pc++;
+		}
+		break;
+	}
+	case(0b10)://NC
+	{
+		if (!F.CY)
+		{
+			pc += e + 2;
+		}
+		else
+		{
+			pc++;
+		}
+		break;
+	}
+	case(0b11)://C
+	{
+		if (F.CY)
+		{
+			pc += e + 2;
+		}
+		else
+		{
+			pc++;
+		}
+		break;
+	}
+	}
+}
+
+void Cpu::operationOpcode_JP_HL()
+{
+	pc = pairRegisters(H, L);
+}
+
+void Cpu::operationOpcode_CALL()
+{
+	memory.write(sp - 1, ((pc + 3) >> 8));
+	memory.write(sp - 2, ((pc + 3) & 0x0F));
+	pc = (memory.read(pc + 1) << 8) + memory.read(pc + 2);
+	sp -= 2;
+}
+
+void Cpu::operationOpcode_CALL_cc()
+{
+	uint8_t opcode = memory.read(pc);
+	uint8_t condition = ((opcode & 0b00011000) >> 3);
+
+	switch (condition)
+	{
+	case(0b00)://NZ
+	{
+		if (!F.Z)
+		{
+			operationOpcode_CALL();
+		}
+		else
+		{
+			pc += 3;
+		}
+		break;
+	}
+	case(0b01)://Z
+	{
+		if (F.Z)
+		{
+			operationOpcode_CALL();
+		}
+		else
+		{
+			pc += 3;
+		}
+		break;
+	}
+	case(0b10)://NC
+	{
+		if (!F.CY)
+		{
+			operationOpcode_CALL();
+		}
+		else
+		{
+			pc += 3;
+		}
+		break;
+	}
+	case(0b11)://C
+	{
+		if (F.CY)
+		{
+			operationOpcode_CALL();
+		}
+		else
+		{
+			pc += 3;
+		}
+		break;
+	}
+	}
+}
+
+void Cpu::operationOpcode_RET()
+{
+	pc = (memory.read(sp + 1) << 8) + memory.read(sp);
+	sp += 2;
+}
+
+void Cpu::operationOpcode_RETI()
+{
+	pc = (memory.read(sp + 1) << 8) + memory.read(sp);
+	sp += 2;
+}
+
+
+void Cpu::operationOpcode_RET_cc()
+{
+	uint8_t opcode = memory.read(pc);
+	uint8_t condition = ((opcode & 0b00011000) >> 3);
+
+	switch (condition)
+	{
+	case(0b00)://NZ
+	{
+		if (!F.Z)
+		{
+			operationOpcode_RET();
+		}
+		else
+		{
+			pc++;
+		}
+		break;
+	}
+	case(0b01)://Z
+	{
+		if (F.Z)
+		{
+			operationOpcode_RET();
+		}
+		else
+		{
+			pc++;
+		}
+		break;
+	}
+	case(0b10)://NC
+	{
+		if (!F.CY)
+		{
+			operationOpcode_RET();
+		}
+		else
+		{
+			pc++;
+		}
+		break;
+	}
+	case(0b11)://C
+	{
+		if (F.CY)
+		{
+			operationOpcode_RET();
+		}
+		else
+		{
+			pc++;
+		}
+		break;
+	}
+	}
+}
+
+//Page 21
+void Cpu::operationOpcode_RST()
+{
+	uint8_t opcode = memory.read(pc);
+	pc++;
+	memory.write(sp - 1, (pc >> 8));
+	memory.write(sp - 2, (pc & 0x0F));
+	sp -= 2;
+
+	uint8_t condition = ((opcode & 0b00111000) >> 3);
+
+	switch (condition)
+	{
+	case(0b000):
+	{
+		pc = 0x0000;
+		break;
+	}
+	case(0b001):
+	{
+		pc = 0x0008;
+		break;
+	}
+	case(0b010):
+	{
+		pc = 0x0010;
+		break;
+	}
+	case(0b011):
+	{
+		pc = 0x0018;
+	}
+	case(0b100):
+	{
+		pc = 0x0020;
+		break;
+	}
+	case(0b101):
+	{
+		pc = 0x0028;
+		break;
+	}
+	case(0b110):
+	{
+		pc = 0x0030;
+		break;
+	}
+	case(0b111):
+	{
+		pc = 0x0038;
+		break;
+	}
+	}
+}
+
+
+/*-------------------------------------GENERAL-PURPOSE ARITHMETIC OPERATIONS AND CPU CONTROL INSTRUCTIONS---------------------------------------*/
+//Page 20
+void Cpu::operationOpcode_DAA()
+{
+	if (!F.N)//If previsous opcode is one of the ADD opcodes
+	{
+		if (((A & 0xF0) > 0x90) || F.CY)
+		{
+			A += 0x60;
+			F.CY = 1;
+		}
+		else
+		{
+			F.CY = 0;
+		}
+
+		if (((A & 0x0F) > 0x09) || F.H)
+		{
+			A += 0x06;
+		}
+	}
+	else//If previsous opcode is one of the SUB opcodes
+	{
+		if (((A & 0xF0) > 0x90) || F.CY)
+		{
+			A -= 0x60;
+			F.CY = 1;
+		}
+		else
+		{
+			F.CY = 0;
+		}
+
+		if (((A & 0x0F) > 0x09) || F.H)
+		{
+			A -= 0x06;
+		}
+	}
+
+	F.H = 0;
+	F.Z = (A == 0);
+	pc++;
+}
+
+
+void Cpu::operationOpcode_CPL()
+{
+	A = ~A;
+	F.H = 1;
+	F.N = 1;
+	pc++;
+}
+
+
+void Cpu::operationOpcode_NOP()
+{
+	pc++;
+}
+

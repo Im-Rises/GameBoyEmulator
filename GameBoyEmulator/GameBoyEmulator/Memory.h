@@ -2,6 +2,7 @@
 #define DEF_MEMORY 
 
 #include <iostream>
+#include <fstream>
 
 #define MEMORY_SIZE (0xFFFF + 0x0001)	//65535 KB
 
@@ -51,8 +52,8 @@ public:
 	Memory();
 
 	uint8_t read(const uint16_t index)const;
-	void write(uint16_t index, uint8_t value);
-
+	void write(const uint16_t& index, uint8_t value);
+	void loadRom(const string& romPath);
 };
 
 #endif
