@@ -25,4 +25,6 @@ Game Boy Programming Manual
 
 ## TO DO
 An indication written "TO CHECK" indicate opcodes that may not work
-Put the init value of every registers after the nintendo logo
+- Verify all the opcodes (mistakes in somes)
+- Put the init value of every registers and the ram before the nintendo logo
+- Init the ram and registers after the bios without bios

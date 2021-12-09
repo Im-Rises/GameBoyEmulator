@@ -4,6 +4,8 @@
 Cpu::Cpu()
 {
 	//this->memory = memory;
+	
+	//ERROR NEED TO SET AN INIT VALUE FOR THE REGISTERS
 	A = 0;
 	B = C = D = E = H = L = 0;
 	pc = ROM_DATA_AREA;
@@ -81,7 +83,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x0B): {operationOpcode16bits_DEC_RP(B, C); break; }
 	case(0x0C): {operationOpcode_INC_R(C); break; }
 	case(0x0D): {operationOpcode_DEC_R(C); break; }
-	case(0x0E): {opcodeOperation_LD_R_d8(C); break; }
+	case(0x0E): {opcodeOperation_LD_a8o_R(A); break; }//ERROR HERE
 	case(0x0F): {operationOpcode_RRCA(); break; }
 	case(0x10): {operationOpcode_STOP(); cout << "Opcode STOP not implemented for the moment at pc = " << hex << pc << endl; break; }
 	case(0x11): {opcodeOperation16bits_LD_RP_d16(D, D); break; }
@@ -312,7 +314,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0xFB): {operationOpcode_EI(); cout << "Opcode EI not implemented for the moment at pc = " << hex << pc << endl; break; }
 	case(0xFE): {operationOpcode_CP_R_d8(A); break; }
 	case(0xFF): {operationOpcode_RST(); break; }
-	default: {cout << "Error opcode unknown at pc = 0x" << hex << pc << endl; break; }
+	default: {cout << "Error opcode unknown read at pc = 0x" << hex << pc << endl; break; }
 	}
 }
 
@@ -643,21 +645,21 @@ void Cpu::opcodeOperation_LD_R_aRo(uint8_t& reg1, const uint8_t& reg2)
 //Page 3
 void Cpu::opcodeOperation_LD_aRo_R(const uint8_t& reg1, const uint8_t& reg2)
 {
-	memory.write((0xFF00 + reg1), reg2);
+	memory.write((INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + reg1), reg2);
 	pc++;
 }
 
 void Cpu::opcodeOperation_LD_R_a8o(uint8_t& reg)
 {
 	pc++;
-	reg = memory.read(0xFF00 + memory.read(pc));
+	reg = memory.read(INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + memory.read(pc));
 	pc++;
 }
 
 void Cpu::opcodeOperation_LD_a8o_R(const uint8_t& reg)
 {
 	pc++;
-	memory.write(0xFF00 + pc, A);
+	memory.write(INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + memory.read(pc), A);//
 	pc++;
 }
 
@@ -737,7 +739,6 @@ void Cpu::opcodeOperation16bits_LD_RP_d16(uint16_t& registersPair)
 	uint8_t regpair2 = registersPair & 0xFF;//HERE CONVERSION ISSUE
 	opcodeOperation16bits_LD_RP_d16(regPair1, regpair2);
 	registersPair = (regPair1 << 8) + regpair2;
-	pc += 2;
 }
 
 void Cpu::opcodeOperation16bits_LD_RP_RP(uint16_t& registersPair, const uint8_t& regPairB1, const uint8_t& regPairB2)

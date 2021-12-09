@@ -69,13 +69,14 @@ private:
 	/// Registers functions:
 	/// Mnemonic therms:
 	/// - R register
+	/// - RP registers pair (for example HL)
+	/// 
 	/// - aR the value pointed in the memory by the register
 	/// - dR direct value of a register (sometimes written only R)
 	/// - Ro means a register + an offset
 	/// - aRo means the value in the memory pointed by the address of the register + an offset
 	/// - RI means incrementation of the register
 	/// - RD means decrementation of the register
-	/// - RP registers pair (for example HL)
 	///	- .... aRP, oRP, aRPowork the same for a pair of registers
 	/// - d8 direct 8 bits following in the memory pointed by the pc
 	/// - d16 direct 16 bits following in the memory pointed by the pc and pc+1

@@ -1,20 +1,18 @@
 ﻿  Cpu.cpp
-E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(806,48): warning C4805: '^' : mélange risqué de type 'int' et de type 'bool' dans l'opération
-E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(807,57): warning C4805: '&' : mélange risqué de type 'uint16_t' et de type 'bool' dans l'opération
-E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(807,84): warning C4805: '&' : mélange risqué de type 'int8_t' et de type 'bool' dans l'opération
-E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(914,48): warning C4805: '^' : mélange risqué de type 'int' et de type 'bool' dans l'opération
-E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(915,57): warning C4805: '&' : mélange risqué de type 'int' et de type 'bool' dans l'opération
-E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(915,84): warning C4805: '&' : mélange risqué de type 'int' et de type 'bool' dans l'opération
-E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(1005,48): warning C4805: '^' : mélange risqué de type 'int' et de type 'bool' dans l'opération
-E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(1319,48): warning C4805: '^' : mélange risqué de type 'int' et de type 'bool' dans l'opération
-E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(1320,57): warning C4805: '&' : mélange risqué de type 'int' et de type 'bool' dans l'opération
-E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(1320,84): warning C4805: '&' : mélange risqué de type 'int' et de type 'bool' dans l'opération
-E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(1348,8): warning C4805: '|=' : mélange risqué de type 'uint8_t' et de type 'bool' dans l'opération
-E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(1361,7): warning C4805: '|=' : mélange risqué de type 'uint8_t' et de type 'bool' dans l'opération
-E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(1403,10): warning C4805: '|=' : mélange risqué de type 'uint8_t' et de type 'bool' dans l'opération
-E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(1416,11): warning C4805: '|=' : mélange risqué de type 'uint8_t' et de type 'bool' dans l'opération
-E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(1430,9): warning C4805: '|=' : mélange risqué de type 'uint8_t' et de type 'bool' dans l'opération
-E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(1444,10): warning C4805: '|=' : mélange risqué de type 'uint8_t' et de type 'bool' dans l'opération
-  Main.cpp
-  Génération de code en cours...
+E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(807,48): warning C4805: '^' : mélange risqué de type 'int' et de type 'bool' dans l'opération
+E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(808,57): warning C4805: '&' : mélange risqué de type 'uint16_t' et de type 'bool' dans l'opération
+E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(808,84): warning C4805: '&' : mélange risqué de type 'int8_t' et de type 'bool' dans l'opération
+E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(915,48): warning C4805: '^' : mélange risqué de type 'int' et de type 'bool' dans l'opération
+E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(916,57): warning C4805: '&' : mélange risqué de type 'int' et de type 'bool' dans l'opération
+E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(916,84): warning C4805: '&' : mélange risqué de type 'int' et de type 'bool' dans l'opération
+E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(1006,48): warning C4805: '^' : mélange risqué de type 'int' et de type 'bool' dans l'opération
+E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(1320,48): warning C4805: '^' : mélange risqué de type 'int' et de type 'bool' dans l'opération
+E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(1321,57): warning C4805: '&' : mélange risqué de type 'int' et de type 'bool' dans l'opération
+E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(1321,84): warning C4805: '&' : mélange risqué de type 'int' et de type 'bool' dans l'opération
+E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(1349,8): warning C4805: '|=' : mélange risqué de type 'uint8_t' et de type 'bool' dans l'opération
+E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(1362,7): warning C4805: '|=' : mélange risqué de type 'uint8_t' et de type 'bool' dans l'opération
+E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(1404,10): warning C4805: '|=' : mélange risqué de type 'uint8_t' et de type 'bool' dans l'opération
+E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(1417,11): warning C4805: '|=' : mélange risqué de type 'uint8_t' et de type 'bool' dans l'opération
+E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(1431,9): warning C4805: '|=' : mélange risqué de type 'uint8_t' et de type 'bool' dans l'opération
+E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cpu.cpp(1445,10): warning C4805: '|=' : mélange risqué de type 'uint8_t' et de type 'bool' dans l'opération
   GameBoyEmulator.vcxproj -> E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\Debug\GameBoyEmulator.exe
