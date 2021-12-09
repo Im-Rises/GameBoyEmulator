@@ -24,5 +24,5 @@ https://www.youtube.com/watch?v=HyzD8pNlpwI
 Game Boy Programming Manual  
 
 ## TO DO
-Resume p21
 An indication written "TO CHECK" indicate opcodes that may not work
+Put the init value of every registers after the nintendo logo

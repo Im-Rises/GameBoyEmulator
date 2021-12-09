@@ -47,8 +47,10 @@ private:
 
 public:
 	//Cpu(Memory* memory);						//Constructor
-	Cpu();
+	Cpu();										//Constructor without bios
+	Cpu(const string& biosPath);				//Constructor with bios
 	~Cpu();
+	void loadBios(const string& biosPath);
 	void loadRom(const string& romPath);
 	void start();
 

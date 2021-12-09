@@ -6,6 +6,8 @@ Memory::Memory()
 	{
 		memoryArray[i] = 0;
 	}
+	memoryArray[0xFF00] = 0xFF;//Inputs
+	memoryArray[0xFF40] = 0x91;//LCDC
 }
 
 uint8_t Memory::read(const uint16_t index)const
@@ -18,7 +20,7 @@ void Memory::write(const uint16_t& index, uint8_t value)
 	memoryArray[index] = value;
 }
 
-bool Memory::loadRom(const string& romPath)
+bool Memory::loadInMemory(const string& romPath)
 {
 	bool loadRomBool = false;
 	std::ifstream input(romPath, std::ios::binary);

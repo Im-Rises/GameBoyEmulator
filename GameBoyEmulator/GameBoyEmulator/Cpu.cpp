@@ -12,14 +12,36 @@ Cpu::Cpu()
 	cycles = 0;
 }
 
+
+Cpu::Cpu(const string& biosPath)
+{
+	A = 0;
+	B = C = D = E = H = L = 0;
+	pc = 0;
+	sp = CPU_WORK_RAM_OR_AND_STACK_END;
+	F.Z = F.N = F.H = F.CY = 0;
+	cycles = 0;
+
+	loadBios(biosPath);
+	for (int i = 0; i < ROM_DATA_AREA; i++)
+	{
+		readOpcode();
+	}
+}
+
 Cpu::~Cpu()
 {
 
 }
 
+void Cpu::loadBios(const string& biosPath)
+{
+	memory.loadInMemory(biosPath);
+}
+
 void Cpu::loadRom(const string& romPath)
 {
-	memory.loadRom(romPath);
+	memory.loadInMemory(romPath);
 }
 
 void Cpu::start()
