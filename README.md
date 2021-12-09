@@ -21,7 +21,8 @@ Chapter 5 Miscellaneous General Information
 ## Documentations  
 https://en.wikipedia.org/wiki/Game_Boy  
 https://www.youtube.com/watch?v=HyzD8pNlpwI  
-Game Boy Programming Manual  
+https://archive.org/details/GameBoyProgManVer1.1/mode/2up
+https://gbdev.gg8.se/wiki/articles/Gameboy_Bootstrap_ROM
 
 ## TO DO
 An indication written "TO CHECK" indicate opcodes that may not work

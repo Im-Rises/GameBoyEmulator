@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
 	Cpu cpu(biosPath);
 	
 	cpu.loadRom(romPathDebug);
-	cpu.start();
+	//cpu.start();
 
 	return 0;
 }
