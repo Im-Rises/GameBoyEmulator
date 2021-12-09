@@ -13,6 +13,10 @@ private:
 
 public:
 
+	void drawBackground();
+	void drawSrpite();
+	void drawWindows();
+
 };
 
 #endif

@@ -2,6 +2,7 @@
 #define DEF_CPU
 
 #include "Memory.h"
+#include "Ppu.h"
 
 #include <iostream>
 
@@ -10,6 +11,9 @@ using namespace std;
 class Cpu {
 
 private:
+
+	int cycles;					//Cycles to do (incremented after each instructions)
+
 	/// <summary>
 	/// Frequency of the CPU
 	/// </summary>
@@ -37,9 +41,6 @@ private:
 		bool H;					//Set to 1 when an operation results in carrying from or borrowing to bit 3
 		bool CY;				//Set to 1 when an operation results in carrying from or borrowing to bit 7
 	} F;						//Auxiliary register of the accumulator, consist of 4 flags that are set and reset according to the results of instruction execution
-
-
-	int cycles;					//Cycles to do (incremented after each instructions)
 	
 	//Memory* memory = nullptr;
 	Memory memory;				//Memory of the console
@@ -250,9 +251,12 @@ private:
 
 
 	/*-------------------------------------JUMP INSTRUCTIONS---------------------------------------*/
+	
+	/////////////////////////////////////TO CHECK////////////////////////////////////////////////////
+	// Error, with the e in the functions
 	//Page 18	(p105)
 	void operationOpcode_JP_d16();
-	void operationOpcode_JP_cc();//CYCLE ISSUE
+	void operationOpcode_JP_cc();
 	void operationOpcode_JR();
 
 	//Page 19	(p106)
@@ -281,6 +285,9 @@ private:
 	//Page 21	(p109)
 	void operationOpcode_HALT();//NOT IMPLEMENTED
 	void operationOpcode_STOP();//NOT IMPLEMENTED
+
+	void operationOpcode_EI();//NOT IMPLEMENTED
+	void operationOpcode_DI();//NOT IMPLEMENTED
 
 };
 

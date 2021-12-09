@@ -37,6 +37,7 @@
 #define CPU_WORK_RAM_OR_AND_STACK_END 0xFFFE
 #define RAM_INTERNAL_CPU_END 0xFFFF
 
+#define CONTROL_DATA_AREA 0xFF00
 
 
 using namespace std;
