@@ -52,6 +52,8 @@ void Cpu::start()
 {
 	while (true)
 	{
+		//Wait the number of cycles
+		cycles = 0;
 		//sleap the amount of the cycle variable
 		readOpcode();
 	}
@@ -79,7 +81,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x05): {DEC_R(B); break; }
 	case(0x06): {LD_R_d8(B); break; }
 	case(0x07): {RLCA(); break; }
-	case(0x08): {LD_a8_SP(); break; }
+	case(0x08): {LD_a16_SP(); break; }
 	case(0x09): {ADD_HL_RP(pairRegisters(B, C)); break; }
 	case(0x0A): {LD_A_aBC(); break; }
 	case(0x0B): {DEC_RP(B, C); break; }
@@ -615,6 +617,67 @@ Cpu::Flag Cpu::byteToFlag(const uint8_t& byte)const
 	return temp;
 }
 
+int Cpu::binaryAddition(const int& numberOfBits, const int& value1, const int& value2, bool& carryBit3, bool& carryBit7)
+{
+	int value1Temp = value1;
+	int value2Temp = value2;
+	bool carryTemp = 0;
+	int calcResultTemp = 0;
+
+	int additionValue = 0;
+
+	for (int i = 0; i < numberOfBits; i++)
+	{
+		value1Temp = (value1 >> i) & 0b1;
+		value2Temp = (value2 >> i) & 0b1;
+
+		calcResultTemp = (value1Temp ^ value2Temp) ^ carryTemp;
+		carryTemp = (value1Temp & value2Temp) | (value1Temp & carryTemp) | (value2Temp & carryTemp);
+
+		if ((i == 3) && carryTemp)
+			carryBit3 = 1;
+
+		if ((i == 7) && carryTemp)
+			carryBit7 = 1;
+
+		additionValue += calcResultTemp << i;
+	}
+
+	return additionValue;
+}
+
+int Cpu::binarySubstraction(const int& numberOfBits, const int& value1, const int& value2, bool& borrowBit3, bool& borrowBit7)
+{
+	int value1Temp = value1;
+	int value2Temp = value2;
+	bool carryTemp = 0;
+	int calcResultTemp = 0;
+
+	int substractionValue = 0;
+
+	for (int i = 0; i < numberOfBits; i++)
+	{
+		value1Temp = (value1 >> i) & 0b1;
+		value2Temp = (value2 >> i) & 0b1;
+
+		calcResultTemp = (value1Temp ^ value2Temp) ^ carryTemp;
+		carryTemp = ((!(value1Temp ^ value2Temp)) & carryTemp) || (((!value1Temp) & value2Temp) & (!carryTemp));
+
+		if ((i == 3) && carryTemp)
+			borrowBit3 = 1;
+
+		if ((i == 7) && carryTemp)
+			borrowBit7 = 1;
+
+		substractionValue += calcResultTemp << i;
+	}
+
+	return substractionValue;
+}
+
+
+
+
 
 /*-----------------------------------------NORMAL OPCODES OPERATIONS------------------------------------------*/
 
@@ -782,7 +845,7 @@ void Cpu::LD_RP_d16(uint8_t& reg1, uint8_t& reg2)
 {
 	pc++;
 	unpairRegisters(reg1, reg2, ((memory.read(pc + 1) << 8) + memory.read(pc)));
-	cycles += 3; 
+	cycles += 3;
 	pc += 2;
 }
 
@@ -840,137 +903,43 @@ void Cpu::POP_RP(uint8_t& regPair1, Flag& flagPair)
 
 void Cpu::LDHL_SP_e()
 {
-	uint8_t e = memory.read(pc + 1);
-	//Temporariry variables
-	uint16_t value1Temp = sp;
-	int8_t value2Temp = e;
-	bool carryTemp = 0;
-	uint8_t calcResultTemp = 0;
+	cout << "May bug because of opcode LDHL" << endl;
+	pc++;
+	int8_t e = memory.read(pc);
 
 	//Variables to use after calculs
-	bool carryBit11 = 0;
-	bool carryBit13 = 0;
-	uint16_t additionValue = 0;
+	bool carryBit3 = 0;
+	bool carryBit7 = 0;
 
-	for (int i = 0; i < 16; i++)
+	if (e >= 0)
 	{
-		value1Temp = (sp >> i) & 0b1;
-		value2Temp = (e >> i) & 0b1;
-
-		calcResultTemp = (value1Temp ^ value2Temp) ^ carryTemp;
-		carryTemp = (value1Temp & value2Temp) | (value1Temp & carryTemp) | (value2Temp & carryTemp);
-
-		if ((i == 11) && carryTemp)
-			carryBit11 = 1;
-
-		if ((i == 13) && carryTemp)
-			carryBit13 = 1;
-
-		additionValue += calcResultTemp << i;
+		F.CY = ((sp & 0xFF) + e) > 0xFF;
+		F.H = ((sp & 0xF) + (e & 0xF)) > 0xF;
+	}
+	else
+	{
+		F.CY = (((sp + e) & 0xFF)) <= (sp & 0xFF);
+		F.H = (((sp + e) & 0xF) <= (sp & 0xF));
 	}
 
-	H = additionValue >> 8;
-	L = additionValue & 0xFF;
+	unpairRegisters(H, L, (sp + e));
 
 	F.Z = 0;
-	F.H = carryBit11;
 	F.N = 0;
-	F.CY = carryBit13;
-
 	cycles += 3;
 	pc++;
 }
 
+void Cpu::LD_a16_SP()
+{
+	pc++;
+	uint16_t nnBits = (memory.read(pc + 1) << 8) + memory.read(pc);
+	memory.write(nnBits, (sp & 0x00FF));
+	memory.write(nnBits + 1, ((sp & 0xFF00) >> 8));
+	cycles += 5;
+	pc += 2;
+}
 
-//
-//void Cpu::LD_R_aRP_RPD(uint8_t& reg, uint8_t regPair1, uint8_t regPair2)
-//{
-//	uint16_t registersPairTemp = pairRegisters(regPair1, regPair2);
-//	reg = memory.read(registersPairTemp);
-//	registersPairTemp--;
-//	regPair1 = registersPairTemp >> 8;
-//	regPair2 = registersPairTemp & 0xFF;//HERE CONVERSION ISSUE
-//	pc++;
-//}
-//
-//
-////Page 5
-//void Cpu::LD_aRP_R_RPI(uint8_t& regPair1, uint8_t& regPair2, const uint8_t& reg)
-//{
-//	uint16_t registersPairTemp = pairRegisters(regPair1, regPair2);
-//	memory.write(registersPairTemp, reg);
-//	registersPairTemp++;
-//	regPair1 = (registersPairTemp >> 8);
-//	regPair2 = registersPairTemp & 0xFF;//HERE CONVERSION ISSUE
-//	pc++;
-//}
-//
-//void Cpu::LD_aRP_R_RPD(uint8_t& regPair1, uint8_t& regPair2, const uint8_t& reg)
-//{
-//	uint16_t registersPairTemp = pairRegisters(regPair1, regPair2);
-//	memory.write(registersPairTemp, reg);
-//	registersPairTemp--;
-//	regPair1 = (registersPairTemp >> 8);
-//	regPair2 = registersPairTemp & 0xFF;//HERE CONVERSION ISSUE
-//	pc++;
-//}
-//
-//
-///*-------------------------------------16bits TRANSFER INSTRUCTIONS---------------------------------------*/
-//
-////Page 6 
-////void Cpu::LD_RP_d16(uint8_t& regPair1, uint8_t& regPair2)
-////{
-////	pc++;
-////	regPair1 = memory.read(pc + 1);
-////	regPair2 = memory.read(pc);
-////	pc += 2;
-////}
-////
-////void Cpu::LD_RP_d16(uint16_t& registersPair)
-////{
-////	uint8_t regPair1 = registersPair >> 8;
-////	uint8_t regpair2 = registersPair & 0xFF;//HERE CONVERSION ISSUE
-////	LD_RP_d16(regPair1, regpair2);
-////	registersPair = (regPair1 << 8) + regpair2;
-////}
-//
-//void Cpu::LD_RP_RP(uint16_t& registersPair, const uint8_t& regPairB1, const uint8_t& regPairB2)
-//{
-//	registersPair = (regPairB1 << 8);
-//	registersPair = regPairB2;
-//	pc++;
-//}
-//
-//void Cpu::PUSH_RP(const uint8_t& regPair1, const uint8_t& regPair2)
-//{
-//	memory.write(sp - 1, regPair1);
-//	memory.write(sp - 2, regPair2);
-//	sp -= 2;
-//	pc++;
-//}
-//
-//void Cpu::PUSH_RP(const uint8_t& regPair1, const Flag& flag)
-//{
-//	uint8_t flagTemp = flagToByte(flag);
-//	PUSH_RP(regPair1, flagTemp);
-//}
-//
-//
-////Page 7
-
-//
-
-//
-//void Cpu::LD_a8_SP()
-//{
-//	pc++;
-//	memory.write(memory.read(pc), sp & 0xFF);;//HERE CONVERSION ISSUE
-//	memory.write(memory.read(pc + 1), (sp >> 8));
-//	pc += 2;
-//}
-//
-//
 ///*-------------------------------------8bits ARITHMETIC AND LOGICAL OPERATION INSTRUCTIONS---------------------------------------*/
 //
 ////Page 8
@@ -1033,34 +1002,7 @@ void Cpu::LDHL_SP_e()
 //}
 //
 //
-//int Cpu::binaryAddition(const int& numberOfBits, const int& value1, const int& value2, bool& carryBit3, bool& carryBit7)
-//{
-//	int value1Temp = value1;
-//	int value2Temp = value2;
-//	bool carryTemp = 0;
-//	int calcResultTemp = 0;
-//
-//	int additionValue = 0;
-//
-//	for (int i = 0; i < numberOfBits; i++)
-//	{
-//		value1Temp = (value1 >> i) & 0b1;
-//		value2Temp = (value2 >> i) & 0b1;
-//
-//		calcResultTemp = (value1Temp ^ value2Temp) ^ carryTemp;
-//		carryTemp = (value1Temp & value2Temp) | (value1Temp & carryTemp) | (value2Temp & carryTemp);
-//
-//		if ((i == 3) && carryTemp)
-//			carryBit3 = 1;
-//
-//		if ((i == 7) && carryTemp)
-//			carryBit7 = 1;
-//
-//		additionValue += calcResultTemp << i;
-//	}
-//
-//	return additionValue;
-//}
+
 //
 //
 //
@@ -1124,50 +1066,7 @@ void Cpu::LDHL_SP_e()
 //}
 //
 //
-//int Cpu::binarySubstraction(const int& numberOfBits, const int& value1, const int& value2, bool& borrowBit3, bool& borrowBit7)
-//{
-//	int value1Temp = value1;
-//	int value2Temp = value2;
-//	bool carryTemp = 0;
-//	int calcResultTemp = 0;
-//
-//	int substractionValue = 0;
-//
-//	for (int i = 0; i < numberOfBits; i++)
-//	{
-//		value1Temp = (value1 >> i) & 0b1;
-//		value2Temp = (value2 >> i) & 0b1;
-//
-//		calcResultTemp = (value1Temp ^ value2Temp) ^ carryTemp;
-//		carryTemp = ((!(value1Temp ^ value2Temp)) & carryTemp) || (((!value1Temp) & value2Temp) & (!carryTemp));
-//
-//		if ((i == 3) && carryTemp)
-//			borrowBit3 = 1;
-//
-//		if ((i == 7) && carryTemp)
-//			borrowBit7 = 1;
-//
-//		substractionValue += calcResultTemp << i;
-//	}
-//
-//	return substractionValue;
-//}
-//
-//
-//
-////Page 10
-//
-//void Cpu::AND_R_R(uint8_t& reg1, const uint8_t& reg2)
-//{
-//	reg1 &= reg2;
-//
-//	F.Z = (reg1 == 0);
-//	F.H = 1;
-//	F.N = 0;
-//	F.CY = 0;
-//
-//	pc++;
-//}
+
 //
 //void Cpu::AND_R_d8(uint8_t& reg1)
 //{
@@ -2117,6 +2016,19 @@ void Cpu::LDHL_SP_e()
 //
 ///*-------------------------------------GENERAL-PURPOSE ARITHMETIC OPERATIONS AND CPU CONTROL INSTRUCTIONS---------------------------------------*/
 ////Page 20
+// 
+//Page 10
+//
+//void Cpu::AND_R_R(uint8_t& reg1, const uint8_t& reg2)
+//{
+//	reg1 &= reg2;
+//	F.Z = (reg1 == 0);
+//	F.H = 1;
+//	F.N = 0;
+//	F.CY = 0;
+//	pc++;
+//}
+//
 //void Cpu::DAA()
 //{
 //	if (!F.N)//If previsous opcode is one of the ADD opcodes

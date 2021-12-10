@@ -66,8 +66,12 @@ private:
 
 	uint16_t pairRegisters(const uint8_t reg1, const uint8_t reg2)const;
 	void unpairRegisters(uint8_t& reg1, uint8_t& reg2, const uint16_t& registersPair);//The & 0x00FF is not an obligation
+	
 	uint8_t flagToByte(const Flag& flag)const;
 	Flag byteToFlag(const uint8_t& byte)const;
+
+	int binaryAddition(const int& numberOfBits, const int& value1, const int& value2, bool& carryBit3, bool& carryBit7);
+	int binarySubstraction(const int& numberOfBits, const int& value1, const int& value2, bool& carryBit3, bool& carryBit7);
 
 	/*-----------------------------------------NORMAL OPCODES OPERATIONS------------------------------------------*/
 
@@ -130,36 +134,13 @@ private:
 	void POP_RP(uint8_t& regPair1, uint8_t& regPair2);//WORKING
 	void POP_RP(uint8_t& regPair1, Flag& flag);//WORKING MAY HAVE A PROBLEM WITH THE CONVERSION FROM FLAG TO BYTE
 
-	void LDHL_SP_e();
+	void LDHL_SP_e();//NOT SURE AT ALL
+	void LD_a16_SP();//WORKING IT SHOULD
 
 
-	////Page 4	(p88)
-	//void LD_R_aRP_RPD(uint8_t& reg, uint8_t regPair1, uint8_t regPair2);
+	/*-------------------------------------8bits ARITHMETIC AND LOGICAL OPERATION INSTRUCTIONS---------------------------------------*/
 
-	////Page 5	(p89)
-	//void LD_aRP_R_RPI(uint8_t& regPair1, uint8_t& regPair2, const uint8_t& reg);
-	//void LD_aRP_R_RPD(uint8_t& regPair1, uint8_t& regPair2, const uint8_t& reg);
-
-
-	///*-------------------------------------16bits TRANSFER INSTRUCTIONS---------------------------------------*/
-
-	////Page 6	(p90) 
-	//void LD_RP_d16(uint8_t& regPair1, uint8_t& regPair2);
-	//void LD_RP_d16(uint16_t& registersPair);
-
-	//void LD_RP_RP(uint16_t& registersPair, const uint8_t& regPairB1, const uint8_t& regPairB2);
-	//void PUSH_RP(const uint8_t& regPair1, const uint8_t& regPair2);
-	//void PUSH_RP(const uint8_t& regPair1, const Flag& flag);
-
-	////Page 7	(p91)
-	//void POP_RP(uint8_t& regPair1, uint8_t& regPair2);
-	//void POP_RP(uint8_t& regPair1, Flag& flag);
-	//void LD_a8_SP();
-
-
-	///*-------------------------------------8bits ARITHMETIC AND LOGICAL OPERATION INSTRUCTIONS---------------------------------------*/
-
-	////Page 8	(p92)
+	//Page ?	(102)
 	//void ADD_R_R(uint8_t& reg1, const uint8_t& reg2);
 	//void ADD_R_d8(uint8_t& reg1);
 	//void ADD_R_aRP(uint8_t& reg, const uint8_t& regPair1, const uint8_t& regPair2);
@@ -169,7 +150,6 @@ private:
 	//void ADC_A_aHL_CY(const uint8_t& regPair1, const uint8_t& regPair2);//TO BE CHECKED, PERHAPS IT IS NEEDED TO VERIFY IF F.CY=1 IF IT IS THAN WE DO THE SDC A,F.CY
 
 	//uint8_t ADD_ADC_subFunctionFlag(const uint8_t& reg, const uint8_t& value);
-	//int binaryAddition(const int& numberOfBits, const int& value1, const int& value2, bool& carryBit3, bool& carryBit7);
 
 
 	////Page 9	(p93)
@@ -182,8 +162,7 @@ private:
 	//void SBC_A_aHL_CY(const uint8_t& regPair1, const uint8_t& regPair2);//TO BE CHECKED, PERHAPS IT IS NEEDED TO VERIFY IF F.CY=1 IF IT IS THAN WE DO THE SBC A,F.CY
 
 	//uint8_t SUB_SBC_subFunctionFlag(const uint8_t& reg, const uint8_t& value);
-	//int binarySubstraction(const int& numberOfBits, const int& value1, const int& value2, bool& carryBit3, bool& carryBit7);
-
+	
 
 	////Page 10	(p94)
 	//void AND_R_R(uint8_t& reg1, const uint8_t& reg2);
