@@ -138,31 +138,37 @@ private:
 	void LD_a16_SP();//WORKING IT SHOULD
 
 
+
 	/*-------------------------------------8bits ARITHMETIC AND LOGICAL OPERATION INSTRUCTIONS---------------------------------------*/
 
-	//Page ?	(102)
-	//void ADD_R_R(uint8_t& reg1, const uint8_t& reg2);
-	//void ADD_R_d8(uint8_t& reg1);
-	//void ADD_R_aRP(uint8_t& reg, const uint8_t& regPair1, const uint8_t& regPair2);
+	//RESUME HERE WITH THE ADC AND SBC
 
-	//void ADC_A_R_CY(const uint8_t& reg);//TO BE CHECKED, PERHAPS IT IS NEEDED TO VERIFY IF F.CY=1 IF IT IS THAN WE DO THE SDC A,F.CY
-	//void ADC_A_d8_CY();//TO BE CHECKED, PERHAPS IT IS NEEDED TO VERIFY IF F.CY=1 IF IT IS THAN WE DO THE SDC A,F.CY
-	//void ADC_A_aHL_CY(const uint8_t& regPair1, const uint8_t& regPair2);//TO BE CHECKED, PERHAPS IT IS NEEDED TO VERIFY IF F.CY=1 IF IT IS THAN WE DO THE SDC A,F.CY
+	void ADD_A_R(const uint8_t& reg);//WORKING EXCEPT IF THE SUBFONCTION DOESN'T WORK
+	void ADD_A_d8();//WORKING
+	void ADD_A_aHL();//WORKING
 
-	//uint8_t ADD_ADC_subFunctionFlag(const uint8_t& reg, const uint8_t& value);
+	void ADC_A_R_CY(const uint8_t& reg);//WORKING IT SHOULD
+	void ADC_A_d8_CY();//WORKING IT SHOULD
+	void ADC_A_aHL_CY(const uint8_t& regPair1, const uint8_t& regPair2);//WORKING IT SHOULD
+
+	uint8_t ADD_ADC_subFunctionFlag(const uint8_t& reg, const uint8_t& value);//WORKING IT SHOULD
 
 
-	////Page 9	(p93)
-	//void SUB_A_R(const uint8_t& reg);
-	//void SUB_A_d8();
-	//void SUB_A_aHL(const uint8_t& regPair1, const uint8_t& regPair2);
-
-	//void SBC_A_R_CY(const uint8_t& reg);//TO BE CHECKED, PERHAPS IT IS NEEDED TO VERIFY IF F.CY=1 IF IT IS THAN WE DO THE SBC A,F.CY
-	//void SBC_A_d8_CY();//TO BE CHECKED, PERHAPS IT IS NEEDED TO VERIFY IF F.CY=1 IF IT IS THAN WE DO THE SBC A,F.CY
-	//void SBC_A_aHL_CY(const uint8_t& regPair1, const uint8_t& regPair2);//TO BE CHECKED, PERHAPS IT IS NEEDED TO VERIFY IF F.CY=1 IF IT IS THAN WE DO THE SBC A,F.CY
-
-	//uint8_t SUB_SBC_subFunctionFlag(const uint8_t& reg, const uint8_t& value);
 	
+	void SUB_A_R(const uint8_t& reg);
+	void SUB_A_d8();
+	void SUB_A_aHL(const uint8_t& regPair1, const uint8_t& regPair2);
+
+	void SBC_A_R_CY(const uint8_t& reg);//TO BE CHECKED, PERHAPS IT IS NEEDED TO VERIFY IF F.CY=1 IF IT IS THAN WE DO THE SBC A,F.CY
+	void SBC_A_d8_CY();//TO BE CHECKED, PERHAPS IT IS NEEDED TO VERIFY IF F.CY=1 IF IT IS THAN WE DO THE SBC A,F.CY
+	void SBC_A_aHL_CY(const uint8_t& regPair1, const uint8_t& regPair2);//TO BE CHECKED, PERHAPS IT IS NEEDED TO VERIFY IF F.CY=1 IF IT IS THAN WE DO THE SBC A,F.CY
+
+	uint8_t SUB_SBC_subFunctionFlag(const uint8_t& reg, const uint8_t& value);
+
+
+	
+
+
 
 	////Page 10	(p94)
 	//void AND_R_R(uint8_t& reg1, const uint8_t& reg2);

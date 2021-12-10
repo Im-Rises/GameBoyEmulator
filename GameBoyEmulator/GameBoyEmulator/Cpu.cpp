@@ -201,14 +201,14 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x7D): {LD_R_R(A, L); break; }
 	case(0x7E): {LD_R_aHL(A); break; }
 	case(0x7F): {LD_R_R(A, A); break; }
-	case(0x80): {ADD_R_R(A, B); break; }
-	case(0x81): {ADD_R_R(A, C); break; }
-	case(0x82): {ADD_R_R(A, D); break; }
-	case(0x83): {ADD_R_R(A, E); break; }
-	case(0x84): {ADD_R_R(A, H); break; }
-	case(0x85): {ADD_R_R(A, L); break; }
-	case(0x86): {ADD_R_aRP(A, H, L); break; }
-	case(0x87): {ADD_R_R(A, A); break; }
+	case(0x80): {ADD_A_R(B); break; }
+	case(0x81): {ADD_A_R(C); break; }
+	case(0x82): {ADD_A_R(D); break; }
+	case(0x83): {ADD_A_R(E); break; }
+	case(0x84): {ADD_A_R(H); break; }
+	case(0x85): {ADD_A_R(L); break; }
+	case(0x86): {ADD_A_aHL(); break; }
+	case(0x87): {ADD_A_R(A); break; }
 	case(0x88): {ADC_A_R_CY(B); break; }
 	case(0x89): {ADC_A_R_CY(C); break; }
 	case(0x8A): {ADC_A_R_CY(D); break; }
@@ -271,7 +271,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0xC3): {JP_d16(); break; }
 	case(0xC4): {CALL_cc(); break; }
 	case(0xC5): {PUSH_RP(B, C); break; }
-	case(0xC6): {ADD_R_d8(A); break; }
+	case(0xC6): {ADD_A_d8(); break; }
 	case(0xC7): {RST(); break; }
 	case(0xC8): {RET_cc(); break; }
 	case(0xC9): {RET(); break; }
@@ -940,132 +940,148 @@ void Cpu::LD_a16_SP()
 	pc += 2;
 }
 
-///*-------------------------------------8bits ARITHMETIC AND LOGICAL OPERATION INSTRUCTIONS---------------------------------------*/
-//
-////Page 8
-//void Cpu::ADD_R_R(uint8_t& reg1, const uint8_t& reg2)
-//{
-//	reg1 = ADD_ADC_subFunctionFlag(reg1, reg2);
-//	pc++;
-//}
-//
-//void Cpu::ADD_R_d8(uint8_t& reg)
-//{
-//	pc++;
-//	reg = ADD_ADC_subFunctionFlag(reg, memory.read(pc));
-//	pc++;
-//}
-//
-//void Cpu::ADD_R_aRP(uint8_t& reg, const uint8_t& regPair1, const uint8_t& regPair2)
-//{
-//	reg = ADD_ADC_subFunctionFlag(reg, memory.read(pairRegisters(regPair1, regPair2)));
-//	pc++;
-//}
-//
-//void Cpu::ADC_A_R_CY(const uint8_t& reg)
-//{
-//	A = ADD_ADC_subFunctionFlag(A, F.CY);
-//	A = ADD_ADC_subFunctionFlag(A, reg);
-//	pc++;
-//}
-//
-//void Cpu::ADC_A_d8_CY()
-//{
-//	pc++;
-//	A = ADD_ADC_subFunctionFlag(A, F.CY);
-//	A = ADD_ADC_subFunctionFlag(A, memory.read(pc));
-//	pc++;
-//}
-//
-//void Cpu::ADC_A_aHL_CY(const uint8_t& regPair1, const uint8_t& regPair2)
-//{
-//	A = ADD_ADC_subFunctionFlag(A, F.CY);
-//	A = ADD_ADC_subFunctionFlag(A, memory.read(pairRegisters(regPair1, regPair2)));
-//	pc++;
-//}
-//
-//
-//
-//uint8_t Cpu::ADD_ADC_subFunctionFlag(const uint8_t& reg, const uint8_t& value)
-//{
-//	//Variables to use after calculs
-//	bool carryBit3 = 0;
-//	bool carryBit7 = 0;
-//	uint8_t additionValue = binaryAddition(8, reg, value, carryBit3, carryBit7);
-//
-//	F.Z = !reg;
-//	F.H = carryBit3;
-//	F.N = 0;
-//	F.CY = carryBit7;
-//
-//	return additionValue;
-//}
-//
-//
 
-//
-//
-//
-////Page 9	
-//
-//void Cpu::SUB_A_R(const uint8_t& reg)
-//{
-//	A = SUB_SBC_subFunctionFlag(A, reg);
-//	pc++;
-//}
-//
-//void Cpu::SUB_A_d8()
-//{
-//	pc++;
-//	A = SUB_SBC_subFunctionFlag(A, memory.read(pc));
-//	pc++;
-//}
-//
-//void Cpu::SUB_A_aHL(const uint8_t& regPair1, const uint8_t& regPair2)
-//{
-//	A = SUB_SBC_subFunctionFlag(A, memory.read(pairRegisters(regPair1, regPair2)));
-//	pc++;
-//}
-//
-//
-//void Cpu::SBC_A_R_CY(const uint8_t& reg)
-//{
-//	A = SUB_SBC_subFunctionFlag(A, F.CY);
-//	A = SUB_SBC_subFunctionFlag(A, reg);
-//}
-//
-//void Cpu::SBC_A_d8_CY()
-//{
-//	pc++;
-//	A = SUB_SBC_subFunctionFlag(A, F.CY);
-//	A = SUB_SBC_subFunctionFlag(A, memory.read(pc));
-//	pc++;
-//}
-//
-//void Cpu::SBC_A_aHL_CY(const uint8_t& regPair1, const uint8_t& regPair2)
-//{
-//	A = SUB_SBC_subFunctionFlag(A, F.CY);
-//	A = SUB_SBC_subFunctionFlag(A, memory.read(pairRegisters(regPair1, regPair2)));
-//}
-//
-//
-//
-//uint8_t Cpu::SUB_SBC_subFunctionFlag(const uint8_t& reg, const uint8_t& value)
-//{
-//	//Variables to use after calculs
-//	bool borrowBit3 = 0;
-//	bool borrowBit7 = 0;
-//	uint8_t subStractionValue = binarySubstraction(8, reg, value, borrowBit3, borrowBit7);
-//
-//	F.Z = !reg;
-//	F.H = borrowBit3;
-//	F.N = 1;
-//	F.CY = borrowBit7;
-//
-//	return subStractionValue;
-//}
-//
-//
+void Cpu::ADD_A_R(const uint8_t& reg)
+{
+	A = ADD_ADC_subFunctionFlag(A, reg);
+	cycles++;
+	pc++;
+}
+
+void Cpu::ADD_A_d8()
+{
+	pc++;
+	A = ADD_ADC_subFunctionFlag(A, memory.read(pc));
+	cycles += 2;
+	pc++;
+}
+
+
+void Cpu::ADD_A_aHL()
+{
+	A = ADD_ADC_subFunctionFlag(A, memory.read(pairRegisters(H, L)));
+	cycles += 2;
+	pc++;
+}
+
+
+void Cpu::ADC_A_R_CY(const uint8_t& reg)
+{
+	bool tempCY;
+	bool tempH;
+	A = ADD_ADC_subFunctionFlag(A, F.CY);
+	tempCY = F.CY;
+	tempH = F.H;
+	A = ADD_ADC_subFunctionFlag(A, reg);
+	if (!F.CY && tempCY)
+		F.CY = 1;
+	if (!F.H && tempH)
+		F.H = 1;
+	cycles++;
+	pc++;
+}
+
+void Cpu::ADC_A_d8_CY()
+{
+	pc++;
+	A = ADD_ADC_subFunctionFlag(A, F.CY);
+	A = ADD_ADC_subFunctionFlag(A, memory.read(pc));
+	cycles += 2;
+	pc++;
+}
+
+void Cpu::ADC_A_aHL_CY(const uint8_t& regPair1, const uint8_t& regPair2)
+{
+	A = ADD_ADC_subFunctionFlag(A, F.CY);
+	A = ADD_ADC_subFunctionFlag(A, memory.read(pairRegisters(regPair1, regPair2)));
+	cycles += 2;
+	pc++;
+}
+
+uint8_t Cpu::ADD_ADC_subFunctionFlag(const uint8_t& reg, const uint8_t& value)
+{
+	//Variables to use after calculs
+	bool carryBit3 = 0;
+	bool carryBit7 = 0;
+	uint8_t additionValue = binaryAddition(8, reg, value, carryBit3, carryBit7);
+
+	F.Z = !reg;
+	F.H = carryBit3;
+	F.N = 0;
+	F.CY = carryBit7;
+
+	return additionValue;
+}
+
+
+void Cpu::SUB_A_R(const uint8_t& reg)
+{
+	A = SUB_SBC_subFunctionFlag(A, reg);
+	cycles++;
+	pc++;
+}
+
+void Cpu::SUB_A_d8()
+{
+	pc++;
+	A = SUB_SBC_subFunctionFlag(A, memory.read(pc));
+	cycles += 2;
+	pc++;
+}
+
+void Cpu::SUB_A_aHL(const uint8_t& regPair1, const uint8_t& regPair2)
+{
+	A = SUB_SBC_subFunctionFlag(A, memory.read(pairRegisters(regPair1, regPair2)));
+	cycles += 2;
+	pc++;
+}
+
+
+
+void Cpu::SBC_A_R_CY(const uint8_t& reg)
+{
+	A = SUB_SBC_subFunctionFlag(A, F.CY);
+	A = SUB_SBC_subFunctionFlag(A, reg);
+	cycles++;
+	pc++;
+}
+
+void Cpu::SBC_A_d8_CY()
+{
+	pc++;
+	A = SUB_SBC_subFunctionFlag(A, F.CY);
+	A = SUB_SBC_subFunctionFlag(A, memory.read(pc));
+	cycles += 2;
+	pc++;
+}
+
+void Cpu::SBC_A_aHL_CY(const uint8_t& regPair1, const uint8_t& regPair2)
+{
+	A = SUB_SBC_subFunctionFlag(A, F.CY);
+	A = SUB_SBC_subFunctionFlag(A, memory.read(pairRegisters(regPair1, regPair2)));
+	cycles += 2;
+	pc++;
+}
+
+uint8_t Cpu::SUB_SBC_subFunctionFlag(const uint8_t& reg, const uint8_t& value)
+{
+	//Variables to use after calculs
+	bool borrowBit3 = 0;
+	bool borrowBit7 = 0;
+	uint8_t subStractionValue = binarySubstraction(8, reg, value, borrowBit3, borrowBit7);
+
+	F.Z = !reg;
+	F.H = borrowBit3;
+	F.N = 1;
+	F.CY = borrowBit7;
+
+	return subStractionValue;
+}
+
+
+
+
+
 
 //
 //void Cpu::AND_R_d8(uint8_t& reg1)
