@@ -208,7 +208,7 @@ private:
 
 	/*-------------------------------------ROTATE SHIFT INSTRUCTION---------------------------------------*/
 	//Page 13	(p98)
-	
+
 	//WORKING BUT MIGHT HAVE AN ISSUE WITH Z FLAG THAT MAY BE TO SET OR UNSET (the doc said no but still represent it in the calculs)
 	void RLCA();
 	void RLA();
@@ -247,22 +247,24 @@ private:
 
 	//RESUME HERE
 	//Page 16	(p103)
-	void BIT_R(const uint8_t& reg,const uint8_t& index);
-	void BIT_aHL(const uint8_t& index);
-	void SET_R(uint8_t& reg, const uint8_t& index);
-	void SET_aHL(const uint8_t& index);
-	void RES_R(uint8_t& reg, const uint8_t& index);
-	void RES_aHL(const uint8_t& index);
+	void BIT_b_R(const uint8_t& indexBit, const uint8_t& reg);//SHOULD WORK
+	void BIT_b_aHL(const uint8_t& indexBit);
+
+	void SET_b_R(const uint8_t& indexBit, uint8_t& reg);
+	void SET_b_aHL(const uint8_t& indexBit);
+	
+	void RES_b_R(const uint8_t& indexBit, uint8_t& reg);
+	void RES_b_aHL(const uint8_t& indexBit);
 
 
-	///*-------------------------------------JUMP INSTRUCTIONS---------------------------------------*/
-	//
-	///////////////////////////////////////TO CHECK////////////////////////////////////////////////////
-	//// Error, with the e in the functions
-	////Page 18	(p105)
-	//void JP_d16();
-	//void JP_cc();
-	//void JR();
+	/*-------------------------------------JUMP INSTRUCTIONS---------------------------------------*/
+	
+	/////////////////////////////////////TO CHECK////////////////////////////////////////////////////
+	// Error, with the e in the functions
+	//Page 18	(p105)
+	void JP_d16();
+	void JP_cc();
+	void JR();
 
 	////Page 19	(p106)
 	//void JR_cc();

@@ -390,198 +390,198 @@ void Cpu::executeOpcodeFollowingCB()
 	case(0x3D): {SRL_R(L); break; }
 	case(0x3E): {SRL_aHL(); break; }
 	case(0x3F): {SRL_R(A); break; }
-	case(0x40): {BIT_R(B); break; }
-	case(0x41): {BIT_R(C); break; }
-	case(0x42): {BIT_R(D); break; }
-	case(0x43): {BIT_R(E); break; }
-	case(0x44): {BIT_R(H); break; }
-	case(0x45): {BIT_R(L); break; }
-	case(0x46): {BIT_aHL(); break; }
-	case(0x47): {BIT_R(A); break; }
-	case(0x48): {BIT_R(B); break; }
-	case(0x49): {BIT_R(C); break; }
-	case(0x4A): {BIT_R(D); break; }
-	case(0x4B): {BIT_R(E); break; }
-	case(0x4C): {BIT_R(H); break; }
-	case(0x4D): {BIT_R(L); break; }
-	case(0x4E): {BIT_aHL(); break; }
-	case(0x4F): {BIT_R(A); break; }
-	case(0x50): {BIT_R(B); break; }
-	case(0x51): {BIT_R(C); break; }
-	case(0x52): {BIT_R(D); break; }
-	case(0x53): {BIT_R(E); break; }
-	case(0x54): {BIT_R(H); break; }
-	case(0x55): {BIT_R(L); break; }
-	case(0x56): {BIT_aHL(); break; }
-	case(0x57): {BIT_R(A); break; }
-	case(0x58): {BIT_R(B); break; }
-	case(0x59): {BIT_R(C); break; }
-	case(0x5A): {BIT_R(D); break; }
-	case(0x5B): {BIT_R(E); break; }
-	case(0x5C): {BIT_R(H); break; }
-	case(0x5D): {BIT_R(L); break; }
-	case(0x5E): {BIT_aHL(); break; }
-	case(0x5F): {BIT_R(A); break; }
-	case(0x60): {BIT_R(B); break; }
-	case(0x61): {BIT_R(C); break; }
-	case(0x62): {BIT_R(D); break; }
-	case(0x63): {BIT_R(E); break; }
-	case(0x64): {BIT_R(H); break; }
-	case(0x65): {BIT_R(L); break; }
-	case(0x66): {BIT_aHL(); break; }
-	case(0x67): {BIT_R(A); break; }
-	case(0x68): {BIT_R(B); break; }
-	case(0x69): {BIT_R(C); break; }
-	case(0x6A): {BIT_R(D); break; }
-	case(0x6B): {BIT_R(E); break; }
-	case(0x6C): {BIT_R(H); break; }
-	case(0x6D): {BIT_R(L); break; }
-	case(0x6E): {BIT_aHL(); break; }
-	case(0x6F): {BIT_R(A); break; }
-	case(0x70): {BIT_R(B); break; }
-	case(0x71): {BIT_R(C); break; }
-	case(0x72): {BIT_R(D); break; }
-	case(0x73): {BIT_R(E); break; }
-	case(0x74): {BIT_R(H); break; }
-	case(0x75): {BIT_R(L); break; }
-	case(0x76): {BIT_aHL(); break; }
-	case(0x77): {BIT_R(A); break; }
-	case(0x78): {BIT_R(B); break; }
-	case(0x79): {BIT_R(C); break; }
-	case(0x7A): {BIT_R(D); break; }
-	case(0x7B): {BIT_R(E); break; }
-	case(0x7C): {BIT_R(H); break; }
-	case(0x7D): {BIT_R(L); break; }
-	case(0x7E): {BIT_aHL(); break; }
-	case(0x7F): {BIT_R(A); break; }
-	case(0x80): {RES_R(B); break; }
-	case(0x81): {RES_R(C); break; }
-	case(0x82): {RES_R(D); break; }
-	case(0x83): {RES_R(E); break; }
-	case(0x84): {RES_R(H); break; }
-	case(0x85): {RES_R(L); break; }
-	case(0x86): {RES_aHL(); break; }
-	case(0x87): {RES_R(A); break; }
-	case(0x88): {RES_R(B); break; }
-	case(0x89): {RES_R(C); break; }
-	case(0x8A): {RES_R(D); break; }
-	case(0x8B): {RES_R(E); break; }
-	case(0x8C): {RES_R(H); break; }
-	case(0x8D): {RES_R(L); break; }
-	case(0x8E): {RES_aHL(); break; }
-	case(0x8F): {RES_R(A); break; }
-	case(0x90): {RES_R(B); break; }
-	case(0x91): {RES_R(C); break; }
-	case(0x92): {RES_R(D); break; }
-	case(0x93): {RES_R(E); break; }
-	case(0x94): {RES_R(H); break; }
-	case(0x95): {RES_R(L); break; }
-	case(0x96): {RES_aHL(); break; }
-	case(0x97): {RES_R(A); break; }
-	case(0x98): {RES_R(B); break; }
-	case(0x99): {RES_R(C); break; }
-	case(0x9A): {RES_R(D); break; }
-	case(0x9B): {RES_R(E); break; }
-	case(0x9C): {RES_R(H); break; }
-	case(0x9D): {RES_R(L); break; }
-	case(0x9E): {RES_aHL(); break; }
-	case(0x9F): {RES_R(A); break; }
-	case(0xA0): {RES_R(B); break; }
-	case(0xA1): {RES_R(C); break; }
-	case(0xA2): {RES_R(D); break; }
-	case(0xA3): {RES_R(E); break; }
-	case(0xA4): {RES_R(H); break; }
-	case(0xA5): {RES_R(L); break; }
-	case(0xA6): {RES_aHL(); break; }
-	case(0xA7): {RES_R(A); break; }
-	case(0xA8): {RES_R(B); break; }
-	case(0xA9): {RES_R(C); break; }
-	case(0xAA): {RES_R(D); break; }
-	case(0xAB): {RES_R(E); break; }
-	case(0xAC): {RES_R(H); break; }
-	case(0xAD): {RES_R(L); break; }
-	case(0xAE): {RES_aHL(); break; }
-	case(0xAF): {RES_R(A); break; }
-	case(0xB0): {RES_R(B); break; }
-	case(0xB1): {RES_R(C); break; }
-	case(0xB2): {RES_R(D); break; }
-	case(0xB3): {RES_R(E); break; }
-	case(0xB4): {RES_R(H); break; }
-	case(0xB5): {RES_R(L); break; }
-	case(0xB6): {RES_aHL(); break; }
-	case(0xB7): {RES_R(A); break; }
-	case(0xB8): {RES_R(B); break; }
-	case(0xB9): {RES_R(C); break; }
-	case(0xBA): {RES_R(D); break; }
-	case(0xBB): {RES_R(E); break; }
-	case(0xBC): {RES_R(H); break; }
-	case(0xBD): {RES_R(L); break; }
-	case(0xBE): {RES_aHL(); break; }
-	case(0xBF): {RES_R(A); break; }
-	case(0xC0): {SET_R(B); break; }
-	case(0xC1): {SET_R(C); break; }
-	case(0xC2): {SET_R(D); break; }
-	case(0xC3): {SET_R(E); break; }
-	case(0xC4): {SET_R(H); break; }
-	case(0xC5): {SET_R(L); break; }
-	case(0xC6): {SET_aHL(); break; }
-	case(0xC7): {SET_R(A); break; }
-	case(0xC8): {SET_R(B); break; }
-	case(0xC9): {SET_R(C); break; }
-	case(0xCA): {SET_R(D); break; }
-	case(0xCB): {SET_R(E); break; }
-	case(0xCC): {SET_R(H); break; }
-	case(0xCD): {SET_R(L); break; }
-	case(0xCE): {SET_aHL(); break; }
-	case(0xCF): {SET_R(A); break; }
-	case(0xD0): {SET_R(B); break; }
-	case(0xD1): {SET_R(C); break; }
-	case(0xD2): {SET_R(D); break; }
-	case(0xD3): {SET_R(E); break; }
-	case(0xD4): {SET_R(H); break; }
-	case(0xD5): {SET_R(L); break; }
-	case(0xD6): {SET_aHL(); break; }
-	case(0xD7): {SET_R(A); break; }
-	case(0xD8): {SET_R(B); break; }
-	case(0xD9): {SET_R(C); break; }
-	case(0xDA): {SET_R(D); break; }
-	case(0xDB): {SET_R(E); break; }
-	case(0xDC): {SET_R(H); break; }
-	case(0xDD): {SET_R(L); break; }
-	case(0xDE): {SET_aHL(); break; }
-	case(0xDF): {SET_R(A); break; }
-	case(0xE0): {SET_R(B); break; }
-	case(0xE1): {SET_R(C); break; }
-	case(0xE2): {SET_R(D); break; }
-	case(0xE3): {SET_R(E); break; }
-	case(0xE4): {SET_R(H); break; }
-	case(0xE5): {SET_R(L); break; }
-	case(0xE6): {SET_aHL(); break; }
-	case(0xE7): {SET_R(A); break; }
-	case(0xE8): {SET_R(B); break; }
-	case(0xE9): {SET_R(C); break; }
-	case(0xEA): {SET_R(D); break; }
-	case(0xEB): {SET_R(E); break; }
-	case(0xEC): {SET_R(H); break; }
-	case(0xED): {SET_R(L); break; }
-	case(0xEE): {SET_aHL(); break; }
-	case(0xEF): {SET_R(A); break; }
-	case(0xF0): {SET_R(B); break; }
-	case(0xF1): {SET_R(C); break; }
-	case(0xF2): {SET_R(D); break; }
-	case(0xF3): {SET_R(E); break; }
-	case(0xF4): {SET_R(H); break; }
-	case(0xF5): {SET_R(L); break; }
-	case(0xF6): {SET_aHL(); break; }
-	case(0xF7): {SET_R(A); break; }
-	case(0xF8): {SET_R(B); break; }
-	case(0xF9): {SET_R(C); break; }
-	case(0xFA): {SET_R(D); break; }
-	case(0xFB): {SET_R(E); break; }
-	case(0xFC): {SET_R(H); break; }
-	case(0xFD): {SET_R(L); break; }
-	case(0xFE): {SET_aHL(); break; }
-	case(0xFF): {SET_R(A); break; }
+	case(0x40): {BIT_b_R(0, B); break; }
+	case(0x41): {BIT_b_R(0, C); break; }
+	case(0x42): {BIT_b_R(0, D); break; }
+	case(0x43): {BIT_b_R(0, E); break; }
+	case(0x44): {BIT_b_R(0, H); break; }
+	case(0x45): {BIT_b_R(0, L); break; }
+	case(0x46): {BIT_b_aHL(0); break; }
+	case(0x47): {BIT_b_R(0, A); break; }
+	case(0x48): {BIT_b_R(1, B); break; }
+	case(0x49): {BIT_b_R(1, C); break; }
+	case(0x4A): {BIT_b_R(1, D); break; }
+	case(0x4B): {BIT_b_R(1, E); break; }
+	case(0x4C): {BIT_b_R(1, H); break; }
+	case(0x4D): {BIT_b_R(1, L); break; }
+	case(0x4E): {BIT_b_aHL(1); break; }
+	case(0x4F): {BIT_b_R(1, A); break; }
+	case(0x50): {BIT_b_R(2, B); break; }
+	case(0x51): {BIT_b_R(2, C); break; }
+	case(0x52): {BIT_b_R(2, D); break; }
+	case(0x53): {BIT_b_R(2, E); break; }
+	case(0x54): {BIT_b_R(2, H); break; }
+	case(0x55): {BIT_b_R(2, L); break; }
+	case(0x56): {BIT_b_aHL(2); break; }
+	case(0x57): {BIT_b_R(2, A); break; }
+	case(0x58): {BIT_b_R(3, B); break; }
+	case(0x59): {BIT_b_R(3, C); break; }
+	case(0x5A): {BIT_b_R(3, D); break; }
+	case(0x5B): {BIT_b_R(3, E); break; }
+	case(0x5C): {BIT_b_R(3, H); break; }
+	case(0x5D): {BIT_b_R(3, L); break; }
+	case(0x5E): {BIT_b_aHL(3); break; }
+	case(0x5F): {BIT_b_R(3, A); break; }
+	case(0x60): {BIT_b_R(4, B); break; }
+	case(0x61): {BIT_b_R(4, C); break; }
+	case(0x62): {BIT_b_R(4, D); break; }
+	case(0x63): {BIT_b_R(4, E); break; }
+	case(0x64): {BIT_b_R(4, H); break; }
+	case(0x65): {BIT_b_R(4, L); break; }
+	case(0x66): {BIT_b_aHL(4); break; }
+	case(0x67): {BIT_b_R(4, A); break; }
+	case(0x68): {BIT_b_R(5, B); break; }
+	case(0x69): {BIT_b_R(5, C); break; }
+	case(0x6A): {BIT_b_R(5, D); break; }
+	case(0x6B): {BIT_b_R(5, E); break; }
+	case(0x6C): {BIT_b_R(5, H); break; }
+	case(0x6D): {BIT_b_R(5, L); break; }
+	case(0x6E): {BIT_b_aHL(5); break; }
+	case(0x6F): {BIT_b_R(5, A); break; }
+	case(0x70): {BIT_b_R(6, B); break; }
+	case(0x71): {BIT_b_R(6, C); break; }
+	case(0x72): {BIT_b_R(6, D); break; }
+	case(0x73): {BIT_b_R(6, E); break; }
+	case(0x74): {BIT_b_R(6, H); break; }
+	case(0x75): {BIT_b_R(6, L); break; }
+	case(0x76): {BIT_b_aHL(6); break; }
+	case(0x77): {BIT_b_R(6, A); break; }
+	case(0x78): {BIT_b_R(7, B); break; }
+	case(0x79): {BIT_b_R(7, C); break; }
+	case(0x7A): {BIT_b_R(7, D); break; }
+	case(0x7B): {BIT_b_R(7, E); break; }
+	case(0x7C): {BIT_b_R(7, H); break; }
+	case(0x7D): {BIT_b_R(7, L); break; }
+	case(0x7E): {BIT_b_aHL(7); break; }
+	case(0x7F): {BIT_b_R(7, A); break; }
+	case(0x80): {RES_b_R(0, B); break; }
+	case(0x81): {RES_b_R(0, C); break; }
+	case(0x82): {RES_b_R(0, D); break; }
+	case(0x83): {RES_b_R(0, E); break; }
+	case(0x84): {RES_b_R(0, H); break; }
+	case(0x85): {RES_b_R(0, L); break; }
+	case(0x86): {RES_b_aHL(0); break; }
+	case(0x87): {RES_b_R(0, A); break; }
+	case(0x88): {RES_b_R(1, B); break; }
+	case(0x89): {RES_b_R(1, C); break; }
+	case(0x8A): {RES_b_R(1, D); break; }
+	case(0x8B): {RES_b_R(1, E); break; }
+	case(0x8C): {RES_b_R(1, H); break; }
+	case(0x8D): {RES_b_R(1, L); break; }
+	case(0x8E): {RES_b_aHL(1); break; }
+	case(0x8F): {RES_b_R(1, A); break; }
+	case(0x90): {RES_b_R(2, B); break; }
+	case(0x91): {RES_b_R(2, C); break; }
+	case(0x92): {RES_b_R(2, D); break; }
+	case(0x93): {RES_b_R(2, E); break; }
+	case(0x94): {RES_b_R(2, H); break; }
+	case(0x95): {RES_b_R(2, L); break; }
+	case(0x96): {RES_b_aHL(2); break; }
+	case(0x97): {RES_b_R(2, A); break; }
+	case(0x98): {RES_b_R(3, B); break; }
+	case(0x99): {RES_b_R(3, C); break; }
+	case(0x9A): {RES_b_R(3, D); break; }
+	case(0x9B): {RES_b_R(3, E); break; }
+	case(0x9C): {RES_b_R(3, H); break; }
+	case(0x9D): {RES_b_R(3, L); break; }
+	case(0x9E): {RES_b_aHL(3); break; }
+	case(0x9F): {RES_b_R(3, A); break; }
+	case(0xA0): {RES_b_R(4, B); break; }
+	case(0xA1): {RES_b_R(4, C); break; }
+	case(0xA2): {RES_b_R(4, D); break; }
+	case(0xA3): {RES_b_R(4, E); break; }
+	case(0xA4): {RES_b_R(4, H); break; }
+	case(0xA5): {RES_b_R(4, L); break; }
+	case(0xA6): {RES_b_aHL(4); break; }
+	case(0xA7): {RES_b_R(4, A); break; }
+	case(0xA8): {RES_b_R(5, B); break; }
+	case(0xA9): {RES_b_R(5, C); break; }
+	case(0xAA): {RES_b_R(5, D); break; }
+	case(0xAB): {RES_b_R(5, E); break; }
+	case(0xAC): {RES_b_R(5, H); break; }
+	case(0xAD): {RES_b_R(5, L); break; }
+	case(0xAE): {RES_b_aHL(5); break; }
+	case(0xAF): {RES_b_R(5, A); break; }
+	case(0xB0): {RES_b_R(6, B); break; }
+	case(0xB1): {RES_b_R(6, C); break; }
+	case(0xB2): {RES_b_R(6, D); break; }
+	case(0xB3): {RES_b_R(6, E); break; }
+	case(0xB4): {RES_b_R(6, H); break; }
+	case(0xB5): {RES_b_R(6, L); break; }
+	case(0xB6): {RES_b_aHL(6); break; }
+	case(0xB7): {RES_b_R(6, A); break; }
+	case(0xB8): {RES_b_R(7, B); break; }
+	case(0xB9): {RES_b_R(7, C); break; }
+	case(0xBA): {RES_b_R(7, D); break; }
+	case(0xBB): {RES_b_R(7, E); break; }
+	case(0xBC): {RES_b_R(7, H); break; }
+	case(0xBD): {RES_b_R(7, L); break; }
+	case(0xBE): {RES_b_aHL(7); break; }
+	case(0xBF): {RES_b_R(7, A); break; }
+	case(0xC0): {SET_b_R(0, B); break; }
+	case(0xC1): {SET_b_R(0, C); break; }
+	case(0xC2): {SET_b_R(0, D); break; }
+	case(0xC3): {SET_b_R(0, E); break; }
+	case(0xC4): {SET_b_R(0, H); break; }
+	case(0xC5): {SET_b_R(0, L); break; }
+	case(0xC6): {SET_b_aHL(0); break; }
+	case(0xC7): {SET_b_R(0, A); break; }
+	case(0xC8): {SET_b_R(1, B); break; }
+	case(0xC9): {SET_b_R(1, C); break; }
+	case(0xCA): {SET_b_R(1, D); break; }
+	case(0xCB): {SET_b_R(1, E); break; }
+	case(0xCC): {SET_b_R(1, H); break; }
+	case(0xCD): {SET_b_R(1, L); break; }
+	case(0xCE): {SET_b_aHL(1); break; }
+	case(0xCF): {SET_b_R(1, A); break; }
+	case(0xD0): {SET_b_R(2, B); break; }
+	case(0xD1): {SET_b_R(2, C); break; }
+	case(0xD2): {SET_b_R(2, D); break; }
+	case(0xD3): {SET_b_R(2, E); break; }
+	case(0xD4): {SET_b_R(2, H); break; }
+	case(0xD5): {SET_b_R(2, L); break; }
+	case(0xD6): {SET_b_aHL(2); break; }
+	case(0xD7): {SET_b_R(2, A); break; }
+	case(0xD8): {SET_b_R(3, B); break; }
+	case(0xD9): {SET_b_R(3, C); break; }
+	case(0xDA): {SET_b_R(3, D); break; }
+	case(0xDB): {SET_b_R(3, E); break; }
+	case(0xDC): {SET_b_R(3, H); break; }
+	case(0xDD): {SET_b_R(3, L); break; }
+	case(0xDE): {SET_b_aHL(3); break; }
+	case(0xDF): {SET_b_R(3, A); break; }
+	case(0xE0): {SET_b_R(4, B); break; }
+	case(0xE1): {SET_b_R(4, C); break; }
+	case(0xE2): {SET_b_R(4, D); break; }
+	case(0xE3): {SET_b_R(4, E); break; }
+	case(0xE4): {SET_b_R(4, H); break; }
+	case(0xE5): {SET_b_R(4, L); break; }
+	case(0xE6): {SET_b_aHL(4); break; }
+	case(0xE7): {SET_b_R(4, A); break; }
+	case(0xE8): {SET_b_R(5, B); break; }
+	case(0xE9): {SET_b_R(5, C); break; }
+	case(0xEA): {SET_b_R(5, D); break; }
+	case(0xEB): {SET_b_R(5, E); break; }
+	case(0xEC): {SET_b_R(5, H); break; }
+	case(0xED): {SET_b_R(5, L); break; }
+	case(0xEE): {SET_b_aHL(5); break; }
+	case(0xEF): {SET_b_R(5, A); break; }
+	case(0xF0): {SET_b_R(6, B); break; }
+	case(0xF1): {SET_b_R(6, C); break; }
+	case(0xF2): {SET_b_R(6, D); break; }
+	case(0xF3): {SET_b_R(6, E); break; }
+	case(0xF4): {SET_b_R(6, H); break; }
+	case(0xF5): {SET_b_R(6, L); break; }
+	case(0xF6): {SET_b_aHL(6); break; }
+	case(0xF7): {SET_b_R(6, A); break; }
+	case(0xF8): {SET_b_R(7, B); break; }
+	case(0xF9): {SET_b_R(7, C); break; }
+	case(0xFA): {SET_b_R(7, D); break; }
+	case(0xFB): {SET_b_R(7, E); break; }
+	case(0xFC): {SET_b_R(7, H); break; }
+	case(0xFD): {SET_b_R(7, L); break; }
+	case(0xFE): {SET_b_aHL(7); break; }
+	case(0xFF): {SET_b_R(7, A);  break; }
 	default: {cout << "Error opcode after CB unknown" << endl; break; }
 	}
 }
@@ -1680,27 +1680,25 @@ void Cpu::SWAP_aHL()
 
 
 //Page 18
-void Cpu::BIT_b_R(const uint8_t& reg, const uint8_t& index)
+void Cpu::BIT_b_R(const uint8_t& indexBit, const uint8_t& reg)
 {
 	F.H = 1;
 	F.N = 0;
 	uint8_t date8Bits = memory.read(pc);//Get the data byte
-	uint8_t indexBit = (date8Bits & 0b00111000) >> 3;//Get index of bit to put value in F.Z
 	F.Z = !((reg & (0b00000001 << indexBit)) >> (indexBit));//Attribute to F.Z the bit's complement of the reg pointed by the index calculated previously
-	cycles++;
+	cycles += 2;
 	pc++;
 }
 
-void Cpu::BIT_aHL()
+void Cpu::BIT_b_aHL(const uint8_t& indexBit)
 {
-	BIT_R(memory.read(pairRegisters(H, L)));
-	cycles += 2;
+	BIT_b_R(memory.read(pairRegisters(H, L)), indexBit);
+	cycles++;
 }
 
-void Cpu::SET_R(uint8_t& reg)
+void Cpu::SET_b_R(const uint8_t& indexBit, uint8_t& reg)
 {
 	uint8_t date8Bits = memory.read(pc);//Get the data byte
-	uint8_t indexBit = (date8Bits & 0b00111000) >> 3;//Get index of bit to set in register
 	reg |= (0b00000001 << indexBit);//Se the bit pointed by the index calculated previously
 	cycles += 2;
 	pc++;
@@ -1708,19 +1706,18 @@ void Cpu::SET_R(uint8_t& reg)
 
 
 //Page 17
-void Cpu::SET_aHL()
+void Cpu::SET_b_aHL(const uint8_t& indexBit)
 {
 	uint8_t temp = memory.read(pairRegisters(H, L));
-	SET_R(temp);
+	SET_b_R(indexBit, temp);
 	memory.write(pairRegisters(H, L), temp);
 	cycles += 2;
 }
 
 
-void Cpu::RES_R(uint8_t& reg)
+void Cpu::RES_b_R(const uint8_t& indexBit, uint8_t& reg)
 {
 	uint8_t date8Bits = memory.read(pc);//Get the data byte
-	uint8_t indexBit = (date8Bits & 0b00111000) >> 3;//Get index of bit to set in register
 	uint8_t mask = (0b00000001 << indexBit);//Shift the bit to set to 0 to the right position
 	mask = ~mask;//Invert the ma
 	reg &= mask;
@@ -1728,10 +1725,10 @@ void Cpu::RES_R(uint8_t& reg)
 	pc++;
 }
 
-void Cpu::RES_aHL()
+void Cpu::RES_b_aHL(const uint8_t& indexBit)
 {
 	uint8_t temp = memory.read(pairRegisters(H, L));
-	SET_R(temp);
+	SET_b_R(indexBit, temp);
 	memory.write(pairRegisters(H, L), temp);
 	cycles += 2;
 }
