@@ -45,7 +45,7 @@ private:
 		bool H;					//Set to 1 when an operation results in carrying from or borrowing to bit 3
 		bool CY;				//Set to 1 when an operation results in carrying from or borrowing to bit 7
 	} F;						//Auxiliary register of the accumulator, consist of 4 flags that are set and reset according to the results of instruction execution
-	
+
 	//Memory* memory = nullptr;
 	Memory memory;				//Memory of the console
 
@@ -66,7 +66,7 @@ private:
 
 	uint16_t pairRegisters(const uint8_t reg1, const uint8_t reg2)const;
 	void unpairRegisters(uint8_t& reg1, uint8_t& reg2, const uint16_t& registersPair);//The & 0x00FF is not an obligation
-	
+
 	uint8_t flagToByte(const Flag& flag)const;
 	Flag byteToFlag(const uint8_t& byte)const;
 
@@ -90,7 +90,7 @@ private:
 	/// - aR the value pointed in the memory by the register
 	/// - RI means incrementation of the register
 	/// - RD means decrementation of the register
-	
+
 	/// </summary>
 
 
@@ -134,14 +134,12 @@ private:
 	void POP_RP(uint8_t& regPair1, uint8_t& regPair2);//WORKING
 	void POP_RP(uint8_t& regPair1, Flag& flag);//WORKING MAY HAVE A PROBLEM WITH THE CONVERSION FROM FLAG TO BYTE
 
-	void LDHL_SP_e();//NOT SURE AT ALL
+	void LDHL_SP_e();//NOT SURE AT ALL PERHAPS CY AND H ARE SUPPOSED TO BE CARRY OF BIT 11 AND 15, ALSO ISSUE WHEN E NEGATIVE IS WRONG
 	void LD_a16_SP();//WORKING IT SHOULD
 
 
 
 	/*-------------------------------------8bits ARITHMETIC AND LOGICAL OPERATION INSTRUCTIONS---------------------------------------*/
-
-	//RESUME HERE WITH THE ADC AND SBC
 
 	void ADD_A_R(const uint8_t& reg);//WORKING EXCEPT IF THE SUBFONCTION DOESN'T WORK
 	void ADD_A_d8();//WORKING
@@ -154,115 +152,107 @@ private:
 	uint8_t ADD_ADC_subFunctionFlag(const uint8_t& reg, const uint8_t& value);//WORKING IT SHOULD
 
 
-	
-	void SUB_A_R(const uint8_t& reg);
+
+	void SUB_A_R(const uint8_t& reg);//WORKING EXCEPT IF THE SUBFONCTION DOESN'T WORK
 	void SUB_A_d8();
 	void SUB_A_aHL(const uint8_t& regPair1, const uint8_t& regPair2);
 
-	void SBC_A_R_CY(const uint8_t& reg);//TO BE CHECKED, PERHAPS IT IS NEEDED TO VERIFY IF F.CY=1 IF IT IS THAN WE DO THE SBC A,F.CY
-	void SBC_A_d8_CY();//TO BE CHECKED, PERHAPS IT IS NEEDED TO VERIFY IF F.CY=1 IF IT IS THAN WE DO THE SBC A,F.CY
-	void SBC_A_aHL_CY(const uint8_t& regPair1, const uint8_t& regPair2);//TO BE CHECKED, PERHAPS IT IS NEEDED TO VERIFY IF F.CY=1 IF IT IS THAN WE DO THE SBC A,F.CY
+	void SBC_A_R_CY(const uint8_t& reg);//WORKING EXCEPT IF THE SUBFONCTION DOESN'T WORK
+	void SBC_A_d8_CY();
+	void SBC_A_aHL_CY(const uint8_t& regPair1, const uint8_t& regPair2);
 
 	uint8_t SUB_SBC_subFunctionFlag(const uint8_t& reg, const uint8_t& value);
 
 
-	
+	void AND_A_R(const uint8_t& reg);//WORKING
+	void AND_A_d8();//WORKING
+	void AND_A_aHL();//WORKING
+
+	void OR_A_R(const uint8_t& reg);//WORKING
+	void OR_A_d8();//WORKING
+	void OR_A_aHL();//WORKING
 
 
-
-	////Page 10	(p94)
-	//void AND_R_R(uint8_t& reg1, const uint8_t& reg2);
-	//void AND_R_d8(uint8_t& reg1);
-	//void AND_R_aHL(uint8_t& reg, const uint8_t& regPair1, const uint8_t& regPair2);
-
-	//void OR_R_R(uint8_t& reg1, const uint8_t& reg2);
-	//void OR_R_d8(uint8_t& reg1);
-	//void OR_R_aHL(uint8_t& reg, const uint8_t& regPair1, const uint8_t& regPair2);
-
-	//void XOR_R_R(uint8_t& reg1, const uint8_t& reg2);
-	//void XOR_R_d8(uint8_t& reg1);
-	//void XOR_R_aHL(uint8_t& reg, const uint8_t& regPair1, const uint8_t& regPair2);
+	void XOR_A_R(const uint8_t& reg);//WORKING
+	void XOR_A_d8();//WORKING
+	void XOR_A_aHL();//WORKING
 
 
 	////Page 11	(p95)
-	//void CP_R_R(const uint8_t& reg1, const uint8_t& reg2);
-	//void CP_R_d8(const uint8_t& reg1);
-	//void CP_R_aHL(const uint8_t& reg, const uint8_t& regPair1, const uint8_t& regPair2);
-	//void CP_subFunctionFlag(const uint8_t& reg1, const uint8_t& reg2);
+	void CP_A_R(const uint8_t& reg);//PERHAPS ISSUE IF CP IS IN FACT A SUBSTRACTION
+	void CP_A_d8();//PERHAPS ISSUE IF CP IS IN FACT A SUBSTRACTION
+	void CP_A_aHL();//PERHAPS ISSUE IF CP IS IN FACT A SUBSTRACTION
+	void CP_subFunctionFlag(const uint8_t& reg);//SHOULD WORK
 
 
-	//void INC_R(uint8_t& reg);
-	//void INC_aHL(const uint8_t& regPair1, const uint8_t& regPair2);
-	//void INC_subFunctionFlag(uint8_t& reg);
+	void INC_R(uint8_t& reg);//WORKING
+	void INC_aHL();//WORKING
+	void INC_subFunctionFlag(uint8_t& reg);//WORKING
 
-	//void DEC_R(uint8_t& reg);
-
-	////Page 12	(p96)
-	//void DEC_aHL(const uint8_t& regPair1, const uint8_t& regPair2);
-
-	//void DEC_subFunctionFlag(uint8_t& reg);
+	void DEC_R(uint8_t& reg);//WORKING
+	void DEC_aHL();//WORKING
+	void DEC_subFunctionFlag(uint8_t& reg);//WORKING
 
 
 	///*-------------------------------------16bits ARITHMETIC OPERATION INSTRUCTIONS---------------------------------------*/
-	////Page 12	(p97)
-	//void ADD_HL_RP(const uint16_t& regsPair);
-	//void ADD_SP_e();
-	//void INC_RP(uint8_t& regPair1, uint8_t& regPair2);
-	//void INC_RP(uint16_t& regsPair);
-	//void DEC_RP(uint8_t& regPair1, uint8_t& regPair2);
-	//void DEC_RP(uint16_t& regsPair);
-
-	//int binaryAddition16bits(const int& value1, const int& value2, bool& carryBit3, bool& carryBit7);
-
-
-	///*-------------------------------------ROTATE SHIFT INSTRUCTION---------------------------------------*/
-	////Page 13	(p98)
-	////TO CHECK, THERE MIGHT BE ERRORS IN THE EXAMPLES, SO THE OCPODES ARE POSSIBILY NOT WELL IMPLEMENTED
-	//void RLCA();
-	//void RLA();
-	//void RRCA();
-	//void RRA();
+	//Page 12	(p97)
+	void ADD_HL_RP(const uint16_t& regsPair);//WORKING
+	void ADD_HL_RP(const uint8_t& regPair1, const uint8_t& regPair2);//WORKING
+	void ADD_SP_e();//NOT WORKING AT ALL
+	void INC_RP(uint8_t& regPair1, uint8_t& regPair2);
+	void INC_RP(uint16_t& regsPair);
+	void DEC_RP(uint8_t& regPair1, uint8_t& regPair2);
+	void DEC_RP(uint16_t& regsPair);
+	int binaryAddition16bits(const int& value1, const int& value2, bool& carryBit3, bool& carryBit7);
 
 
+	/*-------------------------------------ROTATE SHIFT INSTRUCTION---------------------------------------*/
+	//Page 13	(p98)
+	
+	//WORKING BUT MIGHT HAVE AN ISSUE WITH Z FLAG THAT MAY BE TO SET OR UNSET (the doc said no but still represent it in the calculs)
+	void RLCA();
+	void RLA();
+	void RRCA();
+	void RRA();
 
-	////Page 14	(p99)
-	//void RLC_R(uint8_t& reg);
-	//void RLC_aHL();
-	//void RL_R(uint8_t& reg);
-	//void RL_aHL();
+
+
+	//Page 14	(p99)
+	void RLC_R(uint8_t& reg);//SHOULD WORK
+	void RLC_aHL();
+	void RL_R(uint8_t& reg);
+	void RL_aHL();
 
 	////Page 15	(p100)
-	//void RRC_R(uint8_t& reg);
-	//void RRC_aHL();
-	//void RR_R(uint8_t& reg);
-	//void RR_aHL();
+	void RRC_R(uint8_t& reg);//SHOULD WORK
+	void RRC_aHL();
+	void RR_R(uint8_t& reg);
+	void RR_aHL();
 
 	////Page 16	(p101)
-	//void SLA_R(uint8_t& reg);
-	//void SLA_aHL();
+	void SLA_R(uint8_t& reg);//SHOULD WORK
+	void SLA_aHL();
 
-	//void SRA_R(uint8_t& reg);
-	//void SRA_aHL();
+	void SRA_R(uint8_t& reg);
+	void SRA_aHL();
 
 	////Page 17	(p102)
-	//void SRL_R(uint8_t& reg);
-	//void SRL_aHL();
+	void SRL_R(uint8_t& reg);//SHOULD WORK
+	void SRL_aHL();
 
-	//void SWAP_R(uint8_t& reg);
-	//void SWAP_aHL();
+	void SWAP_R(uint8_t& reg);//SHOULD WORK
+	void SWAP_aHL();
 
-	///*-------------------------------------BIT OPERATIONS---------------------------------------*/
+	/*-------------------------------------BIT OPERATIONS---------------------------------------*/
 
-	////Page 16	(p103)
-	//void BIT_R(const uint8_t& reg);
-	//void BIT_aHL();
-	//void SET_R(uint8_t& reg);
-
-	////Page 17	(p104)
-	//void SET_aHL();
-
-	//void RES_R(uint8_t& reg);
-	//void RES_aHL();
+	//RESUME HERE
+	//Page 16	(p103)
+	void BIT_R(const uint8_t& reg,const uint8_t& index);
+	void BIT_aHL(const uint8_t& index);
+	void SET_R(uint8_t& reg, const uint8_t& index);
+	void SET_aHL(const uint8_t& index);
+	void RES_R(uint8_t& reg, const uint8_t& index);
+	void RES_aHL(const uint8_t& index);
 
 
 	///*-------------------------------------JUMP INSTRUCTIONS---------------------------------------*/

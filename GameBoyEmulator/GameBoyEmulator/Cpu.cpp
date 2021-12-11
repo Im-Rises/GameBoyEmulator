@@ -82,7 +82,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x06): {LD_R_d8(B); break; }
 	case(0x07): {RLCA(); break; }
 	case(0x08): {LD_a16_SP(); break; }
-	case(0x09): {ADD_HL_RP(pairRegisters(B, C)); break; }
+	case(0x09): {ADD_HL_RP(B, C); break; }
 	case(0x0A): {LD_A_aBC(); break; }
 	case(0x0B): {DEC_RP(B, C); break; }
 	case(0x0C): {INC_R(C); break; }
@@ -98,7 +98,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x16): {LD_R_d8(D); break; }
 	case(0x17): {RLA(); break; }
 	case(0x18): {JR(); break; }
-	case(0x19): {ADD_HL_RP(pairRegisters(D, E)); break; }
+	case(0x19): {ADD_HL_RP(D, E); break; }
 	case(0x1A): {LD_A_aDE(); break; }
 	case(0x1B): {DEC_RP(D, E); break; }
 	case(0x1C): {INC_R(E); break; }
@@ -114,7 +114,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x26): {LD_R_d8(H); break; }
 	case(0x27): {DAA(); break; }
 	case(0x28): {JR_cc(); break; }
-	case(0x29): {ADD_HL_RP(pairRegisters(H, L)); break; }
+	case(0x29): {ADD_HL_RP(H, L); break; }
 	case(0x2A): {LD_A_aHL_HLI(); break; }
 	case(0x2B): {DEC_RP(H, L); break; }
 	case(0x2C): {INC_R(L); break; }
@@ -125,8 +125,8 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x31): {LD_RP_d16(sp); break; }
 	case(0x32): {LD_aHL_A_HLD(); break; }
 	case(0x33): {INC_RP(sp); break; }
-	case(0x34): {INC_aHL(H, L); break; }
-	case(0x35): {DEC_aHL(H, L); break; }
+	case(0x34): {INC_aHL(); break; }
+	case(0x35): {DEC_aHL(); break; }
 	case(0x36): {LD_aHL_d8(); break; }
 	case(0x37): {cout << "Opcode SCF not implemented for the moment at pc = " << hex << pc << endl; break; }
 	case(0x38): {JR_cc(); break; }
@@ -233,38 +233,38 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x9D): {SBC_A_R_CY(L); break; }
 	case(0x9E): {SBC_A_aHL_CY(H, L); break; }
 	case(0x9F): {SBC_A_R_CY(A); break; }
-	case(0xA0): {AND_R_R(A, B); break; }
-	case(0xA1): {AND_R_R(A, C); break; }
-	case(0xA2): {AND_R_R(A, D); break; }
-	case(0xA3): {AND_R_R(A, E); break; }
-	case(0xA4): {AND_R_R(A, H); break; }
-	case(0xA5): {AND_R_R(A, L); break; }
-	case(0xA6): {AND_R_aHL(A, H, L); break; }
-	case(0xA7): {AND_R_R(A, A); break; }
-	case(0xA8): {XOR_R_R(A, B); break; }
-	case(0xA9): {XOR_R_R(A, C); break; }
-	case(0xAA): {XOR_R_R(A, D); break; }
-	case(0xAB): {XOR_R_R(A, E); break; }
-	case(0xAC): {XOR_R_R(A, H); break; }
-	case(0xAD): {XOR_R_R(A, L); break; }
-	case(0xAE): {XOR_R_aHL(A, H, L); break; }
-	case(0xAF): {XOR_R_R(A, A); break; }
-	case(0xB0): {OR_R_R(A, B); break; }
-	case(0xB1): {OR_R_R(A, C); break; }
-	case(0xB2): {OR_R_R(A, D); break; }
-	case(0xB3): {OR_R_R(A, E); break; }
-	case(0xB4): {OR_R_R(A, H); break; }
-	case(0xB5): {OR_R_R(A, L); break; }
-	case(0xB6): {OR_R_aHL(A, H, L); break; }
-	case(0xB7): {OR_R_R(A, A); break; }
-	case(0xB8): {CP_R_R(A, B); break; }
-	case(0xB9): {CP_R_R(A, C); break; }
-	case(0xBA): {CP_R_R(A, D); break; }
-	case(0xBB): {CP_R_R(A, E); break; }
-	case(0xBC): {CP_R_R(A, H); break; }
-	case(0xBD): {CP_R_R(A, L); break; }
-	case(0xBE): {CP_R_aHL(A, H, L); break; }
-	case(0xBF): {CP_R_R(A, A); break; }
+	case(0xA0): {AND_A_R(B); break; }
+	case(0xA1): {AND_A_R(C); break; }
+	case(0xA2): {AND_A_R(D); break; }
+	case(0xA3): {AND_A_R(E); break; }
+	case(0xA4): {AND_A_R(H); break; }
+	case(0xA5): {AND_A_R(L); break; }
+	case(0xA6): {AND_A_aHL(); break; }
+	case(0xA7): {AND_A_R(A); break; }
+	case(0xA8): {XOR_A_R(B); break; }
+	case(0xA9): {XOR_A_R(C); break; }
+	case(0xAA): {XOR_A_R(D); break; }
+	case(0xAB): {XOR_A_R(E); break; }
+	case(0xAC): {XOR_A_R(H); break; }
+	case(0xAD): {XOR_A_R(L); break; }
+	case(0xAE): {XOR_A_aHL(); break; }
+	case(0xAF): {XOR_A_R(A); break; }
+	case(0xB0): {OR_A_R(B); break; }
+	case(0xB1): {OR_A_R(C); break; }
+	case(0xB2): {OR_A_R(D); break; }
+	case(0xB3): {OR_A_R(E); break; }
+	case(0xB4): {OR_A_R(H); break; }
+	case(0xB5): {OR_A_R(L); break; }
+	case(0xB6): {OR_A_aHL(); break; }
+	case(0xB7): {OR_A_R(A);  break; }
+	case(0xB8): {CP_A_R(B); break; }
+	case(0xB9): {CP_A_R(C); break; }
+	case(0xBA): {CP_A_R(D); break; }
+	case(0xBB): {CP_A_R(E); break; }
+	case(0xBC): {CP_A_R(H); break; }
+	case(0xBD): {CP_A_R(L); break; }
+	case(0xBE): {CP_A_aHL(); break; }
+	case(0xBF): {CP_A_R(A); break; }
 	case(0xC0): {RET_cc(); break; }
 	case(0xC1): {POP_RP(B, C); break; }
 	case(0xC2): {JP_cc(); break; }
@@ -298,25 +298,25 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0xE1): {POP_RP(H, L); break; }
 	case(0xE2): {LD_aCo_A(); break; }
 	case(0xE5): {PUSH_RP(H, L); break; }
-	case(0xE6): {AND_R_d8(A); break; }
+	case(0xE6): {AND_A_d8(); break; }
 	case(0xE7): {RST(); break; }
 	case(0xE8): {ADD_SP_e(); break; }
 	case(0xE9): {JP_HL(); break; }
 	case(0xEA): {LD_a16_A(); break; }
-	case(0xEE): {XOR_R_d8(A); break; }
+	case(0xEE): {XOR_A_d8(); break; }
 	case(0xEF): {RST(); break; }
 	case(0xF0): {LD_A_a8o(); break; }
 	case(0xF1): {POP_RP(A, F); break; }
 	case(0xF2): {LD_A_aCo(); break; }
 	case(0xF3): {DI(); cout << "Opcode DI not implemented for the moment at pc = " << hex << pc << endl; break; }
 	case(0xF5): {PUSH_RP(A, F); break; }
-	case(0xF6): {OR_R_d8(A); break; }
+	case(0xF6): {OR_A_d8(); break; }
 	case(0xF7): {RST(); break; }
 	case(0xF8): {LDHL_SP_e(); break; }
 	case(0xF9): {LD_SP_HL(); break; }
 	case(0xFA): {LD_A_a16(); break; }
 	case(0xFB): {EI(); cout << "Opcode EI not implemented for the moment at pc = " << hex << pc << endl; break; }
-	case(0xFE): {CP_R_d8(A); break; }
+	case(0xFE): {CP_A_d8(); break; }
 	case(0xFF): {RST(); break; }
 	default: {cout << "Error opcode unknown read at pc = 0x" << hex << pc << endl; break; }
 	}
@@ -903,27 +903,37 @@ void Cpu::POP_RP(uint8_t& regPair1, Flag& flagPair)
 
 void Cpu::LDHL_SP_e()
 {
-	cout << "May bug because of opcode LDHL" << endl;
+	cout << "LDHL OPCODE MAY CAUSE ISSUE" << endl;
 	pc++;
 	int8_t e = memory.read(pc);
 
-	//Variables to use after calculs
-	bool carryBit3 = 0;
-	bool carryBit7 = 0;
-
-	if (e >= 0)
+	if (e >= 0)//WORKING
 	{
-		F.CY = ((sp & 0xFF) + e) > 0xFF;
-		F.H = ((sp & 0xF) + (e & 0xF)) > 0xF;
+		F.CY = ((sp & 0xFFFF) + e) > 0xFFFF;
+		F.H = ((sp & 0xFFF) + (e & 0xFFF)) > 0xFFF;
 	}
-	else
+	else//NOT WORKING
 	{
-		F.CY = (((sp + e) & 0xFF)) <= (sp & 0xFF);
-		F.H = (((sp + e) & 0xF) <= (sp & 0xF));
+		cout << "NEGATIVE VALUE MAY CAUSE ISSUE" << endl;
+		F.CY = (((sp + e) & 0xFFFF)) <= (sp & 0xFFFF);
+		F.H = (((sp + e) & 0xFFF) <= (sp & 0xFFF));
+
+		//Solution 1
+		//F.CY = (((sp + e) & 0xFF)) <= (sp & 0xFF);
+		//F.H = (((sp + e) & 0xF) <= (sp & 0xF));
+
+		//Solution 2
+		//uint8_t tempU8Bits = ((~e) + 1);//Convert int8_t in uint8_t
+		//uint16_t tempU16Bits = tempU8Bits;//Convert uint8_t in uint16_t
+		//int16_t temp16SBits = ((~tempU16Bits) + 1);//Convert uint16_t in int16_t
+		//result = binaryAddition(16, sp, e, carryBit3, carryBit7);//Addiction of SP (uint16_t) + e (uint16_t)
+
+		//Solution 3
+		//int16_t e16bits = (int16_t)e;
+		//result = binaryAddition(16, sp, e, carryBit3, carryBit7);
 	}
 
 	unpairRegisters(H, L, (sp + e));
-
 	F.Z = 0;
 	F.N = 0;
 	cycles += 3;
@@ -967,16 +977,12 @@ void Cpu::ADD_A_aHL()
 
 void Cpu::ADC_A_R_CY(const uint8_t& reg)
 {
-	bool tempCY;
-	bool tempH;
 	A = ADD_ADC_subFunctionFlag(A, F.CY);
-	tempCY = F.CY;
-	tempH = F.H;
+	bool tempCY = F.CY;
+	bool tempH = F.H;
 	A = ADD_ADC_subFunctionFlag(A, reg);
-	if (!F.CY && tempCY)
-		F.CY = 1;
-	if (!F.H && tempH)
-		F.H = 1;
+	F.CY |= tempCY;
+	F.H |= tempH;
 	cycles++;
 	pc++;
 }
@@ -985,7 +991,11 @@ void Cpu::ADC_A_d8_CY()
 {
 	pc++;
 	A = ADD_ADC_subFunctionFlag(A, F.CY);
+	bool tempCY = F.CY;
+	bool tempH = F.H;
 	A = ADD_ADC_subFunctionFlag(A, memory.read(pc));
+	F.CY |= tempCY;
+	F.H |= tempH;
 	cycles += 2;
 	pc++;
 }
@@ -993,7 +1003,11 @@ void Cpu::ADC_A_d8_CY()
 void Cpu::ADC_A_aHL_CY(const uint8_t& regPair1, const uint8_t& regPair2)
 {
 	A = ADD_ADC_subFunctionFlag(A, F.CY);
+	bool tempCY = F.CY;
+	bool tempH = F.H;
 	A = ADD_ADC_subFunctionFlag(A, memory.read(pairRegisters(regPair1, regPair2)));
+	F.CY |= tempCY;
+	F.H |= tempH;
 	cycles += 2;
 	pc++;
 }
@@ -1036,12 +1050,16 @@ void Cpu::SUB_A_aHL(const uint8_t& regPair1, const uint8_t& regPair2)
 	pc++;
 }
 
-
+//RESUME HERE
 
 void Cpu::SBC_A_R_CY(const uint8_t& reg)
 {
-	A = SUB_SBC_subFunctionFlag(A, F.CY);
+	bool A = SUB_SBC_subFunctionFlag(A, F.CY);
+	bool tempCY = F.CY;
+	bool tempH = F.H;
 	A = SUB_SBC_subFunctionFlag(A, reg);
+	F.CY |= tempCY;
+	F.H |= tempH;
 	cycles++;
 	pc++;
 }
@@ -1050,7 +1068,11 @@ void Cpu::SBC_A_d8_CY()
 {
 	pc++;
 	A = SUB_SBC_subFunctionFlag(A, F.CY);
+	bool tempCY = F.CY;
+	bool tempH = F.H;
 	A = SUB_SBC_subFunctionFlag(A, memory.read(pc));
+	F.CY |= tempCY;
+	F.H |= tempH;
 	cycles += 2;
 	pc++;
 }
@@ -1058,7 +1080,11 @@ void Cpu::SBC_A_d8_CY()
 void Cpu::SBC_A_aHL_CY(const uint8_t& regPair1, const uint8_t& regPair2)
 {
 	A = SUB_SBC_subFunctionFlag(A, F.CY);
+	bool tempCY = F.CY;
+	bool tempH = F.H;
 	A = SUB_SBC_subFunctionFlag(A, memory.read(pairRegisters(regPair1, regPair2)));
+	F.CY |= tempCY;
+	F.H |= tempH;
 	cycles += 2;
 	pc++;
 }
@@ -1080,279 +1106,271 @@ uint8_t Cpu::SUB_SBC_subFunctionFlag(const uint8_t& reg, const uint8_t& value)
 
 
 
+void Cpu::AND_A_R(const uint8_t& reg)
+{
+	A &= reg;
+	F.Z = (A == 0);
+	F.H = 1;
+	F.N = 0;
+	F.CY = 0;
+	cycles++;
+	pc++;
+}
+
+void Cpu::AND_A_d8()
+{
+	pc++;
+	A &= memory.read(pc);
+	F.Z = (A == 0);
+	F.H = 1;
+	F.N = 0;
+	F.CY = 0;
+	cycles += 2;
+	pc++;
+}
+
+void Cpu::AND_A_aHL()
+{
+	A &= memory.read(pairRegisters(H, L));
+	F.Z = (A == 0);
+	F.H = 1;
+	F.N = 0;
+	F.CY = 0;
+	cycles += 2;
+	pc++;
+}
+
+
+void Cpu::OR_A_R(const uint8_t& reg)
+{
+	A |= reg;
+	F.Z = (A == 0);
+	F.H = 0;
+	F.N = 0;
+	F.CY = 0;
+	cycles++;
+	pc++;
+}
+
+void Cpu::OR_A_d8()
+{
+	pc++;
+	A |= memory.read(pc);
+	F.Z = (A == 0);
+	F.H = 0;
+	F.N = 0;
+	F.CY = 0;
+	cycles += 2;
+	pc++;
+}
+
+void Cpu::OR_A_aHL()
+{
+	A |= memory.read(pairRegisters(H, L));
+	F.Z = (A == 0);
+	F.H = 0;
+	F.N = 0;
+	F.CY = 0;
+	cycles += 2;
+	pc++;
+}
 
 
 
-//
-//void Cpu::AND_R_d8(uint8_t& reg1)
-//{
-//	pc++;
-//	reg1 &= memory.read(pc);
-//	F.Z = (reg1 == 0);
-//	F.H = 1;
-//	F.N = 0;
-//	F.CY = 0;
-//	pc++;
-//}
-//
-//void Cpu::AND_R_aHL(uint8_t& reg, const uint8_t& regPair1, const uint8_t& regPair2)
-//{
-//	reg &= memory.read(pairRegisters(regPair1, regPair2));
-//	F.Z = (reg == 0);
-//	F.H = 1;
-//	F.N = 0;
-//	F.CY = 0;
-//	pc++;
-//}
-//
-//
-//void Cpu::OR_R_R(uint8_t& reg1, const uint8_t& reg2)
-//{
-//	reg1 |= reg2;
-//	F.Z = (reg1 == 0);
-//	F.H = 0;
-//	F.N = 0;
-//	F.CY = 0;
-//	pc++;
-//}
-//
-//void Cpu::OR_R_d8(uint8_t& reg1)
-//{
-//	pc++;
-//	reg1 |= memory.read(pc);
-//	F.Z = (reg1 == 0);
-//	F.H = 0;
-//	F.N = 0;
-//	F.CY = 0;
-//	pc++;
-//}
-//
-//void Cpu::OR_R_aHL(uint8_t& reg, const uint8_t& regPair1, const uint8_t& regPair2)
-//{
-//	reg |= memory.read(pairRegisters(regPair1, regPair2));
-//	F.Z = (reg == 0);
-//	F.H = 0;
-//	F.N = 0;
-//	F.CY = 0;
-//	pc++;
-//}
-//
-//
-//void Cpu::XOR_R_R(uint8_t& reg1, const uint8_t& reg2)
-//{
-//	reg1 ^= reg2;
-//	F.Z = (reg1 == 0);
-//	F.H = 0;
-//	F.N = 0;
-//	F.CY = 0;
-//	pc++;
-//}
-//
-//void Cpu::XOR_R_d8(uint8_t& reg1)
-//{
-//	pc++;
-//	reg1 ^= memory.read(pc);
-//	F.Z = (reg1 == 0);
-//	F.H = 0;
-//	F.N = 0;
-//	F.CY = 0;
-//	pc++;
-//}
-//
-//void Cpu::XOR_R_aHL(uint8_t& reg, const uint8_t& regPair1, const uint8_t& regPair2)
-//{
-//	reg ^= memory.read(pairRegisters(regPair1, regPair2));
-//	F.Z = (reg == 0);
-//	F.H = 0;
-//	F.N = 0;
-//	F.CY = 0;
-//	pc++;
-//}
-//
-//
-////Page 11
-//void Cpu::CP_R_R(const uint8_t& reg1, const uint8_t& reg2)
-//{
-//	CP_subFunctionFlag(reg1, reg2);
-//	pc++;
-//}
-//
-//void Cpu::CP_R_d8(const uint8_t& reg1)
-//{
-//	pc++;
-//	CP_subFunctionFlag(reg1, memory.read(pc));
-//	pc++;
-//}
-//
-//void Cpu::CP_R_aHL(const uint8_t& reg, const uint8_t& regPair1, const uint8_t& regPair2)
-//{
-//	CP_subFunctionFlag(reg, memory.read(pairRegisters(regPair1, regPair2)));
-//	pc++;
-//}
-//
-//void Cpu::CP_subFunctionFlag(const uint8_t& reg1, const uint8_t& reg2)
-//{
-//	if (reg1 > reg2)
-//	{
-//		F.Z = 0;
-//		F.H = 1;
-//		F.CY = 0;
-//	}
-//	else if (reg1 < reg2)
-//	{
-//		F.Z = 0;
-//		F.H = 0;
-//		F.CY = 1;
-//	}
-//	else
-//	{
-//		F.Z = 1;
-//		F.H = 0;
-//		F.CY = 0;
-//	}
-//
-//	F.N = 1;
-//}
-//
-//
-//void Cpu::INC_R(uint8_t& reg)
-//{
-//	INC_subFunctionFlag(reg);
-//	pc++;
-//}
-//
-//void Cpu::INC_aHL(const uint8_t& regPair1, const uint8_t& regPair2)
-//{
-//	//INC_subFunctionFlag(memory.read(pairRegisters(regPair1, regPair2)));//C++ initial value of reference to non-const must be an lvalue
-//	uint8_t memTemp = memory.read(pairRegisters(regPair1, regPair2));
-//	INC_subFunctionFlag(memTemp);
-//	pc++;
-//}
-//
-//void Cpu::INC_subFunctionFlag(uint8_t& reg)
-//{
-//	if (reg == 0xFF)
-//	{
-//		reg = 0;
-//		F.Z = 1;
-//		F.H = 1;
-//	}
-//	else
-//	{
-//		bool carryBit3 = false, carryBit7 = false;
-//		reg = binaryAddition(8, reg, 1, carryBit3, carryBit7);
-//		F.Z = 0;
-//		F.H = carryBit3;
-//	}
-//
-//	F.N = 0;
-//}
-//
-//
-//
-//void Cpu::DEC_R(uint8_t& reg)
-//{
-//	DEC_subFunctionFlag(reg);
-//	pc++;
-//}
-//
-//void Cpu::DEC_aHL(const uint8_t& regPair1, const uint8_t& regPair2)
-//{
-//	//INC_subFunctionFlag(memory.read(pairRegisters(regPair1, regPair2)));//C++ initial value of reference to non-const must be an lvalue
-//	uint8_t memTemp = memory.read(pairRegisters(regPair1, regPair2));
-//	DEC_subFunctionFlag(memTemp);
-//	pc++;
-//}
-//
-//void Cpu::DEC_subFunctionFlag(uint8_t& reg)
-//{
-//	if (reg == 0x00)
-//	{
-//		reg = 0xFF;
-//		F.Z = 0;
-//		F.H = 1;
-//	}
-//	else if (reg == 0x01)
-//	{
-//		reg--;
-//		F.Z = 1;
-//		F.H = 0;
-//	}
-//	else
-//	{
-//		bool borrowBit3 = false, borrowBit7 = false;
-//		reg = binarySubstraction(8, reg, 1, borrowBit3, borrowBit7);
-//		F.Z = 0;
-//		F.H = borrowBit3;
-//	}
-//
-//	F.N = 1;
-//}
-//
-//
-///*-------------------------------------16bits ARITHMETIC OPERATION INSTRUCTIONS---------------------------------------*/
-//
-////Page 12
-//
-//void Cpu::ADD_HL_RP(const uint16_t& regsPair)
-//{
-//	uint16_t regsPairHL = (H << 8) + L;
-//	bool carryBit11 = 0;
-//	bool carryBit15 = 0;
-//	regsPairHL = binaryAddition16bits(regsPairHL, regsPair, carryBit11, carryBit15);
-//	H = regsPairHL >> 8;
-//	L = regsPairHL & 0b00001111;
-//	F.H = carryBit11;
-//	F.N = 0;
-//	F.CY = carryBit15;
-//	pc++;
-//}
-//
-//void Cpu::ADD_SP_e()
-//{
-//	pc++;
-//	bool carryBit11 = 0;
-//	bool carryBit15 = 0;
-//	uint16_t e = memory.read(pc);
-//	sp = binaryAddition16bits(sp, e, carryBit11, carryBit15);
-//	F.H = carryBit11;
-//	F.CY = carryBit15;
-//	F.N = 0;
-//	F.Z = 0;
-//	pc++;
-//}
-//
-//void Cpu::INC_RP(uint8_t& regPair1, uint8_t& regPair2)
-//{
-//	uint16_t regsPair = pairRegisters(regPair1, regPair2);
-//	regsPair++;
-//	regPair1 = regsPair >> 8;
-//	regPair2 = regsPair & 0b00001111;
-//	pc++;
-//}
-//
-//void Cpu::INC_RP(uint16_t& regsPair)
-//{
-//	regsPair++;
-//	pc++;
-//}
-//
-//void Cpu::DEC_RP(uint8_t& regPair1, uint8_t& regPair2)
-//{
-//	uint16_t regsPair = pairRegisters(regPair1, regPair2);
-//	regsPair--;
-//	regPair1 = regsPair >> 8;
-//	regPair2 = regsPair & 0b00001111;
-//	pc++;
-//}
-//
-//void Cpu::DEC_RP(uint16_t& regsPair)
-//{
-//	regsPair--;
-//	pc++;
-//}
-//
-//
+
+void Cpu::XOR_A_R(const uint8_t& reg)
+{
+	A ^= reg;
+	F.Z = (A == 0);
+	F.H = 0;
+	F.N = 0;
+	F.CY = 0;
+	cycles++;
+	pc++;
+}
+
+void Cpu::XOR_A_d8()
+{
+	pc++;
+	A ^= memory.read(pc);
+	F.Z = (A == 0);
+	F.H = 0;
+	F.N = 0;
+	F.CY = 0;
+	cycles += 2;
+	pc++;
+}
+
+void Cpu::XOR_A_aHL()
+{
+	A ^= memory.read(pairRegisters(H, L));
+	F.Z = (A == 0);
+	F.H = 0;
+	F.N = 0;
+	F.CY = 0;
+	cycles += 2;
+	pc++;
+}
+
+
+
+void Cpu::CP_A_R(const uint8_t& reg)
+{
+	CP_subFunctionFlag(reg);
+	cycles++;
+	pc++;
+}
+
+void Cpu::CP_A_d8()
+{
+	pc++;
+	CP_subFunctionFlag(memory.read(pc));
+	cycles += 2;
+	pc++;
+}
+
+void Cpu::CP_A_aHL()
+{
+	CP_subFunctionFlag(memory.read(pairRegisters(H, L)));
+	cycles += 2;
+	pc++;
+}
+
+
+void Cpu::CP_subFunctionFlag(const uint8_t& reg)
+{
+	F.Z = (A == reg);
+	F.H = (A & 0xF) - (reg & 0xF) < 0;
+	F.CY = (A < reg);
+	F.N = 1;
+}
+
+
+void Cpu::INC_R(uint8_t& reg)
+{
+	INC_subFunctionFlag(reg);
+	cycles++;
+	pc++;
+}
+
+void Cpu::INC_aHL()
+{
+	//INC_subFunctionFlag(memory.read(pairRegisters(regPair1, regPair2)));//C++ initial value of reference to non-const must be an lvalue
+	uint8_t memTemp = memory.read(pairRegisters(H, L));
+	INC_subFunctionFlag(memTemp);
+	memory.write(pairRegisters(H, L), memTemp);
+	cycles += 3;
+	pc++;
+}
+
+void Cpu::INC_subFunctionFlag(uint8_t& reg)
+{
+	reg++;
+	F.Z = (reg == 0);
+	F.N = 0;
+	F.H = ((reg & 0xF) == 0x0);
+}
+
+
+
+void Cpu::DEC_R(uint8_t& reg)
+{
+	DEC_subFunctionFlag(reg);
+	cycles++;
+	pc++;
+}
+
+void Cpu::DEC_aHL()
+{
+	//INC_subFunctionFlag(memory.read(pairRegisters(regPair1, regPair2)));//C++ initial value of reference to non-const must be an lvalue
+	uint8_t memTemp = memory.read(pairRegisters(H, L));
+	DEC_subFunctionFlag(memTemp);
+	memory.write(pairRegisters(H, L), memTemp);
+	cycles += 3;
+	pc++;
+}
+
+void Cpu::DEC_subFunctionFlag(uint8_t& reg)
+{
+	reg--;
+	F.Z = (reg == 0);
+	F.N = 1;
+	F.H = ((reg & 0xF) == 0xF);
+}
+
+
+/*-------------------------------------16bits ARITHMETIC OPERATION INSTRUCTIONS---------------------------------------*/
+
+//Page 12
+
+void Cpu::ADD_HL_RP(const uint16_t& regsPair)
+{
+	uint16_t regsPairHL = pairRegisters(H, L);
+	F.N = 0;
+	F.H = ((regsPairHL & 0xFFF) + (regsPair & 0xFFF)) > 0xFFF;
+	F.CY = ((regsPairHL + regsPair) > 0xFFFF);
+	unpairRegisters(H, L, (regsPairHL + regsPair));
+	cycles += 2;
+	pc++;
+}
+
+void Cpu::ADD_HL_RP(const uint8_t& regPair1, const uint8_t& regPair2)
+{
+	ADD_HL_RP(pairRegisters(regPair1, regPair2));
+}
+
+void Cpu::ADD_SP_e()
+{
+	cout << "Program may bug here, thanks to opcode ADD_SP_e" << endl;
+	cout << "FOR SURE" << endl;
+
+	pc++;
+	int8_t e = memory.read(pc);
+	//F.CY = (sp + e) & 0xFFFF;
+
+	sp += e;
+	F.Z = 0;
+	F.N = 0;
+	cycles += 4;
+	pc++;
+}
+
+void Cpu::INC_RP(uint8_t& regPair1, uint8_t& regPair2)
+{
+	uint16_t regsPair = pairRegisters(regPair1, regPair2);
+	regsPair++;
+	unpairRegisters(regPair1, regPair2, regsPair);
+	cycles += 2;
+	pc++;
+}
+
+void Cpu::INC_RP(uint16_t& regsPair)
+{
+	uint8_t regPair1, regPair2;
+	unpairRegisters(regPair1, regPair2, regsPair);
+	INC_RP(regPair1, regPair2);
+	regsPair = pairRegisters(regPair1, regPair2);
+}
+
+void Cpu::DEC_RP(uint8_t& regPair1, uint8_t& regPair2)
+{
+	uint16_t regsPair = pairRegisters(regPair1, regPair2);
+	regsPair--;
+	regPair1 = regsPair >> 8;
+	regPair2 = regsPair & 0b00001111;
+	cycles += 2;
+	pc++;
+}
+
+void Cpu::DEC_RP(uint16_t& regsPair)
+{
+	uint8_t regPair1, regPair2;
+	unpairRegisters(regPair1, regPair2, regsPair);
+	DEC_RP(regPair1, regPair2);
+	regsPair = pairRegisters(regPair1, regPair2);
+}
+
+
 //int Cpu::binaryAddition16bits(const int& value1, const int& value2, bool& carryBit11, bool& carryBit15)
 //{
 //	int value1Temp = value1;
@@ -1381,318 +1399,343 @@ uint8_t Cpu::SUB_SBC_subFunctionFlag(const uint8_t& reg, const uint8_t& value)
 //
 //	return additionValue;
 //}
-//
-//
-//
-///*-------------------------------------ROTATE SHIFT INSTRUCTION---------------------------------------*/
-////Page 13	(p98)
-//
-//
-//void Cpu::RLCA()
-//{
-//	F.H = 0;
-//	F.N = 0;
-//	F.Z = 0;
-//	F.CY = A >> 7;
-//	A <<= 1;
-//	A &= 0b11111110;
-//	A |= F.CY;
-//	pc++;
-//}
-//
-//void Cpu::RLA()
-//{
-//	F.H = 0;
-//	F.N = 0;
-//	F.Z = 0;
-//	bool oldCarry = F.CY;
-//	F.CY = A >> 7;
-//	A <<= 1;
-//	A &= 0b11111110;
-//	A |= oldCarry;
-//	pc++;
-//}
-//
-//
-//void Cpu::RRCA()
-//{
-//	F.H = 0;
-//	F.N = 0;
-//	F.Z = 0;
-//	F.CY = A & 0x1;
-//	A >>= 1;
-//	A &= 0b01111111;
-//	A |= (F.CY << 7);
-//	pc++;
-//}
-//
-//void Cpu::RRA()
-//{
-//	F.H = 0;
-//	F.N = 0;
-//	F.Z = 0;
-//	bool oldCarry = F.CY;
-//	F.CY = A & 0x1;
-//	A >>= 1;
-//	A &= 0b01111111;
-//	A |= (oldCarry << 7);
-//	pc++;
-//}
-//
-//
-///*-----------------------------------------CB OPCODES OPERATIONS-----------------------------------------------*/
-//
-////Page 14	(p99)
-//void Cpu::RLC_R(uint8_t& reg)
-//{
-//	F.H = 0;
-//	F.N = 0;
-//	F.Z = 0;
-//	F.CY = reg >> 7;
-//	reg <<= 1;
-//	reg &= 0b11111110;
-//	reg |= F.CY;
-//	pc++;
-//}
-//
-//void Cpu::RLC_aHL()
-//{
-//	uint8_t temp = memory.read(pairRegisters(H, L));
-//	F.H = 0;
-//	F.N = 0;
-//	F.Z = 0;
-//	F.CY = temp >> 7;
-//	temp <<= 1;
-//	temp &= 0b11111110;
-//	temp |= F.CY;
-//	memory.write(pairRegisters(H, L), temp);
-//	pc++;
-//}
-//
-//
-//void Cpu::RL_R(uint8_t& reg)
-//{
-//	F.H = 0;
-//	F.N = 0;
-//	bool oldCarry = F.CY;
-//	F.CY = reg >> 7;
-//	reg <<= 1;
-//	reg &= 0b11111110;
-//	reg |= oldCarry;
-//	F.Z = (reg == 0);
-//	pc++;
-//}
-//
-//void Cpu::RL_aHL()
-//{
-//	uint8_t temp = memory.read(pairRegisters(H, L));
-//	F.H = 0;
-//	F.N = 0;
-//	bool oldCarry = F.CY;
-//	F.CY = temp >> 7;
-//	temp <<= 1;
-//	temp &= 0b11111110;
-//	temp |= oldCarry;
-//	memory.write(pairRegisters(H, L), temp);
-//	F.Z = (temp == 0);
-//	pc++;
-//}
-//
-//
-////Page 15
-//void Cpu::RRC_R(uint8_t& reg)
-//{
-//	F.H = 0;
-//	F.N = 0;
-//	F.CY = reg & 0x1;
-//	reg >>= 1;
-//	reg &= 0b01111111;
-//	reg |= (F.CY << 7);
-//	F.Z = (reg == 0);
-//	pc++;
-//}
-//
-//void Cpu::RRC_aHL()
-//{
-//	uint8_t temp = memory.read(pairRegisters(H, L));
-//	F.H = 0;
-//	F.N = 0;
-//	F.Z = 0;
-//	F.CY = temp & 0x1;
-//	temp >>= 1;
-//	temp &= 0b01111111;
-//	temp |= (F.CY << 7);
-//	memory.write(pairRegisters(H, L), temp);
-//	F.Z = (temp == 0);
-//	pc++;
-//}
-//
-//void Cpu::RR_R(uint8_t& reg)
-//{
-//	F.H = 0;
-//	F.N = 0;
-//	F.Z = 0;
-//	bool oldCarry = F.CY;
-//	F.CY = reg & 0x1;
-//	reg >>= 1;
-//	reg &= 0b01111111;
-//	reg |= (oldCarry << 7);
-//	F.Z = (reg == 0);
-//	pc++;
-//}
-//
-//void Cpu::RR_aHL()
-//{
-//	uint8_t temp = memory.read(pairRegisters(H, L));
-//	F.H = 0;
-//	F.N = 0;
-//	F.Z = 0;
-//	bool oldCarry = F.CY;
-//	F.CY = temp & 0x1;
-//	temp >>= 1;
-//	temp &= 0b01111111;
-//	temp |= (oldCarry << 7);
-//	memory.write(pairRegisters(H, L), temp);
-//	F.Z = (temp == 0);
-//	pc++;
-//}
-//
-//
-////Page 16
-//
-//void Cpu::SLA_R(uint8_t& reg)
-//{
-//	F.H = 0;
-//	F.N = 0;
-//	F.CY = reg >> 7;
-//	reg <<= 1;
-//	reg &= 0b11111110;
-//	F.Z = (reg == 0);
-//	pc++;
-//}
-//
-//void Cpu::SLA_aHL()
-//{
-//	uint8_t temp = memory.read(pairRegisters(H, L));
-//	SLA_R(temp);
-//	memory.write(pairRegisters(H, L), temp);
-//}
-//
-//
-//void Cpu::SRA_R(uint8_t& reg)
-//{
-//	F.H = 0;
-//	F.N = 0;
-//	F.CY = reg & 0x1;
-//	bool bit7 = reg >> 7;
-//	reg >>= 1;
-//	reg &= 0b01111111;
-//	reg |= (bit7 << 7);
-//	F.Z = (reg == 0);
-//	pc++;
-//}
-//
-//void Cpu::SRA_aHL()
-//{
-//	uint8_t temp = memory.read(pairRegisters(H, L));
-//	SRA_R(temp);
-//	memory.write(pairRegisters(H, L), temp);
-//}
-//
-//
-////Page 17
-//void Cpu::SRL_R(uint8_t& reg)
-//{
-//	F.H = 0;
-//	F.N = 0;
-//	F.CY = reg & 0x1;
-//	reg >>= 1;
-//	reg &= 0b01111111;
-//	F.Z = (reg == 0);
-//	pc++;
-//}
-//
-//void Cpu::SRL_aHL()
-//{
-//	uint8_t temp = memory.read(pairRegisters(H, L));
-//	SRL_R(temp);
-//	memory.write(pairRegisters(H, L), temp);
-//}
-//
-//void Cpu::SWAP_R(uint8_t& reg)
-//{
-//	F.CY = 0;
-//	F.H = 0;
-//	F.N = 0;
-//	uint8_t nibbleL = reg & 0x0F;
-//	reg >>= 4;
-//	reg &= 0x0F;
-//	reg |= (nibbleL << 4);
-//	F.Z = (reg == 0);
-//	pc++;
-//}
-//void Cpu::SWAP_aHL()
-//{
-//	uint8_t temp = memory.read(pairRegisters(H, L));
-//	SWAP_R(temp);
-//	memory.write(pairRegisters(H, L), temp);
-//}
-//
-////Page 18
-//void Cpu::BIT_R(const uint8_t& reg)
-//{
-//	pc++;
-//	F.H = 1;
-//	F.N = 0;
-//	uint8_t date8Bits = memory.read(pc);//Get the data byte
-//	uint8_t indexBit = (date8Bits & 0b00111000) >> 3;//Get index of bit to put value in F.Z
-//	F.Z = !((reg & (0b00000001 << indexBit)) >> (indexBit));//Attribute to F.Z the bit's complement of the reg pointed by the index calculated previously
-//	pc++;
-//}
-//
-//void Cpu::BIT_aHL()
-//{
-//	BIT_R(memory.read(pairRegisters(H, L)));
-//}
-//
-//void Cpu::SET_R(uint8_t& reg)
-//{
-//	pc++;
-//	uint8_t date8Bits = memory.read(pc);//Get the data byte
-//	uint8_t indexBit = (date8Bits & 0b00111000) >> 3;//Get index of bit to set in register
-//	reg |= (0b00000001 << indexBit);//Se the bit pointed by the index calculated previously
-//	pc++;
-//}
-//
-//
-////Page 17
-//void Cpu::SET_aHL()
-//{
-//	uint8_t temp = memory.read(pairRegisters(H, L));
-//	SET_R(temp);
-//}
-//
-//
-//void Cpu::RES_R(uint8_t& reg)
-//{
-//	pc++;
-//	uint8_t date8Bits = memory.read(pc);//Get the data byte
-//	uint8_t indexBit = (date8Bits & 0b00111000) >> 3;//Get index of bit to set in register
-//	uint8_t masque = (0b11111110 << indexBit);//Set the bit pointed by the index calculated previously
-//	for (int i = 0; i < indexBit; i++)//Set the bits put to 0 during the bit shifting above
-//	{
-//		masque += (0x1 << i);
-//	}
-//	reg &= masque;
-//	pc++;
-//}
-//
-//void Cpu::RES_aHL()
-//{
-//	uint8_t temp = memory.read(pairRegisters(H, L));
-//	SET_R(temp);
-//}
-//
+
+
+
+/*-------------------------------------ROTATE SHIFT INSTRUCTION---------------------------------------*/
+//Page 13	(p98)
+
+
+void Cpu::RLCA()
+{
+	F.H = 0;
+	F.N = 0;
+	F.Z = 0;
+	F.CY = (A >> 7) & 0x1;
+	A <<= 1;
+	A &= 0b11111110;
+	A += F.CY;
+	cycles++;
+	pc++;
+}
+
+void Cpu::RLA()
+{
+	F.H = 0;
+	F.N = 0;
+	F.Z = 0;
+	bool oldCarry = F.CY;
+	F.CY = (A >> 7) & 0x1;
+	A <<= 1;
+	A &= 0b11111110;
+	A += oldCarry;
+	cycles++;
+	pc++;
+}
+
+
+void Cpu::RRCA()
+{
+	F.H = 0;
+	F.N = 0;
+	F.Z = 0;
+	F.CY = A & 0x1;
+	A >>= 1;
+	A &= 0b01111111;
+	A += (F.CY << 7);
+	cycles++;
+	pc++;
+}
+
+void Cpu::RRA()
+{
+	F.H = 0;
+	F.N = 0;
+	F.Z = 0;
+	bool oldCarry = F.CY;
+	F.CY = A & 0x1;
+	A >>= 1;
+	A &= 0b01111111;
+	A |= (oldCarry << 7);
+	cycles++;
+	pc++;
+}
+
+
+/*-----------------------------------------CB OPCODES OPERATIONS-----------------------------------------------*/
+
+//Page 14	(p99)
+void Cpu::RLC_R(uint8_t& reg)
+{
+	F.H = 0;
+	F.N = 0;
+	F.CY = (reg >> 7) & 0x1;
+	reg <<= 1;
+	reg &= 0b11111110;
+	reg += F.CY;
+	F.Z = (reg == 0);
+	cycles += 2;
+	pc++;
+}
+
+void Cpu::RLC_aHL()
+{
+	uint8_t temp = memory.read(pairRegisters(H, L));
+	F.H = 0;
+	F.N = 0;
+	F.CY = (temp >> 7) & 0x1;
+	temp <<= 1;
+	temp &= 0b11111110;
+	temp += F.CY;
+	memory.write(pairRegisters(H, L), temp);
+	F.Z = (temp == 0);
+	cycles += 4;
+	pc++;
+}
+
+
+void Cpu::RL_R(uint8_t& reg)
+{
+	F.H = 0;
+	F.N = 0;
+	bool oldCarry = F.CY;
+	F.CY = (reg >> 7) & 0x1;
+	reg <<= 1;
+	reg &= 0b11111110;
+	reg += oldCarry;
+	F.Z = (reg == 0);
+	cycles += 2;
+	pc++;
+}
+
+void Cpu::RL_aHL()
+{
+	uint8_t temp = memory.read(pairRegisters(H, L));
+	F.H = 0;
+	F.N = 0;
+	bool oldCarry = F.CY;
+	F.CY = temp >> 7;
+	temp <<= 1;
+	temp &= 0b11111110;
+	temp += oldCarry;
+	memory.write(pairRegisters(H, L), temp);
+	F.Z = (temp == 0);
+	cycles += 4;
+	pc++;
+}
+
+
+//Page 15
+void Cpu::RRC_R(uint8_t& reg)
+{
+	F.H = 0;
+	F.N = 0;
+	F.CY = reg & 0x1;
+	reg >>= 1;
+	reg &= 0b01111111;
+	reg += (F.CY << 7);
+	F.Z = (reg == 0);
+	cycles += 2;
+	pc++;
+}
+
+void Cpu::RRC_aHL()
+{
+	uint8_t temp = memory.read(pairRegisters(H, L));
+	F.H = 0;
+	F.N = 0;
+	F.Z = 0;
+	F.CY = temp & 0x1;
+	temp >>= 1;
+	temp &= 0b01111111;
+	temp += (F.CY << 7);
+	memory.write(pairRegisters(H, L), temp);
+	F.Z = (temp == 0);
+	cycles += 4;
+	pc++;
+}
+
+void Cpu::RR_R(uint8_t& reg)
+{
+	F.H = 0;
+	F.N = 0;
+	F.Z = 0;
+	bool oldCarry = F.CY;
+	F.CY = reg & 0x1;
+	reg >>= 1;
+	reg &= 0b01111111;
+	reg += (oldCarry << 7);
+	F.Z = (reg == 0);
+	cycles += 2;
+	pc++;
+}
+
+void Cpu::RR_aHL()
+{
+	uint8_t temp = memory.read(pairRegisters(H, L));
+	F.H = 0;
+	F.N = 0;
+	F.Z = 0;
+	bool oldCarry = F.CY;
+	F.CY = temp & 0x1;
+	temp >>= 1;
+	temp &= 0b01111111;
+	temp |= (oldCarry << 7);
+	memory.write(pairRegisters(H, L), temp);
+	F.Z = (temp == 0);
+	cycles += 4;
+	pc++;
+}
+
+
+//Page 16
+
+void Cpu::SLA_R(uint8_t& reg)
+{
+	F.H = 0;
+	F.N = 0;
+	F.CY = (reg >> 7) & 0x1;
+	reg <<= 1;
+	reg &= 0b11111110;
+	F.Z = (reg == 0);
+	cycles += 2;
+	pc++;
+}
+
+void Cpu::SLA_aHL()
+{
+	uint8_t temp = memory.read(pairRegisters(H, L));
+	SLA_R(temp);
+	memory.write(pairRegisters(H, L), temp);
+	cycles += 2;
+}
+
+
+void Cpu::SRA_R(uint8_t& reg)
+{
+	F.H = 0;
+	F.N = 0;
+	F.CY = reg & 0x1;
+	bool bit7 = (reg >> 7) & 0x1;
+	reg >>= 1;
+	reg &= 0b01111111;
+	reg += (bit7 << 7);
+	F.Z = (reg == 0);
+	cycles += 2;
+	pc++;
+}
+
+void Cpu::SRA_aHL()
+{
+	uint8_t temp = memory.read(pairRegisters(H, L));
+	SRA_R(temp);
+	memory.write(pairRegisters(H, L), temp);
+	cycles += 2;
+}
+
+
+//Page 17
+void Cpu::SRL_R(uint8_t& reg)
+{
+	F.H = 0;
+	F.N = 0;
+	F.CY = reg & 0x1;
+	reg >>= 1;
+	reg &= 0b01111111;
+	F.Z = (reg == 0);
+	cycles += 2;
+	pc++;
+}
+
+void Cpu::SRL_aHL()
+{
+	uint8_t temp = memory.read(pairRegisters(H, L));
+	SRL_R(temp);
+	memory.write(pairRegisters(H, L), temp);
+	cycles += 2;
+}
+
+
+void Cpu::SWAP_R(uint8_t& reg)
+{
+	F.CY = 0;
+	F.H = 0;
+	F.N = 0;
+	uint8_t nibbleL = reg & 0x0F;
+	reg >>= 4;
+	reg &= 0x0F;
+	reg |= (nibbleL << 4);
+	F.Z = (reg == 0);
+	cycles += 2;
+	pc++;
+}
+void Cpu::SWAP_aHL()
+{
+	uint8_t temp = memory.read(pairRegisters(H, L));
+	SWAP_R(temp);
+	memory.write(pairRegisters(H, L), temp);
+	cycles += 2;
+}
+
+
+
+//Page 18
+void Cpu::BIT_b_R(const uint8_t& reg, const uint8_t& index)
+{
+	F.H = 1;
+	F.N = 0;
+	uint8_t date8Bits = memory.read(pc);//Get the data byte
+	uint8_t indexBit = (date8Bits & 0b00111000) >> 3;//Get index of bit to put value in F.Z
+	F.Z = !((reg & (0b00000001 << indexBit)) >> (indexBit));//Attribute to F.Z the bit's complement of the reg pointed by the index calculated previously
+	cycles++;
+	pc++;
+}
+
+void Cpu::BIT_aHL()
+{
+	BIT_R(memory.read(pairRegisters(H, L)));
+	cycles += 2;
+}
+
+void Cpu::SET_R(uint8_t& reg)
+{
+	uint8_t date8Bits = memory.read(pc);//Get the data byte
+	uint8_t indexBit = (date8Bits & 0b00111000) >> 3;//Get index of bit to set in register
+	reg |= (0b00000001 << indexBit);//Se the bit pointed by the index calculated previously
+	cycles += 2;
+	pc++;
+}
+
+
+//Page 17
+void Cpu::SET_aHL()
+{
+	uint8_t temp = memory.read(pairRegisters(H, L));
+	SET_R(temp);
+	memory.write(pairRegisters(H, L), temp);
+	cycles += 2;
+}
+
+
+void Cpu::RES_R(uint8_t& reg)
+{
+	uint8_t date8Bits = memory.read(pc);//Get the data byte
+	uint8_t indexBit = (date8Bits & 0b00111000) >> 3;//Get index of bit to set in register
+	uint8_t mask = (0b00000001 << indexBit);//Shift the bit to set to 0 to the right position
+	mask = ~mask;//Invert the ma
+	reg &= mask;
+	cycles += 2;
+	pc++;
+}
+
+void Cpu::RES_aHL()
+{
+	uint8_t temp = memory.read(pairRegisters(H, L));
+	SET_R(temp);
+	memory.write(pairRegisters(H, L), temp);
+	cycles += 2;
+}
+
 ///*-------------------------------------JUMP INSTRUCTIONS---------------------------------------*/
 ////Page 18
 //
@@ -2035,15 +2078,7 @@ uint8_t Cpu::SUB_SBC_subFunctionFlag(const uint8_t& reg, const uint8_t& value)
 // 
 //Page 10
 //
-//void Cpu::AND_R_R(uint8_t& reg1, const uint8_t& reg2)
-//{
-//	reg1 &= reg2;
-//	F.Z = (reg1 == 0);
-//	F.H = 1;
-//	F.N = 0;
-//	F.CY = 0;
-//	pc++;
-//}
+
 //
 //void Cpu::DAA()
 //{
