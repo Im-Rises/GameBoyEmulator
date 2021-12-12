@@ -49,8 +49,9 @@ void Cpu::start()
 		//Wait the number of cycles
 		cycles = 0;
 		//sleap the amount of the cycle variable
-		//if (pc == 0xA8)
-		//	cout << "Passe" << endl;
+		if (pc == 0x64)
+			cout << "Arret pc = " << hex << pc << endl;
+		cout << pc << endl;
 		readOpcode();
 	}
 }
@@ -1809,7 +1810,7 @@ void Cpu::JR_e()
 {
 	cout << "May have issue now, because of opcode JR e : 0x18" << endl;
 	pc++;
-	int16_t e = memory.read(pc + 1);//LOOK AT THE Z80 CPU MANUAL
+	int8_t e = memory.read(pc);//LOOK AT THE Z80 CPU MANUAL
 	pc++;
 	cycles += 3;
 	pc += e;
