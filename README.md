@@ -6,10 +6,10 @@ GameBoy Emulator make in C++ with Visual Studio 2019.
 
 ## Task order
 1. CPU opcodes implementation
-2. Video (PPU)
+2. Interrupts
 3. Controls
-4. Audio
-5. Interrupts
+4. Video (PPU)
+5. Audio
 
 ## To read
 Chapter 1 System
@@ -19,9 +19,8 @@ Chapter 4 CPU Instruction Set
 Chapter 5 Miscellaneous General Information 
 
 ## TO DO
-- Verify all the opcodes (mistakes in somes)  
-<-- Put the init value of every registers and the ram before the nintendo logo -->
-- Init the ram and registers after the bios without bios  
+- Setup the user inputs
+- PPU
 
 ## Documentations  
 https://www.youtube.com/watch?v=HyzD8pNlpwI  

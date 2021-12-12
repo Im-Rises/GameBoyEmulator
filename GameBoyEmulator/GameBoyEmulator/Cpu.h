@@ -69,9 +69,12 @@ public:
 private:
 	uint16_t haltSubFunction();
 
+	void writeUserInput();
+
 	void readOpcode();							//Read an opcode
 	void executeOpcode(uint8_t opcode);			//Execute an opcode
 	void executeOpcodeFollowingCB();			//Execute an opcode on two bytes (following the CB opcode) 
+
 
 	uint16_t pairRegisters(const uint8_t reg1, const uint8_t reg2)const;
 	void unpairRegisters(uint8_t& reg1, uint8_t& reg2, const uint16_t& registersPair);//The & 0x00FF is not an obligation

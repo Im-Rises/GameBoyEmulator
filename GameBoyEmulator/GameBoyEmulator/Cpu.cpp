@@ -55,12 +55,6 @@ void Cpu::start()
 {
 	while (onOff)
 	{
-		//Wait the number of cycles
-		cycles = 0;
-		//sleap the amount of the cycle variable
-
-		//Put user inputs here in the memory registers
-
 		if (true)//DEBUG
 		{
 			if (pc == 0x64)
@@ -69,13 +63,17 @@ void Cpu::start()
 		}
 
 
+		//Wait the number of cycles
+		cycles = 0;
+
+		//Put user inputs here in the memory registers
+
 		if (!halted && !stopped)//If CPU is not in halt mode neither stop mode
 		{
 			readOpcode();
 		}
 		else if (halted)//If halt mode is enable
 		{
-			cycles++;
 			//HALT mode is canceled by the following events, which have the starting addresses indicated.
 			//	1) A LOW signal to the / RESET terminal
 			//		Starting address : 0000h
@@ -100,20 +98,23 @@ void Cpu::start()
 		}
 		else//If stop mode is enable
 		{
-			cycles++;
 			//STOP Mode
 			//	Game Boy switches to STOP mode when a STOP instruction is executed.
 			//	The system clockand oscillation circuitry between the CK1and CK2 terminals are halted in
 			//	this mode.Thus, all operation is halted except that of the SI0 external clock.STOP mode is
 			//	canceled by the following events, and started from the starting address.
 			//	3) A LOW signal to the / RESET terminal
-			//	Starting address : 0000h
+			//		Starting address : 0000h
 			//	4) A LOW signal to terminal P10, P11, P12, or P13
-			//	Starting address : address following that of STOP instruction
+			//		Starting address : address following that of STOP instruction
 			//	When STOP mode is canceled, the system clock is restored after 217 times the oscillation
 			//	clock(DMG : 4 MHz, CGB : 4 MHz / 8 MHz), and the CPU resumes operation.
 			//	When STOP mode is entered, the STOP instruction should be executed after all interruptenable
 			//	flags are reset, and meanwhile, terminals P10 - P13 are all in a HIGH period.
+			cout << "STOP MODE ENABLED. WAITING FOR USER INPUT." << endl;
+			stopped = !((memory.read(CONTROLLER_DATA_ADDRESS) & 0b00001111) < 15);
+			if (!stopped)
+				cycles += 217;
 		}
 
 		if (!resetTerminal)
@@ -149,6 +150,12 @@ uint16_t Cpu::haltSubFunction()
 		return 0x0040;
 }
 
+void Cpu::writeUserInput()
+{
+	memory.write(CONTROLLER_DATA_ADDRESS, 0b00111111);
+	//RESUME HERE
+}
+
 void Cpu::readOpcode()
 {
 	//Do sometinh here//Wait the number of cycle following the value of variable "cycles"
@@ -175,7 +182,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x0D): {DEC_R(C); break; }
 	case(0x0E): {LD_R_d8(C); break; }
 	case(0x0F): {RRCA(); break; }
-	case(0x10): {STOP(); cout << "Opcode STOP not implemented for the moment at pc = " << hex << pc << endl; break; }
+	case(0x10): {STOP(); break; }
 	case(0x11): {LD_RP_d16(D, E); break; }
 	case(0x12): {LD_aDE_A(); break; }
 	case(0x13): {INC_RP(D, E); break; }
