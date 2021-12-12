@@ -67,6 +67,7 @@ public:
 	void start();
 
 private:
+	uint16_t haltSubFunction();
 
 	void readOpcode();							//Read an opcode
 	void executeOpcode(uint8_t opcode);			//Execute an opcode
@@ -136,7 +137,7 @@ private:
 
 	void LD_SP_HL();//WORKING
 	void PUSH_RP(const uint8_t& regPair1, const uint8_t& regPair2);//WORKING
-	void PUSH_RP(const uint8_t& regPair1, const Flag& flag);//WORING PERHAPS ISSUE WITH AF BECAUSE OF THE CONVERSION OF THE FLAG
+	void PUSH_RP(const uint8_t& regPair, const Flag& flag);//WORING PERHAPS ISSUE WITH AF BECAUSE OF THE CONVERSION OF THE FLAG
 
 	//Page ?	(p101)
 	void POP_RP(uint8_t& regPair1, uint8_t& regPair2);//WORKING

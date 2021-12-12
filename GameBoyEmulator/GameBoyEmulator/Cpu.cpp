@@ -59,6 +59,7 @@ void Cpu::start()
 		cycles = 0;
 		//sleap the amount of the cycle variable
 
+		//Put user inputs here in the memory registers
 
 		if (true)//DEBUG
 		{
@@ -75,28 +76,26 @@ void Cpu::start()
 		else if (halted)//If halt mode is enable
 		{
 			cycles++;
-			//HALT mode is canceled by the following events, which have the starting addresses
-			//	indicated.
+			//HALT mode is canceled by the following events, which have the starting addresses indicated.
 			//	1) A LOW signal to the / RESET terminal
-			//	Starting address : 0000h
+			//		Starting address : 0000h
 			//	2) The interrupt - enable flag and its corresponding interrupt request flag are set
-			//	IME = 0 (Interrupt Master Enable flag disabled)
-			//	Starting address : address following that of the HALT instruction
-			//	IME = 1 (Interrupt Master Enable flag enabled)
-			//	Starting address : each interrupt starting address
+			//		IME = 0 (Interrupt Master Enable flag disabled)
+			//		Starting address : address following that of the HALT instruction
+			//		IME = 1 (Interrupt Master Enable flag enabled)
+			//		Starting address : each interrupt starting address
 
-			if ()
+			if (memory.read(INTERRUPT_FLAG_IE_ADDRESS) == memory.read(INTERRUPT_FLAG_IF_ADDRESS))//Doubt about if it should be a | or & between their flags
 			{
 				halted = false;
 				if (IME)
 				{
-					halted = false;
-					//pc=interrupt starting address
+					pc = haltSubFunction();
 				}
-				//else
-				//{
-				//	pc = pc;
-				//}
+				else
+				{
+					pc = pc;
+				}
 			}
 		}
 		else//If stop mode is enable
@@ -122,6 +121,32 @@ void Cpu::start()
 			reset();
 		}
 	}
+}
+
+uint16_t Cpu::haltSubFunction()
+{
+	IME = 0;
+	uint8_t tempIE = memory.read(INTERRUPT_FLAG_IE_ADDRESS);
+	memory.write(INTERRUPT_FLAG_IE_ADDRESS, 0x00);//The resetting of the IF register that initiates the interrupt is a hardware reset.
+
+	//PUSH pc
+	memory.write(sp - 1, (pc >> 8));
+	memory.write(sp - 2, (pc & 0x00FF));
+	sp -= 2;
+
+	//cycles += 4;Cycle or not ???
+
+
+	if ((tempIE >> 4) & 0x1)//P10-P13 input signal goes low
+		return 0x0060;
+	else if ((tempIE >> 3) & 0x1)//Serial transfer completion
+		return 0x0058;
+	else if ((tempIE >> 2) & 0x1)//Timer overflow
+		return 0x0050;
+	else if ((tempIE >> 1) & 0x1)//LCDC status interrupt
+		return 0x0048;
+	else//Vertical blanking
+		return 0x0040;
 }
 
 void Cpu::readOpcode()
@@ -935,10 +960,10 @@ void Cpu::PUSH_RP(const uint8_t& regPair1, const uint8_t& regPair2)
 	pc++;
 }
 
-void Cpu::PUSH_RP(const uint8_t& regPair1, const Flag& flag)
+void Cpu::PUSH_RP(const uint8_t& regPair, const Flag& flag)
 {
 	uint8_t flagTemp = flagToByte(flag);
-	PUSH_RP(regPair1, flagTemp);
+	PUSH_RP(regPair, flagTemp);
 }
 
 
@@ -2023,6 +2048,7 @@ void Cpu::RETI()
 {
 	pc = (memory.read(sp + 1) << 8) + memory.read(sp);
 	sp += 2;
+	IME = 1;
 	cycles += 4;
 }
 
