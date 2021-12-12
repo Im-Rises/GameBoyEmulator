@@ -46,6 +46,8 @@ private:
 		bool CY;				//Set to 1 when an operation results in carrying from or borrowing to bit 7
 	} F;						//Auxiliary register of the accumulator, consist of 4 flags that are set and reset according to the results of instruction execution
 
+	bool IME;					//IME flag (Interupt Master Enable)
+
 	//Memory* memory = nullptr;
 	Memory memory;				//Memory of the console
 
@@ -262,39 +264,44 @@ private:
 	/////////////////////////////////////TO CHECK////////////////////////////////////////////////////
 	// Error, with the e in the functions
 	//Page 18	(p105)
-	void JP_d16();
-	void JP_cc();
-	void JR();
+	void JP_d16();//WORKING
+	void JP_cc_d16();//WORKING IT SHOULD
+	void JR_e();
 
 	////Page 19	(p106)
-	//void JR_cc();
-	//void JP_HL();
+	void JR_cc_e();//WORKING IT SHOULD
+	void JP_HL();//WORKING IT SHOULD
 
-	///*-------------------------------------CALL AND RETURN INSTRUCTIONS---------------------------------------*/
-	////Page 19	(p107)
-	//void CALL();
-	//void CALL_cc();
+	/*-------------------------------------CALL AND RETURN INSTRUCTIONS---------------------------------------*/
+	//Page 19	(p107)
+	void CALL();//WORKING IT SHOULD
+	void CALL_cc();
 
 	////Page 20	(p108)
-	//void RET();
-	//void RETI();
-	//void RET_cc();
+	void RET();
+	void RETI();//TO CHECK
+	void RET_cc();
 
 	////Page 21	(p109)
-	//void RST();
+	void RST();//SHOULD WORK
 
-	///*-------------------------------------GENERAL-PURPOSE ARITHMETIC OPERATIONS AND CPU CONTROL INSTRUCTIONS---------------------------------------*/
-	////Page 20	(p108)
-	//void DAA();//TO CHECK
-	//void CPL();
-	//void NOP();
+	/*-------------------------------------GENERAL-PURPOSE ARITHMETIC OPERATIONS AND CPU CONTROL INSTRUCTIONS---------------------------------------*/
+	//Page 20	(p108)
+	void DAA();//TO CHECK
+	void CPL();
+	void NOP();//I think it works
 
-	////Page 21	(p109)
-	//void HALT();//NOT IMPLEMENTED
-	//void STOP();//NOT IMPLEMENTED
+	void CCF();
+	void SCF();
 
-	//void EI();//NOT IMPLEMENTED
-	//void DI();//NOT IMPLEMENTED
+	void EI();
+	void DI();
+
+	//Page 21	(p109)
+	void HALT();//NOT IMPLEMENTED
+	void STOP();//NOT IMPLEMENTED
+
+	
 
 };
 

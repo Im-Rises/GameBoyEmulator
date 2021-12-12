@@ -5,30 +5,24 @@ Cpu::Cpu()
 {
 	//this->memory = memory;
 
-	//ERROR NEED TO SET AN INIT VALUE FOR THE REGISTERS
+	//ERROR NEED TO SET AN INIT VALUE FOR THE REGISTERS AFTER THE BIOS
+	halted = 0;
+	stopped = 0;
 	A = 0;
 	B = C = D = E = H = L = 0;
 	pc = ROM_DATA_AREA;
 	sp = CPU_WORK_RAM_OR_AND_STACK_END;
 	F.Z = F.N = F.H = F.CY = 0;
+	IME = 0;
 	cycles = 0;
 }
 
 
 Cpu::Cpu(const string& biosPath)
 {
-	A = 0;
-	B = C = D = E = H = L = 0;
 	pc = 0;
-	sp = CPU_WORK_RAM_OR_AND_STACK_END;
-	F.Z = F.N = F.H = F.CY = 0;
 	cycles = 0;
-
 	loadBios(biosPath);
-	for (int i = 0; i < ROM_DATA_AREA; i++)
-	{
-		readOpcode();
-	}
 }
 
 Cpu::~Cpu()
@@ -55,6 +49,8 @@ void Cpu::start()
 		//Wait the number of cycles
 		cycles = 0;
 		//sleap the amount of the cycle variable
+		//if (pc == 0xA8)
+		//	cout << "Passe" << endl;
 		readOpcode();
 	}
 }
@@ -68,10 +64,6 @@ void Cpu::readOpcode()
 
 void Cpu::executeOpcode(uint8_t opcode)
 {
-	/// <summary>
-	/// Opcode issue with number 0x7A and 0x7D because D and L have the same three bits
-	/// </summary>
-	/// <param name="opcode"></param>
 	switch (opcode) {
 	case(0x00): {NOP(); break; }
 	case(0x01): {LD_RP_d16(B, C); break; }
@@ -97,7 +89,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x15): {DEC_R(D); break; }
 	case(0x16): {LD_R_d8(D); break; }
 	case(0x17): {RLA(); break; }
-	case(0x18): {JR(); break; }
+	case(0x18): {JR_e(); break; }
 	case(0x19): {ADD_HL_RP(D, E); break; }
 	case(0x1A): {LD_A_aDE(); break; }
 	case(0x1B): {DEC_RP(D, E); break; }
@@ -105,7 +97,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x1D): {DEC_R(E); break; }
 	case(0x1E): {LD_R_d8(E); break; }
 	case(0x1F): {RRA(); break; }
-	case(0x20): {JR_cc(); break; }
+	case(0x20): {JR_cc_e(); break; }
 	case(0x21): {LD_RP_d16(H, L); break; }
 	case(0x22): {LD_aHL_A_HLI(); break; }
 	case(0x23): {INC_RP(H, L); break; }
@@ -113,7 +105,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x25): {DEC_R(H); break; }
 	case(0x26): {LD_R_d8(H); break; }
 	case(0x27): {DAA(); break; }
-	case(0x28): {JR_cc(); break; }
+	case(0x28): {JR_cc_e(); break; }
 	case(0x29): {ADD_HL_RP(H, L); break; }
 	case(0x2A): {LD_A_aHL_HLI(); break; }
 	case(0x2B): {DEC_RP(H, L); break; }
@@ -121,22 +113,22 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x2D): {DEC_R(L); break; }
 	case(0x2E): {LD_R_d8(L); break; }
 	case(0x2F): {CPL(); break; }
-	case(0x30): {JR_cc(); break; }
+	case(0x30): {JR_cc_e(); break; }
 	case(0x31): {LD_RP_d16(sp); break; }
 	case(0x32): {LD_aHL_A_HLD(); break; }
 	case(0x33): {INC_RP(sp); break; }
 	case(0x34): {INC_aHL(); break; }
 	case(0x35): {DEC_aHL(); break; }
 	case(0x36): {LD_aHL_d8(); break; }
-	case(0x37): {cout << "Opcode SCF not implemented for the moment at pc = " << hex << pc << endl; break; }
-	case(0x38): {JR_cc(); break; }
+	case(0x37): {SCF(); break; }
+	case(0x38): {JR_cc_e(); break; }
 	case(0x39): {ADD_HL_RP(sp); break; }
 	case(0x3A): {LD_A_aHL_HLD(); break; }
 	case(0x3B): {DEC_RP(sp); break; }
 	case(0x3C): {INC_R(A); break; }
 	case(0x3D): {DEC_R(A); break; }
 	case(0x3E): {LD_R_d8(A); break; }
-	case(0x3F): {cout << "Opcode CCF not implemented for the moment at pc = " << hex << pc << endl; break; }
+	case(0x3F): {CCF(); break; }
 	case(0x40): {LD_R_R(B, B); break; }
 	case(0x41): {LD_R_R(B, C); break; }
 	case(0x42): {LD_R_R(B, D); break; }
@@ -267,7 +259,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0xBF): {CP_A_R(A); break; }
 	case(0xC0): {RET_cc(); break; }
 	case(0xC1): {POP_RP(B, C); break; }
-	case(0xC2): {JP_cc(); break; }
+	case(0xC2): {JP_cc_d16(); break; }
 	case(0xC3): {JP_d16(); break; }
 	case(0xC4): {CALL_cc(); break; }
 	case(0xC5): {PUSH_RP(B, C); break; }
@@ -275,7 +267,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0xC7): {RST(); break; }
 	case(0xC8): {RET_cc(); break; }
 	case(0xC9): {RET(); break; }
-	case(0xCA): {JP_cc(); break; }
+	case(0xCA): {JP_cc_d16(); break; }
 	case(0xCB): {executeOpcodeFollowingCB(); break; }
 	case(0xCC): {CALL_cc(); break; }
 	case(0xCD): {CALL(); break; }
@@ -283,14 +275,14 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0xCF): {RST(); break; }
 	case(0xD0): {RET_cc(); break; }
 	case(0xD1): {POP_RP(D, E); break; }
-	case(0xD2): {JP_cc(); break; }
+	case(0xD2): {JP_cc_d16(); break; }
 	case(0xD4): {CALL_cc(); break; }
 	case(0xD5): {PUSH_RP(D, E); break; }
 	case(0xD6): {SUB_A_d8(); break; }
 	case(0xD7): {RST(); break; }
 	case(0xD8): {RET_cc(); break; }
 	case(0xD9): {RETI(); break; }
-	case(0xDA): {JP_cc(); break; }
+	case(0xDA): {JP_cc_d16(); break; }
 	case(0xDC): {CALL_cc(); break; }
 	case(0xDE): {SBC_A_d8_CY(); break; }
 	case(0xDF): {RST(); break; }
@@ -318,7 +310,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0xFB): {EI(); cout << "Opcode EI not implemented for the moment at pc = " << hex << pc << endl; break; }
 	case(0xFE): {CP_A_d8(); break; }
 	case(0xFF): {RST(); break; }
-	default: {cout << "Error opcode unknown read at pc = 0x" << hex << pc << endl; break; }
+	default: {cout << "Error opcode 0x" << opcode << " unknown at pc = 0x" << hex << pc << endl; exit(1); break; }
 	}
 }
 
@@ -631,8 +623,8 @@ int Cpu::binaryAddition(const int& numberOfBits, const int& value1, const int& v
 		value1Temp = (value1 >> i) & 0b1;
 		value2Temp = (value2 >> i) & 0b1;
 
-		calcResultTemp = (value1Temp ^ value2Temp) ^ carryTemp;
-		carryTemp = (value1Temp & value2Temp) | (value1Temp & carryTemp) | (value2Temp & carryTemp);
+		calcResultTemp = (value1Temp ^ value2Temp) ^ (carryTemp & 0x1);
+		carryTemp = (value1Temp & value2Temp) | (value1Temp & (carryTemp & 0x1)) | (value2Temp & (carryTemp & 0x1));
 
 		if ((i == 3) && carryTemp)
 			carryBit3 = 1;
@@ -660,7 +652,7 @@ int Cpu::binarySubstraction(const int& numberOfBits, const int& value1, const in
 		value1Temp = (value1 >> i) & 0b1;
 		value2Temp = (value2 >> i) & 0b1;
 
-		calcResultTemp = (value1Temp ^ value2Temp) ^ carryTemp;
+		calcResultTemp = (value1Temp ^ value2Temp) ^ (carryTemp & 0x1);
 		carryTemp = ((!(value1Temp ^ value2Temp)) & carryTemp) || (((!value1Temp) & value2Temp) & (!carryTemp));
 
 		if ((i == 3) && carryTemp)
@@ -1054,7 +1046,7 @@ void Cpu::SUB_A_aHL(const uint8_t& regPair1, const uint8_t& regPair2)
 
 void Cpu::SBC_A_R_CY(const uint8_t& reg)
 {
-	bool A = SUB_SBC_subFunctionFlag(A, F.CY);
+	A = SUB_SBC_subFunctionFlag(A, F.CY);
 	bool tempCY = F.CY;
 	bool tempH = F.H;
 	A = SUB_SBC_subFunctionFlag(A, reg);
@@ -1733,425 +1725,466 @@ void Cpu::RES_b_aHL(const uint8_t& indexBit)
 	cycles += 2;
 }
 
-///*-------------------------------------JUMP INSTRUCTIONS---------------------------------------*/
-////Page 18
-//
-//void Cpu::JP_d16()
-//{
-//	pc++;
-//	pc = (memory.read(pc + 1) << 8) + (memory.read(pc));
-//}
-//
-//void Cpu::JP_cc()
-//{
-//	uint8_t opcode = memory.read(pc);
-//	uint8_t condition = ((opcode & 0b00011000) >> 3);
-//	pc++;
-//	uint8_t lowByte = memory.read(pc);
-//	pc++;
-//	uint8_t highByte = memory.read(pc);
-//
-//	switch (condition)
-//	{
-//	case(0b00)://NZ
-//	{
-//		if (!F.Z)
-//		{
-//			pc = (highByte << 8) + lowByte;
-//		}
-//		else
-//		{
-//			pc++;
-//		}
-//		break;
-//	}
-//	case(0b01)://Z
-//	{
-//		if (F.Z)
-//		{
-//			pc = (highByte << 8) + lowByte;
-//		}
-//		else
-//		{
-//			pc++;
-//		}
-//		break;
-//	}
-//	case(0b10)://NC
-//	{
-//		if (!F.CY)
-//		{
-//			pc = (highByte << 8) + lowByte;
-//		}
-//		else
-//		{
-//			pc++;
-//		}
-//		break;
-//	}
-//	case(0b11)://C
-//	{
-//		if (F.CY)
-//		{
-//			pc = (highByte << 8) + lowByte;
-//		}
-//		else
-//		{
-//			pc++;
-//		}
-//		break;
-//	}
-//	}
-//}
-//
-//void Cpu::JR()
-//{
-//	pc++;
-//	int8_t e = memory.read(pc);
-//	pc += e + 2;
-//}
-//
-//
-//void Cpu::JR_cc()
-//{
-//	uint8_t opcode = memory.read(pc);
-//	uint8_t condition = ((opcode & 0b00011000) >> 3);
-//	pc++;
-//	int8_t e = memory.read(pc);
-//
-//	switch (condition)
-//	{
-//	case(0b00)://NZ
-//	{
-//		if (!F.Z)
-//		{
-//			pc += e + 2;
-//		}
-//		else
-//		{
-//			pc++;
-//		}
-//		break;
-//	}
-//	case(0b01)://Z
-//	{
-//		if (F.Z)
-//		{
-//			pc += e + 2;
-//		}
-//		else
-//		{
-//			pc++;
-//		}
-//		break;
-//	}
-//	case(0b10)://NC
-//	{
-//		if (!F.CY)
-//		{
-//			pc += e + 2;
-//		}
-//		else
-//		{
-//			pc++;
-//		}
-//		break;
-//	}
-//	case(0b11)://C
-//	{
-//		if (F.CY)
-//		{
-//			pc += e + 2;
-//		}
-//		else
-//		{
-//			pc++;
-//		}
-//		break;
-//	}
-//	}
-//}
-//
-//void Cpu::JP_HL()
-//{
-//	pc = pairRegisters(H, L);
-//}
-//
-//void Cpu::CALL()
-//{
-//	memory.write(sp - 1, ((pc + 3) >> 8));
-//	memory.write(sp - 2, ((pc + 3) & 0x0F));
-//	pc = (memory.read(pc + 1) << 8) + memory.read(pc + 2);
-//	sp -= 2;
-//}
-//
-//void Cpu::CALL_cc()
-//{
-//	uint8_t opcode = memory.read(pc);
-//	uint8_t condition = ((opcode & 0b00011000) >> 3);
-//
-//	switch (condition)
-//	{
-//	case(0b00)://NZ
-//	{
-//		if (!F.Z)
-//		{
-//			CALL();
-//		}
-//		else
-//		{
-//			pc += 3;
-//		}
-//		break;
-//	}
-//	case(0b01)://Z
-//	{
-//		if (F.Z)
-//		{
-//			CALL();
-//		}
-//		else
-//		{
-//			pc += 3;
-//		}
-//		break;
-//	}
-//	case(0b10)://NC
-//	{
-//		if (!F.CY)
-//		{
-//			CALL();
-//		}
-//		else
-//		{
-//			pc += 3;
-//		}
-//		break;
-//	}
-//	case(0b11)://C
-//	{
-//		if (F.CY)
-//		{
-//			CALL();
-//		}
-//		else
-//		{
-//			pc += 3;
-//		}
-//		break;
-//	}
-//	}
-//}
-//
-//void Cpu::RET()
-//{
-//	pc = (memory.read(sp + 1) << 8) + memory.read(sp);
-//	sp += 2;
-//}
-//
-//void Cpu::RETI()
-//{
-//	pc = (memory.read(sp + 1) << 8) + memory.read(sp);
-//	sp += 2;
-//}
-//
-//
-//void Cpu::RET_cc()
-//{
-//	uint8_t opcode = memory.read(pc);
-//	uint8_t condition = ((opcode & 0b00011000) >> 3);
-//
-//	switch (condition)
-//	{
-//	case(0b00)://NZ
-//	{
-//		if (!F.Z)
-//		{
-//			RET();
-//		}
-//		else
-//		{
-//			pc++;
-//		}
-//		break;
-//	}
-//	case(0b01)://Z
-//	{
-//		if (F.Z)
-//		{
-//			RET();
-//		}
-//		else
-//		{
-//			pc++;
-//		}
-//		break;
-//	}
-//	case(0b10)://NC
-//	{
-//		if (!F.CY)
-//		{
-//			RET();
-//		}
-//		else
-//		{
-//			pc++;
-//		}
-//		break;
-//	}
-//	case(0b11)://C
-//	{
-//		if (F.CY)
-//		{
-//			RET();
-//		}
-//		else
-//		{
-//			pc++;
-//		}
-//		break;
-//	}
-//	}
-//}
-//
-////Page 21
-//void Cpu::RST()
-//{
-//	uint8_t opcode = memory.read(pc);
-//	pc++;
-//	memory.write(sp - 1, (pc >> 8));
-//	memory.write(sp - 2, (pc & 0x0F));
-//	sp -= 2;
-//
-//	uint8_t condition = ((opcode & 0b00111000) >> 3);
-//
-//	switch (condition)
-//	{
-//	case(0b000):
-//	{
-//		pc = 0x0000;
-//		break;
-//	}
-//	case(0b001):
-//	{
-//		pc = 0x0008;
-//		break;
-//	}
-//	case(0b010):
-//	{
-//		pc = 0x0010;
-//		break;
-//	}
-//	case(0b011):
-//	{
-//		pc = 0x0018;
-//	}
-//	case(0b100):
-//	{
-//		pc = 0x0020;
-//		break;
-//	}
-//	case(0b101):
-//	{
-//		pc = 0x0028;
-//		break;
-//	}
-//	case(0b110):
-//	{
-//		pc = 0x0030;
-//		break;
-//	}
-//	case(0b111):
-//	{
-//		pc = 0x0038;
-//		break;
-//	}
-//	}
-//}
-//
-//
-///*-------------------------------------GENERAL-PURPOSE ARITHMETIC OPERATIONS AND CPU CONTROL INSTRUCTIONS---------------------------------------*/
-////Page 20
-// 
-//Page 10
-//
+/*-------------------------------------JUMP INSTRUCTIONS---------------------------------------*/
+//Page 18
 
-//
-//void Cpu::DAA()
-//{
-//	if (!F.N)//If previsous opcode is one of the ADD opcodes
-//	{
-//		if (((A & 0xF0) > 0x90) || F.CY)
-//		{
-//			A += 0x60;
-//			F.CY = 1;
-//		}
-//		else
-//		{
-//			F.CY = 0;
-//		}
-//
-//		if (((A & 0x0F) > 0x09) || F.H)
-//		{
-//			A += 0x06;
-//		}
-//	}
-//	else//If previsous opcode is one of the SUB opcodes
-//	{
-//		if (((A & 0xF0) > 0x90) || F.CY)
-//		{
-//			A -= 0x60;
-//			F.CY = 1;
-//		}
-//		else
-//		{
-//			F.CY = 0;
-//		}
-//
-//		if (((A & 0x0F) > 0x09) || F.H)
-//		{
-//			A -= 0x06;
-//		}
-//	}
-//
-//	F.H = 0;
-//	F.Z = (A == 0);
-//	pc++;
-//}
-//
-//
-//void Cpu::CPL()
-//{
-//	A = ~A;
-//	F.H = 1;
-//	F.N = 1;
-//	pc++;
-//}
-//
-//
-//void Cpu::NOP()
-//{
-//	pc++;
-//}
-//
-////Page 21
-//void Cpu::HALT()//NOT IMPLEMENTED
-//{
-//	pc++;
-//}
-//
-//void Cpu::STOP()//NOT IMPLEMENTED
-//{
-//	pc++;
-//}
-//
-//void Cpu::EI()
-//{
-//	pc++;
-//}
-//
-//void Cpu::DI()
-//{
-//	pc++;
-//}
-//
+void Cpu::JP_d16()
+{
+	pc++;
+	pc = (memory.read(pc + 1) << 8) + (memory.read(pc));
+	cycles += 4;
+}
+
+void Cpu::JP_cc_d16()
+{
+	uint8_t condition = ((memory.read(pc) & 0b00011000) >> 3);
+	pc++;
+	uint8_t lowByte = memory.read(pc);
+	pc++;
+	uint8_t highByte = memory.read(pc);
+
+	switch (condition)
+	{
+	case(0b00)://NZ
+	{
+		if (!F.Z)
+		{
+			pc = (highByte << 8) + lowByte;
+			cycles += 4;
+		}
+		else
+		{
+			cycles += 3;
+			pc++;
+		}
+		break;
+	}
+	case(0b01)://Z
+	{
+		if (F.Z)
+		{
+			pc = (highByte << 8) + lowByte;
+			cycles += 4;
+		}
+		else
+		{
+			cycles += 3;
+			pc++;
+		}
+		break;
+	}
+	case(0b10)://NC
+	{
+		if (!F.CY)
+		{
+			pc = (highByte << 8) + lowByte;
+			cycles += 4;
+		}
+		else
+		{
+			cycles += 3;
+			pc++;
+		}
+		break;
+	}
+	case(0b11)://C
+	{
+		if (F.CY)
+		{
+			pc = (highByte << 8) + lowByte;
+			cycles += 4;
+		}
+		else
+		{
+			pc++;
+			cycles += 3;
+		}
+		break;
+	}
+	}
+}
+
+
+void Cpu::JR_e()
+{
+	cout << "May have issue now, because of opcode JR e : 0x18" << endl;
+	pc++;
+	int16_t e = memory.read(pc + 1);//LOOK AT THE Z80 CPU MANUAL
+	pc++;
+	cycles += 3;
+	pc += e;
+}
+
+
+void Cpu::JR_cc_e()
+{
+	uint8_t condition = ((memory.read(pc) & 0b00011000) >> 3);
+	pc++;
+	int8_t e = memory.read(pc);
+	pc++;
+	cycles += 2;
+
+	switch (condition)
+	{
+	case(0b00)://NZ
+	{
+		if (!F.Z)
+		{
+			pc += e;
+			cycles++;
+		}
+		break;
+	}
+	case(0b01)://Z
+	{
+		if (F.Z)
+		{
+			pc += e;
+			cycles++;
+		}
+		break;
+	}
+	case(0b10)://NC
+	{
+		if (!F.CY)
+		{
+			pc += e;
+			cycles++;
+		}
+		break;
+	}
+	case(0b11)://C
+	{
+		if (F.CY)
+		{
+			pc += e;
+			cycles++;
+		}
+		break;
+	}
+	}
+}
+
+void Cpu::JP_HL()
+{
+	pc = pairRegisters(H, L);
+	cycles++;
+}
+
+
+void Cpu::CALL()
+{
+	pc += 3;
+	memory.write(sp - 1, (pc >> 8));
+	memory.write(sp - 2, (pc & 0x00FF));
+	pc = (memory.read(pc - 1) << 8) + memory.read(pc - 2);
+	sp -= 2;
+	cycles += 6;
+}
+
+void Cpu::CALL_cc()
+{
+	uint8_t condition = ((memory.read(pc) & 0b00011000) >> 3);
+	switch (condition)
+	{
+	case(0b00)://NZ
+	{
+		if (!F.Z)
+		{
+			CALL();
+		}
+		else
+		{
+			pc += 3;
+			cycles += 3;
+		}
+		break;
+	}
+	case(0b01)://Z
+	{
+		if (F.Z)
+		{
+			CALL();
+		}
+		else
+		{
+			pc += 3;
+			cycles += 3;
+		}
+		break;
+	}
+	case(0b10)://NC
+	{
+		if (!F.CY)
+		{
+			CALL();
+		}
+		else
+		{
+			pc += 3;
+			cycles += 3;
+		}
+		break;
+	}
+	case(0b11)://C
+	{
+		if (F.CY)
+		{
+			CALL();
+		}
+		else
+		{
+			pc += 3;
+			cycles += 3;
+		}
+		break;
+	}
+	}
+}
+
+
+void Cpu::RET()
+{
+	pc = (memory.read(sp + 1) << 8) + memory.read(sp);
+	sp += 2;
+	cycles += 4;
+}
+
+void Cpu::RETI()
+{
+	pc = (memory.read(sp + 1) << 8) + memory.read(sp);
+	sp += 2;
+	cycles += 4;
+}
+
+
+void Cpu::RET_cc()
+{
+	uint8_t condition = ((memory.read(pc) & 0b00011000) >> 3);
+	cycles++;
+	switch (condition)
+	{
+	case(0b00)://NZ
+	{
+		if (!F.Z)
+		{
+			RET();
+		}
+		else
+		{
+			cycles++;
+			pc++;
+		}
+		break;
+	}
+	case(0b01)://Z
+	{
+		if (F.Z)
+		{
+			RET();
+		}
+		else
+		{
+			cycles++;
+			pc++;
+		}
+		break;
+	}
+	case(0b10)://NC
+	{
+		if (!F.CY)
+		{
+			RET();
+		}
+		else
+		{
+			cycles++;
+			pc++;
+		}
+		break;
+	}
+	case(0b11)://C
+	{
+		if (F.CY)
+		{
+			RET();
+		}
+		else
+		{
+			cycles++;
+			pc++;
+		}
+		break;
+	}
+	}
+}
+
+//Page 21
+void Cpu::RST()
+{
+	uint8_t opcode = memory.read(pc);
+	pc++;
+	memory.write(sp - 1, (pc >> 8));
+	memory.write(sp - 2, (pc & 0x00FF));
+	sp -= 2;
+	cycles += 4;
+
+	uint8_t condition = ((opcode & 0b00111000) >> 3);
+
+	switch (condition)
+	{
+	case(0b000):
+	{
+		pc = 0x0000;
+		break;
+	}
+	case(0b001):
+	{
+		pc = 0x0008;
+		break;
+	}
+	case(0b010):
+	{
+		pc = 0x0010;
+		break;
+	}
+	case(0b011):
+	{
+		pc = 0x0018;
+	}
+	case(0b100):
+	{
+		pc = 0x0020;
+		break;
+	}
+	case(0b101):
+	{
+		pc = 0x0028;
+		break;
+	}
+	case(0b110):
+	{
+		pc = 0x0030;
+		break;
+	}
+	case(0b111):
+	{
+		pc = 0x0038;
+		break;
+	}
+	}
+}
+
+
+/*-------------------------------------GENERAL-PURPOSE ARITHMETIC OPERATIONS AND CPU CONTROL INSTRUCTIONS---------------------------------------*/
+
+void Cpu::DAA()
+{
+	cout << "May bug now, because of opcode DAA" << endl;
+	cycles += 1;
+
+	if (!F.N)//If previsous opcode is one of the ADD opcodes
+	{
+		if (((A & 0xF0) > 0x90) || F.CY)
+		{
+			A += 0x60;
+			F.CY = 1;
+		}
+		else
+		{
+			F.CY = 0;
+		}
+
+		if (((A & 0x0F) > 0x09) || F.H)
+		{
+			A += 0x06;
+		}
+	}
+	else//If previsous opcode is one of the SUB opcodes
+	{
+		if (((A & 0xF0) > 0x90) || F.CY)
+		{
+			A -= 0x60;
+			F.CY = 1;
+		}
+		else
+		{
+			F.CY = 0;
+		}
+
+		if (((A & 0x0F) > 0x09) || F.H)
+		{
+			A -= 0x06;
+		}
+	}
+
+	F.H = 0;
+	F.Z = (A == 0);
+	pc++;
+}
+
+
+void Cpu::CPL()
+{
+	A = ~A;
+	F.H = 1;
+	F.N = 1;
+	cycles++;
+	pc++;
+}
+
+
+void Cpu::NOP()
+{
+	cycles++;
+	pc++;
+}
+
+void Cpu::CCF()
+{
+	F.CY = !F.CY;
+	F.H = 0;
+	F.N = 0;
+	cycles++;
+	pc++;
+}
+
+
+void Cpu::SCF()
+{
+	F.CY = 1;
+	F.H = 0;
+	F.N = 0;
+	cycles++;
+	pc++;
+}
+
+void Cpu::EI()
+{
+	IME = 1;
+	cycles++;
+	pc++;
+}
+
+void Cpu::DI()
+{
+	IME = 0;
+	cycles++;
+	pc++;
+}
+
+
+//Page 21
+void Cpu::HALT()//NOT IMPLEMENTED
+{
+	cycles++;
+	pc++;
+}
+
+void Cpu::STOP()//NOT IMPLEMENTED
+{
+	cycles++;
+	pc++;
+}
+
+

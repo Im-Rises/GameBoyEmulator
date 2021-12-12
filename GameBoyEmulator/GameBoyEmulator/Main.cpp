@@ -10,8 +10,9 @@ int main(int argc, char* argv[])
 	string romPathDebug = "../../../Tetris.GB";
 	
 	Cpu cpu(biosPath);
+	cpu.start();
 	
-	cpu.loadRom(romPathDebug);
+	//cpu.loadRom(romPathDebug);
 	//cpu.start();
 	
 	return 0;
