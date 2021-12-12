@@ -1,2 +1,6 @@
 ﻿  Cpu.cpp
+  Main.cpp
+  Memory.cpp
+E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Memory.cpp(33,15): warning C4244: 'initialisation' : conversion de 'std::streamoff' en 'int', perte possible de données
+  Génération de code en cours...
   GameBoyEmulator.vcxproj -> E:\Perso\Developpement\Programmes\C++\GameBoyEmulator\GameBoyEmulator\Debug\GameBoyEmulator.exe

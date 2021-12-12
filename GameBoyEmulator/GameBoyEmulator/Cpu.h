@@ -11,30 +11,28 @@ using namespace std;
 class Cpu {
 
 private:
-
-	int cycles;					//Cycles to do (incremented after each instructions)
-
-	bool halted;				//CPU is halted
-
-	bool stopped;				//CPU is stopped
-
 	/// <summary>
 	/// Frequency of the CPU
 	/// </summary>
 	double frequencyNormalMode = 1.05;//In MHZ
 	double frequencyDoubleSpeedMode = 2.10;//In MHZ
 
+	int cycles;					//Cycles to do (incremented after each instructions)
+
+
+	/// <summary>
+	/// CPU mode
+	/// </summary>
+	bool halted;				//CPU is halted
+	bool stopped;				//CPU is stopped
+	bool resetTerminal;			//CPU terminal state
+	bool onOff;					//On off button state (1:ON, 2:OFF)
+
 	/// <summary>
 	/// 8 bits registers
 	/// </summary>
 	uint8_t A;					//Accumulator A
 	uint8_t B, C, D, E, H, L;	//Auxiliary registers of the accumulator A, they work by pairs (BC, DE, HL)
-
-	/// <summary>
-	/// Program Counter and Stack Pointer
-	/// </summary>
-	uint16_t pc;				//Program counter
-	uint16_t sp;				//Stack pointer
 
 	/// <summary>
 	/// Flags
@@ -46,6 +44,13 @@ private:
 		bool CY;				//Set to 1 when an operation results in carrying from or borrowing to bit 7
 	} F;						//Auxiliary register of the accumulator, consist of 4 flags that are set and reset according to the results of instruction execution
 
+	/// <summary>
+	/// Program Counter and Stack Pointer
+	/// </summary>
+	uint16_t pc;				//Program counter
+	uint16_t sp;				//Stack pointer
+
+
 	bool IME;					//IME flag (Interupt Master Enable)
 
 	//Memory* memory = nullptr;
@@ -56,6 +61,7 @@ public:
 	Cpu();										//Constructor without bios
 	Cpu(const string& biosPath);				//Constructor with bios
 	~Cpu();
+	void reset();
 	void loadBios(const string& biosPath);
 	void loadRom(const string& romPath);
 	void start();
@@ -279,7 +285,7 @@ private:
 
 	////Page 20	(p108)
 	void RET();
-	void RETI();//TO CHECK
+	void RETI();//TO CHECK, TO IMPLEMENT THE MIE (Master Interrupt Enable)
 	void RET_cc();
 
 	////Page 21	(p109)

@@ -39,6 +39,9 @@
 
 #define CONTROL_DATA_AREA 0xFF00
 
+#define INTERRUPT_FLAG_IF 0xFF0F
+#define INTERRUPT_FLAG_IE 0xFFFF
+
 
 using namespace std;
 
@@ -51,7 +54,7 @@ private:
 
 public:
 	Memory();
-
+	void reset();
 	uint8_t read(const uint16_t index)const;
 	void write(const uint16_t& index, uint8_t value);
 	bool loadInMemory(const string& romPath);

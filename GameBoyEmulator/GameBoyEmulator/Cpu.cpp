@@ -4,30 +4,39 @@
 Cpu::Cpu()
 {
 	//this->memory = memory;
-
 	//ERROR NEED TO SET AN INIT VALUE FOR THE REGISTERS AFTER THE BIOS
-	halted = 0;
-	stopped = 0;
-	A = 0;
-	B = C = D = E = H = L = 0;
+	reset();
 	pc = ROM_DATA_AREA;
 	sp = CPU_WORK_RAM_OR_AND_STACK_END;
-	F.Z = F.N = F.H = F.CY = 0;
 	IME = 0;
-	cycles = 0;
 }
 
 
 Cpu::Cpu(const string& biosPath)
 {
-	pc = 0;
-	cycles = 0;
+	reset();
+	pc = 0x0000;
+	sp = 0x0000;
+	IME = 0;
 	loadBios(biosPath);
 }
 
 Cpu::~Cpu()
 {
 
+}
+
+void Cpu::reset()
+{
+	cycles = 0;
+	halted = 0;
+	resetTerminal = 1;
+	onOff = 1;
+	stopped = 0;
+	A = 0;
+	B = C = D = E = H = L = 0;
+	F.Z = F.N = F.H = F.CY = 0;
+	memory.reset();
 }
 
 void Cpu::loadBios(const string& biosPath)
@@ -44,15 +53,74 @@ void Cpu::loadRom(const string& romPath)
 
 void Cpu::start()
 {
-	while (true)
+	while (onOff)
 	{
 		//Wait the number of cycles
 		cycles = 0;
 		//sleap the amount of the cycle variable
-		if (pc == 0x64)
-			cout << "Arret pc = " << hex << pc << endl;
-		cout << pc << endl;
-		readOpcode();
+
+
+		if (true)//DEBUG
+		{
+			if (pc == 0x64)
+				cout << "Arret pc = " << hex << pc << endl;
+			cout << "pc = 0x" << hex << pc << endl;
+		}
+
+
+		if (!halted && !stopped)//If CPU is not in halt mode neither stop mode
+		{
+			readOpcode();
+		}
+		else if (halted)//If halt mode is enable
+		{
+			cycles++;
+			//HALT mode is canceled by the following events, which have the starting addresses
+			//	indicated.
+			//	1) A LOW signal to the / RESET terminal
+			//	Starting address : 0000h
+			//	2) The interrupt - enable flag and its corresponding interrupt request flag are set
+			//	IME = 0 (Interrupt Master Enable flag disabled)
+			//	Starting address : address following that of the HALT instruction
+			//	IME = 1 (Interrupt Master Enable flag enabled)
+			//	Starting address : each interrupt starting address
+
+			if ()
+			{
+				halted = false;
+				if (IME)
+				{
+					halted = false;
+					//pc=interrupt starting address
+				}
+				//else
+				//{
+				//	pc = pc;
+				//}
+			}
+		}
+		else//If stop mode is enable
+		{
+			cycles++;
+			//STOP Mode
+			//	Game Boy switches to STOP mode when a STOP instruction is executed.
+			//	The system clockand oscillation circuitry between the CK1and CK2 terminals are halted in
+			//	this mode.Thus, all operation is halted except that of the SI0 external clock.STOP mode is
+			//	canceled by the following events, and started from the starting address.
+			//	3) A LOW signal to the / RESET terminal
+			//	Starting address : 0000h
+			//	4) A LOW signal to terminal P10, P11, P12, or P13
+			//	Starting address : address following that of STOP instruction
+			//	When STOP mode is canceled, the system clock is restored after 217 times the oscillation
+			//	clock(DMG : 4 MHz, CGB : 4 MHz / 8 MHz), and the CPU resumes operation.
+			//	When STOP mode is entered, the STOP instruction should be executed after all interruptenable
+			//	flags are reset, and meanwhile, terminals P10 - P13 are all in a HIGH period.
+		}
+
+		if (!resetTerminal)
+		{
+			reset();
+		}
 	}
 }
 
@@ -184,7 +252,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0x73): {LD_aHL_R(E); break; }
 	case(0x74): {LD_aHL_R(H); break; }
 	case(0x75): {LD_aHL_R(L); break; }
-	case(0x76): {HALT(); cout << "Opcode HALT not implemented for the moment at pc = " << hex << pc << endl; break; }
+	case(0x76): {HALT(); break; }
 	case(0x77): {LD_aHL_R(A);  break; }
 	case(0x78): {LD_R_R(A, B); break; }
 	case(0x79): {LD_R_R(A, C); break; }
@@ -301,14 +369,14 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0xF0): {LD_A_a8o(); break; }
 	case(0xF1): {POP_RP(A, F); break; }
 	case(0xF2): {LD_A_aCo(); break; }
-	case(0xF3): {DI(); cout << "Opcode DI not implemented for the moment at pc = " << hex << pc << endl; break; }
+	case(0xF3): {DI(); break; }
 	case(0xF5): {PUSH_RP(A, F); break; }
 	case(0xF6): {OR_A_d8(); break; }
 	case(0xF7): {RST(); break; }
 	case(0xF8): {LDHL_SP_e(); break; }
 	case(0xF9): {LD_SP_HL(); break; }
 	case(0xFA): {LD_A_a16(); break; }
-	case(0xFB): {EI(); cout << "Opcode EI not implemented for the moment at pc = " << hex << pc << endl; break; }
+	case(0xFB): {EI(); break; }
 	case(0xFE): {CP_A_d8(); break; }
 	case(0xFF): {RST(); break; }
 	default: {cout << "Error opcode 0x" << opcode << " unknown at pc = 0x" << hex << pc << endl; exit(1); break; }
@@ -2178,12 +2246,14 @@ void Cpu::DI()
 //Page 21
 void Cpu::HALT()//NOT IMPLEMENTED
 {
+	halted = 1;
 	cycles++;
 	pc++;
 }
 
 void Cpu::STOP()//NOT IMPLEMENTED
 {
+	stopped = 1;
 	cycles++;
 	pc++;
 }

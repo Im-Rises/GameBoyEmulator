@@ -2,12 +2,15 @@
 
 Memory::Memory()
 {
+	reset();
+}
+
+void Memory::reset()
+{
 	for (int i = 0; i < MEMORY_SIZE; i++)
 	{
 		memoryArray[i] = 0;
 	}
-	memoryArray[0xFF00] = 0xFF;//Inputs
-	memoryArray[0xFF40] = 0x91;//LCDC
 }
 
 uint8_t Memory::read(const uint16_t index)const
