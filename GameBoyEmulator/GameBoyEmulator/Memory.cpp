@@ -25,7 +25,6 @@ void Memory::write(const uint16_t& index, uint8_t value)
 
 bool Memory::loadInMemory(const string& romPath)
 {
-	bool loadRomBool = false;
 	std::ifstream input(romPath, std::ios::binary);
 	if (input)
 	{
@@ -37,12 +36,11 @@ bool Memory::loadInMemory(const string& romPath)
 			memoryArray[i] = input.get();
 		}
 		input.close();
-		loadRomBool = true;
+		return true;
 	}
 	else
 	{
-		cout << "Can't open file" << endl;
-		loadRomBool = false;
+		cout << "Can't open bios file" << endl;
+		return false;
 	}
-	return loadRomBool;
 }

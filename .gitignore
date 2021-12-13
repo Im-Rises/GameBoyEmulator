@@ -1,0 +1,4 @@
+# Ignore Bios and Games #
+*.gb
+*.GB
+*.bin

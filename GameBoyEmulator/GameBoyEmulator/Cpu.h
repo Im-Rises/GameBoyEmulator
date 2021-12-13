@@ -82,19 +82,16 @@ private:
 	uint8_t flagToByte(const Flag& flag)const;
 	Flag byteToFlag(const uint8_t& byte)const;
 
-	int binaryAddition(const int& numberOfBits, const int& value1, const int& value2, bool& carryBit3, bool& carryBit7);
-	int binarySubstraction(const int& numberOfBits, const int& value1, const int& value2, bool& carryBit3, bool& carryBit7);
-
 	/*-----------------------------------------NORMAL OPCODES OPERATIONS------------------------------------------*/
 
 	/// <summary>
 	/// Registers functions:
 	/// Mnemonic therms:
 	/// - R register
-	/// - RP registers pair (for example HL
+	/// - RP registers pair (for example HL)
 	/// - d8 direct 8 bits following in the memory pointed by the pc
 	/// - d16 direct 16 bits following in the memory pointed by the pc and pc+1
-	/// - aRP value pointed in the memory by the the registers pair value
+	/// - aRP value pointed in the memory by the registers pair value
 	/// - Ro means a register + an offset
 	/// - aRo means the value in the memory pointed by the address of the register + an offset
 	/// - a8 value in the memory pointed by the 8 following bits pointed by the pc 
@@ -123,20 +120,20 @@ private:
 	void LD_aCo_A();//WORKING
 	void LD_A_a8o();//WORKING NOT SURE ABOUT IF IT'S INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + memory.read(pc) OR INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + memory.read(memory.read(pc))
 	void LD_a8o_A();//WORKING NOT SURE ...
-	void LD_A_a16();//WORKING NOT SURE ABOUT THE ORDER OF THE LESS AND MOST SIGNIFICANT BITS, I THINK IT IS LOGICAL LIKE IT IS
-	void LD_a16_A();//WORKING NOT SURE ABOUT THE ORDER OF THE LESS AND MOST SIGNIFICANT BITS, I THINK IT IS LOGICAL LIKE IT IS
+	void LD_A_a16();//WORKING
+	void LD_a16_A();//WORKING
 
-	void LD_A_aHL_HLI();//WORKING, BUT I'M SURPRISED THE FLAGS DOESN'T CHANGE	
-	void LD_A_aHL_HLD();//WORKING, BUT I'M SURPRISED THE FLAGS DOESN'T CHANGE
+	void LD_A_aHL_HLI();//WORKING
+	void LD_A_aHL_HLD();//WORKING
 
 	//Page ?	(p99)
 	void LD_aBC_A();//WORKING
 	void LD_aDE_A();//WORKING
-	void LD_aHL_A_HLI();//WORKING EXCEPT IF THERE'S AN ISSUE WITH THE PAIRREGISTERS AND UNPAIREGISTERS FUNCTIONS
-	void LD_aHL_A_HLD();//WORKING EXCEPT IF THERE'S AN ISSUE WITH THE PAIRREGISTERS AND UNPAIREGISTERS FUNCTIONS
+	void LD_aHL_A_HLI();//WORKING
+	void LD_aHL_A_HLD();//WORKING
 
-	void LD_RP_d16(uint8_t& reg1, uint8_t& reg2);//WORKING EXCEPT IF THE FUNCTIONS CALLING OTHERS DOESN'T WORK PROPERLY (IN PARTICULAR FOR UNPAIREGISTRES)
-	void LD_RP_d16(uint16_t& regsPair);//WORKING EXCEPT IF THE FUNCTIONS CALLING OTHERS DOESN'T WORK PROPERLY (IN PARTICULAR FOR UNPAIREGISTRES)
+	void LD_RP_d16(uint8_t& reg1, uint8_t& reg2);//WORKING 
+	void LD_RP_d16(uint16_t& regsPair);//WORKING 
 
 	void LD_SP_HL();//WORKING
 	void PUSH_RP(const uint8_t& regPair1, const uint8_t& regPair2);//WORKING
@@ -147,21 +144,21 @@ private:
 	void POP_RP(uint8_t& regPair1, Flag& flag);//WORKING MAY HAVE A PROBLEM WITH THE CONVERSION FROM FLAG TO BYTE
 
 	void LDHL_SP_e();//NOT SURE AT ALL PERHAPS CY AND H ARE SUPPOSED TO BE CARRY OF BIT 11 AND 15, ALSO ISSUE WHEN E NEGATIVE IS WRONG
-	void LD_a16_SP();//WORKING IT SHOULD
+	void LD_a16_SP();//WORKING
 
 
 
 	/*-------------------------------------8bits ARITHMETIC AND LOGICAL OPERATION INSTRUCTIONS---------------------------------------*/
 
-	void ADD_A_R(const uint8_t& reg);//WORKING EXCEPT IF THE SUBFONCTION DOESN'T WORK
+	void ADD_A_R(const uint8_t& reg);//WORKING
 	void ADD_A_d8();//WORKING
 	void ADD_A_aHL();//WORKING
 
-	void ADC_A_R_CY(const uint8_t& reg);//WORKING IT SHOULD
-	void ADC_A_d8_CY();//WORKING IT SHOULD
-	void ADC_A_aHL_CY(const uint8_t& regPair1, const uint8_t& regPair2);//WORKING IT SHOULD
+	void ADC_A_R_CY(const uint8_t& reg);//WORKING
+	void ADC_A_d8_CY();//WORKING
+	void ADC_A_aHL_CY(const uint8_t& regPair1, const uint8_t& regPair2);//WORKING
 
-	uint8_t ADD_ADC_subFunctionFlag(const uint8_t& reg, const uint8_t& value);//WORKING IT SHOULD
+	uint8_t ADD_ADC_subFunctionFlag(const uint8_t& reg, const uint8_t& value);//WORKING
 
 
 
@@ -215,7 +212,6 @@ private:
 	void INC_RP(uint16_t& regsPair);
 	void DEC_RP(uint8_t& regPair1, uint8_t& regPair2);
 	void DEC_RP(uint16_t& regsPair);
-	int binaryAddition16bits(const int& value1, const int& value2, bool& carryBit3, bool& carryBit7);
 
 
 	/*-------------------------------------ROTATE SHIFT INSTRUCTION---------------------------------------*/
@@ -308,10 +304,8 @@ private:
 	void DI();
 
 	//Page 21	(p109)
-	void HALT();//NOT IMPLEMENTED
-	void STOP();//NOT IMPLEMENTED
-
-	
+	void HALT();
+	void STOP();
 
 };
 

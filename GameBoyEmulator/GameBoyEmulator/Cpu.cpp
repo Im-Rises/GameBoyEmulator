@@ -36,14 +36,14 @@ void Cpu::reset()
 	A = 0;
 	B = C = D = E = H = L = 0;
 	F.Z = F.N = F.H = F.CY = 0;
-	memory.reset();
 }
 
 void Cpu::loadBios(const string& biosPath)
 {
 	//Verify size of bios
-	memory.loadInMemory(biosPath);
-}
+	if (!memory.loadInMemory(biosPath))
+		exit(1);
+};
 
 void Cpu::loadRom(const string& romPath)
 {
@@ -59,7 +59,7 @@ void Cpu::start()
 		{
 			if (pc == 0x64)
 				cout << "Arret pc = " << hex << pc << endl;
-			cout << "pc = 0x" << hex << pc << endl;
+			cout << "pc = 0x" << hex << pc << " Opcode: " << hex << (int)memory.read(pc) << endl;
 		}
 
 
@@ -710,64 +710,6 @@ Cpu::Flag Cpu::byteToFlag(const uint8_t& byte)const
 	return temp;
 }
 
-int Cpu::binaryAddition(const int& numberOfBits, const int& value1, const int& value2, bool& carryBit3, bool& carryBit7)
-{
-	int value1Temp = value1;
-	int value2Temp = value2;
-	bool carryTemp = 0;
-	int calcResultTemp = 0;
-
-	int additionValue = 0;
-
-	for (int i = 0; i < numberOfBits; i++)
-	{
-		value1Temp = (value1 >> i) & 0b1;
-		value2Temp = (value2 >> i) & 0b1;
-
-		calcResultTemp = (value1Temp ^ value2Temp) ^ (carryTemp & 0x1);
-		carryTemp = (value1Temp & value2Temp) | (value1Temp & (carryTemp & 0x1)) | (value2Temp & (carryTemp & 0x1));
-
-		if ((i == 3) && carryTemp)
-			carryBit3 = 1;
-
-		if ((i == 7) && carryTemp)
-			carryBit7 = 1;
-
-		additionValue += calcResultTemp << i;
-	}
-
-	return additionValue;
-}
-
-int Cpu::binarySubstraction(const int& numberOfBits, const int& value1, const int& value2, bool& borrowBit3, bool& borrowBit7)
-{
-	int value1Temp = value1;
-	int value2Temp = value2;
-	bool carryTemp = 0;
-	int calcResultTemp = 0;
-
-	int substractionValue = 0;
-
-	for (int i = 0; i < numberOfBits; i++)
-	{
-		value1Temp = (value1 >> i) & 0b1;
-		value2Temp = (value2 >> i) & 0b1;
-
-		calcResultTemp = (value1Temp ^ value2Temp) ^ (carryTemp & 0x1);
-		carryTemp = ((!(value1Temp ^ value2Temp)) & carryTemp) || (((!value1Temp) & value2Temp) & (!carryTemp));
-
-		if ((i == 3) && carryTemp)
-			borrowBit3 = 1;
-
-		if ((i == 7) && carryTemp)
-			borrowBit7 = 1;
-
-		substractionValue += calcResultTemp << i;
-	}
-
-	return substractionValue;
-}
-
 
 
 
@@ -775,7 +717,6 @@ int Cpu::binarySubstraction(const int& numberOfBits, const int& value1, const in
 /*-----------------------------------------NORMAL OPCODES OPERATIONS------------------------------------------*/
 
 /*-------------------------------------8bits TRANSFER AND INPUT/OUTPUT INSTRUCTIONS---------------------------------------*/
-
 
 void Cpu::LD_R_R(uint8_t& reg1, const uint8_t& reg2) {
 	reg1 = reg2;
@@ -1007,21 +948,21 @@ void Cpu::LDHL_SP_e()
 	}
 	else//NOT WORKING
 	{
-		cout << "NEGATIVE VALUE MAY CAUSE ISSUE" << endl;
-		F.CY = (((sp + e) & 0xFFFF)) <= (sp & 0xFFFF);
-		F.H = (((sp + e) & 0xFFF) <= (sp & 0xFFF));
+		cout << "FOR SURE BECAUSE OF A NEGATIVE VALUE MAY CAUSE ISSUE" << endl;
+		//F.CY = (((sp + e) & 0xFFFF)) <= (sp & 0xFFFF);
+		//F.H = (((sp + e) & 0xFFF) <= (sp & 0xFFF));
 
-		//Solution 1
+		//Solution 2
 		//F.CY = (((sp + e) & 0xFF)) <= (sp & 0xFF);
 		//F.H = (((sp + e) & 0xF) <= (sp & 0xF));
 
-		//Solution 2
+		//Solution 3
 		//uint8_t tempU8Bits = ((~e) + 1);//Convert int8_t in uint8_t
 		//uint16_t tempU16Bits = tempU8Bits;//Convert uint8_t in uint16_t
 		//int16_t temp16SBits = ((~tempU16Bits) + 1);//Convert uint16_t in int16_t
 		//result = binaryAddition(16, sp, e, carryBit3, carryBit7);//Addiction of SP (uint16_t) + e (uint16_t)
 
-		//Solution 3
+		//Solution 4
 		//int16_t e16bits = (int16_t)e;
 		//result = binaryAddition(16, sp, e, carryBit3, carryBit7);
 	}
@@ -1108,16 +1049,16 @@ void Cpu::ADC_A_aHL_CY(const uint8_t& regPair1, const uint8_t& regPair2)
 uint8_t Cpu::ADD_ADC_subFunctionFlag(const uint8_t& reg, const uint8_t& value)
 {
 	//Variables to use after calculs
-	bool carryBit3 = 0;
-	bool carryBit7 = 0;
-	uint8_t additionValue = binaryAddition(8, reg, value, carryBit3, carryBit7);
+	//bool carryBit3 = 0;
+	//bool carryBit7 = 0;
+	//uint8_t additionValue = binaryAddition(8, reg, value, carryBit3, carryBit7);
 
+	F.H = ((reg & 0xF) + (value & 0xF)) > 0xF;
+	F.CY = ((reg & 0xFF) + value) > 0xFF;
 	F.Z = !reg;
-	F.H = carryBit3;
 	F.N = 0;
-	F.CY = carryBit7;
 
-	return additionValue;
+	return (reg + value);
 }
 
 
@@ -1142,8 +1083,6 @@ void Cpu::SUB_A_aHL(const uint8_t& regPair1, const uint8_t& regPair2)
 	cycles += 2;
 	pc++;
 }
-
-//RESUME HERE
 
 void Cpu::SBC_A_R_CY(const uint8_t& reg)
 {
@@ -1185,16 +1124,23 @@ void Cpu::SBC_A_aHL_CY(const uint8_t& regPair1, const uint8_t& regPair2)
 uint8_t Cpu::SUB_SBC_subFunctionFlag(const uint8_t& reg, const uint8_t& value)
 {
 	//Variables to use after calculs
-	bool borrowBit3 = 0;
-	bool borrowBit7 = 0;
-	uint8_t subStractionValue = binarySubstraction(8, reg, value, borrowBit3, borrowBit7);
+	//bool borrowBit3 = 0;
+	//bool borrowBit7 = 0;
+	//uint8_t subStractionValue = binarySubstraction(8, reg, value, borrowBit3, borrowBit7);
+
+	//F.H = ((reg & 0xF) + (value & 0xF)) > 0xF;
+	//F.CY = ((reg & 0xFF) + value) > 0xFF;
+
+	//F.H = (((sp - value) & 0xF) <= (sp & 0xF));
+	//F.CY = (((sp - value) & 0xFF)) <= (sp & 0xFF);
+
+	F.H = (reg & 0x0F) < (value & 0x0F);//Working
+	F.CY = (reg & 0xF0) < (reg & 0xF0);//Need to implement the result of F.H to know if there's a -1 to put in the calcul
 
 	F.Z = !reg;
-	F.H = borrowBit3;
 	F.N = 1;
-	F.CY = borrowBit7;
 
-	return subStractionValue;
+	return (reg - value);
 }
 
 
@@ -1415,12 +1361,18 @@ void Cpu::ADD_HL_RP(const uint8_t& regPair1, const uint8_t& regPair2)
 void Cpu::ADD_SP_e()
 {
 	cout << "Program may bug here, thanks to opcode ADD_SP_e" << endl;
-	cout << "FOR SURE" << endl;
 
 	pc++;
 	int8_t e = memory.read(pc);
-	//F.CY = (sp + e) & 0xFFFF;
-
+	if (e >= 0)//WORKING
+	{
+		F.CY = ((sp & 0xFFFF) + e) > 0xFFFF;
+		F.H = ((sp & 0xFFF) + (e & 0xFFF)) > 0xFFF;
+	}
+	else//NOT WORKING
+	{
+		cout << "FOR SURE BECAUSE OF A NEGATIVE VALUE MAY CAUSE ISSUE" << endl;
+	}
 	sp += e;
 	F.Z = 0;
 	F.N = 0;
@@ -1464,40 +1416,8 @@ void Cpu::DEC_RP(uint16_t& regsPair)
 }
 
 
-//int Cpu::binaryAddition16bits(const int& value1, const int& value2, bool& carryBit11, bool& carryBit15)
-//{
-//	int value1Temp = value1;
-//	int value2Temp = value2;
-//	bool carryTemp = 0;
-//	int calcResultTemp = 0;
-//
-//	int additionValue = 0;
-//
-//	for (int i = 0; i < 16; i++)
-//	{
-//		value1Temp = (value1 >> i) & 0b1;
-//		value2Temp = (value2 >> i) & 0b1;
-//
-//		calcResultTemp = (value1Temp ^ value2Temp) ^ carryTemp;
-//		carryTemp = (value1Temp & value2Temp) | (value1Temp & carryTemp) | (value2Temp & carryTemp);
-//
-//		if ((i == 11) && carryTemp)
-//			carryBit11 = 1;
-//
-//		if ((i == 15) && carryTemp)
-//			carryBit15 = 1;
-//
-//		additionValue += calcResultTemp << i;
-//	}
-//
-//	return additionValue;
-//}
-
-
 
 /*-------------------------------------ROTATE SHIFT INSTRUCTION---------------------------------------*/
-//Page 13	(p98)
-
 
 void Cpu::RLCA()
 {
@@ -1908,7 +1828,6 @@ void Cpu::JP_cc_d16()
 
 void Cpu::JR_e()
 {
-	cout << "May have issue now, because of opcode JR e : 0x18" << endl;
 	pc++;
 	int8_t e = memory.read(pc);//LOOK AT THE Z80 CPU MANUAL
 	pc++;

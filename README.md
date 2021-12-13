@@ -24,5 +24,6 @@ Chapter 5 Miscellaneous General Information
 
 ## Documentations  
 https://www.youtube.com/watch?v=HyzD8pNlpwI  
-https://archive.org/details/GameBoyProgManVer1.1/mode/2up
-https://gbdev.gg8.se/wiki/articles/Gameboy_Bootstrap_ROM
+https://archive.org/details/GameBoyProgManVer1.1/mode/2up  
+https://gbdev.gg8.se/wiki/articles/Gameboy_Bootstrap_ROM  
+https://www.pastraiser.com/cpu/gameboy/gameboy_opcodes.html  

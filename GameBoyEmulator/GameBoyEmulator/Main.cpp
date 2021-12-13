@@ -6,8 +6,8 @@ int main(int argc, char* argv[])
 {
 	std::cout << "Nintendo GameBoy Emulator" << std::endl;
 
-	string biosPath = "../../../dmg_boot.bin";
-	string romPathDebug = "../../../Tetris.GB";
+	string biosPath = "../../Bios_Games/dmg_boot.bin";
+	string romPathDebug = "../../Bios_Games/Tetris.GB";
 	
 	Cpu cpu(biosPath);
 	cpu.start();
