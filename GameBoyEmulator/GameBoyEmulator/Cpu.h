@@ -105,12 +105,10 @@ private:
 
 	/*-------------------------------------8bits TRANSFER AND INPUT/OUTPUT INSTRUCTIONS---------------------------------------*/
 
-	//Page 1	(p85)
 	void LD_R_R(uint8_t& reg1, const uint8_t& reg2);//WORKING
 	void LD_R_d8(uint8_t& reg);//WORKING
 	void LD_R_aHL(uint8_t& reg);//WORKING
 
-	//Page 2	(p86)
 	void LD_aHL_R(const uint8_t& reg);//WORKING
 	void LD_aHL_d8();//WORKING
 	void LD_A_aBC();//WORKING
@@ -126,7 +124,6 @@ private:
 	void LD_A_aHL_HLI();//WORKING
 	void LD_A_aHL_HLD();//WORKING
 
-	//Page ?	(p99)
 	void LD_aBC_A();//WORKING
 	void LD_aDE_A();//WORKING
 	void LD_aHL_A_HLI();//WORKING
@@ -139,7 +136,6 @@ private:
 	void PUSH_RP(const uint8_t& regPair1, const uint8_t& regPair2);//WORKING
 	void PUSH_RP(const uint8_t& regPair, const Flag& flag);//WORING PERHAPS ISSUE WITH AF BECAUSE OF THE CONVERSION OF THE FLAG
 
-	//Page ?	(p101)
 	void POP_RP(uint8_t& regPair1, uint8_t& regPair2);//WORKING
 	void POP_RP(uint8_t& regPair1, Flag& flag);//WORKING MAY HAVE A PROBLEM WITH THE CONVERSION FROM FLAG TO BYTE
 
@@ -187,7 +183,6 @@ private:
 	void XOR_A_aHL();//WORKING
 
 
-	////Page 11	(p95)
 	void CP_A_R(const uint8_t& reg);//PERHAPS ISSUE IF CP IS IN FACT A SUBSTRACTION
 	void CP_A_d8();//PERHAPS ISSUE IF CP IS IN FACT A SUBSTRACTION
 	void CP_A_aHL();//PERHAPS ISSUE IF CP IS IN FACT A SUBSTRACTION
@@ -204,7 +199,6 @@ private:
 
 
 	///*-------------------------------------16bits ARITHMETIC OPERATION INSTRUCTIONS---------------------------------------*/
-	//Page 12	(p97)
 	void ADD_HL_RP(const uint16_t& regsPair);//WORKING
 	void ADD_HL_RP(const uint8_t& regPair1, const uint8_t& regPair2);//WORKING
 	void ADD_SP_e();//NOT WORKING AT ALL
@@ -215,36 +209,29 @@ private:
 
 
 	/*-------------------------------------ROTATE SHIFT INSTRUCTION---------------------------------------*/
-	//Page 13	(p98)
-
+	
 	//WORKING BUT MIGHT HAVE AN ISSUE WITH Z FLAG THAT MAY BE TO SET OR UNSET (the doc said no but still represent it in the calculs)
 	void RLCA();
 	void RLA();
 	void RRCA();
 	void RRA();
 
-
-
-	//Page 14	(p99)
 	void RLC_R(uint8_t& reg);//SHOULD WORK
 	void RLC_aHL();
 	void RL_R(uint8_t& reg);
 	void RL_aHL();
 
-	////Page 15	(p100)
 	void RRC_R(uint8_t& reg);//SHOULD WORK
 	void RRC_aHL();
 	void RR_R(uint8_t& reg);
 	void RR_aHL();
 
-	////Page 16	(p101)
 	void SLA_R(uint8_t& reg);//SHOULD WORK
 	void SLA_aHL();
 
 	void SRA_R(uint8_t& reg);
 	void SRA_aHL();
 
-	////Page 17	(p102)
 	void SRL_R(uint8_t& reg);//SHOULD WORK
 	void SRL_aHL();
 
@@ -253,8 +240,6 @@ private:
 
 	/*-------------------------------------BIT OPERATIONS---------------------------------------*/
 
-	//RESUME HERE
-	//Page 16	(p103)
 	void BIT_b_R(const uint8_t& indexBit, const uint8_t& reg);//SHOULD WORK
 	void BIT_b_aHL(const uint8_t& indexBit);
 
@@ -268,31 +253,24 @@ private:
 	/*-------------------------------------JUMP INSTRUCTIONS---------------------------------------*/
 	
 	/////////////////////////////////////TO CHECK////////////////////////////////////////////////////
-	// Error, with the e in the functions
-	//Page 18	(p105)
 	void JP_d16();//WORKING
 	void JP_cc_d16();//WORKING IT SHOULD
 	void JR_e();
 
-	////Page 19	(p106)
 	void JR_cc_e();//WORKING IT SHOULD
 	void JP_HL();//WORKING IT SHOULD
 
 	/*-------------------------------------CALL AND RETURN INSTRUCTIONS---------------------------------------*/
-	//Page 19	(p107)
 	void CALL();//WORKING IT SHOULD
 	void CALL_cc();
 
-	////Page 20	(p108)
 	void RET();
 	void RETI();//TO CHECK, TO IMPLEMENT THE MIE (Master Interrupt Enable)
 	void RET_cc();
 
-	////Page 21	(p109)
 	void RST();//SHOULD WORK
 
 	/*-------------------------------------GENERAL-PURPOSE ARITHMETIC OPERATIONS AND CPU CONTROL INSTRUCTIONS---------------------------------------*/
-	//Page 20	(p108)
 	void DAA();//TO CHECK
 	void CPL();
 	void NOP();//I think it works
@@ -303,7 +281,6 @@ private:
 	void EI();
 	void DI();
 
-	//Page 21	(p109)
 	void HALT();
 	void STOP();
 

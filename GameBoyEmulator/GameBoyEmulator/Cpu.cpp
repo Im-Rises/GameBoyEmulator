@@ -1135,7 +1135,7 @@ uint8_t Cpu::SUB_SBC_subFunctionFlag(const uint8_t& reg, const uint8_t& value)
 	//F.CY = (((sp - value) & 0xFF)) <= (sp & 0xFF);
 
 	F.H = (reg & 0x0F) < (value & 0x0F);//Working
-	F.CY = (reg & 0xF0) < (reg & 0xF0);//Need to implement the result of F.H to know if there's a -1 to put in the calcul
+	F.CY = ((reg & 0xF0) - (F.H << 4)) < (reg & 0xF0);
 
 	F.Z = !reg;
 	F.N = 1;
@@ -2196,14 +2196,14 @@ void Cpu::DI()
 
 
 //Page 21
-void Cpu::HALT()//NOT IMPLEMENTED
+void Cpu::HALT()
 {
 	halted = 1;
 	cycles++;
 	pc++;
 }
 
-void Cpu::STOP()//NOT IMPLEMENTED
+void Cpu::STOP()
 {
 	stopped = 1;
 	cycles++;
