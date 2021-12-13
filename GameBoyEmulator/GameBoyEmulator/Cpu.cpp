@@ -946,25 +946,10 @@ void Cpu::LDHL_SP_e()
 		F.CY = ((sp & 0xFFFF) + e) > 0xFFFF;
 		F.H = ((sp & 0xFFF) + (e & 0xFFF)) > 0xFFF;
 	}
-	else//NOT WORKING
+	else//WORKING
 	{
-		cout << "FOR SURE BECAUSE OF A NEGATIVE VALUE MAY CAUSE ISSUE" << endl;
-		//F.CY = (((sp + e) & 0xFFFF)) <= (sp & 0xFFFF);
-		//F.H = (((sp + e) & 0xFFF) <= (sp & 0xFFF));
-
-		//Solution 2
-		//F.CY = (((sp + e) & 0xFF)) <= (sp & 0xFF);
-		//F.H = (((sp + e) & 0xF) <= (sp & 0xF));
-
-		//Solution 3
-		//uint8_t tempU8Bits = ((~e) + 1);//Convert int8_t in uint8_t
-		//uint16_t tempU16Bits = tempU8Bits;//Convert uint8_t in uint16_t
-		//int16_t temp16SBits = ((~tempU16Bits) + 1);//Convert uint16_t in int16_t
-		//result = binaryAddition(16, sp, e, carryBit3, carryBit7);//Addiction of SP (uint16_t) + e (uint16_t)
-
-		//Solution 4
-		//int16_t e16bits = (int16_t)e;
-		//result = binaryAddition(16, sp, e, carryBit3, carryBit7);
+		F.H = (sp & 0x0FFF) < (e & 0x0FFF);
+		F.CY = (sp) < e;
 	}
 
 	unpairRegisters(H, L, (sp + e));
@@ -1054,7 +1039,7 @@ uint8_t Cpu::ADD_ADC_subFunctionFlag(const uint8_t& reg, const uint8_t& value)
 	//uint8_t additionValue = binaryAddition(8, reg, value, carryBit3, carryBit7);
 
 	F.H = ((reg & 0xF) + (value & 0xF)) > 0xF;
-	F.CY = ((reg & 0xFF) + value) > 0xFF;
+	F.CY = (reg + value) > 0xFF;
 	F.Z = !reg;
 	F.N = 0;
 
@@ -1135,7 +1120,8 @@ uint8_t Cpu::SUB_SBC_subFunctionFlag(const uint8_t& reg, const uint8_t& value)
 	//F.CY = (((sp - value) & 0xFF)) <= (sp & 0xFF);
 
 	F.H = (reg & 0x0F) < (value & 0x0F);//Working
-	F.CY = ((reg & 0xF0) - (F.H << 4)) < (reg & 0xF0);
+	//F.CY = ((reg & 0xF0) - (F.H << 4)) < (reg & 0xF0);
+	F.CY = (reg) < value;
 
 	F.Z = !reg;
 	F.N = 1;
@@ -1279,7 +1265,7 @@ void Cpu::CP_A_aHL()
 void Cpu::CP_subFunctionFlag(const uint8_t& reg)
 {
 	F.Z = (A == reg);
-	F.H = (A & 0xF) - (reg & 0xF) < 0;
+	F.H = (A & 0xF) < (reg & 0xF);
 	F.CY = (A < reg);
 	F.N = 1;
 }
@@ -1369,9 +1355,10 @@ void Cpu::ADD_SP_e()
 		F.CY = ((sp & 0xFFFF) + e) > 0xFFFF;
 		F.H = ((sp & 0xFFF) + (e & 0xFFF)) > 0xFFF;
 	}
-	else//NOT WORKING
+	else
 	{
-		cout << "FOR SURE BECAUSE OF A NEGATIVE VALUE MAY CAUSE ISSUE" << endl;
+		F.H = (sp & 0x0FFF) < (e & 0x0FFF);
+		F.CY = (sp) < e;
 	}
 	sp += e;
 	F.Z = 0;

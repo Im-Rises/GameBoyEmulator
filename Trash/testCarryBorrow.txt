@@ -1,0 +1,18 @@
+//Solution 1
+		//F.CY = (((sp + e) & 0xFFFF)) <= (sp & 0xFFFF);
+		//F.H = (((sp + e) & 0xFFF) <= (sp & 0xFFF));
+
+		//Solution 2
+		//F.CY = (((sp + e) & 0xFF)) <= (sp & 0xFF);
+		//F.H = (((sp + e) & 0xF) <= (sp & 0xF));
+
+		//Solution 3
+		//uint8_t tempU8Bits = ((~e) + 1);//Convert int8_t in uint8_t
+		//uint16_t tempU16Bits = tempU8Bits;//Convert uint8_t in uint16_t
+		//int16_t temp16SBits = ((~tempU16Bits) + 1);//Convert uint16_t in int16_t
+		//result = binaryAddition(16, sp, e, carryBit3, carryBit7);//Addiction of SP (uint16_t) + e (uint16_t)
+
+		//Solution 4
+		//int16_t e16bits = (int16_t)e;
+		//result = binaryAddition(16, sp, e, carryBit3, carryBit7);
+	
