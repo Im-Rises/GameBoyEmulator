@@ -55,6 +55,7 @@ private:
 
 	//Memory* memory = nullptr;
 	Memory memory;				//Memory of the console
+	Ppu ppu;					//PPPU of the console
 
 public:
 	//Cpu(Memory* memory);						//Constructor
