@@ -4,6 +4,9 @@
 #include "Memory.h"
 #include "Ppu.h"
 
+#define FREQUENCY_NORMAL_MODE 1.05
+#define FREQUENCY_DOUBLE_SPEED_MODE 2*FREQUENCY_NORMAL_MODE 
+
 #include <iostream>
 
 using namespace std;
@@ -11,14 +14,7 @@ using namespace std;
 class Cpu {
 
 private:
-	/// <summary>
-	/// Frequency of the CPU
-	/// </summary>
-	double frequencyNormalMode = 1.05;//In MHZ
-	double frequencyDoubleSpeedMode = 2.10;//In MHZ
-
 	int cycles;					//Cycles to do (incremented after each instructions)
-
 
 	/// <summary>
 	/// CPU mode
@@ -50,7 +46,6 @@ private:
 	uint16_t pc;				//Program counter
 	uint16_t sp;				//Stack pointer
 
-
 	bool IME;					//IME flag (Interupt Master Enable)
 
 	//Memory* memory = nullptr;
@@ -62,26 +57,26 @@ public:
 	Cpu();										//Constructor without bios
 	Cpu(const string& biosPath);				//Constructor with bios
 	~Cpu();
-	void reset();
-	void loadBios(const string& biosPath);
-	void loadRom(const string& romPath);
-	void start();
+	void reset();										//Reset Cpu
+	void loadBios(const string& biosPath);				//Load bios
+	void loadRomCompletey(const string& romPath);		//Load game
+	void start();										//Start Cpu
 
 private:
-	uint16_t haltSubFunction();
+	uint16_t haltSubFunction();					//Halt mode function
 
-	void writeUserInput();
+	void writeUserInput();						//Function to write user inputs
 
 	void readOpcode();							//Read an opcode
 	void executeOpcode(uint8_t opcode);			//Execute an opcode
 	void executeOpcodeFollowingCB();			//Execute an opcode on two bytes (following the CB opcode) 
 
 
-	uint16_t pairRegisters(const uint8_t reg1, const uint8_t reg2)const;
-	void unpairRegisters(uint8_t& reg1, uint8_t& reg2, const uint16_t& registersPair);//The & 0x00FF is not an obligation
+	uint16_t pairRegisters(const uint8_t reg1, const uint8_t reg2)const;				//Function to pair registers
+	void unpairRegisters(uint8_t& reg1, uint8_t& reg2, const uint16_t& registersPair);	//Function to unpair registers
 
-	uint8_t flagToByte(const Flag& flag)const;
-	Flag byteToFlag(const uint8_t& byte)const;
+	uint8_t flagToByte(const Flag& flag)const;//Function to convert from flag to byte
+	Flag byteToFlag(const uint8_t& byte)const;//Function to convert from byte to flag
 
 	/*-----------------------------------------NORMAL OPCODES OPERATIONS------------------------------------------*/
 
@@ -106,111 +101,89 @@ private:
 
 	/*-------------------------------------8bits TRANSFER AND INPUT/OUTPUT INSTRUCTIONS---------------------------------------*/
 
-	void LD_R_R(uint8_t& reg1, const uint8_t& reg2);//WORKING
-	void LD_R_d8(uint8_t& reg);//WORKING
-	void LD_R_aHL(uint8_t& reg);//WORKING
-
-	void LD_aHL_R(const uint8_t& reg);//WORKING
-	void LD_aHL_d8();//WORKING
-	void LD_A_aBC();//WORKING
-	void LD_A_aDE();//WORKING
-
-	void LD_A_aCo();//WORKING
-	void LD_aCo_A();//WORKING
+	void LD_R_R(uint8_t& reg1, const uint8_t& reg2);
+	void LD_R_d8(uint8_t& reg);
+	void LD_R_aHL(uint8_t& reg);
+	void LD_aHL_R(const uint8_t& reg);
+	void LD_aHL_d8();
+	void LD_A_aBC();
+	void LD_A_aDE();
+	void LD_A_aCo();
+	void LD_aCo_A();
 	void LD_A_a8o();//WORKING NOT SURE ABOUT IF IT'S INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + memory.read(pc) OR INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + memory.read(memory.read(pc))
 	void LD_a8o_A();//WORKING NOT SURE ...
-	void LD_A_a16();//WORKING
-	void LD_a16_A();//WORKING
-
-	void LD_A_aHL_HLI();//WORKING
-	void LD_A_aHL_HLD();//WORKING
-
-	void LD_aBC_A();//WORKING
-	void LD_aDE_A();//WORKING
-	void LD_aHL_A_HLI();//WORKING
-	void LD_aHL_A_HLD();//WORKING
-
-	void LD_RP_d16(uint8_t& reg1, uint8_t& reg2);//WORKING 
-	void LD_RP_d16(uint16_t& regsPair);//WORKING 
-
-	void LD_SP_HL();//WORKING
-	void PUSH_RP(const uint8_t& regPair1, const uint8_t& regPair2);//WORKING
-	void PUSH_RP(const uint8_t& regPair, const Flag& flag);//WORING PERHAPS ISSUE WITH AF BECAUSE OF THE CONVERSION OF THE FLAG
-
-	void POP_RP(uint8_t& regPair1, uint8_t& regPair2);//WORKING
-	void POP_RP(uint8_t& regPair1, Flag& flag);//WORKING MAY HAVE A PROBLEM WITH THE CONVERSION FROM FLAG TO BYTE
-
-	void LDHL_SP_e();//NOT SURE AT ALL PERHAPS CY AND H ARE SUPPOSED TO BE CARRY OF BIT 11 AND 15, ALSO ISSUE WHEN E NEGATIVE IS WRONG
-	void LD_a16_SP();//WORKING
-
-
+	void LD_A_a16();
+	void LD_a16_A();
+	void LD_A_aHL_HLI();
+	void LD_A_aHL_HLD();
+	void LD_aBC_A();
+	void LD_aDE_A();
+	void LD_aHL_A_HLI();
+	void LD_aHL_A_HLD();
+	void LD_RP_d16(uint8_t& reg1, uint8_t& reg2);
+	void LD_RP_d16(uint16_t& regsPair);
+	void LD_SP_HL();
+	void PUSH_RP(const uint8_t& regPair1, const uint8_t& regPair2);
+	void PUSH_RP(const uint8_t& regPair, const Flag& flag);
+	void POP_RP(uint8_t& regPair1, uint8_t& regPair2);
+	void POP_RP(uint8_t& regPair1, Flag& flag);
+	void LDHL_SP_e();
+	void LD_a16_SP();
 
 	/*-------------------------------------8bits ARITHMETIC AND LOGICAL OPERATION INSTRUCTIONS---------------------------------------*/
+	void ADD_A_R(const uint8_t& reg);
+	void ADD_A_d8();
+	void ADD_A_aHL();
+	void ADC_A_R_CY(const uint8_t& reg);
+	void ADC_A_d8_CY();
+	void ADC_A_aHL_CY(const uint8_t& regPair1, const uint8_t& regPair2);
+	uint8_t ADD_ADC_subFunctionFlag(const uint8_t& reg, const uint8_t& value);
 
-	void ADD_A_R(const uint8_t& reg);//WORKING
-	void ADD_A_d8();//WORKING
-	void ADD_A_aHL();//WORKING
-
-	void ADC_A_R_CY(const uint8_t& reg);//WORKING
-	void ADC_A_d8_CY();//WORKING
-	void ADC_A_aHL_CY(const uint8_t& regPair1, const uint8_t& regPair2);//WORKING
-
-	uint8_t ADD_ADC_subFunctionFlag(const uint8_t& reg, const uint8_t& value);//WORKING
-
-
-
-	void SUB_A_R(const uint8_t& reg);//WORKING EXCEPT IF THE SUBFONCTION DOESN'T WORK
+	void SUB_A_R(const uint8_t& reg);
 	void SUB_A_d8();
 	void SUB_A_aHL(const uint8_t& regPair1, const uint8_t& regPair2);
-
-	void SBC_A_R_CY(const uint8_t& reg);//WORKING EXCEPT IF THE SUBFONCTION DOESN'T WORK
+	void SBC_A_R_CY(const uint8_t& reg);
 	void SBC_A_d8_CY();
 	void SBC_A_aHL_CY(const uint8_t& regPair1, const uint8_t& regPair2);
-
 	uint8_t SUB_SBC_subFunctionFlag(const uint8_t& reg, const uint8_t& value);
 
+	void AND_A_R(const uint8_t& reg);
+	void AND_A_d8();
+	void AND_A_aHL();
 
-	void AND_A_R(const uint8_t& reg);//WORKING
-	void AND_A_d8();//WORKING
-	void AND_A_aHL();//WORKING
+	void OR_A_R(const uint8_t& reg);
+	void OR_A_d8();
+	void OR_A_aHL();
 
-	void OR_A_R(const uint8_t& reg);//WORKING
-	void OR_A_d8();//WORKING
-	void OR_A_aHL();//WORKING
+	void XOR_A_R(const uint8_t& reg);
+	void XOR_A_d8();
+	void XOR_A_aHL();
 
+	void CP_A_R(const uint8_t& reg);
+	void CP_A_d8();
+	void CP_A_aHL();
+	void CP_subFunctionFlag(const uint8_t& reg);
 
-	void XOR_A_R(const uint8_t& reg);//WORKING
-	void XOR_A_d8();//WORKING
-	void XOR_A_aHL();//WORKING
+	void INC_R(uint8_t& reg);
+	void INC_aHL();
+	void INC_subFunctionFlag(uint8_t& reg);
 
-
-	void CP_A_R(const uint8_t& reg);//PERHAPS ISSUE IF CP IS IN FACT A SUBSTRACTION
-	void CP_A_d8();//PERHAPS ISSUE IF CP IS IN FACT A SUBSTRACTION
-	void CP_A_aHL();//PERHAPS ISSUE IF CP IS IN FACT A SUBSTRACTION
-	void CP_subFunctionFlag(const uint8_t& reg);//SHOULD WORK
-
-
-	void INC_R(uint8_t& reg);//WORKING
-	void INC_aHL();//WORKING
-	void INC_subFunctionFlag(uint8_t& reg);//WORKING
-
-	void DEC_R(uint8_t& reg);//WORKING
-	void DEC_aHL();//WORKING
-	void DEC_subFunctionFlag(uint8_t& reg);//WORKING
-
+	void DEC_R(uint8_t& reg);
+	void DEC_aHL();
+	void DEC_subFunctionFlag(uint8_t& reg);
 
 	///*-------------------------------------16bits ARITHMETIC OPERATION INSTRUCTIONS---------------------------------------*/
-	void ADD_HL_RP(const uint16_t& regsPair);//WORKING
-	void ADD_HL_RP(const uint8_t& regPair1, const uint8_t& regPair2);//WORKING
-	void ADD_SP_e();//NOT WORKING AT ALL
+	void ADD_HL_RP(const uint16_t& regsPair);
+	void ADD_HL_RP(const uint8_t& regPair1, const uint8_t& regPair2);
+	void ADD_SP_e();
+
 	void INC_RP(uint8_t& regPair1, uint8_t& regPair2);
 	void INC_RP(uint16_t& regsPair);
+
 	void DEC_RP(uint8_t& regPair1, uint8_t& regPair2);
 	void DEC_RP(uint16_t& regsPair);
 
-
 	/*-------------------------------------ROTATE SHIFT INSTRUCTION---------------------------------------*/
-	
 	//WORKING BUT MIGHT HAVE AN ISSUE WITH Z FLAG THAT MAY BE TO SET OR UNSET (the doc said no but still represent it in the calculs)
 	void RLCA();
 	void RLA();
@@ -240,41 +213,37 @@ private:
 	void SWAP_aHL();
 
 	/*-------------------------------------BIT OPERATIONS---------------------------------------*/
-
-	void BIT_b_R(const uint8_t& indexBit, const uint8_t& reg);//SHOULD WORK
+	void BIT_b_R(const uint8_t& indexBit, const uint8_t& reg);
 	void BIT_b_aHL(const uint8_t& indexBit);
 
 	void SET_b_R(const uint8_t& indexBit, uint8_t& reg);
 	void SET_b_aHL(const uint8_t& indexBit);
-	
+
 	void RES_b_R(const uint8_t& indexBit, uint8_t& reg);
 	void RES_b_aHL(const uint8_t& indexBit);
 
 
 	/*-------------------------------------JUMP INSTRUCTIONS---------------------------------------*/
-	
-	/////////////////////////////////////TO CHECK////////////////////////////////////////////////////
-	void JP_d16();//WORKING
-	void JP_cc_d16();//WORKING IT SHOULD
+	void JP_d16();
+	void JP_cc_d16();
 	void JR_e();
-
-	void JR_cc_e();//WORKING IT SHOULD
-	void JP_HL();//WORKING IT SHOULD
+	void JR_cc_e();
+	void JP_HL();
 
 	/*-------------------------------------CALL AND RETURN INSTRUCTIONS---------------------------------------*/
-	void CALL();//WORKING IT SHOULD
+	void CALL();
 	void CALL_cc();
 
 	void RET();
 	void RETI();//TO CHECK, TO IMPLEMENT THE MIE (Master Interrupt Enable)
 	void RET_cc();
 
-	void RST();//SHOULD WORK
+	void RST();
 
 	/*-------------------------------------GENERAL-PURPOSE ARITHMETIC OPERATIONS AND CPU CONTROL INSTRUCTIONS---------------------------------------*/
 	void DAA();//TO CHECK
 	void CPL();
-	void NOP();//I think it works
+	void NOP();
 
 	void CCF();
 	void SCF();
@@ -284,7 +253,6 @@ private:
 
 	void HALT();
 	void STOP();
-
 };
 
 #endif

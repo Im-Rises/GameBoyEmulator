@@ -142,7 +142,7 @@
     <ClCompile Include="Cpu.cpp" />
     <ClCompile Include="GameBoycpp.cpp" />
     <ClCompile Include="Ppu.cpp" />
-    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="Memory.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -11,7 +11,6 @@ Cpu::Cpu()
 	IME = 0;
 }
 
-
 Cpu::Cpu(const string& biosPath)
 {
 	reset();
@@ -45,11 +44,13 @@ void Cpu::loadBios(const string& biosPath)
 		exit(1);
 };
 
-void Cpu::loadRom(const string& romPath)
+void Cpu::loadRomCompletey(const string& romPath)
 {
 	//Verify size of rom and identify if it is a GBC or DMG game
-	memory.loadInMemory(romPath);
+	if (memory.loadInMemory(romPath))
+		exit(1);
 }
+
 
 void Cpu::start()
 {
@@ -74,15 +75,6 @@ void Cpu::start()
 		}
 		else if (halted)//If halt mode is enable
 		{
-			//HALT mode is canceled by the following events, which have the starting addresses indicated.
-			//	1) A LOW signal to the / RESET terminal
-			//		Starting address : 0000h
-			//	2) The interrupt - enable flag and its corresponding interrupt request flag are set
-			//		IME = 0 (Interrupt Master Enable flag disabled)
-			//		Starting address : address following that of the HALT instruction
-			//		IME = 1 (Interrupt Master Enable flag enabled)
-			//		Starting address : each interrupt starting address
-
 			if (memory.read(INTERRUPT_FLAG_IE_ADDRESS) == memory.read(INTERRUPT_FLAG_IF_ADDRESS))//Doubt about if it should be a | or & between their flags
 			{
 				halted = false;
@@ -98,19 +90,6 @@ void Cpu::start()
 		}
 		else//If stop mode is enable
 		{
-			//STOP Mode
-			//	Game Boy switches to STOP mode when a STOP instruction is executed.
-			//	The system clockand oscillation circuitry between the CK1and CK2 terminals are halted in
-			//	this mode.Thus, all operation is halted except that of the SI0 external clock.STOP mode is
-			//	canceled by the following events, and started from the starting address.
-			//	3) A LOW signal to the / RESET terminal
-			//		Starting address : 0000h
-			//	4) A LOW signal to terminal P10, P11, P12, or P13
-			//		Starting address : address following that of STOP instruction
-			//	When STOP mode is canceled, the system clock is restored after 217 times the oscillation
-			//	clock(DMG : 4 MHz, CGB : 4 MHz / 8 MHz), and the CPU resumes operation.
-			//	When STOP mode is entered, the STOP instruction should be executed after all interruptenable
-			//	flags are reset, and meanwhile, terminals P10 - P13 are all in a HIGH period.
 			cout << "STOP MODE ENABLED. WAITING FOR USER INPUT." << endl;
 			stopped = !((memory.read(CONTROLLER_DATA_ADDRESS) & 0b00001111) < 15);
 			if (!stopped)
@@ -158,7 +137,6 @@ void Cpu::writeUserInput()
 
 void Cpu::readOpcode()
 {
-	//Do sometinh here//Wait the number of cycle following the value of variable "cycles"
 	executeOpcode(memory.read(pc));//Execute opcode
 }
 
@@ -1033,11 +1011,6 @@ void Cpu::ADC_A_aHL_CY(const uint8_t& regPair1, const uint8_t& regPair2)
 
 uint8_t Cpu::ADD_ADC_subFunctionFlag(const uint8_t& reg, const uint8_t& value)
 {
-	//Variables to use after calculs
-	//bool carryBit3 = 0;
-	//bool carryBit7 = 0;
-	//uint8_t additionValue = binaryAddition(8, reg, value, carryBit3, carryBit7);
-
 	F.H = ((reg & 0xF) + (value & 0xF)) > 0xF;
 	F.CY = (reg + value) > 0xFF;
 	F.Z = !reg;
@@ -1108,28 +1081,13 @@ void Cpu::SBC_A_aHL_CY(const uint8_t& regPair1, const uint8_t& regPair2)
 
 uint8_t Cpu::SUB_SBC_subFunctionFlag(const uint8_t& reg, const uint8_t& value)
 {
-	//Variables to use after calculs
-	//bool borrowBit3 = 0;
-	//bool borrowBit7 = 0;
-	//uint8_t subStractionValue = binarySubstraction(8, reg, value, borrowBit3, borrowBit7);
-
-	//F.H = ((reg & 0xF) + (value & 0xF)) > 0xF;
-	//F.CY = ((reg & 0xFF) + value) > 0xFF;
-
-	//F.H = (((sp - value) & 0xF) <= (sp & 0xF));
-	//F.CY = (((sp - value) & 0xFF)) <= (sp & 0xFF);
-
-	F.H = (reg & 0x0F) < (value & 0x0F);//Working
-	//F.CY = ((reg & 0xF0) - (F.H << 4)) < (reg & 0xF0);
+	F.H = (reg & 0x0F) < (value & 0x0F);
 	F.CY = (reg) < value;
-
 	F.Z = !reg;
 	F.N = 1;
 
 	return (reg - value);
 }
-
-
 
 void Cpu::AND_A_R(const uint8_t& reg)
 {
