@@ -1,4 +1,4 @@
-GameBoyEmulator/GameBoyEmulator/GLFW/include/*.h linguistic-language=Cpp
-GameBoyEmulator/GameBoyEmulator/GLFW/include/*.hpp linguistic-language=Cpp
-GameBoyEmulator/GameBoyEmulator/GLFW/include/*.c linguistic-language=Cpp
-GameBoyEmulator/GameBoyEmulator/GLFW/include/*.cpp linguistic-language=Cpp
+GameBoyEmulator/GameBoyEmulator/GLFW/include/*.h linguistic-language=C++
+GameBoyEmulator/GameBoyEmulator/GLFW/include/*.hpp linguistic-language=C++
+GameBoyEmulator/GameBoyEmulator/GLFW/include/*.c linguistic-language=C++
+GameBoyEmulator/GameBoyEmulator/GLFW/include/*.cpp linguistic-language=C++
