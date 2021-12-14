@@ -75,7 +75,7 @@ void Cpu::start()
 		}
 		else if (halted)//If halt mode is enable
 		{
-			if (memory.read(INTERRUPT_FLAG_IE_ADDRESS) == memory.read(INTERRUPT_FLAG_IF_ADDRESS))//Doubt about if it should be a | or & between their flags
+			if ((memory.read(INTERRUPT_FLAG_IE_ADDRESS) | memory.read(INTERRUPT_FLAG_IF_ADDRESS)) > 0)//If one of the request flag (IF) is activated and its corresponding flag (IE) is activated the halted mode is canceled
 			{
 				halted = false;
 				if (IME)
@@ -91,7 +91,7 @@ void Cpu::start()
 		else//If stop mode is enable
 		{
 			cout << "STOP MODE ENABLED. WAITING FOR USER INPUT." << endl;
-			stopped = !((memory.read(CONTROLLER_DATA_ADDRESS) & 0b00001111) < 15);
+			stopped = !((memory.read(CONTROLLER_DATA_ADDRESS) & 0b00001111) < 15);//If low signal on P10, P11, P12 or P13 the stopped mode is disable
 			if (!stopped)
 				cycles += 217;
 		}
@@ -114,8 +114,7 @@ uint16_t Cpu::haltSubFunction()
 	memory.write(sp - 2, (pc & 0x00FF));
 	sp -= 2;
 
-	//cycles += 4;Cycle or not ???
-
+	//cycles += ?;	//Cycle or not ???
 
 	if ((tempIE >> 4) & 0x1)//P10-P13 input signal goes low
 		return 0x0060;

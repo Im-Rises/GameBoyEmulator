@@ -1,8 +1,5 @@
-﻿  Cpu.cpp
-  GameBoycpp.cpp
-  Ppu.cpp
-  Main.cpp
-  Memory.cpp
-E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Memory.cpp(32,15): warning C4244: 'initialisation' : conversion de 'std::streamoff' en 'int', perte possible de données
-  Génération de code en cours...
-  GameBoyEmulator.vcxproj -> E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\Debug\GameBoyEmulator.exe
+﻿main.obj : error LNK2019: symbole externe non résolu _glfwInit référencé dans la fonction _main
+.\GLFW\lib-vc2019\glfw3.lib : warning LNK4272: type d'ordinateur bibliothèque 'x64' en conflit avec le type d'ordinateur cible 'x86'
+.\GLFW\lib-vc2019\glfw3_mt.lib : warning LNK4272: type d'ordinateur bibliothèque 'x64' en conflit avec le type d'ordinateur cible 'x86'
+.\GLFW\lib-vc2019\glfw3dll.lib : warning LNK4272: type d'ordinateur bibliothèque 'x64' en conflit avec le type d'ordinateur cible 'x86'
+E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\Debug\GameBoyEmulator.exe : fatal error LNK1120: 1 externes non résolus

@@ -5,6 +5,7 @@ GameBoy Emulator make in C++ with Visual Studio 2019.
 ## Console specifications
 
 ## Task order
+
 1. CPU opcodes implementation
 2. Interrupts
 3. Controls
@@ -12,7 +13,8 @@ GameBoy Emulator make in C++ with Visual Studio 2019.
 5. Audio
 
 ## Documentations  
-https://www.youtube.com/watch?v=HyzD8pNlpwI  
-https://archive.org/details/GameBoyProgManVer1.1/mode/2up  
-https://gbdev.gg8.se/wiki/articles/Gameboy_Bootstrap_ROM  
-https://www.pastraiser.com/cpu/gameboy/gameboy_opcodes.html  
+
+<https://www.youtube.com/watch?v=HyzD8pNlpwI>  
+<https://archive.org/details/GameBoyProgManVer1.1/mode/2up>  
+<https://gbdev.gg8.se/wiki/articles/Gameboy_Bootstrap_ROM>  
+<https://www.pastraiser.com/cpu/gameboy/gameboy_opcodes.html>  
