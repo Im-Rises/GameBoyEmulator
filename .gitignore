@@ -1,5 +1,8 @@
-# Ignore Bios and Games #
+# Ignore Bios and Games
 *.gb
 *.GB
 *.bin
 *.jfm
+
+# Ignore GLFW libs doc
+/GameBoyEmulator/GameBoyEmulator/GLFW/docs
