@@ -1,4 +1,4 @@
-*.h linguistic-language=Cpp
-*.hpp linguistic-language=Cpp
-*.c linguistic-language=Cpp
-*.cpp linguistic-language=Cpp
+/GameBoyEmulator/GameBoyEmulator/*.h linguistic-language=Cpp
+/GameBoyEmulator/GameBoyEmulator/*.hpp linguistic-language=Cpp
+/GameBoyEmulator/GameBoyEmulator/*.c linguistic-language=Cpp
+/GameBoyEmulator/GameBoyEmulator/*.cpp linguistic-language=Cpp
