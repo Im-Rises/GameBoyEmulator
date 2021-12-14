@@ -140,7 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Cpu.cpp" />
-    <ClCompile Include="GameBoycpp.cpp" />
+    <ClCompile Include="GameBoy.cpp" />
     <ClCompile Include="Ppu.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Memory.cpp" />

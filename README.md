@@ -11,10 +11,6 @@ GameBoy Emulator make in C++ with Visual Studio 2019.
 4. Video (PPU)
 5. Audio
 
-## TO DO
-- Setup the user inputs
-- PPU
-
 ## Documentations  
 https://www.youtube.com/watch?v=HyzD8pNlpwI  
 https://archive.org/details/GameBoyProgManVer1.1/mode/2up  

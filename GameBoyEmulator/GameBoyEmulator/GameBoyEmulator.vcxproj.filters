@@ -27,7 +27,7 @@
     <ClCompile Include="main.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="GameBoycpp.cpp">
+    <ClCompile Include="GameBoy.cpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClCompile>
   </ItemGroup>
