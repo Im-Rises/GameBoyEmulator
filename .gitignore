@@ -3,4 +3,4 @@
 *.GB
 *.bin
 *.jfm
-/E:\GameBoyEmulator\GameBoyEmulator\GLFW\docs
+.\GameBoyEmulator\GameBoyEmulator\GLFW\docs
