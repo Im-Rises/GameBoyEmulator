@@ -1,6 +1,6 @@
 # GameBoyEmulator
 
-GameBoy Emulator make in C++ with Visual Studio 2019.
+GameBoy Emulator make in C++ with Visual Studio 2019 using the library GLFW.
 
 ## Console specifications
 
