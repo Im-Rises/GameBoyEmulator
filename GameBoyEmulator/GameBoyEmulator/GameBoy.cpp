@@ -1,6 +1,12 @@
 //#include "GameBoy.h"
 //
-//GameBoy::GameBoy()
+//GameBoy::GameBoy() :cpu(&memory), ppu(&memory)
 //{
-////	cpu = Cpu(&memory);
+//
+//}
+//
+//
+//void GameBoy::start()
+//{
+//	this->cpu.start();
 //}

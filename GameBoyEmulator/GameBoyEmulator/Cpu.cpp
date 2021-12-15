@@ -1,18 +1,18 @@
 #include "Cpu.h"
 
-//Cpu::Cpu(Memory* memory)
-Cpu::Cpu()
+Cpu::Cpu(Memory* memory)
 {
-	//this->memory = memory;
-	//ERROR NEED TO SET AN INIT VALUE FOR THE REGISTERS AFTER THE BIOS
+	this->memory = memory;
 	reset();
 	pc = ROM_DATA_AREA;
 	sp = CPU_WORK_RAM_OR_AND_STACK_END;
 	IME = 0;
+	//ERROR NEED TO SET AN INIT VALUE FOR THE REGISTERS AFTER THE BIOS
 }
 
-Cpu::Cpu(const string& biosPath)
+Cpu::Cpu(Memory* memory, const string& biosPath)
 {
+	this->memory = memory;
 	reset();
 	pc = 0x0000;
 	sp = 0x0000;
@@ -20,10 +20,6 @@ Cpu::Cpu(const string& biosPath)
 	loadBios(biosPath);
 }
 
-Cpu::~Cpu()
-{
-
-}
 
 void Cpu::reset()
 {
@@ -40,14 +36,14 @@ void Cpu::reset()
 void Cpu::loadBios(const string& biosPath)
 {
 	//Verify size of bios
-	if (!memory.loadInMemory(biosPath))
+	if (!memory->loadInMemory(biosPath))
 		exit(1);
 };
 
 void Cpu::loadRomCompletey(const string& romPath)
 {
 	//Verify size of rom and identify if it is a GBC or DMG game
-	if (memory.loadInMemory(romPath))
+	if (memory->loadInMemory(romPath))
 		exit(1);
 }
 
@@ -60,7 +56,7 @@ void Cpu::start()
 		{
 			if (pc == 0x64)
 				cout << "Arret pc = " << hex << pc << endl;
-			cout << "pc = 0x" << hex << pc << " Opcode: " << hex << (int)memory.read(pc) << endl;
+			cout << "pc = 0x" << hex << pc << " Opcode: " << hex << (int)memory->read(pc) << endl;
 		}
 
 
@@ -75,7 +71,7 @@ void Cpu::start()
 		}
 		else if (halted)//If halt mode is enable
 		{
-			if ((memory.read(INTERRUPT_FLAG_IE_ADDRESS) | memory.read(INTERRUPT_FLAG_IF_ADDRESS)) > 0)//If one of the request flag (IF) is activated and its corresponding flag (IE) is activated the halted mode is canceled
+			if ((memory->read(INTERRUPT_FLAG_IE_ADDRESS) | memory->read(INTERRUPT_FLAG_IF_ADDRESS)) > 0)//If one of the request flag (IF) is activated and its corresponding flag (IE) is activated the halted mode is canceled
 			{
 				halted = false;
 				if (IME)
@@ -91,7 +87,7 @@ void Cpu::start()
 		else//If stop mode is enable
 		{
 			cout << "STOP MODE ENABLED. WAITING FOR USER INPUT." << endl;
-			stopped = !((memory.read(CONTROLLER_DATA_ADDRESS) & 0b00001111) < 15);//If low signal on P10, P11, P12 or P13 the stopped mode is disable
+			stopped = !((memory->read(CONTROLLER_DATA_ADDRESS) & 0b00001111) < 15);//If low signal on P10, P11, P12 or P13 the stopped mode is disable
 			if (!stopped)
 				cycles += 217;
 		}
@@ -106,12 +102,12 @@ void Cpu::start()
 uint16_t Cpu::haltSubFunction()
 {
 	IME = 0;
-	uint8_t tempIE = memory.read(INTERRUPT_FLAG_IE_ADDRESS);
-	memory.write(INTERRUPT_FLAG_IE_ADDRESS, 0x00);//The resetting of the IF register that initiates the interrupt is a hardware reset.
+	uint8_t tempIE = memory->read(INTERRUPT_FLAG_IE_ADDRESS);
+	memory->write(INTERRUPT_FLAG_IE_ADDRESS, 0x00);//The resetting of the IF register that initiates the interrupt is a hardware reset.
 
 	//PUSH pc
-	memory.write(sp - 1, (pc >> 8));
-	memory.write(sp - 2, (pc & 0x00FF));
+	memory->write(sp - 1, (pc >> 8));
+	memory->write(sp - 2, (pc & 0x00FF));
 	sp -= 2;
 
 	//cycles += ?;	//Cycle or not ???
@@ -130,13 +126,25 @@ uint16_t Cpu::haltSubFunction()
 
 void Cpu::writeUserInput()
 {
-	memory.write(CONTROLLER_DATA_ADDRESS, 0b00111111);
+	//To be implemented
+	memory->write(CONTROLLER_DATA_ADDRESS, 0b00111111);
+	//Get inputs and write them: memory->write(CONTROLLER_DATA_ADDRESS, );
+	memory->write(INTERRUPT_FLAG_IF_ADDRESS, (memory->read(INTERRUPT_FLAG_IF_ADDRESS) | 0b00010000));//Put to enable IF flag controller
 	//RESUME HERE
 }
 
+void Cpu::incrementTimer()
+{
+	if ((memory->read(TIMER_REGISTER_TAC_ADDRESS) & 0b00000100) > 0)
+	{
+		memory->write(TIMER_REGISTER_TMA_ADDRESS, memory->read(TIMER_REGISTER_TMA_ADDRESS) + 1);
+	}
+}
+
+
 void Cpu::readOpcode()
 {
-	executeOpcode(memory.read(pc));//Execute opcode
+	executeOpcode(memory->read(pc));//Execute opcode
 }
 
 
@@ -395,7 +403,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 void Cpu::executeOpcodeFollowingCB()
 {
 	pc++;
-	switch (memory.read(pc)) {
+	switch (memory->read(pc)) {
 	case(0x00): {RLC_R(B); break; }
 	case(0x01): {RLC_R(C); break; }
 	case(0x02): {RLC_R(D); break; }
@@ -704,14 +712,14 @@ void Cpu::LD_R_R(uint8_t& reg1, const uint8_t& reg2) {
 void Cpu::LD_R_d8(uint8_t& reg)
 {
 	pc++;
-	reg = memory.read(pc);
+	reg = memory->read(pc);
 	pc++;
 	cycles += 2;
 }
 
 void Cpu::LD_R_aHL(uint8_t& reg)
 {
-	reg = memory.read(pairRegisters(H, L));
+	reg = memory->read(pairRegisters(H, L));
 	pc++;
 	cycles += 2;
 }
@@ -720,7 +728,7 @@ void Cpu::LD_R_aHL(uint8_t& reg)
 
 void Cpu::LD_aHL_R(const uint8_t& reg)
 {
-	memory.write(pairRegisters(H, L), reg);
+	memory->write(pairRegisters(H, L), reg);
 	pc++;
 	cycles += 2;
 }
@@ -728,21 +736,21 @@ void Cpu::LD_aHL_R(const uint8_t& reg)
 void Cpu::LD_aHL_d8()
 {
 	pc++;
-	memory.write(pairRegisters(H, L), memory.read(pc));
+	memory->write(pairRegisters(H, L), memory->read(pc));
 	pc++;
 	cycles += 3;
 }
 
 void Cpu::LD_A_aBC()
 {
-	A = memory.read(pairRegisters(B, C));
+	A = memory->read(pairRegisters(B, C));
 	pc++;
 	cycles += 2;
 }
 
 void Cpu::LD_A_aDE()
 {
-	A = memory.read(pairRegisters(D, E));
+	A = memory->read(pairRegisters(D, E));
 	pc++;
 	cycles += 2;
 }
@@ -751,14 +759,14 @@ void Cpu::LD_A_aDE()
 
 void Cpu::LD_A_aCo()
 {
-	A = memory.read(INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + C);
+	A = memory->read(INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + C);
 	pc++;
 	cycles += 2;
 }
 
 void Cpu::LD_aCo_A()
 {
-	memory.write((INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + C), A);
+	memory->write((INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + C), A);
 	cycles += 2;
 	pc++;
 }
@@ -768,7 +776,7 @@ void Cpu::LD_aCo_A()
 void Cpu::LD_A_a8o()
 {
 	pc++;
-	A = memory.read((INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + memory.read(pc)));
+	A = memory->read((INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + memory->read(pc)));
 	cycles += 3;
 	pc++;
 }
@@ -776,7 +784,7 @@ void Cpu::LD_A_a8o()
 void Cpu::LD_a8o_A()
 {
 	pc++;
-	memory.write(INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + memory.read(pc), A);
+	memory->write(INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + memory->read(pc), A);
 	cycles += 3;
 	pc++;
 }
@@ -784,7 +792,7 @@ void Cpu::LD_a8o_A()
 void Cpu::LD_A_a16()
 {
 	pc++;
-	A = memory.read(((memory.read(pc + 1) << 8) + memory.read(pc)));//the n are the less significant bits, the n+1 are the most significant bits.
+	A = memory->read(((memory->read(pc + 1) << 8) + memory->read(pc)));//the n are the less significant bits, the n+1 are the most significant bits.
 	cycles += 4;
 	pc += 2;
 }
@@ -792,7 +800,7 @@ void Cpu::LD_A_a16()
 void Cpu::LD_a16_A()
 {
 	pc++;
-	memory.write(((memory.read(pc + 1) << 8) + memory.read(pc)), A);//the n are the less significant bits, the n+1 are the most significant bits.
+	memory->write(((memory->read(pc + 1) << 8) + memory->read(pc)), A);//the n are the less significant bits, the n+1 are the most significant bits.
 	cycles += 4;
 	pc += 2;
 }
@@ -800,7 +808,7 @@ void Cpu::LD_a16_A()
 void Cpu::LD_A_aHL_HLI()
 {
 	uint16_t tempHL = pairRegisters(H, L);
-	A = memory.read(tempHL);
+	A = memory->read(tempHL);
 	tempHL++;
 	unpairRegisters(H, L, tempHL);
 	cycles += 2;
@@ -810,7 +818,7 @@ void Cpu::LD_A_aHL_HLI()
 void Cpu::LD_A_aHL_HLD()
 {
 	uint16_t tempHL = pairRegisters(H, L);
-	A = memory.read(tempHL);
+	A = memory->read(tempHL);
 	tempHL--;
 	unpairRegisters(H, L, tempHL);
 	cycles += 2;
@@ -819,14 +827,14 @@ void Cpu::LD_A_aHL_HLD()
 
 void Cpu::LD_aBC_A()
 {
-	memory.write(pairRegisters(B, C), A);
+	memory->write(pairRegisters(B, C), A);
 	cycles += 2;
 	pc++;
 }
 
 void Cpu::LD_aDE_A()
 {
-	memory.write(pairRegisters(D, E), A);
+	memory->write(pairRegisters(D, E), A);
 	cycles += 2;
 	pc++;
 }
@@ -834,7 +842,7 @@ void Cpu::LD_aDE_A()
 void Cpu::LD_aHL_A_HLI()
 {
 	uint16_t tempHL = pairRegisters(H, L);
-	memory.write(tempHL, A);
+	memory->write(tempHL, A);
 	tempHL++;
 	unpairRegisters(H, L, tempHL);
 	cycles += 2;
@@ -844,7 +852,7 @@ void Cpu::LD_aHL_A_HLI()
 void Cpu::LD_aHL_A_HLD()
 {
 	uint16_t tempHL = pairRegisters(H, L);
-	memory.write(tempHL, A);
+	memory->write(tempHL, A);
 	tempHL--;
 	unpairRegisters(H, L, tempHL);
 	cycles += 2;
@@ -855,7 +863,7 @@ void Cpu::LD_aHL_A_HLD()
 void Cpu::LD_RP_d16(uint8_t& reg1, uint8_t& reg2)
 {
 	pc++;
-	unpairRegisters(reg1, reg2, ((memory.read(pc + 1) << 8) + memory.read(pc)));
+	unpairRegisters(reg1, reg2, ((memory->read(pc + 1) << 8) + memory->read(pc)));
 	cycles += 3;
 	pc += 2;
 }
@@ -863,7 +871,7 @@ void Cpu::LD_RP_d16(uint8_t& reg1, uint8_t& reg2)
 void Cpu::LD_RP_d16(uint16_t& regsPair)
 {
 	pc++;
-	sp = ((memory.read(pc + 1) << 8) + memory.read(pc));
+	sp = ((memory->read(pc + 1) << 8) + memory->read(pc));
 	cycles += 3;
 	pc += 2;
 }
@@ -878,8 +886,8 @@ void Cpu::LD_SP_HL()
 
 void Cpu::PUSH_RP(const uint8_t& regPair1, const uint8_t& regPair2)
 {
-	memory.write(sp - 1, regPair1);
-	memory.write(sp - 2, regPair2);
+	memory->write(sp - 1, regPair1);
+	memory->write(sp - 2, regPair2);
 	sp -= 2;
 	cycles += 4;
 	pc++;
@@ -894,8 +902,8 @@ void Cpu::PUSH_RP(const uint8_t& regPair, const Flag& flag)
 
 void Cpu::POP_RP(uint8_t& regPair1, uint8_t& regPair2)
 {
-	regPair2 = memory.read(sp);
-	regPair1 = memory.read(sp + 1);
+	regPair2 = memory->read(sp);
+	regPair1 = memory->read(sp + 1);
 	sp += 2;
 	cycles += 3;
 	pc++;
@@ -903,9 +911,9 @@ void Cpu::POP_RP(uint8_t& regPair1, uint8_t& regPair2)
 
 void Cpu::POP_RP(uint8_t& regPair1, Flag& flagPair)
 {
-	uint8_t temp = memory.read(sp);
+	uint8_t temp = memory->read(sp);
 	flagPair = byteToFlag(temp);
-	regPair1 = memory.read(sp + 1);
+	regPair1 = memory->read(sp + 1);
 	sp += 2;
 	cycles += 3;
 	pc++;
@@ -916,7 +924,7 @@ void Cpu::LDHL_SP_e()
 {
 	cout << "LDHL OPCODE MAY CAUSE ISSUE" << endl;
 	pc++;
-	int8_t e = memory.read(pc);
+	int8_t e = memory->read(pc);
 
 	if (e >= 0)//WORKING
 	{
@@ -939,9 +947,9 @@ void Cpu::LDHL_SP_e()
 void Cpu::LD_a16_SP()
 {
 	pc++;
-	uint16_t nnBits = (memory.read(pc + 1) << 8) + memory.read(pc);
-	memory.write(nnBits, (sp & 0x00FF));
-	memory.write(nnBits + 1, ((sp & 0xFF00) >> 8));
+	uint16_t nnBits = (memory->read(pc + 1) << 8) + memory->read(pc);
+	memory->write(nnBits, (sp & 0x00FF));
+	memory->write(nnBits + 1, ((sp & 0xFF00) >> 8));
 	cycles += 5;
 	pc += 2;
 }
@@ -957,7 +965,7 @@ void Cpu::ADD_A_R(const uint8_t& reg)
 void Cpu::ADD_A_d8()
 {
 	pc++;
-	A = ADD_ADC_subFunctionFlag(A, memory.read(pc));
+	A = ADD_ADC_subFunctionFlag(A, memory->read(pc));
 	cycles += 2;
 	pc++;
 }
@@ -965,7 +973,7 @@ void Cpu::ADD_A_d8()
 
 void Cpu::ADD_A_aHL()
 {
-	A = ADD_ADC_subFunctionFlag(A, memory.read(pairRegisters(H, L)));
+	A = ADD_ADC_subFunctionFlag(A, memory->read(pairRegisters(H, L)));
 	cycles += 2;
 	pc++;
 }
@@ -989,7 +997,7 @@ void Cpu::ADC_A_d8_CY()
 	A = ADD_ADC_subFunctionFlag(A, F.CY);
 	bool tempCY = F.CY;
 	bool tempH = F.H;
-	A = ADD_ADC_subFunctionFlag(A, memory.read(pc));
+	A = ADD_ADC_subFunctionFlag(A, memory->read(pc));
 	F.CY |= tempCY;
 	F.H |= tempH;
 	cycles += 2;
@@ -1001,7 +1009,7 @@ void Cpu::ADC_A_aHL_CY(const uint8_t& regPair1, const uint8_t& regPair2)
 	A = ADD_ADC_subFunctionFlag(A, F.CY);
 	bool tempCY = F.CY;
 	bool tempH = F.H;
-	A = ADD_ADC_subFunctionFlag(A, memory.read(pairRegisters(regPair1, regPair2)));
+	A = ADD_ADC_subFunctionFlag(A, memory->read(pairRegisters(regPair1, regPair2)));
 	F.CY |= tempCY;
 	F.H |= tempH;
 	cycles += 2;
@@ -1029,14 +1037,14 @@ void Cpu::SUB_A_R(const uint8_t& reg)
 void Cpu::SUB_A_d8()
 {
 	pc++;
-	A = SUB_SBC_subFunctionFlag(A, memory.read(pc));
+	A = SUB_SBC_subFunctionFlag(A, memory->read(pc));
 	cycles += 2;
 	pc++;
 }
 
 void Cpu::SUB_A_aHL(const uint8_t& regPair1, const uint8_t& regPair2)
 {
-	A = SUB_SBC_subFunctionFlag(A, memory.read(pairRegisters(regPair1, regPair2)));
+	A = SUB_SBC_subFunctionFlag(A, memory->read(pairRegisters(regPair1, regPair2)));
 	cycles += 2;
 	pc++;
 }
@@ -1059,7 +1067,7 @@ void Cpu::SBC_A_d8_CY()
 	A = SUB_SBC_subFunctionFlag(A, F.CY);
 	bool tempCY = F.CY;
 	bool tempH = F.H;
-	A = SUB_SBC_subFunctionFlag(A, memory.read(pc));
+	A = SUB_SBC_subFunctionFlag(A, memory->read(pc));
 	F.CY |= tempCY;
 	F.H |= tempH;
 	cycles += 2;
@@ -1071,7 +1079,7 @@ void Cpu::SBC_A_aHL_CY(const uint8_t& regPair1, const uint8_t& regPair2)
 	A = SUB_SBC_subFunctionFlag(A, F.CY);
 	bool tempCY = F.CY;
 	bool tempH = F.H;
-	A = SUB_SBC_subFunctionFlag(A, memory.read(pairRegisters(regPair1, regPair2)));
+	A = SUB_SBC_subFunctionFlag(A, memory->read(pairRegisters(regPair1, regPair2)));
 	F.CY |= tempCY;
 	F.H |= tempH;
 	cycles += 2;
@@ -1102,7 +1110,7 @@ void Cpu::AND_A_R(const uint8_t& reg)
 void Cpu::AND_A_d8()
 {
 	pc++;
-	A &= memory.read(pc);
+	A &= memory->read(pc);
 	F.Z = (A == 0);
 	F.H = 1;
 	F.N = 0;
@@ -1113,7 +1121,7 @@ void Cpu::AND_A_d8()
 
 void Cpu::AND_A_aHL()
 {
-	A &= memory.read(pairRegisters(H, L));
+	A &= memory->read(pairRegisters(H, L));
 	F.Z = (A == 0);
 	F.H = 1;
 	F.N = 0;
@@ -1137,7 +1145,7 @@ void Cpu::OR_A_R(const uint8_t& reg)
 void Cpu::OR_A_d8()
 {
 	pc++;
-	A |= memory.read(pc);
+	A |= memory->read(pc);
 	F.Z = (A == 0);
 	F.H = 0;
 	F.N = 0;
@@ -1148,7 +1156,7 @@ void Cpu::OR_A_d8()
 
 void Cpu::OR_A_aHL()
 {
-	A |= memory.read(pairRegisters(H, L));
+	A |= memory->read(pairRegisters(H, L));
 	F.Z = (A == 0);
 	F.H = 0;
 	F.N = 0;
@@ -1174,7 +1182,7 @@ void Cpu::XOR_A_R(const uint8_t& reg)
 void Cpu::XOR_A_d8()
 {
 	pc++;
-	A ^= memory.read(pc);
+	A ^= memory->read(pc);
 	F.Z = (A == 0);
 	F.H = 0;
 	F.N = 0;
@@ -1185,7 +1193,7 @@ void Cpu::XOR_A_d8()
 
 void Cpu::XOR_A_aHL()
 {
-	A ^= memory.read(pairRegisters(H, L));
+	A ^= memory->read(pairRegisters(H, L));
 	F.Z = (A == 0);
 	F.H = 0;
 	F.N = 0;
@@ -1206,14 +1214,14 @@ void Cpu::CP_A_R(const uint8_t& reg)
 void Cpu::CP_A_d8()
 {
 	pc++;
-	CP_subFunctionFlag(memory.read(pc));
+	CP_subFunctionFlag(memory->read(pc));
 	cycles += 2;
 	pc++;
 }
 
 void Cpu::CP_A_aHL()
 {
-	CP_subFunctionFlag(memory.read(pairRegisters(H, L)));
+	CP_subFunctionFlag(memory->read(pairRegisters(H, L)));
 	cycles += 2;
 	pc++;
 }
@@ -1237,10 +1245,10 @@ void Cpu::INC_R(uint8_t& reg)
 
 void Cpu::INC_aHL()
 {
-	//INC_subFunctionFlag(memory.read(pairRegisters(regPair1, regPair2)));//C++ initial value of reference to non-const must be an lvalue
-	uint8_t memTemp = memory.read(pairRegisters(H, L));
+	//INC_subFunctionFlag(memory->read(pairRegisters(regPair1, regPair2)));//C++ initial value of reference to non-const must be an lvalue
+	uint8_t memTemp = memory->read(pairRegisters(H, L));
 	INC_subFunctionFlag(memTemp);
-	memory.write(pairRegisters(H, L), memTemp);
+	memory->write(pairRegisters(H, L), memTemp);
 	cycles += 3;
 	pc++;
 }
@@ -1264,10 +1272,10 @@ void Cpu::DEC_R(uint8_t& reg)
 
 void Cpu::DEC_aHL()
 {
-	//INC_subFunctionFlag(memory.read(pairRegisters(regPair1, regPair2)));//C++ initial value of reference to non-const must be an lvalue
-	uint8_t memTemp = memory.read(pairRegisters(H, L));
+	//INC_subFunctionFlag(memory->read(pairRegisters(regPair1, regPair2)));//C++ initial value of reference to non-const must be an lvalue
+	uint8_t memTemp = memory->read(pairRegisters(H, L));
 	DEC_subFunctionFlag(memTemp);
-	memory.write(pairRegisters(H, L), memTemp);
+	memory->write(pairRegisters(H, L), memTemp);
 	cycles += 3;
 	pc++;
 }
@@ -1306,7 +1314,7 @@ void Cpu::ADD_SP_e()
 	cout << "Program may bug here, thanks to opcode ADD_SP_e" << endl;
 
 	pc++;
-	int8_t e = memory.read(pc);
+	int8_t e = memory->read(pc);
 	if (e >= 0)//WORKING
 	{
 		F.CY = ((sp & 0xFFFF) + e) > 0xFFFF;
@@ -1437,14 +1445,14 @@ void Cpu::RLC_R(uint8_t& reg)
 
 void Cpu::RLC_aHL()
 {
-	uint8_t temp = memory.read(pairRegisters(H, L));
+	uint8_t temp = memory->read(pairRegisters(H, L));
 	F.H = 0;
 	F.N = 0;
 	F.CY = (temp >> 7) & 0x1;
 	temp <<= 1;
 	temp &= 0b11111110;
 	temp += F.CY;
-	memory.write(pairRegisters(H, L), temp);
+	memory->write(pairRegisters(H, L), temp);
 	F.Z = (temp == 0);
 	cycles += 4;
 	pc++;
@@ -1467,7 +1475,7 @@ void Cpu::RL_R(uint8_t& reg)
 
 void Cpu::RL_aHL()
 {
-	uint8_t temp = memory.read(pairRegisters(H, L));
+	uint8_t temp = memory->read(pairRegisters(H, L));
 	F.H = 0;
 	F.N = 0;
 	bool oldCarry = F.CY;
@@ -1475,7 +1483,7 @@ void Cpu::RL_aHL()
 	temp <<= 1;
 	temp &= 0b11111110;
 	temp += oldCarry;
-	memory.write(pairRegisters(H, L), temp);
+	memory->write(pairRegisters(H, L), temp);
 	F.Z = (temp == 0);
 	cycles += 4;
 	pc++;
@@ -1498,7 +1506,7 @@ void Cpu::RRC_R(uint8_t& reg)
 
 void Cpu::RRC_aHL()
 {
-	uint8_t temp = memory.read(pairRegisters(H, L));
+	uint8_t temp = memory->read(pairRegisters(H, L));
 	F.H = 0;
 	F.N = 0;
 	F.Z = 0;
@@ -1506,7 +1514,7 @@ void Cpu::RRC_aHL()
 	temp >>= 1;
 	temp &= 0b01111111;
 	temp += (F.CY << 7);
-	memory.write(pairRegisters(H, L), temp);
+	memory->write(pairRegisters(H, L), temp);
 	F.Z = (temp == 0);
 	cycles += 4;
 	pc++;
@@ -1529,7 +1537,7 @@ void Cpu::RR_R(uint8_t& reg)
 
 void Cpu::RR_aHL()
 {
-	uint8_t temp = memory.read(pairRegisters(H, L));
+	uint8_t temp = memory->read(pairRegisters(H, L));
 	F.H = 0;
 	F.N = 0;
 	F.Z = 0;
@@ -1538,7 +1546,7 @@ void Cpu::RR_aHL()
 	temp >>= 1;
 	temp &= 0b01111111;
 	temp |= (oldCarry << 7);
-	memory.write(pairRegisters(H, L), temp);
+	memory->write(pairRegisters(H, L), temp);
 	F.Z = (temp == 0);
 	cycles += 4;
 	pc++;
@@ -1561,9 +1569,9 @@ void Cpu::SLA_R(uint8_t& reg)
 
 void Cpu::SLA_aHL()
 {
-	uint8_t temp = memory.read(pairRegisters(H, L));
+	uint8_t temp = memory->read(pairRegisters(H, L));
 	SLA_R(temp);
-	memory.write(pairRegisters(H, L), temp);
+	memory->write(pairRegisters(H, L), temp);
 	cycles += 2;
 }
 
@@ -1584,9 +1592,9 @@ void Cpu::SRA_R(uint8_t& reg)
 
 void Cpu::SRA_aHL()
 {
-	uint8_t temp = memory.read(pairRegisters(H, L));
+	uint8_t temp = memory->read(pairRegisters(H, L));
 	SRA_R(temp);
-	memory.write(pairRegisters(H, L), temp);
+	memory->write(pairRegisters(H, L), temp);
 	cycles += 2;
 }
 
@@ -1606,9 +1614,9 @@ void Cpu::SRL_R(uint8_t& reg)
 
 void Cpu::SRL_aHL()
 {
-	uint8_t temp = memory.read(pairRegisters(H, L));
+	uint8_t temp = memory->read(pairRegisters(H, L));
 	SRL_R(temp);
-	memory.write(pairRegisters(H, L), temp);
+	memory->write(pairRegisters(H, L), temp);
 	cycles += 2;
 }
 
@@ -1628,9 +1636,9 @@ void Cpu::SWAP_R(uint8_t& reg)
 }
 void Cpu::SWAP_aHL()
 {
-	uint8_t temp = memory.read(pairRegisters(H, L));
+	uint8_t temp = memory->read(pairRegisters(H, L));
 	SWAP_R(temp);
-	memory.write(pairRegisters(H, L), temp);
+	memory->write(pairRegisters(H, L), temp);
 	cycles += 2;
 }
 
@@ -1641,7 +1649,7 @@ void Cpu::BIT_b_R(const uint8_t& indexBit, const uint8_t& reg)
 {
 	F.H = 1;
 	F.N = 0;
-	uint8_t date8Bits = memory.read(pc);//Get the data byte
+	uint8_t date8Bits = memory->read(pc);//Get the data byte
 	F.Z = !((reg & (0b00000001 << indexBit)) >> (indexBit));//Attribute to F.Z the bit's complement of the reg pointed by the index calculated previously
 	cycles += 2;
 	pc++;
@@ -1649,13 +1657,13 @@ void Cpu::BIT_b_R(const uint8_t& indexBit, const uint8_t& reg)
 
 void Cpu::BIT_b_aHL(const uint8_t& indexBit)
 {
-	BIT_b_R(memory.read(pairRegisters(H, L)), indexBit);
+	BIT_b_R(memory->read(pairRegisters(H, L)), indexBit);
 	cycles++;
 }
 
 void Cpu::SET_b_R(const uint8_t& indexBit, uint8_t& reg)
 {
-	uint8_t date8Bits = memory.read(pc);//Get the data byte
+	uint8_t date8Bits = memory->read(pc);//Get the data byte
 	reg |= (0b00000001 << indexBit);//Se the bit pointed by the index calculated previously
 	cycles += 2;
 	pc++;
@@ -1665,16 +1673,16 @@ void Cpu::SET_b_R(const uint8_t& indexBit, uint8_t& reg)
 //Page 17
 void Cpu::SET_b_aHL(const uint8_t& indexBit)
 {
-	uint8_t temp = memory.read(pairRegisters(H, L));
+	uint8_t temp = memory->read(pairRegisters(H, L));
 	SET_b_R(indexBit, temp);
-	memory.write(pairRegisters(H, L), temp);
+	memory->write(pairRegisters(H, L), temp);
 	cycles += 2;
 }
 
 
 void Cpu::RES_b_R(const uint8_t& indexBit, uint8_t& reg)
 {
-	uint8_t date8Bits = memory.read(pc);//Get the data byte
+	uint8_t date8Bits = memory->read(pc);//Get the data byte
 	uint8_t mask = (0b00000001 << indexBit);//Shift the bit to set to 0 to the right position
 	mask = ~mask;//Invert the ma
 	reg &= mask;
@@ -1684,9 +1692,9 @@ void Cpu::RES_b_R(const uint8_t& indexBit, uint8_t& reg)
 
 void Cpu::RES_b_aHL(const uint8_t& indexBit)
 {
-	uint8_t temp = memory.read(pairRegisters(H, L));
+	uint8_t temp = memory->read(pairRegisters(H, L));
 	SET_b_R(indexBit, temp);
-	memory.write(pairRegisters(H, L), temp);
+	memory->write(pairRegisters(H, L), temp);
 	cycles += 2;
 }
 
@@ -1696,17 +1704,17 @@ void Cpu::RES_b_aHL(const uint8_t& indexBit)
 void Cpu::JP_d16()
 {
 	pc++;
-	pc = (memory.read(pc + 1) << 8) + (memory.read(pc));
+	pc = (memory->read(pc + 1) << 8) + (memory->read(pc));
 	cycles += 4;
 }
 
 void Cpu::JP_cc_d16()
 {
-	uint8_t condition = ((memory.read(pc) & 0b00011000) >> 3);
+	uint8_t condition = ((memory->read(pc) & 0b00011000) >> 3);
 	pc++;
-	uint8_t lowByte = memory.read(pc);
+	uint8_t lowByte = memory->read(pc);
 	pc++;
-	uint8_t highByte = memory.read(pc);
+	uint8_t highByte = memory->read(pc);
 
 	switch (condition)
 	{
@@ -1773,7 +1781,7 @@ void Cpu::JP_cc_d16()
 void Cpu::JR_e()
 {
 	pc++;
-	int8_t e = memory.read(pc);//LOOK AT THE Z80 CPU MANUAL
+	int8_t e = memory->read(pc);//LOOK AT THE Z80 CPU MANUAL
 	pc++;
 	cycles += 3;
 	pc += e;
@@ -1782,9 +1790,9 @@ void Cpu::JR_e()
 
 void Cpu::JR_cc_e()
 {
-	uint8_t condition = ((memory.read(pc) & 0b00011000) >> 3);
+	uint8_t condition = ((memory->read(pc) & 0b00011000) >> 3);
 	pc++;
-	int8_t e = memory.read(pc);
+	int8_t e = memory->read(pc);
 	pc++;
 	cycles += 2;
 
@@ -1839,16 +1847,16 @@ void Cpu::JP_HL()
 void Cpu::CALL()
 {
 	pc += 3;
-	memory.write(sp - 1, (pc >> 8));
-	memory.write(sp - 2, (pc & 0x00FF));
-	pc = (memory.read(pc - 1) << 8) + memory.read(pc - 2);
+	memory->write(sp - 1, (pc >> 8));
+	memory->write(sp - 2, (pc & 0x00FF));
+	pc = (memory->read(pc - 1) << 8) + memory->read(pc - 2);
 	sp -= 2;
 	cycles += 6;
 }
 
 void Cpu::CALL_cc()
 {
-	uint8_t condition = ((memory.read(pc) & 0b00011000) >> 3);
+	uint8_t condition = ((memory->read(pc) & 0b00011000) >> 3);
 	switch (condition)
 	{
 	case(0b00)://NZ
@@ -1909,14 +1917,14 @@ void Cpu::CALL_cc()
 
 void Cpu::RET()
 {
-	pc = (memory.read(sp + 1) << 8) + memory.read(sp);
+	pc = (memory->read(sp + 1) << 8) + memory->read(sp);
 	sp += 2;
 	cycles += 4;
 }
 
 void Cpu::RETI()
 {
-	pc = (memory.read(sp + 1) << 8) + memory.read(sp);
+	pc = (memory->read(sp + 1) << 8) + memory->read(sp);
 	sp += 2;
 	IME = 1;
 	cycles += 4;
@@ -1925,7 +1933,7 @@ void Cpu::RETI()
 
 void Cpu::RET_cc()
 {
-	uint8_t condition = ((memory.read(pc) & 0b00011000) >> 3);
+	uint8_t condition = ((memory->read(pc) & 0b00011000) >> 3);
 	cycles++;
 	switch (condition)
 	{
@@ -1987,10 +1995,10 @@ void Cpu::RET_cc()
 //Page 21
 void Cpu::RST()
 {
-	uint8_t opcode = memory.read(pc);
+	uint8_t opcode = memory->read(pc);
 	pc++;
-	memory.write(sp - 1, (pc >> 8));
-	memory.write(sp - 2, (pc & 0x00FF));
+	memory->write(sp - 1, (pc >> 8));
+	memory->write(sp - 2, (pc & 0x00FF));
 	sp -= 2;
 	cycles += 4;
 

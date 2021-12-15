@@ -14,7 +14,7 @@ using namespace std;
 class Cpu {
 
 private:
-	int cycles;					//Cycles to do (incremented after each instructions)
+	int cycles;					//Cycles to do (increasse after each instructions)
 
 	/// <summary>
 	/// CPU mode
@@ -48,15 +48,12 @@ private:
 
 	bool IME;					//IME flag (Interupt Master Enable)
 
-	//Memory* memory = nullptr;
-	Memory memory;				//Memory of the console
-	Ppu ppu;					//PPPU of the console
+	Memory* memory = nullptr;	//Memory of the console
+	//Ppu ppu;					//PPU of the console
 
 public:
-	//Cpu(Memory* memory);						//Constructor
-	Cpu();										//Constructor without bios
-	Cpu(const string& biosPath);				//Constructor with bios
-	~Cpu();
+	Cpu(Memory* memory);								//Constructor without bios
+	Cpu(Memory* memory, const string& biosPath);		//Constructor with bios
 	void reset();										//Reset Cpu
 	void loadBios(const string& biosPath);				//Load bios
 	void loadRomCompletey(const string& romPath);		//Load game
@@ -66,6 +63,7 @@ private:
 	uint16_t haltSubFunction();					//Halt mode function
 
 	void writeUserInput();						//Function to write user inputs
+	void incrementTimer();
 
 	void readOpcode();							//Read an opcode
 	void executeOpcode(uint8_t opcode);			//Execute an opcode
