@@ -22,6 +22,7 @@
 #define INTERRUPT_FLAG_IE_ADDRESS 0xFFFF
 
 #define LCD_LY 0xFF44
+#define LCD_LCDC 0xFF40
 
 using namespace std;
 
@@ -30,14 +31,18 @@ class Memory {
 private:
 	bool biosInMemory;
 	uint8_t memoryArray[MEMORY_SIZE];
+	uint8_t memoryBios[0x100];
 
 public:
 	Memory();
 	void reset();
 	uint8_t read(const uint16_t index)const;
 	void write(const uint16_t& index, uint8_t value);
+	void increment(const uint16_t& index);
+	void decrement(const uint16_t& index);
 	bool loadBiosInMemory(const string& biosPath);
 	bool loadRomInMemory(const string& romPath);
+	bool getBiosInMemeory();
 };
 
 #endif

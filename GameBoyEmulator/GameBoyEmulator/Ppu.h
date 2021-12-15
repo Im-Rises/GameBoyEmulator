@@ -11,6 +11,7 @@
 #define DOTS_DISPLAY_X 160
 #define DOTS_DISPLAY_Y 144
 
+#define VERTICAL_BLANKING_LINES_NUMBER 154
 
 class Ppu
 {
@@ -19,6 +20,7 @@ private:
 
 public:
 	Ppu(Memory* memory);
+	void draw(int cycles);
 	void drawLine(int cycles);
 };
 

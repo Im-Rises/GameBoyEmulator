@@ -1,6 +1,8 @@
 #ifndef DEF_CPU
 #define DEF_CPU
 
+#include <chrono>
+
 #include "Memory.h"
 #include "Ppu.h"
 

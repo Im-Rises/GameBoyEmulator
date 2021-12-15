@@ -1,5 +1,7 @@
-﻿  Cpu.cpp
-  GameBoy.cpp
+﻿  GameBoy.cpp
   main.cpp
+  Memory.cpp
+E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Memory.cpp(65,15): warning C4244: 'initialisation' : conversion de 'std::streamoff' en 'int', perte possible de données
   Génération de code en cours...
+LINK : warning LNK4098: conflit entre la bibliothèque par défaut 'MSVCRT' et les autres bibliothèques ; utilisez /NODEFAULTLIB:library
   GameBoyEmulator.vcxproj -> E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\x64\Debug\GameBoyEmulator.exe

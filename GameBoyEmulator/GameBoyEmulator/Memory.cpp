@@ -24,6 +24,17 @@ void Memory::write(const uint16_t& index, uint8_t value)
 	memoryArray[index] = value;
 }
 
+
+void Memory::increment(const uint16_t& index)
+{
+	memoryArray[index]++;
+}
+
+void Memory::decrement(const uint16_t& index)
+{
+	memoryArray[index]--;
+}
+
 bool Memory::loadBiosInMemory(const string& biosPath)
 {
 	std::ifstream input(biosPath, std::ios::binary);
@@ -65,4 +76,9 @@ bool Memory::loadRomInMemory(const string& romPath)
 		cout << "Can't open rom file" << endl;
 		return false;
 	}
+}
+
+bool Memory::getBiosInMemeory()
+{
+	return biosInMemory;
 }

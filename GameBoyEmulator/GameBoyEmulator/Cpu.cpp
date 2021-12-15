@@ -8,7 +8,6 @@ Cpu::Cpu(Memory* memory) :ppu(memory)
 	pc = 0;
 	sp = CPU_WORK_RAM_OR_AND_STACK_END;
 	IME = 0;
-	//ERROR NEED TO SET AN INIT VALUE FOR THE REGISTERS AFTER THE BIOS
 }
 
 void Cpu::reset()
@@ -25,61 +24,60 @@ void Cpu::reset()
 
 void Cpu::start()
 {
-	while (onOff)
+	if (true)//DEBUG
 	{
-		if (true)//DEBUG
+		if (pc == 0xE9)
+			cout << "Arret pc = " << hex << pc << endl;
+	}
+
+	//Draw a line with the PPU
+	ppu.draw(cycles);
+
+	//Check timer
+	incrementTimer();
+	incrementDivider();
+
+	//Put user inputs here in the memory registers
+	writeUserInput();
+
+	//Wait the number of cycles
+	//std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+	//std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+	//std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl;
+	//std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::nanoseconds> (end - begin).count() << "[ns]" << std::endl;
+	cycles = 0;
+
+
+	if (!halted && !stopped)//If CPU is not in halt mode neither stop mode
+	{
+		readOpcode();
+	}
+	else if (halted)//If halt mode is enable
+	{
+		if ((memory->read(INTERRUPT_FLAG_IE_ADDRESS) | memory->read(INTERRUPT_FLAG_IF_ADDRESS)) > 0)//If one of the request flag (IF) is activated and its corresponding flag (IE) is activated the halted mode is canceled
 		{
-			if (pc >= 0x64)
-				cout << "Arret pc = " << hex << pc << endl;
-			cout << "pc = 0x" << hex << pc << " Opcode: " << hex << (int)memory->read(pc) << endl;
-		}
-
-		//Draw a line with the PPU
-		ppu.drawLine(cycles);
-
-		//Wait the number of cycles
-		cycles = 0;
-
-		//Check timer
-		incrementTimer();
-		incrementDivider();
-
-		//Put user inputs here in the memory registers
-
-
-
-
-		if (!halted && !stopped)//If CPU is not in halt mode neither stop mode
-		{
-			readOpcode();
-		}
-		else if (halted)//If halt mode is enable
-		{
-			if ((memory->read(INTERRUPT_FLAG_IE_ADDRESS) | memory->read(INTERRUPT_FLAG_IF_ADDRESS)) > 0)//If one of the request flag (IF) is activated and its corresponding flag (IE) is activated the halted mode is canceled
+			halted = false;
+			if (IME)
 			{
-				halted = false;
-				if (IME)
-				{
-					pc = haltSubFunction();
-				}
-				else
-				{
-					pc = pc;
-				}
+				pc = haltSubFunction();
+			}
+			else
+			{
+				pc = pc;
 			}
 		}
-		else//If stop mode is enable
-		{
-			cout << "STOP MODE ENABLED. WAITING FOR USER INPUT." << endl;
-			stopped = !((memory->read(CONTROLLER_DATA_ADDRESS) & 0b00001111) < 15);//If low signal on P10, P11, P12 or P13 the stopped mode is disable
-			if (!stopped)
-				cycles += 217;
-		}
+	}
+	else//If stop mode is enable
+	{
+		cout << "STOP MODE ENABLED. WAITING FOR USER INPUT." << endl;
+		stopped = !((memory->read(CONTROLLER_DATA_ADDRESS) & 0b00001111) < 15);//If low signal on P10, P11, P12 or P13 the stopped mode is disable
+		if (!stopped)
+			cycles += 217;
+	}
 
-		if (!resetTerminal)
-		{
-			reset();
-		}
+	if (!resetTerminal)
+	{
+		reset();
 	}
 }
 
@@ -120,9 +118,16 @@ void Cpu::writeUserInput()
 
 void Cpu::incrementTimer()
 {
-	//Check value of TAC to know speed of increment
 	if ((memory->read(TIMER_REGISTER_TAC_ADDRESS) & 0b00000110) > 0)//If timer enable
 	{
+		//Increment timer here regarding of its speed defined in the TAC
+		/*
+		* 00: f/210 (4.096 KHz)
+		* 01: f/24 (262.144 KHz)
+		* 10: f/26 (65.536 KHz)
+		* 11: f/28 (16.384 KHz)
+		*/
+
 		if ((memory->read(TIMER_REGISTER_TIMA_ADDRESS) + cycles) > 0xFFFF)
 		{
 			//overflow

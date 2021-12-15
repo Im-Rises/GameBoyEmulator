@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
 		argc = 2;
 	}
 
-	if (argc > 1)
+	if (argc > 1)//If a game is loaded
 	{
 		//romPath = argv[1];
 		GameBoy* gameBoy = GameBoy::getInstance();
@@ -24,8 +24,8 @@ int main(int argc, char* argv[])
 		{
 			gameBoy->loadBios(biosPath);
 		}
-		gameBoy->start();
-		//Call destructor ?
+		gameBoy->loadGame(romPath);
+		gameBoy->launch();
 	}
 	return 0;
 }
