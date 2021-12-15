@@ -63,6 +63,9 @@ void Cpu::start()
 		//Wait the number of cycles
 		cycles = 0;
 
+		//Check timer
+		incrementTimer();
+
 		//Put user inputs here in the memory registers
 
 		if (!halted && !stopped)//If CPU is not in halt mode neither stop mode
@@ -103,6 +106,7 @@ uint16_t Cpu::haltSubFunction()
 {
 	IME = 0;
 	uint8_t tempIE = memory->read(INTERRUPT_FLAG_IE_ADDRESS);
+	uint8_t tempIF = memory->read(INTERRUPT_FLAG_IF_ADDRESS);
 	memory->write(INTERRUPT_FLAG_IE_ADDRESS, 0x00);//The resetting of the IF register that initiates the interrupt is a hardware reset.
 
 	//PUSH pc
@@ -112,13 +116,13 @@ uint16_t Cpu::haltSubFunction()
 
 	//cycles += ?;	//Cycle or not ???
 
-	if ((tempIE >> 4) & 0x1)//P10-P13 input signal goes low
+	if (((tempIE & tempIF) >> 4) & 0x1)//P10-P13 input signal goes low
 		return 0x0060;
-	else if ((tempIE >> 3) & 0x1)//Serial transfer completion
+	else if (((tempIE & tempIF) >> 3) & 0x1)//Serial transfer completion
 		return 0x0058;
-	else if ((tempIE >> 2) & 0x1)//Timer overflow
+	else if (((tempIE & tempIF) >> 2) & 0x1)//Timer overflow
 		return 0x0050;
-	else if ((tempIE >> 1) & 0x1)//LCDC status interrupt
+	else if (((tempIE & tempIF) >> 1) & 0x1)//LCDC status interrupt
 		return 0x0048;
 	else//Vertical blanking
 		return 0x0040;
@@ -135,10 +139,24 @@ void Cpu::writeUserInput()
 
 void Cpu::incrementTimer()
 {
-	if ((memory->read(TIMER_REGISTER_TAC_ADDRESS) & 0b00000100) > 0)
+	if ((memory->read(TIMER_REGISTER_TAC_ADDRESS) & 0b00000110) > 0)//If timer enable
 	{
-		memory->write(TIMER_REGISTER_TMA_ADDRESS, memory->read(TIMER_REGISTER_TMA_ADDRESS) + 1);
+		if ((memory->read(TIMER_REGISTER_TIMA_ADDRESS) + cycles) > 0xFFFF)
+		{
+			//overflow
+			memory->write(TIMER_REGISTER_TIMA_ADDRESS, memory->read(TIMER_REGISTER_TMA_ADDRESS));
+		}
+		else
+		{
+			memory->write(TIMER_REGISTER_TIMA_ADDRESS, memory->read(TIMER_REGISTER_TIMA_ADDRESS) + cycles);
+		}
 	}
+}
+
+
+void Cpu::incrementDivider()
+{
+	memory->write(DIVIDER_REGISTER_ADDRESS, memory->(readDIVIDER_REGISTER_ADDRESS)+1);
 }
 
 

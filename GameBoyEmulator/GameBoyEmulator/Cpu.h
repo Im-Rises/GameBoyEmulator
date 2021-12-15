@@ -64,6 +64,7 @@ private:
 
 	void writeUserInput();						//Function to write user inputs
 	void incrementTimer();
+	void incrementDivider();
 
 	void readOpcode();							//Read an opcode
 	void executeOpcode(uint8_t opcode);			//Execute an opcode
