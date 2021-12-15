@@ -30,12 +30,6 @@
     <ClCompile Include="GameBoy.cpp">
       <Filter>Fichiers de ressources</Filter>
     </ClCompile>
-    <ClCompile Include="input.cpp">
-      <Filter>Fichiers de ressources</Filter>
-    </ClCompile>
-    <ClCompile Include="video.cpp">
-      <Filter>Fichiers de ressources</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cpu.h">
@@ -48,12 +42,6 @@
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="GameBoy.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="input.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="video.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>

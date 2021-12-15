@@ -149,19 +149,15 @@
   <ItemGroup>
     <ClCompile Include="Cpu.cpp" />
     <ClCompile Include="GameBoy.cpp" />
-    <ClCompile Include="input.cpp" />
     <ClCompile Include="Ppu.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Memory.cpp" />
-    <ClCompile Include="video.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cpu.h" />
     <ClInclude Include="GameBoy.h" />
-    <ClInclude Include="input.h" />
     <ClInclude Include="Ppu.h" />
     <ClInclude Include="Memory.h" />
-    <ClInclude Include="video.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

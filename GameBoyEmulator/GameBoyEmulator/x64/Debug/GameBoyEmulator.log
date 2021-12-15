@@ -1,3 +1,5 @@
-﻿  main.cpp
-LINK : warning LNK4098: conflit entre la bibliothèque par défaut 'MSVCRT' et les autres bibliothèques ; utilisez /NODEFAULTLIB:library
+﻿  Cpu.cpp
+  GameBoy.cpp
+  main.cpp
+  Génération de code en cours...
   GameBoyEmulator.vcxproj -> E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\x64\Debug\GameBoyEmulator.exe

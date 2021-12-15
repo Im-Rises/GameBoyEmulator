@@ -1,25 +1,15 @@
 #include "Cpu.h"
 
-Cpu::Cpu(Memory* memory)
+Cpu::Cpu(Memory* memory) :ppu(memory)
 {
 	this->memory = memory;
 	reset();
-	pc = ROM_DATA_AREA;
+	//pc = ROM_DATA_AREA;
+	pc = 0;
 	sp = CPU_WORK_RAM_OR_AND_STACK_END;
 	IME = 0;
 	//ERROR NEED TO SET AN INIT VALUE FOR THE REGISTERS AFTER THE BIOS
 }
-
-Cpu::Cpu(Memory* memory, const string& biosPath)
-{
-	this->memory = memory;
-	reset();
-	pc = 0x0000;
-	sp = 0x0000;
-	IME = 0;
-	loadBios(biosPath);
-}
-
 
 void Cpu::reset()
 {
@@ -33,32 +23,19 @@ void Cpu::reset()
 	F.Z = F.N = F.H = F.CY = 0;
 }
 
-void Cpu::loadBios(const string& biosPath)
-{
-	//Verify size of bios
-	if (!memory->loadInMemory(biosPath))
-		exit(1);
-};
-
-void Cpu::loadRomCompletey(const string& romPath)
-{
-	//Verify size of rom and identify if it is a GBC or DMG game
-	if (memory->loadInMemory(romPath))
-		exit(1);
-}
-
-
 void Cpu::start()
 {
 	while (onOff)
 	{
 		if (true)//DEBUG
 		{
-			if (pc == 0x64)
+			if (pc >= 0x64)
 				cout << "Arret pc = " << hex << pc << endl;
 			cout << "pc = 0x" << hex << pc << " Opcode: " << hex << (int)memory->read(pc) << endl;
 		}
 
+		//Draw a line with the PPU
+		ppu.drawLine(cycles);
 
 		//Wait the number of cycles
 		cycles = 0;
@@ -68,6 +45,9 @@ void Cpu::start()
 		incrementDivider();
 
 		//Put user inputs here in the memory registers
+
+
+
 
 		if (!halted && !stopped)//If CPU is not in halt mode neither stop mode
 		{

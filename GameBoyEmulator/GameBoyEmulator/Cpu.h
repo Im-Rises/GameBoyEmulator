@@ -49,14 +49,11 @@ private:
 	bool IME;					//IME flag (Interupt Master Enable)
 
 	Memory* memory = nullptr;	//Memory of the console
-	//Ppu ppu;					//PPU of the console
+	Ppu ppu;					//PPU of the console
 
 public:
 	Cpu(Memory* memory);								//Constructor without bios
-	Cpu(Memory* memory, const string& biosPath);		//Constructor with bios
 	void reset();										//Reset Cpu
-	void loadBios(const string& biosPath);				//Load bios
-	void loadRomCompletey(const string& romPath);		//Load game
 	void start();										//Start Cpu
 
 private:
@@ -125,10 +122,10 @@ private:
 
 	void PUSH_RP(const uint8_t& regPair1, const uint8_t& regPair2);
 	void PUSH_RP(const uint8_t& regPair, const Flag& flag);
-	
+
 	void POP_RP(uint8_t& regPair1, uint8_t& regPair2);
 	void POP_RP(uint8_t& regPair1, Flag& flag);
-	
+
 	void LDHL_SP_e();
 	void LD_a16_SP();
 

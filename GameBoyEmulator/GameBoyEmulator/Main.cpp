@@ -1,30 +1,26 @@
 #include <iostream>
 
 #include "GameBoy.h"
-#include "GLFW/include/glfw3.h"
 
 int main(int argc, char* argv[])
 {
 	std::cout << "Nintendo GameBoy Emulator" << std::endl;
 
-	/*
+	string biosPath;
+	string romPath;
+
+	if (true)//Debug
+	{
+		biosPath = "../../Bios_Games/dmg_boot.bin";
+		romPath = "../../Bios_Games/Tetris.GB";
+		argc = 2;
+	}
+
 	if (argc > 1)
 	{
-		string biosPath;
-		string romPath;
-
+		//romPath = argv[1];
 		GameBoy gameBoy;
 
-		if (true)//Debug
-		{
-			biosPath = "../../Bios_Games/dmg_boot.bin";
-			romPath = "../../Bios_Games/Tetris.GB";
-		}
-
-		romPath = argv[1];
-
-		//Open setting file to get bios if enable
-		//If there is bios
 		if (true)
 		{
 			gameBoy.loadBios(biosPath);
@@ -32,7 +28,6 @@ int main(int argc, char* argv[])
 
 		gameBoy.start();
 	}
-	*/
-	
+
 	return 0;
 }

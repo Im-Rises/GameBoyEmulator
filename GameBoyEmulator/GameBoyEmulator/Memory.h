@@ -21,11 +21,14 @@
 #define INTERRUPT_FLAG_IF_ADDRESS 0xFF0F
 #define INTERRUPT_FLAG_IE_ADDRESS 0xFFFF
 
+#define LCD_LY 0xFF44
+
 using namespace std;
 
 class Memory {
 
 private:
+	bool biosInMemory;
 	uint8_t memoryArray[MEMORY_SIZE];
 
 public:
@@ -33,7 +36,8 @@ public:
 	void reset();
 	uint8_t read(const uint16_t index)const;
 	void write(const uint16_t& index, uint8_t value);
-	bool loadInMemory(const string& romPath);
+	bool loadBiosInMemory(const string& biosPath);
+	bool loadRomInMemory(const string& romPath);
 };
 
 #endif
