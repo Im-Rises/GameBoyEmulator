@@ -33,17 +33,6 @@ int main(int argc, char* argv[])
 		gameBoy.start();
 	}
 	*/
-
-
-
-
-
-	if (!glfwInit())
-	{
-		std::cout << "not Working" << std::endl;
-	}
-	GLFWwindow* window = glfwCreateWindow(640, 480, "My Title", NULL, NULL);
-	glfwTerminate();
-
+	
 	return 0;
 }

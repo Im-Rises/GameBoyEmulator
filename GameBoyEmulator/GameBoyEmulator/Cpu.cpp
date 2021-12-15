@@ -65,6 +65,7 @@ void Cpu::start()
 
 		//Check timer
 		incrementTimer();
+		incrementDivider();
 
 		//Put user inputs here in the memory registers
 
@@ -139,6 +140,7 @@ void Cpu::writeUserInput()
 
 void Cpu::incrementTimer()
 {
+	//Check value of TAC to know speed of increment
 	if ((memory->read(TIMER_REGISTER_TAC_ADDRESS) & 0b00000110) > 0)//If timer enable
 	{
 		if ((memory->read(TIMER_REGISTER_TIMA_ADDRESS) + cycles) > 0xFFFF)
@@ -156,7 +158,7 @@ void Cpu::incrementTimer()
 
 void Cpu::incrementDivider()
 {
-	memory->write(DIVIDER_REGISTER_ADDRESS, memory->(readDIVIDER_REGISTER_ADDRESS)+1);
+	memory->write(DIVIDER_REGISTER_ADDRESS, memory->read(DIVIDER_REGISTER_ADDRESS) + cycles);
 }
 
 
@@ -784,7 +786,15 @@ void Cpu::LD_A_aCo()
 
 void Cpu::LD_aCo_A()
 {
-	memory->write((INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + C), A);
+	uint16_t addressMemory = (INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + C);
+	if (DIVIDER_REGISTER_ADDRESS == addressMemory)
+	{
+		memory->write(addressMemory, 0);
+	}
+	else
+	{
+		memory->write(addressMemory, A);
+	}
 	cycles += 2;
 	pc++;
 }
@@ -802,7 +812,15 @@ void Cpu::LD_A_a8o()
 void Cpu::LD_a8o_A()
 {
 	pc++;
-	memory->write(INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + memory->read(pc), A);
+	uint16_t addressToWrite = INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + memory->read(pc);
+	if (addressToWrite == DIVIDER_REGISTER_ADDRESS)
+	{
+		memory->write(addressToWrite, 0);
+	}
+	else
+	{
+		memory->write(addressToWrite, A);
+	}
 	cycles += 3;
 	pc++;
 }

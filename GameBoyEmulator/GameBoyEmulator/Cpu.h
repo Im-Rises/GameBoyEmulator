@@ -122,10 +122,13 @@ private:
 	void LD_RP_d16(uint8_t& reg1, uint8_t& reg2);
 	void LD_RP_d16(uint16_t& regsPair);
 	void LD_SP_HL();
+
 	void PUSH_RP(const uint8_t& regPair1, const uint8_t& regPair2);
 	void PUSH_RP(const uint8_t& regPair, const Flag& flag);
+	
 	void POP_RP(uint8_t& regPair1, uint8_t& regPair2);
 	void POP_RP(uint8_t& regPair1, Flag& flag);
+	
 	void LDHL_SP_e();
 	void LD_a16_SP();
 
