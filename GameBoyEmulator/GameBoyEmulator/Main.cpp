@@ -19,15 +19,13 @@ int main(int argc, char* argv[])
 	if (argc > 1)
 	{
 		//romPath = argv[1];
-		GameBoy gameBoy;
-
+		GameBoy* gameBoy = GameBoy::getInstance();
 		if (true)
 		{
-			gameBoy.loadBios(biosPath);
+			gameBoy->loadBios(biosPath);
 		}
-
-		gameBoy.start();
+		gameBoy->start();
+		//Call destructor ?
 	}
-
 	return 0;
 }

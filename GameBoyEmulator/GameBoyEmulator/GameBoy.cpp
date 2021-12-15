@@ -1,8 +1,25 @@
 #include "GameBoy.h"
 
-GameBoy::GameBoy():cpu(&memory)
+GameBoy::GameBoy() :cpu(&memory)
 {
 
+}
+
+
+GameBoy* GameBoy::getInstance()
+{
+	if (gameboyInstance == 0)
+	{
+		gameboyInstance = new GameBoy();
+	}
+
+	return gameboyInstance;
+}
+
+void GameBoy::reset()
+{
+	cpu.reset();
+	memory.reset();
 }
 
 void GameBoy::loadBios(const string& biosPath)
@@ -12,20 +29,23 @@ void GameBoy::loadBios(const string& biosPath)
 
 void GameBoy::loadGame(const string& gamePath)
 {
-	
+
 }
 
-void GameBoy::start()
+void GameBoy::launch()
 {
-	//Get inputs and send them to CPU
-	//this->setinputes();
+	while (true)
+	{
+		//Get inputs and send them to CPU
+		//this->setinputes();
 
-	//Read one opcode
-	this->cpu.start();
+		//Read one opcode
+		this->cpu.start();
 
-	//Update screen
+		//Update screen
 
-	//If escape button is pressed leave function
+		//If escape button is pressed leave function
+	}
 }
 
 void GameBoy::updateScreen()
@@ -35,8 +55,7 @@ void GameBoy::updateScreen()
 		for (int x = 0; x < DOTS_DISPLAY_X; x++)
 		{
 			//Get memory data
-
-
+			//memory.read
 		}
 	}
 }

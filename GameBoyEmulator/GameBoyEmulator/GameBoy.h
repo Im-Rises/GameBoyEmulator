@@ -16,17 +16,21 @@
 class GameBoy
 {
 private:
-	//static GameBoy* gameboy = nullptr;
+	GameBoy();
+	static GameBoy* gameboyInstance;
 
 	Cpu cpu;
 	Memory memory;
-	
+
 public:
-	GameBoy();
+	static GameBoy* getInstance();
 	void reset();
+
 	void loadBios(const string& biosPath);
 	void loadGame(const string& gamePath);
-	void start();
+
+	void launch();
+
 	void updateScreen();
 };
 
