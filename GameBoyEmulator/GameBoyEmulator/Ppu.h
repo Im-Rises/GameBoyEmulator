@@ -20,8 +20,8 @@ private:
 
 public:
 	Ppu(Memory* memory);
-	void draw(int cycles);
-	void drawLine(int cycles);
+	void draw(const int& cycles);
+	void drawLine(const int& cycles);
 };
 
 #endif

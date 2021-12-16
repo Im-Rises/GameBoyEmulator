@@ -31,7 +31,7 @@ class Memory {
 private:
 	bool biosInMemory;
 	uint8_t memoryArray[MEMORY_SIZE];
-	uint8_t memoryBios[0x100];
+	//uint8_t memoryBios[0x100];
 
 public:
 	Memory();

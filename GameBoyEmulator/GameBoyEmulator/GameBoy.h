@@ -2,11 +2,13 @@
 #define DEF_GAMEBOY
 
 #include <iostream>
+#include <chrono>
 
 #include "Cpu.h"
 #include "Memory.h"
 #include "Ppu.h"
 #include "GLFW/include/glfw3.h"
+//#include "glew/include/GL/glew.h"
 
 #define VER 0.1
 #define AUTHOR "Im-Rises"
@@ -22,6 +24,7 @@ private:
 	static GameBoy* gameboyInstance;
 	GameBoy();
 
+	//bool onOff;					//On off button state (1:ON, 2:OFF)
 	Cpu cpu;
 	Memory memory;
 
@@ -31,11 +34,10 @@ public:
 
 	void loadBios(const string& biosPath);
 	void loadGame(const string& gamePath);
-
 	void launch();
 
-	void readInputs();
-
+private:
+	//bool readInputs(GLFWwindow* window);
 	void updateScreen();
 };
 

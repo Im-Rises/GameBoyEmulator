@@ -34,52 +34,49 @@ void GameBoy::loadGame(const string& gamePath)
 {
 	if (memory.getBiosInMemeory())//If there is a bios
 	{
-		//memory.loadRomInMemoryPartially();
+
 	}
 	else//If there's no bios
 	{
 		memory.loadRomInMemory(gamePath);
-
 		//Set memory and CPU like after bios
 	}
 }
 
 void GameBoy::launch()
 {
-	//if (!glfwInit())
-	//{
-	//	cout << "Initialization failed" << endl;
-	//	exit(1);
-	//}
-	//GLFWwindow* window = glfwCreateWindow(640, 480, PROJECT_NAME, NULL, NULL);
-	//if (!window)
-	//{
-	//	cout << "Window or OpenGL context creation failed" << endl;
-	//}
-	//glfwMakeContextCurrent(window);
-	//gladLoadGL(glfwGetProcAddress);
+	////Wait the number of cycles
+	//std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+	//std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+	//std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl;
+	//std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::nanoseconds> (end - begin).count() << "[ns]" << std::endl;
 
 	while (true)
 	{
 		//Get inputs and send them to CPU
-		readInputs();
 		//this->setinputes();
 
+		//if (readInputs(window))
+		//	onOff = 0;
+
 		//Read one opcode
-		this->cpu.start();
+		this->cpu.doCycle();
 
 		//Update screen
 		updateScreen();
 		//If escape button is pressed leave function
 	}
-
-	glfwTerminate();
 }
 
-void GameBoy::readInputs()
-{
-
-}
+//bool GameBoy::readInputs(GLFWwindow* window)
+//{
+//	int state = glfwGetKey(window, GLFW_KEY_ESCAPE);
+//	if (state == GLFW_PRESS)
+//	{
+//		return true;
+//	}
+//	return false;
+//}
 
 void GameBoy::updateScreen()
 {

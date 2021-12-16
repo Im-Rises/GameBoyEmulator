@@ -1,8 +1,6 @@
 #ifndef DEF_CPU
 #define DEF_CPU
 
-#include <chrono>
-
 #include "Memory.h"
 #include "Ppu.h"
 
@@ -24,7 +22,6 @@ private:
 	bool halted;				//CPU is halted
 	bool stopped;				//CPU is stopped
 	bool resetTerminal;			//CPU terminal state
-	bool onOff;					//On off button state (1:ON, 2:OFF)
 
 	/// <summary>
 	/// 8 bits registers
@@ -56,7 +53,7 @@ private:
 public:
 	Cpu(Memory* memory);								//Constructor without bios
 	void reset();										//Reset Cpu
-	void start();										//Start Cpu
+	void doCycle();										//Start Cpu
 
 private:
 	uint16_t haltSubFunction();					//Halt mode function

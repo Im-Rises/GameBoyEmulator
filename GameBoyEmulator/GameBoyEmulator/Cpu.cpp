@@ -15,23 +15,24 @@ void Cpu::reset()
 	cycles = 0;
 	halted = 0;
 	resetTerminal = 1;
-	onOff = 1;
 	stopped = 0;
 	A = 0;
 	B = C = D = E = H = L = 0;
 	F.Z = F.N = F.H = F.CY = 0;
 }
 
-void Cpu::start()
+void Cpu::doCycle()
 {
-	if (true)//DEBUG
+	if (true)
 	{
-		if (pc == 0xE9)
-			cout << "Arret pc = " << hex << pc << endl;
+		if (pc == 0x00E9)
+			cout << "Security block game" << endl;
 	}
 
 	//Draw a line with the PPU
 	ppu.draw(cycles);
+
+	cycles = 0;
 
 	//Check timer
 	incrementTimer();
@@ -39,14 +40,6 @@ void Cpu::start()
 
 	//Put user inputs here in the memory registers
 	writeUserInput();
-
-	//Wait the number of cycles
-	//std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-	//std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-	//std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl;
-	//std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::nanoseconds> (end - begin).count() << "[ns]" << std::endl;
-	cycles = 0;
-
 
 	if (!halted && !stopped)//If CPU is not in halt mode neither stop mode
 	{
