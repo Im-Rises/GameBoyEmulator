@@ -27,5 +27,6 @@ int main(int argc, char* argv[])
 		gameBoy->loadGame(romPath);
 		gameBoy->launch();
 	}
+
 	return 0;
 }

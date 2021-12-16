@@ -12,6 +12,7 @@ Cpu::Cpu(Memory* memory) :ppu(memory)
 
 void Cpu::reset()
 {
+	timeCycle = 1/FREQUENCY_NORMAL_MODE;
 	cycles = 0;
 	halted = 0;
 	resetTerminal = 1;
@@ -21,7 +22,7 @@ void Cpu::reset()
 	F.Z = F.N = F.H = F.CY = 0;
 }
 
-void Cpu::doCycle()
+int Cpu::doCycle()
 {
 	if (true)
 	{
@@ -72,6 +73,8 @@ void Cpu::doCycle()
 	{
 		reset();
 	}
+
+	return cycles;
 }
 
 uint16_t Cpu::haltSubFunction()
@@ -693,7 +696,10 @@ Cpu::Flag Cpu::byteToFlag(const uint8_t& byte)const
 	return temp;
 }
 
-
+double Cpu::getTimeCycle()
+{
+	return timeCycle;
+}
 
 
 

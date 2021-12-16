@@ -1,13 +1,12 @@
 #ifndef DEF_CPU
 #define DEF_CPU
 
+#include <iostream>
 #include "Memory.h"
 #include "Ppu.h"
 
-#define FREQUENCY_NORMAL_MODE 1.05
+#define FREQUENCY_NORMAL_MODE 1050000 //In Hz (1.05 MHz)
 #define FREQUENCY_DOUBLE_SPEED_MODE 2*FREQUENCY_NORMAL_MODE 
-
-#include <iostream>
 
 using namespace std;
 
@@ -15,6 +14,7 @@ class Cpu {
 
 private:
 	int cycles;					//Cycles to do (increasse after each instructions)
+	double timeCycle;			//Time of a cycle in 
 
 	/// <summary>
 	/// CPU mode
@@ -53,7 +53,8 @@ private:
 public:
 	Cpu(Memory* memory);								//Constructor without bios
 	void reset();										//Reset Cpu
-	void doCycle();										//Start Cpu
+	int doCycle();										//Start Cpu
+	double getTimeCycle();
 
 private:
 	uint16_t haltSubFunction();					//Halt mode function
@@ -90,7 +91,6 @@ private:
 	/// - aR the value pointed in the memory by the register
 	/// - RI means incrementation of the register
 	/// - RD means decrementation of the register
-
 	/// </summary>
 
 

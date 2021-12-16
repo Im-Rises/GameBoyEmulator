@@ -2,7 +2,6 @@
 #define DEF_LCD 
 
 #include <iostream>
-
 #include "Memory.h"
 
 #define DOTS_NUMBER_X 256

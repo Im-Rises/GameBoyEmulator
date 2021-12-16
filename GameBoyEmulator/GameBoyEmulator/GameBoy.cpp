@@ -45,38 +45,55 @@ void GameBoy::loadGame(const string& gamePath)
 
 void GameBoy::launch()
 {
-	////Wait the number of cycles
-	//std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-	//std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-	//std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl;
-	//std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::nanoseconds> (end - begin).count() << "[ns]" << std::endl;
-
-	while (true)
+	if (!glfwInit())//Init GLFW
 	{
+		cout << "Initialization failed" << endl;
+		exit(1);
+	}
+	glfwSetErrorCallback(error_callback);//Set callback function
+	GLFWwindow* window = glfwCreateWindow(640, 480, PROJECT_NAME, NULL, NULL);//Create a window
+	if (!window)
+	{
+		cout << "Window or OpenGL context creation failed" << endl;
+		exit(1);
+	}
+	glfwMakeContextCurrent(window);//Make wndow current context
+	glfwSetKeyCallback(window, key_callback);//Set inputs Callback
+
+	//gladLoadGL(glfwGetProcAddress);//Init openGL with Glad
+	//int width, height;
+	//glfwGetFramebufferSize(window, &width, &height);
+	//glViewport(0, 0, width, height);
+
+	int cycles = 0;
+	chrono::steady_clock::time_point begin = chrono::steady_clock::now();
+	chrono::steady_clock::time_point end = chrono::steady_clock::now();
+	//cout << "Time difference = " << chrono::duration_cast<chrono::nanoseconds> (end - begin).count() << "[ns]" << endl;
+	double test = cpu.getTimeCycle() * cycles;
+	while (!glfwWindowShouldClose(window))//While window not closed
+	{
+		begin = chrono::steady_clock::now();
+		//while ((cpu.getTimeCycle() * cycles) >= (end - begin).count())
+		//{ }
+
+		//Read one opcode
+		cycles = cpu.doCycle();
+
 		//Get inputs and send them to CPU
 		//this->setinputes();
 
 		//if (readInputs(window))
-		//	onOff = 0;
-
-		//Read one opcode
-		this->cpu.doCycle();
 
 		//Update screen
-		updateScreen();
+		//updateScreen();
 		//If escape button is pressed leave function
-	}
-}
 
-//bool GameBoy::readInputs(GLFWwindow* window)
-//{
-//	int state = glfwGetKey(window, GLFW_KEY_ESCAPE);
-//	if (state == GLFW_PRESS)
-//	{
-//		return true;
-//	}
-//	return false;
-//}
+		glfwPollEvents();//Get evenements
+		end = chrono::steady_clock::now();
+	}
+	glfwDestroyWindow(window);//Destroy window and context
+	glfwTerminate();//Terminate GLFW
+}
 
 void GameBoy::updateScreen()
 {
@@ -88,4 +105,17 @@ void GameBoy::updateScreen()
 			//memory.read
 		}
 	}
+}
+
+/*------------------------------------------GLFW FUNCTIONS--------------------------------*/
+
+void GameBoy::error_callback(int error, const char* description)
+{
+	fprintf(stderr, "Error: %s\n", description);
+}
+
+void GameBoy::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
