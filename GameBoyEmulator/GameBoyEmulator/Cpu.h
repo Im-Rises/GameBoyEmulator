@@ -54,6 +54,7 @@ public:
 	Cpu(Memory* memory);								//Constructor without bios
 	void reset();										//Reset Cpu
 	int doCycle();										//Start Cpu
+	void writeInputs(const uint8_t& inputs);
 	double getTimeCycle();
 
 private:

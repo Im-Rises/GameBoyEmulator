@@ -77,6 +77,16 @@ int Cpu::doCycle()
 	return cycles;
 }
 
+void Cpu::writeInputs(const uint8_t& inputs)
+{
+	memory->write(CONTROLLER_DATA_ADDRESS, inputs);
+}
+
+double Cpu::getTimeCycle()
+{
+	return timeCycle;
+}
+
 uint16_t Cpu::haltSubFunction()
 {
 	IME = 0;
@@ -696,10 +706,7 @@ Cpu::Flag Cpu::byteToFlag(const uint8_t& byte)const
 	return temp;
 }
 
-double Cpu::getTimeCycle()
-{
-	return timeCycle;
-}
+
 
 
 

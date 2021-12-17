@@ -1,6 +1,8 @@
 #include "GameBoy.h"
 
 GameBoy* GameBoy::gameboyInstance = 0;
+uint8_t GameBoy::inputs = 0b00111111;
+bool GameBoy::pause=false;
 
 GameBoy::GameBoy() :cpu(&memory)
 {
@@ -51,7 +53,7 @@ void GameBoy::launch()
 		exit(1);
 	}
 	glfwSetErrorCallback(error_callback);//Set callback function
-	GLFWwindow* window = glfwCreateWindow(640, 480, PROJECT_NAME, NULL, NULL);//Create a window
+	GLFWwindow* window = glfwCreateWindow(EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y, PROJECT_NAME, NULL, NULL);//Create a window
 	if (!window)
 	{
 		cout << "Window or OpenGL context creation failed" << endl;
@@ -59,11 +61,6 @@ void GameBoy::launch()
 	}
 	glfwMakeContextCurrent(window);//Make wndow current context
 	glfwSetKeyCallback(window, key_callback);//Set inputs Callback
-
-	//gladLoadGL(glfwGetProcAddress);//Init openGL with Glad
-	//int width, height;
-	//glfwGetFramebufferSize(window, &width, &height);
-	//glViewport(0, 0, width, height);
 
 	int cycles = 0;
 	chrono::steady_clock::time_point begin = chrono::steady_clock::now();
@@ -74,19 +71,18 @@ void GameBoy::launch()
 	{
 		begin = chrono::steady_clock::now();
 		//while ((cpu.getTimeCycle() * cycles) >= (end - begin).count())
-		//{ }
+		//{ 
+		// glfwPollEvents();//Get evenements
+		//}
+
+		//Write inputs to cpu that write it to memory
+		cpu.writeInputs(inputs);
 
 		//Read one opcode
 		cycles = cpu.doCycle();
 
-		//Get inputs and send them to CPU
-		//this->setinputes();
-
-		//if (readInputs(window))
-
 		//Update screen
 		//updateScreen();
-		//If escape button is pressed leave function
 
 		glfwPollEvents();//Get evenements
 		end = chrono::steady_clock::now();
@@ -116,6 +112,36 @@ void GameBoy::error_callback(int error, const char* description)
 
 void GameBoy::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+	//Emulator controls
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
+	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+		pause != pause;
+
+	//Game Boy controls
+	//0: Low signal (button pressed)
+	//1: High signal (button not pressed)
+	inputs = 0b00000000;
+
+	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)//Right
+		inputs |= 0b00010001;
+	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)//Left
+		inputs |= 0b00010010;
+	if (key == GLFW_KEY_UP && action == GLFW_PRESS)//Up
+		inputs |= 0b00010100;
+	if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)//Down
+		inputs |= 0b00011000;
+	if (key == GLFW_KEY_A && action == GLFW_PRESS)//A
+		inputs |= 0b00100001;
+	if (key == GLFW_KEY_B && action == GLFW_PRESS)//B
+		inputs |= 0b00100010;
+	if (key == GLFW_KEY_SEMICOLON && action == GLFW_PRESS)//Select
+		inputs |= 0b00100100;
+	if (key == GLFW_KEY_SLASH && action == GLFW_PRESS)//Start
+		inputs |= 0b00101000;
+
+	inputs = ~inputs;
 }
+
+
+/*-----------------------------------------OPENGL FUNCTIONS----------------------------------------------*/
