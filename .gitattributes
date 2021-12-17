@@ -1,3 +1,2 @@
 # Ignore library files's language for github display
-GameBoyEmulator/GameBoyEmulator/GLFW/include/* linguist-vendored  
-GameBoyEmulator/GameBoyEmulator/glew/include/GL/* linguist-vendored  
+GameBoyEmulator/GameBoyEmulator/GLFW/include/* linguist-vendored
