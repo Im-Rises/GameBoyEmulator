@@ -8,7 +8,7 @@
 #include "Memory.h"
 #include "Ppu.h"
 
-//#include "glew/include/GL/glew.h"
+#include "glew/include/GL/glew.h"
 #include "GLFW/include/glfw3.h"
 
 #define VER 0.1

@@ -47,6 +47,9 @@ void GameBoy::loadGame(const string& gamePath)
 
 void GameBoy::launch()
 {
+	/// <summary>
+	/// GLFW initialisation
+	/// </summary>
 	if (!glfwInit())//Init GLFW
 	{
 		cout << "Initialization failed" << endl;
@@ -59,9 +62,23 @@ void GameBoy::launch()
 		cout << "Window or OpenGL context creation failed" << endl;
 		exit(1);
 	}
-	glfwMakeContextCurrent(window);//Make wndow current context
+	glfwMakeContextCurrent(window);//Make window current context
 	glfwSetKeyCallback(window, key_callback);//Set inputs Callback
 
+	/// <summary>
+	/// OpenGL initialisation
+	/// </summary>
+
+	glfwWindowHint(GLFW_SAMPLES, 4); // 4x antialiasing
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // We want OpenGL 3.3
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // We don't want the old OpenGL 
+
+
+	/// <summary>
+	/// Cycles
+	/// </summary>
 	int cycles = 0;
 	chrono::steady_clock::time_point begin = chrono::steady_clock::now();
 	chrono::steady_clock::time_point end = chrono::steady_clock::now();
