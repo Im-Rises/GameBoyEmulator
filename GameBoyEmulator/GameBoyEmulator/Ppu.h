@@ -34,8 +34,10 @@ public:
 	void drawLine(const int& cycles);
 
 	void drawBackground();
-	void darwWindows();
+	void drawWindows();
 	void drawSprites();
+
+	void drawCharacScreen(int x, int y, uint16_t dataCharacAddress);
 
 	uint8_t getDot(int indexX, int indexY);
 

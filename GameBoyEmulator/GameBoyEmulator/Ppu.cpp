@@ -22,7 +22,7 @@ void Ppu::draw(const int& cycles)
 void Ppu::drawLine(const int& cycles)
 {
 	/// <summary>
-	/// Function that simulate the drawing of a line (in pixel not block) each cycle of the CPU
+	/// Function that simulate the drawing of a line each cycle of the CPU (in pixel not block) 
 	/// </summary>
 	/// <param name="cycles"></param>
 	if ((memory->read(LCDC_ADDRESS) >> 7) == 1)
@@ -60,28 +60,55 @@ void Ppu::drawBackground()
 	{
 		for (int i = 0; i < DOTS_DISPLAY_X; i++)
 		{
-			memory->read(bGCodeAreaSelection + (i + scx) + ((j + scy) * BLOCKS_MEMORY_X));//Get character code (p55)
+			//Calcul the dots to get
+			uint8_t offsetX = (i + scx / 8);
+			uint8_t offsetY = ((j + scy / 8) * BLOCKS_MEMORY_X);
 
 			//If scx and scy are hight and the selection screen is out take the first values
-			//if (scx+)
+			if (offsetX >= BLOCKS_MEMORY_X)
+				offsetX -= BLOCKS_MEMORY_X;
+			if (offsetY >= BLOCKS_MEMORY_Y)
+				offsetY -= BLOCKS_MEMORY_Y;
+
+			//Get character code address
+			uint8_t chrCode = memory->read(bGCodeAreaSelection + offsetX + offsetY);//X00, X01, X02, X03 etc...
 
 			//Use character code to find character data to write on screen
-			//memory->read(bgCharacterDataSelection+characterCode);
+			uint16_t dataCharacAddress = bgCharacterDataSelection + chrCode * 0x10;//Address of first 8 bits of character data
 
-			//Write character to screen
-			//lcdScreen
+			//Write character to screen (RESUME HERE)
+			drawCharacScreen(i * 8, j * 8, dataCharacAddress);
 		}
 	}
 }
 
-void darwWindows();
+void drawWindows();
 void drawSprites();
+
+
+
+void Ppu::drawCharacScreen(int x, int y, uint16_t dataCharacAddress)
+{
+	for (int j = 0; j < 16; j++)
+	{
+		uint8_t characLine = memory->read(dataCharacAddress + j);//Line data of charac read
+		for (int i = 0; i < 8; i++)
+		{
+			//Draw line of charac on screen depending on line 1 and 2 we get color
+			//Line 1
+			//j++
+			//Line 2
+			//Deduct pixel color with line 1 and line 2
+		}
+	}
+}
 
 uint8_t Ppu::getDot(int indexX, int indexY)
 {
 	//if (memory->read(LCDC_ADDRESS))
 	//{
 	//}
+	return 0;
 }
 
 bool Ppu::testBit(int value, int bitNumber)
