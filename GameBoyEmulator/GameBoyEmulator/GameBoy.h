@@ -39,6 +39,9 @@ private:
 	//bool onOff;					//On off button state (1:ON, 2:OFF)
 	Cpu cpu;
 	Memory memory;
+
+	int tempScreen[SCREEN_RESOLUTION_X][SCREEN_RESOLUTION_Y];//Screen to debug
+
 	static bool pause;				//Emulator in pause
 	static uint8_t inputs;			//Game Boy inputs (Buttons)
 

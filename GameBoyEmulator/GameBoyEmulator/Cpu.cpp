@@ -27,7 +27,7 @@ int Cpu::doCycle()
 	if (true)
 	{
 		if (pc == 0x00E9)
-			cout << "Security block game" << endl;
+			cerr << "Security block game" << endl;
 	}
 
 	//Draw a line with the PPU
@@ -63,7 +63,7 @@ int Cpu::doCycle()
 	}
 	else//If stop mode is enable
 	{
-		cout << "STOP MODE ENABLED. WAITING FOR USER INPUT." << endl;
+		cerr << "STOP MODE ENABLED. WAITING FOR USER INPUT." << endl;
 		stopped = !((memory->read(CONTROLLER_DATA_ADDRESS) & 0b00001111) < 15);//If low signal on P10, P11, P12 or P13 the stopped mode is disable
 		if (!stopped)
 			cycles += 217;
@@ -407,7 +407,7 @@ void Cpu::executeOpcode(uint8_t opcode)
 	case(0xFB): {EI(); break; }
 	case(0xFE): {CP_A_d8(); break; }
 	case(0xFF): {RST(); break; }
-	default: {cout << "Error opcode 0x" << opcode << " unknown at pc = 0x" << hex << pc << endl; exit(1); break; }
+	default: {cerr << "Error opcode 0x" << opcode << " unknown at pc = 0x" << hex << pc << endl; exit(1); break; }
 	}
 }
 
@@ -671,7 +671,7 @@ void Cpu::executeOpcodeFollowingCB()
 	case(0xFD): {SET_b_R(7, L); break; }
 	case(0xFE): {SET_b_aHL(7); break; }
 	case(0xFF): {SET_b_R(7, A);  break; }
-	default: {cout << "Error opcode after CB unknown" << endl; break; }
+	default: {cerr << "Error opcode after CB unknown" << endl; break; }
 	}
 }
 
@@ -949,7 +949,7 @@ void Cpu::POP_RP(uint8_t& regPair1, Flag& flagPair)
 
 void Cpu::LDHL_SP_e()
 {
-	cout << "LDHL OPCODE MAY CAUSE ISSUE" << endl;
+	cerr << "LDHL OPCODE MAY CAUSE ISSUE" << endl;
 	pc++;
 	int8_t e = memory->read(pc);
 
@@ -1338,7 +1338,7 @@ void Cpu::ADD_HL_RP(const uint8_t& regPair1, const uint8_t& regPair2)
 
 void Cpu::ADD_SP_e()
 {
-	cout << "Program may bug here, thanks to opcode ADD_SP_e" << endl;
+	cerr << "Program may bug here, thanks to opcode ADD_SP_e" << endl;
 
 	pc++;
 	int8_t e = memory->read(pc);
@@ -2080,7 +2080,7 @@ void Cpu::RST()
 
 void Cpu::DAA()
 {
-	cout << "May bug now, because of opcode DAA" << endl;
+	cerr << "May bug now, because of opcode DAA" << endl;
 	cycles += 1;
 
 	if (!F.N)//If previsous opcode is one of the ADD opcodes

@@ -16,11 +16,20 @@ class Ppu
 {
 private:
 	Memory* memory = nullptr;
+	uint8_t lcdScreen[DOTS_DISPLAY_X][DOTS_DISPLAY_Y];
 
 public:
 	Ppu(Memory* memory);
 	void draw(const int& cycles);
 	void drawLine(const int& cycles);
+
+	void drawBackground();
+	void darwWindows();
+	void drawSprites();
+
+	uint8_t getBlock(int indexX, int indexY);
+
+	bool testBit(int value, int bitNumber);
 };
 
 #endif

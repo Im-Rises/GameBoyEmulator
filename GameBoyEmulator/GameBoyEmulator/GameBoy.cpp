@@ -52,14 +52,14 @@ void GameBoy::launch()
 	/// </summary>
 	if (!glfwInit())//Init GLFW
 	{
-		cout << "Initialization failed" << endl;
+		cerr << "Initialization failed" << endl;
 		exit(1);
 	}
 	glfwSetErrorCallback(error_callback);//Set callback function
 	GLFWwindow* window = glfwCreateWindow(EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y, PROJECT_NAME, NULL, NULL);//Create a window
 	if (!window)
 	{
-		cout << "Window or OpenGL context creation failed" << endl;
+		cerr << "Window or OpenGL context creation failed" << endl;
 		exit(1);
 	}
 	glfwMakeContextCurrent(window);//Make window current context
@@ -75,7 +75,7 @@ void GameBoy::launch()
 
 	glewExperimental = true; // Needed in core profile
 	if (glewInit() != GLEW_OK) {
-		fprintf(stderr, "Failed to initialize GLEW\n");
+		cerr << "Failed to initialize GLEW" << endl;
 		exit(1);
 	}
 
@@ -86,7 +86,7 @@ void GameBoy::launch()
 	int cycles = 0;
 	chrono::steady_clock::time_point begin = chrono::steady_clock::now();
 	chrono::steady_clock::time_point end = chrono::steady_clock::now();
-	//cout << "Time difference = " << chrono::duration_cast<chrono::nanoseconds> (end - begin).count() << "[ns]" << endl;
+	//cerr << "Time difference = " << chrono::duration_cast<chrono::nanoseconds> (end - begin).count() << "[ns]" << endl;
 	double test = cpu.getTimeCycle() * cycles;
 	while (!glfwWindowShouldClose(window))//While window not closed
 	{
@@ -128,7 +128,7 @@ void GameBoy::updateScreen()
 
 void GameBoy::error_callback(int error, const char* description)
 {
-	fprintf(stderr, "Error: %s\n", description);
+	cerr << "Error: " << description << "\n" << endl;
 }
 
 void GameBoy::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
