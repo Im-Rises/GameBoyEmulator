@@ -12,6 +12,16 @@
 
 #define VERTICAL_BLANKING_LINES_NUMBER 154
 
+#define BLOCKS_DISPLAY_X 20
+#define BLOCKS_DISPLAY_Y 18
+
+#define BLOCKS_MEMORY_X 32
+#define BLOCKS_MEMORY_Y 32
+
+struct Block {
+
+};
+
 class Ppu
 {
 private:
@@ -27,7 +37,7 @@ public:
 	void darwWindows();
 	void drawSprites();
 
-	uint8_t getBlock(int indexX, int indexY);
+	uint8_t getDot(int indexX, int indexY);
 
 	bool testBit(int value, int bitNumber);
 };
