@@ -13,39 +13,31 @@ Ppu::Ppu(Memory* memory)
 	}
 }
 
-//void Ppu::draw(const int& cycles)//Working
-//{
-//	drawLine(cycles);
-//	//drawBackground();
-//	cout << hex<<(int)memory->read(LY_ADDRESS) << endl;
-//}
-
 void Ppu::draw(const int& cycles)//Not working
 {
 	for (int i = 0; i < cycles; i++)
 	{
-		drawLine(1);
-		//rawBackground();
+		drawLine();
+		drawBackgroundLine();
 	}
-	cout << hex<<(int)memory->read(LY_ADDRESS) << endl;
-}
-
-void Ppu::drawLine(const int& cycles)
-{
-	/// <summary>
-	/// Function that simulate the drawing of a line each cycle of the CPU (in pixel not block) 
-	/// </summary>
-	/// <param name="cycles"></param>
-	if ((memory->read(LCDC_ADDRESS) >> 7) == 1)
-		memory->write(LY_ADDRESS, (memory->read(LY_ADDRESS) + cycles));
-	else
-		memory->write(LY_ADDRESS, 0);
 
 	if (memory->read(LY_ADDRESS) >= VERTICAL_BLANKING_LINES_NUMBER)
 		memory->write(LY_ADDRESS, 0);
 }
 
-void Ppu::drawBackground()
+void Ppu::drawLine()
+{
+	/// <summary>
+	/// Function that simulate the drawing of a line each cycle of the CPU (in pixel not block) 
+	/// </summary>
+
+	if (testBit(memory->read(LCDC_ADDRESS), 7))
+		memory->increment(LY_ADDRESS);
+	else
+		memory->write(LY_ADDRESS, 0);
+}
+
+void Ppu::drawBackgroundLine()
 {
 	//bool bank = memory->read(VBK_ADDRESS);//In DGB always zero
 
@@ -92,8 +84,11 @@ void Ppu::drawBackground()
 
 	for (int i = 0; i < DOTS_DISPLAY_X; i++)
 	{
-		//lcdScreen[i][memory->read(LY_ADDRESS)] = pixelValue;
+		lcdScreen[i][memory->read(LY_ADDRESS)] = pixelValue;
 	}
+
+	//RESUME HERE
+
 
 	/*
 	//Read all blocks code

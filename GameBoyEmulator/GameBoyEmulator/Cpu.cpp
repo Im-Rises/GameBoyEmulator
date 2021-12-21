@@ -12,7 +12,7 @@ Cpu::Cpu(Memory* memory) :ppu(memory)
 
 void Cpu::reset()
 {
-	timeCycle = 1/FREQUENCY_NORMAL_MODE;
+	timeCycle = 1 / FREQUENCY_NORMAL_MODE;
 	cycles = 0;
 	halted = 0;
 	resetTerminal = 1;
@@ -26,15 +26,13 @@ int Cpu::doCycle()
 {
 	if (true)
 	{
-		if (pc == 0x0064)
-			cerr << "Block at LY incrementation wait" << endl;
 		if (pc == 0x00E9)
 			cerr << "Security block game" << endl;
 	}
 
+
 	//Draw a line with the PPU
 	ppu.draw(cycles);
-
 	cycles = 0;
 
 	//Check timer
@@ -75,7 +73,6 @@ int Cpu::doCycle()
 	{
 		reset();
 	}
-
 	return cycles;
 }
 
@@ -1257,7 +1254,7 @@ void Cpu::CP_A_aHL()
 
 
 void Cpu::CP_subFunctionFlag(const uint8_t& reg)
-{
+{	
 	F.Z = (A == reg);
 	F.H = (A & 0xF) < (reg & 0xF);
 	F.CY = (A < reg);

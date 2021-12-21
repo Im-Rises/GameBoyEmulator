@@ -31,9 +31,9 @@ private:
 public:
 	Ppu(Memory* memory);
 	void draw(const int& cycles);
-	void drawLine(const int& cycles);
+	void drawLine();
 
-	void drawBackground();
+	void drawBackgroundLine();
 	void drawWindows();
 	void drawSprites();
 
