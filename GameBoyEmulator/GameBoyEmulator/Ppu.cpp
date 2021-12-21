@@ -13,10 +13,21 @@ Ppu::Ppu(Memory* memory)
 	}
 }
 
-void Ppu::draw(const int& cycles)
+//void Ppu::draw(const int& cycles)//Working
+//{
+//	drawLine(cycles);
+//	//drawBackground();
+//	cout << hex<<(int)memory->read(LY_ADDRESS) << endl;
+//}
+
+void Ppu::draw(const int& cycles)//Not working
 {
-	drawLine(cycles);
-	drawBackground();
+	for (int i = 0; i < cycles; i++)
+	{
+		drawLine(1);
+		//rawBackground();
+	}
+	cout << hex<<(int)memory->read(LY_ADDRESS) << endl;
 }
 
 void Ppu::drawLine(const int& cycles)
@@ -26,7 +37,7 @@ void Ppu::drawLine(const int& cycles)
 	/// </summary>
 	/// <param name="cycles"></param>
 	if ((memory->read(LCDC_ADDRESS) >> 7) == 1)
-		memory->write(LY_ADDRESS, memory->read(LY_ADDRESS) + cycles);
+		memory->write(LY_ADDRESS, (memory->read(LY_ADDRESS) + cycles));
 	else
 		memory->write(LY_ADDRESS, 0);
 
@@ -42,6 +53,10 @@ void Ppu::drawBackground()
 	uint8_t stat = memory->read(STAT_ADDRESS);
 	uint8_t scx = memory->read(SCX_ADDRESS);
 	uint8_t scy = memory->read(SCY_ADDRESS);
+	uint8_t wx = memory->read(WX_ADDRESS);
+	uint8_t wy = memory->read(WY_ADDRESS);
+
+	bool windowing = testBit(lcdc, 5);
 
 	uint16_t bGCodeAreaSelection;
 	if (!testBit(lcdc, 3))
@@ -49,16 +64,42 @@ void Ppu::drawBackground()
 	else
 		bGCodeAreaSelection = BG_DISPLAY_DATA_2;//Bit 3 equals 1
 
+
 	uint16_t bgCharacterDataSelection;
 	if (!testBit(lcdc, 4))
 		bgCharacterDataSelection = BG_CHARACTER_DATA_SELECTION_0;//Bit 4 equals 0
 	else
 		bgCharacterDataSelection = BG_CHARACTER_DATA_SELECTION_1;//Bit 4 equals 1
 
+	uint16_t windowCodeAreaSelection;
+	if (!testBit(lcdc, 6))
+		windowCodeAreaSelection = WINDOW_CODE_AREA_SELECTION_0;
+	else
+		windowCodeAreaSelection = WINDOW_CODE_AREA_SELECTION_1;
+
+
+	uint16_t codeAreaSelection;
+
+	if (windowing)
+	{
+		codeAreaSelection = windowCodeAreaSelection;
+	}
+	else
+	{
+		codeAreaSelection = bGCodeAreaSelection;
+	}
+
+
+	for (int i = 0; i < DOTS_DISPLAY_X; i++)
+	{
+		//lcdScreen[i][memory->read(LY_ADDRESS)] = pixelValue;
+	}
+
+	/*
 	//Read all blocks code
 	for (int j = 0; j < BLOCKS_DISPLAY_Y; j++)
 	{
-		for (int i = 0; i < DOTS_DISPLAY_X; i++)
+		for (int i = 0; i < BLOCKS_DISPLAY_X; i++)
 		{
 			//Calcul the dots to get
 			uint8_t offsetX = (i + scx / 8);
@@ -80,6 +121,7 @@ void Ppu::drawBackground()
 			drawCharacScreen(i * 8, j * 8, dataCharacAddress);
 		}
 	}
+	*/
 }
 
 void drawWindows();
@@ -87,21 +129,20 @@ void drawSprites();
 
 
 
-void Ppu::drawCharacScreen(int x, int y, uint16_t dataCharacAddress)
-{
-	for (int j = 0; j < 16; j++)
-	{
-		uint8_t characLine = memory->read(dataCharacAddress + j);//Line data of charac read
-		for (int i = 0; i < 8; i++)
-		{
-			//Draw line of charac on screen depending on line 1 and 2 we get color
-			//Line 1
-			//j++
-			//Line 2
-			//Deduct pixel color with line 1 and line 2
-		}
-	}
-}
+//void Ppu::drawCharacScreen(int x, int y, uint16_t dataCharacAddress)
+//{
+//	for (int j = 0; j < 16; j += 2)
+//	{
+//		//Draw line of charac on screen depending on line 1 and 2 we get color
+//		uint8_t line1 = memory->read(dataCharacAddress + j);
+//		uint8_t line2 = memory->read(dataCharacAddress + j + 1);
+//
+//		for (int i = 0; i < 8; i++)
+//		{
+//			lcdScreen[i][j] = ((line1 >> i) & 0x1) + ((line2 >> i) & 0x1);
+//		}
+//	}
+//}
 
 uint8_t Ppu::getDot(int indexX, int indexY)
 {

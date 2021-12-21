@@ -79,24 +79,27 @@ void GameBoy::launch()
 		exit(1);
 	}
 
+	GLuint VertexArrayID;
+	glGenVertexArrays(1, &VertexArrayID);
+	glBindVertexArray(VertexArrayID);
 
 	/// <summary>
 	/// Cycles
 	/// </summary>
 	int cycles = 0;
-	chrono::steady_clock::time_point begin = chrono::steady_clock::now();
-	chrono::steady_clock::time_point end = chrono::steady_clock::now();
+	//chrono::steady_clock::time_point begin = chrono::steady_clock::now();
+	//chrono::steady_clock::time_point end = chrono::steady_clock::now();
 	//cerr << "Time difference = " << chrono::duration_cast<chrono::nanoseconds> (end - begin).count() << "[ns]" << endl;
-	double test = cpu.getTimeCycle() * cycles;
+	//double test = cpu.getTimeCycle() * cycles;
 	while (!glfwWindowShouldClose(window))//While window not closed
 	{
-		begin = chrono::steady_clock::now();
+		//begin = chrono::steady_clock::now();
 		//while ((cpu.getTimeCycle() * cycles) >= (end - begin).count())
 		//{ 
 		// glfwPollEvents();//Get evenements
 		//}
 
-		//Write inputs to cpu that write it to memory
+		//Write inputs to cpu that writes it to memory
 		cpu.writeInputs(inputs);
 
 		//Read one opcode
@@ -105,8 +108,9 @@ void GameBoy::launch()
 		//Update screen
 		//updateScreen();
 
+		//glClear(GL_COLOR_BUFFER_BIT);
 		glfwPollEvents();//Get evenements
-		end = chrono::steady_clock::now();
+		//end = chrono::steady_clock::now();
 	}
 	glfwDestroyWindow(window);//Destroy window and context
 	glfwTerminate();//Terminate GLFW

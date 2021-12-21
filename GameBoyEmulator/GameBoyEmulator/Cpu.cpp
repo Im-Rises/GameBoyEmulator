@@ -26,6 +26,8 @@ int Cpu::doCycle()
 {
 	if (true)
 	{
+		if (pc == 0x0064)
+			cerr << "Block at LY incrementation wait" << endl;
 		if (pc == 0x00E9)
 			cerr << "Security block game" << endl;
 	}

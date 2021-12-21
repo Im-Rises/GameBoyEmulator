@@ -42,6 +42,12 @@
 
 #define DOTS_NUMBER 1024
 
+#define WINDOW_CODE_AREA_SELECTION_0 0x9800
+#define WINDOW_CODE_AREA_SELECTION_1 0X9C00
+
+#define WX_ADDRESS 0xFF4A
+#define WY_ADDRESS 0xFF4B
+
 using namespace std;
 
 class Memory {
