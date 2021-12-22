@@ -55,7 +55,7 @@ void GameBoy::launch()
 		cerr << "Initialization failed" << endl;
 		exit(1);
 	}
-	glfwSetErrorCallback(error_callback);//Set callback function
+	glfwSetErrorCallback(error_callback);//Set callback error function
 	GLFWwindow* window = glfwCreateWindow(EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y, PROJECT_NAME, NULL, NULL);//Create a window
 	if (!window)
 	{
@@ -63,6 +63,7 @@ void GameBoy::launch()
 		exit(1);
 	}
 	glfwMakeContextCurrent(window);//Make window current context
+
 	glfwSetKeyCallback(window, key_callback);//Set inputs Callback
 
 	/// <summary>
@@ -79,13 +80,7 @@ void GameBoy::launch()
 		exit(1);
 	}
 
-	GLuint VertexArrayID;
-	glGenVertexArrays(1, &VertexArrayID);
-	glBindVertexArray(VertexArrayID);
 
-	/// <summary>
-	/// Cycles
-	/// </summary>
 	int cycles = 0;
 	//chrono::steady_clock::time_point begin = chrono::steady_clock::now();
 	//chrono::steady_clock::time_point end = chrono::steady_clock::now();
@@ -108,8 +103,9 @@ void GameBoy::launch()
 		//Update screen
 		updateScreen();
 
-		//glClear(GL_COLOR_BUFFER_BIT);
-		glfwPollEvents();//Get evenements
+		//Get evenements
+		glfwPollEvents();		
+		
 		//end = chrono::steady_clock::now();
 	}
 	glfwDestroyWindow(window);//Destroy window and context
