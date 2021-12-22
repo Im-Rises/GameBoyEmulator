@@ -1,8 +1,9 @@
 #include "Cpu.h"
 
-Cpu::Cpu(Memory* memory) :ppu(memory)
+Cpu::Cpu(Memory* memory, Ppu* ppu)
 {
 	this->memory = memory;
+	this->ppu = ppu;
 	reset();
 	//pc = ROM_DATA_AREA;
 	pc = 0;
@@ -32,7 +33,7 @@ int Cpu::doCycle()
 
 
 	//Draw a line with the PPU
-	ppu.draw(cycles);
+	ppu->draw(cycles);
 	cycles = 0;
 
 	//Check timer

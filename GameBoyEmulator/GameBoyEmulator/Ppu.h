@@ -31,17 +31,17 @@ private:
 public:
 	Ppu(Memory* memory);
 	void draw(const int& cycles);
-	void drawLine();
+	uint8_t getLcdScreenPixel(int indexX, int indexY);
 
+private:
+	void drawLine();
 	void drawBackgroundLine();
-	void drawWindows();
 	void drawSprites();
 
 	void drawCharacScreen(int x, int y, uint16_t dataCharacAddress);
 
 	uint8_t transformDotDataToColor(uint8_t dotData, uint16_t dataPaletteAddress);
 
-	uint8_t getLcdScreenPixel(int indexX, int indexY);
 
 	uint8_t getBit(uint8_t byte, int bitIndex);
 

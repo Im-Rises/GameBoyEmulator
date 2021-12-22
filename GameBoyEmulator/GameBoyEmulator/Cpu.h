@@ -14,7 +14,7 @@ class Cpu {
 
 private:
 	int cycles;					//Cycles to do (increasse after each instructions)
-	double timeCycle;			//Time of a cycle in 
+	double timeCycle;			//Time of a cycle
 
 	/// <summary>
 	/// CPU mode
@@ -48,10 +48,10 @@ private:
 	bool IME;					//IME flag (Interupt Master Enable)
 
 	Memory* memory = nullptr;	//Memory of the console
-	Ppu ppu;					//PPU of the console
+	Ppu* ppu = nullptr;			//PPU of the console
 
 public:
-	Cpu(Memory* memory);								//Constructor without bios
+	Cpu(Memory* memory, Ppu* ppu);								//Constructor without bios
 	void reset();										//Reset Cpu
 	int doCycle();										//Start Cpu
 	void writeInputs(const uint8_t& inputs);

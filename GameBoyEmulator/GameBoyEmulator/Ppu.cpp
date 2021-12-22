@@ -42,13 +42,21 @@ void Ppu::drawBackgroundLine()
 	//bool bank = memory->read(VBK_ADDRESS);//In DGB always zero
 
 	uint8_t lcdc = memory->read(LCDC_ADDRESS);
-	uint8_t stat = memory->read(STAT_ADDRESS);
+	//uint8_t stat = memory->read(STAT_ADDRESS);
 	uint8_t scx = memory->read(SCX_ADDRESS);
 	uint8_t scy = memory->read(SCY_ADDRESS);
 	uint8_t wx = memory->read(WX_ADDRESS);
 	uint8_t wy = memory->read(WY_ADDRESS);
 
-	bool windowing = testBit(lcdc, 5);
+	uint8_t yPosLcd = memory->read(LY_ADDRESS);//Line being written by the ppu/lcd
+
+	bool windowing = false;
+
+	//if (testBit(lcdc, 5))
+	//{
+	//	if (wy <= yPosLcd)
+	//		windowing = true;
+	//}
 
 	uint16_t bGCodeAreaSelection;
 	if (!testBit(lcdc, 3))
@@ -81,13 +89,16 @@ void Ppu::drawBackgroundLine()
 		codeAreaSelection = bGCodeAreaSelection;
 	}
 
-
-	uint8_t yPosLcd = memory->read(LY_ADDRESS);//Line being written by the ppu/lcd
-
 	for (int i = 0; i < DOTS_DISPLAY_X; i++)
 	{
 		//Get x position of pixel to write to screen
 		uint8_t xPosLcd = i;
+
+		//If windowing and pixel been drawed is greater equals than wx
+		//if (windowing && i >= wx)
+		//{
+		//	xPosLcd -= wx;
+		//}
 
 		//Get tile
 		uint8_t tileNumber = memory->read(codeAreaSelection + ((scx + xPosLcd) / 8) + (((scy + yPosLcd) / 8) * 32));
@@ -105,9 +116,6 @@ void Ppu::drawBackgroundLine()
 
 		//Draw pixel on screen
 		lcdScreen[xPosLcd][yPosLcd] = color;
-
-		if ((xPosLcd == 80) && (yPosLcd == 72))
-			cout << "test";
 	}
 }
 
@@ -207,7 +215,6 @@ uint8_t Ppu::getBit(uint8_t byte, int bitIndex)
 //}
 
 
-void drawWindows();
 void drawSprites();
 
 

@@ -4,9 +4,9 @@ GameBoy* GameBoy::gameboyInstance = 0;
 uint8_t GameBoy::inputs = 0b00111111;
 bool GameBoy::pause = false;
 
-GameBoy::GameBoy() :cpu(&memory)
+GameBoy::GameBoy() :cpu(&memory,&ppu), ppu(&memory)
 {
-
+	
 }
 
 
@@ -106,7 +106,7 @@ void GameBoy::launch()
 		cycles = cpu.doCycle();
 
 		//Update screen
-		//updateScreen();
+		updateScreen();
 
 		//glClear(GL_COLOR_BUFFER_BIT);
 		glfwPollEvents();//Get evenements
@@ -166,6 +166,7 @@ void GameBoy::updateScreen()
 	{
 		for (int x = 0; x < DOTS_DISPLAY_X; x++)
 		{
+			ppu.getLcdScreenPixel(x, y);
 			//Get memory data
 			//memory.read
 		}
@@ -173,7 +174,7 @@ void GameBoy::updateScreen()
 }
 
 
-uint8_t colorToRGB(uint8_t colorGameBoy)
+uint8_t GameBoy::colorToRGB(uint8_t colorGameBoy)
 {
 	switch (colorGameBoy)
 	{
