@@ -48,6 +48,9 @@
 #define WX_ADDRESS 0xFF4A
 #define WY_ADDRESS 0xFF4B
 
+#define BG_PALETTE_DATA 0xFF47
+
+
 using namespace std;
 
 class Memory {

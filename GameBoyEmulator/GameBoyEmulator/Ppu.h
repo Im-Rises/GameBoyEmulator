@@ -39,7 +39,11 @@ public:
 
 	void drawCharacScreen(int x, int y, uint16_t dataCharacAddress);
 
-	uint8_t getDot(int indexX, int indexY);
+	uint8_t transformDotDataToColor(uint8_t dotData, uint16_t dataPaletteAddress);
+
+	uint8_t getLcdScreenPixel(int indexX, int indexY);
+
+	uint8_t getBit(uint8_t byte, int bitIndex);
 
 	bool testBit(int value, int bitNumber);
 };

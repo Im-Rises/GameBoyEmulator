@@ -116,17 +116,6 @@ void GameBoy::launch()
 	glfwTerminate();//Terminate GLFW
 }
 
-void GameBoy::updateScreen()
-{
-	for (int y = 0; y < DOTS_NUMBER_Y; y++)
-	{
-		for (int x = 0; x < DOTS_DISPLAY_X; x++)
-		{
-			//Get memory data
-			//memory.read
-		}
-	}
-}
 
 /*------------------------------------------GLFW FUNCTIONS--------------------------------*/
 
@@ -170,3 +159,47 @@ void GameBoy::key_callback(GLFWwindow* window, int key, int scancode, int action
 
 
 /*-----------------------------------------OPENGL FUNCTIONS----------------------------------------------*/
+
+void GameBoy::updateScreen()
+{
+	for (int y = 0; y < DOTS_NUMBER_Y; y++)
+	{
+		for (int x = 0; x < DOTS_DISPLAY_X; x++)
+		{
+			//Get memory data
+			//memory.read
+		}
+	}
+}
+
+
+uint8_t colorToRGB(uint8_t colorGameBoy)
+{
+	switch (colorGameBoy)
+	{
+	case(0b00):
+	{
+		return 0x00;
+		break;
+	}
+	case(0b01):
+	{
+		return 0x77;
+		break;
+	}
+	case(0b10):
+	{
+		return 0xCC;
+		break;
+	}
+	case(0b11):
+	{
+		return 0xFF;
+		break;
+	}
+	default:
+		cerr << "Error wrong data color";
+		exit(1);
+		break;
+	}
+}

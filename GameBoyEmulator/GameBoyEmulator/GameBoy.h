@@ -39,6 +39,7 @@ private:
 	//bool onOff;					//On off button state (1:ON, 2:OFF)
 	Cpu cpu;
 	Memory memory;
+	//Ppu pu;
 
 	int tempScreen[SCREEN_RESOLUTION_X][SCREEN_RESOLUTION_Y];//Screen to debug
 
@@ -55,6 +56,7 @@ public:
 
 private:
 	void updateScreen();
+	uint8_t colorToRGB(uint8_t colorGameBoy);
 
 	/*------------------------------------------GLFW FUNCTIONS--------------------------------*/
 

@@ -56,6 +56,11 @@ void Ppu::drawBackgroundLine()
 	else
 		bGCodeAreaSelection = BG_DISPLAY_DATA_2;//Bit 3 equals 1
 
+	uint16_t windowCodeAreaSelection;
+	if (!testBit(lcdc, 6))
+		windowCodeAreaSelection = WINDOW_CODE_AREA_SELECTION_0;
+	else
+		windowCodeAreaSelection = WINDOW_CODE_AREA_SELECTION_1;
 
 	uint16_t bgCharacterDataSelection;
 	if (!testBit(lcdc, 4))
@@ -63,11 +68,6 @@ void Ppu::drawBackgroundLine()
 	else
 		bgCharacterDataSelection = BG_CHARACTER_DATA_SELECTION_1;//Bit 4 equals 1
 
-	uint16_t windowCodeAreaSelection;
-	if (!testBit(lcdc, 6))
-		windowCodeAreaSelection = WINDOW_CODE_AREA_SELECTION_0;
-	else
-		windowCodeAreaSelection = WINDOW_CODE_AREA_SELECTION_1;
 
 
 	uint16_t codeAreaSelection;
@@ -82,12 +82,85 @@ void Ppu::drawBackgroundLine()
 	}
 
 
+	uint8_t yPosLcd = memory->read(LY_ADDRESS);//Line being written by the ppu/lcd
+
 	for (int i = 0; i < DOTS_DISPLAY_X; i++)
 	{
-		lcdScreen[i][memory->read(LY_ADDRESS)] = pixelValue;
-	}
+		//Get x position of pixel to write to screen
+		uint8_t xPosLcd = i;
 
-	//RESUME HERE
+		//Get tile
+		uint8_t tileNumber = memory->read(codeAreaSelection + ((scx + xPosLcd) / 8) + (((scy + yPosLcd) / 8) * 32));
+		uint8_t tileAddress = bgCharacterDataSelection + tileNumber * 16;
+
+		//Get data line 1 and 2 of tile to know pixel color
+		uint8_t tileDataLine1 = memory->read(tileAddress + (((yPosLcd + scy) % 8) * 2));
+		uint8_t tileDataLine2 = memory->read(tileAddress + (((yPosLcd + scy) % 8) * 2) + 1);
+
+		//Get color num code (dot data)
+		uint8_t colorNum = getBit(tileDataLine1, xPosLcd % 8) + (getBit(tileDataLine2, xPosLcd % 8) << 1);
+
+		//Attribute the color value corresponding to the color num
+		uint8_t color = transformDotDataToColor(colorNum, BG_PALETTE_DATA);
+
+		//Draw pixel on screen
+		lcdScreen[xPosLcd][yPosLcd] = color;
+
+		if ((xPosLcd == 80) && (yPosLcd == 72))
+			cout << "test";
+	}
+}
+
+uint8_t Ppu::transformDotDataToColor(uint8_t dotData, uint16_t dataPaletteAddress)
+{
+	switch (dotData)
+	{
+	case(0b00):
+	{
+		return ((memory->read(dataPaletteAddress) & 0b00000011));
+		break;
+	}
+	case(0b01):
+	{
+		return ((memory->read(dataPaletteAddress) & 0b00001100) >> 2);
+		break;
+	}
+	case(0b10):
+	{
+		return ((memory->read(dataPaletteAddress) & 0b00110000) >> 4);
+		break;
+	}
+	case(0b11):
+	{
+		return ((memory->read(dataPaletteAddress) & 0b11000000) >> 6);
+		break;
+	}
+	default:
+		cerr << "Error wrong data color code";
+		exit(1);
+		break;
+	}
+}
+
+
+uint8_t Ppu::getBit(uint8_t byte, int bitIndex)
+{
+	return ((byte & (0b00000001 << bitIndex)) >> bitIndex);
+}
+
+//RESUME HERE
+	//uint16_t lineWritten = memory->read(LY_ADDRESS);//Line being written by the ppu/lcd
+	//for (int i = 0; i < BLOCKS_DISPLAY_X; i++)//Get all character codes
+	//{
+	//	uint16_t characAddress = (scx + codeAreaSelection + i * 0xF) % BLOCKS_DISPLAY_X + ((scy + lineWritten) * BLOCKS_DISPLAY_X);//Address of charac
+	//	uint8_t characLine1 = memory->read(characAddress);//Line1 of character
+	//	uint8_t characLine2 = memory->read(characAddress + 1);//Line2 of character
+	//	for (int j = 0; j < 8; j++)//Attribute the bit 1, 2, 3, etc... of charac1 + charac2 to the pixels of the screen
+	//	{
+	//		lcdScreen[j][lineWritten] = (characLine1 > j) & 0x1 + (((characLine2 > j) & 0x1) << 1);
+	//	}
+	//}
+
 
 
 	/*
@@ -117,14 +190,8 @@ void Ppu::drawBackgroundLine()
 		}
 	}
 	*/
-}
 
-void drawWindows();
-void drawSprites();
-
-
-
-//void Ppu::drawCharacScreen(int x, int y, uint16_t dataCharacAddress)
+	//void Ppu::drawCharacScreen(int x, int y, uint16_t dataCharacAddress)
 //{
 //	for (int j = 0; j < 16; j += 2)
 //	{
@@ -139,12 +206,16 @@ void drawSprites();
 //	}
 //}
 
-uint8_t Ppu::getDot(int indexX, int indexY)
+
+void drawWindows();
+void drawSprites();
+
+
+
+
+uint8_t Ppu::getLcdScreenPixel(int indexX, int indexY)
 {
-	//if (memory->read(LCDC_ADDRESS))
-	//{
-	//}
-	return 0;
+	return lcdScreen[indexX][indexY];
 }
 
 bool Ppu::testBit(int value, int bitNumber)

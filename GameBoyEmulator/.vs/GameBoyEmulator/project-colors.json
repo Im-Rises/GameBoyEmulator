@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "b3f13bd3-79bc-4bc4-bace-b9cbeba89aa3": {
+      "ProjectGuid": "b3f13bd3-79bc-4bc4-bace-b9cbeba89aa3",
+      "DisplayName": "GameBoyEmulator",
+      "ColorIndex": 0
+    }
+  },
+  "NextColorIndex": 1
+}
