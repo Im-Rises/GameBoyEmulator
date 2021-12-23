@@ -68,9 +68,12 @@ private:
 
 
 	/*------------------------------------------DEBUG--------------------------------*/
-
-	void writeScreenToFile();
+	
 	static bool debug;
+	void writeScreenToFile();
+	void writeAllTiles();
+	uint8_t getBit(uint8_t byte, int bitIndex);
+
 };
 
 #endif

@@ -92,6 +92,7 @@ void GameBoy::launch()
 		if (debug)
 		{
 			writeScreenToFile();
+			writeAllTiles();
 			debug = false;
 		}
 
@@ -99,14 +100,14 @@ void GameBoy::launch()
 
 
 		//Update screen
-		
+
 
 		//Write inputs to cpu that writes it to memory
 		cpu.writeInputs(inputs);
 
 		//Read one opcode
 		cycles = cpu.doCycle();
-		cycles *= 4;
+		//cycles *= 4;
 
 
 		//SwapBuffers
@@ -118,7 +119,7 @@ void GameBoy::launch()
 
 		auto finish = std::chrono::high_resolution_clock::now();
 
-		std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(finish - start).count() << "ns\n";
+		//std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(finish - start).count() << "ns\n";
 	}
 
 	glfwDestroyWindow(window);//Destroy window and context
@@ -253,4 +254,42 @@ void GameBoy::writeScreenToFile()
 		cout << "Error debug file not created." << endl;
 	}
 
+}
+
+void GameBoy::writeAllTiles()
+{
+	string const nomFichier("tilesDebug.txt");
+	ofstream monFlux(nomFichier.c_str());
+
+	if (monFlux)
+	{
+		for (int i = 0; i < 0x2000; i++)
+		{
+			uint8_t line1 = memory.read(i + 0x8000);
+			uint8_t line2 = memory.read(i + 1 + 0x8000);
+			i++;
+
+			for (int j = 0; j < 16; j++)
+			{
+				uint8_t bitLine1 = getBit(line1, j);
+				uint8_t bitLine2 = getBit(line2, j);
+				monFlux << (bitLine1 + (bitLine2 << 1));
+			}
+
+			monFlux << endl;
+			if (!(((i + 1) % 16) > 0))
+				monFlux << endl;
+		}
+		cout << "Debug file created" << endl;
+	}
+	else
+	{
+		cout << "Error debug file not created." << endl;
+	}
+
+}
+
+uint8_t GameBoy::getBit(uint8_t byte, int bitIndex)
+{
+	return ((byte & (0b00000001 << bitIndex)) >> bitIndex);
 }
