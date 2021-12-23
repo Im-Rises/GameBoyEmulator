@@ -41,22 +41,22 @@ void Ppu::drawBackgroundLine()
 {
 	uint8_t lcdc = memory->read(LCDC_ADDRESS);
 
+	bool unsig = true;
+
 	//if (testBit(lcdc, 0))
 	//{
 	uint8_t scx = memory->read(SCX_ADDRESS);
 	uint8_t scy = memory->read(SCY_ADDRESS);
-	uint8_t wx = memory->read(WX_ADDRESS);
+	uint8_t wx = memory->read(WX_ADDRESS) - 7;//Why -7 ?
 	uint8_t wy = memory->read(WY_ADDRESS);
-
-	uint8_t yPosLcd = memory->read(LY_ADDRESS);//Line being written by the ppu/lcd
 
 	bool windowing = false;
 
-	//if (testBit(lcdc, 5))
-	//{
-	//	if (wy <= yPosLcd)
-	//		windowing = true;
-	//}
+	if (testBit(lcdc, 5))
+	{
+		if (wy <= memory->read(LY_ADDRESS))
+			windowing = true;
+	}
 
 	uint16_t bGCodeAreaSelection;
 	if (!testBit(lcdc, 3))
@@ -72,37 +72,55 @@ void Ppu::drawBackgroundLine()
 
 	uint16_t bgCharacterDataSelection;
 	if (!testBit(lcdc, 4))
+	{
 		bgCharacterDataSelection = BG_CHARACTER_DATA_SELECTION_0;//Bit 4 equals 0
+		unsig = false;
+	}
 	else
 		bgCharacterDataSelection = BG_CHARACTER_DATA_SELECTION_1;//Bit 4 equals 1
 
 
-
 	uint16_t codeAreaSelection;
+
+	uint8_t yPosLcd = memory->read(LY_ADDRESS);//Line being written by the ppu/lcd
 
 	if (windowing)
 	{
 		codeAreaSelection = windowCodeAreaSelection;
+		yPosLcd -= wy;
 	}
 	else
 	{
 		codeAreaSelection = bGCodeAreaSelection;
+		yPosLcd += scy;
 	}
 
 	for (int i = 0; i < DOTS_DISPLAY_X; i++)
 	{
 		//Get x position of pixel to write to screen
-		uint8_t xPosLcd = i;
+		uint8_t xPosLcd = i + scx;
 
 		//If windowing and pixel been drawed is greater equals than wx
-		//if (windowing && i >= wx)
-		//{
-		//	xPosLcd -= wx;
-		//}
+		if (windowing && i >= wx)
+		{
+			xPosLcd = i - wx;
+		}
+
+		int16_t tileNumber;
 
 		//Get tile
-		uint8_t tileNumber = memory->read(codeAreaSelection + ((scx + xPosLcd) / 8) + (((scy + yPosLcd) / 8) * 32));
-		uint8_t tileAddress = bgCharacterDataSelection + tileNumber * 16;
+		if (unsig)
+			tileNumber = (uint8_t)memory->read(codeAreaSelection + ((scx + xPosLcd) / 8) + (((scy + yPosLcd) / 8) * 32));
+		else
+			tileNumber = (int8_t)memory->read(codeAreaSelection + ((scx + xPosLcd) / 8) + (((scy + yPosLcd) / 8) * 32));
+
+
+		uint16_t tileAddress = bgCharacterDataSelection;
+
+		if (unsig)
+			tileAddress += (tileNumber * 16);
+		else
+			tileAddress += ((tileNumber + 128) * 16);
 
 		//Get data line 1 and 2 of tile to know pixel color
 		uint8_t tileDataLine1 = memory->read(tileAddress + (((yPosLcd + scy) % 8) * 2));

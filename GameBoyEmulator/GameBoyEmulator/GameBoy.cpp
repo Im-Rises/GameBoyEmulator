@@ -58,7 +58,7 @@ void GameBoy::launch()
 
 	glfwSetErrorCallback(error_callback);//Set callback error function
 
-	GLFWwindow* window = glfwCreateWindow(160, 144, PROJECT_NAME, NULL, NULL);//Create a window
+	GLFWwindow* window = glfwCreateWindow(EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y, PROJECT_NAME, NULL, NULL);//Create a window
 
 	if (!window)
 	{
@@ -77,34 +77,48 @@ void GameBoy::launch()
 		exit(1);
 	}
 
-	//glOrtho(0, 640, 0, 480, -1, 1);
+	int pixelSize = std::min(EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y) / SCREEN_RESOLUTION_X;
+
+	//glViewport(0, 0, SCREEN_RESOLUTION_X, SCREEN_RESOLUTION_Y);
+	//glMatrixMode(GL_PROJECTION);
+	//glLoadIdentity();
+	//glOrtho(0, 250.0, 0, 250.0, 0, 0);
+	//glMatrixMode(GL_MODELVIEW);
+	//glLoadIdentity();
 
 	int cycles = 0;
 	while (!glfwWindowShouldClose(window))//While window not closed
 	{
 		if (debug)
 		{
-			cout << "Debug file created" << endl;
 			writeScreenToFile();
 			debug = false;
 		}
-		// Clear the screen. It's not mentioned before Tutorial 02, but it can cause flickering, so it's there nonetheless.
-		//glClear(GL_COLOR_BUFFER_BIT);
+
+		auto start = std::chrono::high_resolution_clock::now();
+
 
 		//Update screen
-		//RenderGame();
+		
 
 		//Write inputs to cpu that writes it to memory
 		cpu.writeInputs(inputs);
 
 		//Read one opcode
 		cycles = cpu.doCycle();
+		cycles *= 4;
+
 
 		//SwapBuffers
 		//glfwSwapBuffers(window);
 
 		//Get evenements
 		glfwPollEvents();
+		// operation to be timed ...
+
+		auto finish = std::chrono::high_resolution_clock::now();
+
+		std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(finish - start).count() << "ns\n";
 	}
 
 	glfwDestroyWindow(window);//Destroy window and context
@@ -215,11 +229,11 @@ uint8_t GameBoy::colorToRGB(uint8_t colorGameBoy)
 
 /*-----------------------------------------DEBUG----------------------------------------------*/
 
-bool GameBoy::debug=false;
+bool GameBoy::debug = false;
 
 void GameBoy::writeScreenToFile()
 {
-	string const nomFichier("screen.txt");
+	string const nomFichier("screenDebug.txt");
 	ofstream monFlux(nomFichier.c_str());
 
 	if (monFlux)
@@ -228,14 +242,15 @@ void GameBoy::writeScreenToFile()
 		{
 			for (int j = 0; j < 160; j++)
 			{
-				monFlux << (int)ppu.getLcdScreenPixel(j, i)<<" ";
+				monFlux << (int)ppu.getLcdScreenPixel(j, i) << " ";
 			}
 			monFlux << endl;
 		}
+		cout << "Debug file created" << endl;
 	}
 	else
 	{
-		cout << "Error file." << endl;
+		cout << "Error debug file not created." << endl;
 	}
 
 }
