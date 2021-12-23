@@ -5,6 +5,11 @@
       "ProjectGuid": "b3f13bd3-79bc-4bc4-bace-b9cbeba89aa3",
       "DisplayName": "GameBoyEmulator",
       "ColorIndex": 0
+    },
+    "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3": {
+      "ProjectGuid": "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3",
+      "DisplayName": "Fichiers divers",
+      "ColorIndex": -1
     }
   },
   "NextColorIndex": 1

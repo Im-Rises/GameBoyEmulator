@@ -18,9 +18,3 @@ GameBoy Emulator make in C++ with Visual Studio 2019 using the GLFW and OpenGL l
 <https://archive.org/details/GameBoyProgManVer1.1/mode/2up>  
 <https://gbdev.gg8.se/wiki/articles/Gameboy_Bootstrap_ROM>  
 <https://www.pastraiser.com/cpu/gameboy/gameboy_opcodes.html>  
-
-## To do
-
-Reimplement correctly the timers
-Implement controls
-Resume Chapter 2 (PPU)

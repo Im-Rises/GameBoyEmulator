@@ -17,7 +17,7 @@ void Ppu::draw(const int& cycles)//Not working
 {
 	for (int i = 0; i < cycles; i++)
 	{
-		drawLine();
+		drawLineSimulation();
 		drawBackgroundLine();
 	}
 
@@ -25,7 +25,7 @@ void Ppu::draw(const int& cycles)//Not working
 		memory->write(LY_ADDRESS, 0);
 }
 
-void Ppu::drawLine()
+void Ppu::drawLineSimulation()
 {
 	/// <summary>
 	/// Function that simulate the drawing of a line each cycle of the CPU (in pixel not block) 
@@ -39,10 +39,10 @@ void Ppu::drawLine()
 
 void Ppu::drawBackgroundLine()
 {
-	//bool bank = memory->read(VBK_ADDRESS);//In DGB always zero
-
 	uint8_t lcdc = memory->read(LCDC_ADDRESS);
-	//uint8_t stat = memory->read(STAT_ADDRESS);
+
+	//if (testBit(lcdc, 0))
+	//{
 	uint8_t scx = memory->read(SCX_ADDRESS);
 	uint8_t scy = memory->read(SCY_ADDRESS);
 	uint8_t wx = memory->read(WX_ADDRESS);
@@ -156,66 +156,11 @@ uint8_t Ppu::getBit(uint8_t byte, int bitIndex)
 	return ((byte & (0b00000001 << bitIndex)) >> bitIndex);
 }
 
-//RESUME HERE
-	//uint16_t lineWritten = memory->read(LY_ADDRESS);//Line being written by the ppu/lcd
-	//for (int i = 0; i < BLOCKS_DISPLAY_X; i++)//Get all character codes
-	//{
-	//	uint16_t characAddress = (scx + codeAreaSelection + i * 0xF) % BLOCKS_DISPLAY_X + ((scy + lineWritten) * BLOCKS_DISPLAY_X);//Address of charac
-	//	uint8_t characLine1 = memory->read(characAddress);//Line1 of character
-	//	uint8_t characLine2 = memory->read(characAddress + 1);//Line2 of character
-	//	for (int j = 0; j < 8; j++)//Attribute the bit 1, 2, 3, etc... of charac1 + charac2 to the pixels of the screen
-	//	{
-	//		lcdScreen[j][lineWritten] = (characLine1 > j) & 0x1 + (((characLine2 > j) & 0x1) << 1);
-	//	}
-	//}
 
+void Ppu::drawSpritesLine()
+{
 
-
-	/*
-	//Read all blocks code
-	for (int j = 0; j < BLOCKS_DISPLAY_Y; j++)
-	{
-		for (int i = 0; i < BLOCKS_DISPLAY_X; i++)
-		{
-			//Calcul the dots to get
-			uint8_t offsetX = (i + scx / 8);
-			uint8_t offsetY = ((j + scy / 8) * BLOCKS_MEMORY_X);
-
-			//If scx and scy are hight and the selection screen is out take the first values
-			if (offsetX >= BLOCKS_MEMORY_X)
-				offsetX -= BLOCKS_MEMORY_X;
-			if (offsetY >= BLOCKS_MEMORY_Y)
-				offsetY -= BLOCKS_MEMORY_Y;
-
-			//Get character code address
-			uint8_t chrCode = memory->read(bGCodeAreaSelection + offsetX + offsetY);//X00, X01, X02, X03 etc...
-
-			//Use character code to find character data to write on screen
-			uint16_t dataCharacAddress = bgCharacterDataSelection + chrCode * 0x10;//Address of first 8 bits of character data
-
-			//Write character to screen (RESUME HERE)
-			drawCharacScreen(i * 8, j * 8, dataCharacAddress);
-		}
-	}
-	*/
-
-	//void Ppu::drawCharacScreen(int x, int y, uint16_t dataCharacAddress)
-//{
-//	for (int j = 0; j < 16; j += 2)
-//	{
-//		//Draw line of charac on screen depending on line 1 and 2 we get color
-//		uint8_t line1 = memory->read(dataCharacAddress + j);
-//		uint8_t line2 = memory->read(dataCharacAddress + j + 1);
-//
-//		for (int i = 0; i < 8; i++)
-//		{
-//			lcdScreen[i][j] = ((line1 >> i) & 0x1) + ((line2 >> i) & 0x1);
-//		}
-//	}
-//}
-
-
-void drawSprites();
+}
 
 
 

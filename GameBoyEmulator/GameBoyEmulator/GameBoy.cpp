@@ -4,9 +4,9 @@ GameBoy* GameBoy::gameboyInstance = 0;
 uint8_t GameBoy::inputs = 0b00111111;
 bool GameBoy::pause = false;
 
-GameBoy::GameBoy() :cpu(&memory,&ppu), ppu(&memory)
+GameBoy::GameBoy() :cpu(&memory, &ppu), ppu(&memory)
 {
-	
+
 }
 
 
@@ -55,44 +55,44 @@ void GameBoy::launch()
 		cerr << "Initialization failed" << endl;
 		exit(1);
 	}
+
 	glfwSetErrorCallback(error_callback);//Set callback error function
-	GLFWwindow* window = glfwCreateWindow(EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y, PROJECT_NAME, NULL, NULL);//Create a window
+
+	GLFWwindow* window = glfwCreateWindow(160, 144, PROJECT_NAME, NULL, NULL);//Create a window
+
 	if (!window)
 	{
 		cerr << "Window or OpenGL context creation failed" << endl;
 		exit(1);
 	}
-	glfwMakeContextCurrent(window);//Make window current context
 
 	glfwSetKeyCallback(window, key_callback);//Set inputs Callback
 
-	/// <summary>
-	/// OpenGL initialisation
-	/// </summary>
-	glfwWindowHint(GLFW_SAMPLES, 4); // 4x antialiasing
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // We want OpenGL 3.3
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // We don't want the old OpenGL
+	glfwMakeContextCurrent(window);//Make window current context
 
+	//Init glew
 	glewExperimental = true; // Needed in core profile
 	if (glewInit() != GLEW_OK) {
 		cerr << "Failed to initialize GLEW" << endl;
 		exit(1);
 	}
 
+	//glOrtho(0, 640, 0, 480, -1, 1);
 
 	int cycles = 0;
-	//chrono::steady_clock::time_point begin = chrono::steady_clock::now();
-	//chrono::steady_clock::time_point end = chrono::steady_clock::now();
-	//cerr << "Time difference = " << chrono::duration_cast<chrono::nanoseconds> (end - begin).count() << "[ns]" << endl;
-	//double test = cpu.getTimeCycle() * cycles;
 	while (!glfwWindowShouldClose(window))//While window not closed
 	{
-		//begin = chrono::steady_clock::now();
-		//while ((cpu.getTimeCycle() * cycles) >= (end - begin).count())
-		//{ 
-		// glfwPollEvents();//Get evenements
-		//}
+		if (debug)
+		{
+			cout << "Debug file created" << endl;
+			writeScreenToFile();
+			debug = false;
+		}
+		// Clear the screen. It's not mentioned before Tutorial 02, but it can cause flickering, so it's there nonetheless.
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		//Update screen
+		//RenderGame();
 
 		//Write inputs to cpu that writes it to memory
 		cpu.writeInputs(inputs);
@@ -100,14 +100,13 @@ void GameBoy::launch()
 		//Read one opcode
 		cycles = cpu.doCycle();
 
-		//Update screen
-		updateScreen();
+		//SwapBuffers
+		glfwSwapBuffers(window);
 
 		//Get evenements
-		glfwPollEvents();		
-		
-		//end = chrono::steady_clock::now();
+		glfwPollEvents();
 	}
+
 	glfwDestroyWindow(window);//Destroy window and context
 	glfwTerminate();//Terminate GLFW
 }
@@ -127,7 +126,10 @@ void GameBoy::key_callback(GLFWwindow* window, int key, int scancode, int action
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
 	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
 		pause != pause;
-
+	if (key == GLFW_KEY_ENTER && action == GLFW_PRESS)
+	{
+		debug = true;
+	}
 	//Game Boy controls
 	//0: Low signal (button pressed)
 	//1: High signal (button not pressed)
@@ -169,6 +171,15 @@ void GameBoy::updateScreen()
 	}
 }
 
+void GameBoy::RenderGame()
+{
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//glLoadIdentity();
+	//glRasterPos2i(-1, 1);
+	//glPixelZoom(1, -1);
+	//glDrawPixels(160, 144, GL_RGB, GL_UNSIGNED_BYTE, ppu.lcdScreen);
+}
+
 
 uint8_t GameBoy::colorToRGB(uint8_t colorGameBoy)
 {
@@ -199,4 +210,32 @@ uint8_t GameBoy::colorToRGB(uint8_t colorGameBoy)
 		exit(1);
 		break;
 	}
+}
+
+
+/*-----------------------------------------DEBUG----------------------------------------------*/
+
+bool GameBoy::debug=false;
+
+void GameBoy::writeScreenToFile()
+{
+	string const nomFichier("screen.txt");
+	ofstream monFlux(nomFichier.c_str());
+
+	if (monFlux)
+	{
+		for (int i = 0; i < 144; i++)
+		{
+			for (int j = 0; j < 160; j++)
+			{
+				monFlux << (int)ppu.getLcdScreenPixel(j, i)<<" ";
+			}
+			monFlux << endl;
+		}
+	}
+	else
+	{
+		cout << "Error file." << endl;
+	}
+
 }

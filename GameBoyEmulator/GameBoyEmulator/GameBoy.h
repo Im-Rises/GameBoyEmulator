@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <chrono>
+#include <fstream>
 
 #include "Cpu.h"
 #include "Memory.h"
@@ -26,10 +27,10 @@
 #define SCREEN_FREQUENCY 59.7	//In fps
 
 /*
-* this class is used to made an interface between the CPUand the screen, buttons.
+* this class is used to made an interface between the CPU and the screen, buttons.
 * It represent the game boy itself
-*
 */
+
 class GameBoy
 {
 private:
@@ -40,8 +41,6 @@ private:
 	Cpu cpu;
 	Ppu ppu;
 	Memory memory;
-
-	int tempScreen[SCREEN_RESOLUTION_X][SCREEN_RESOLUTION_Y];//Screen to debug
 
 	static bool pause;				//Emulator in pause
 	static uint8_t inputs;			//Game Boy inputs (Buttons)
@@ -62,6 +61,16 @@ private:
 
 	static void error_callback(int error, const char* description);
 	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+
+	/*------------------------------------------OPENGL FUNCTIONS--------------------------------*/
+
+	void RenderGame();
+
+
+	/*------------------------------------------DEBUG--------------------------------*/
+
+	void writeScreenToFile();
+	static bool debug;
 };
 
 #endif
