@@ -89,7 +89,7 @@ void GameBoy::launch()
 			debug = false;
 		}
 		// Clear the screen. It's not mentioned before Tutorial 02, but it can cause flickering, so it's there nonetheless.
-		glClear(GL_COLOR_BUFFER_BIT);
+		//glClear(GL_COLOR_BUFFER_BIT);
 
 		//Update screen
 		//RenderGame();
@@ -101,7 +101,7 @@ void GameBoy::launch()
 		cycles = cpu.doCycle();
 
 		//SwapBuffers
-		glfwSwapBuffers(window);
+		//glfwSwapBuffers(window);
 
 		//Get evenements
 		glfwPollEvents();
