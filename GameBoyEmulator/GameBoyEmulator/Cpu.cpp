@@ -29,6 +29,10 @@ int Cpu::doCycle()
 	{
 		if (pc == 0x00E9)
 			cerr << "Security block game" << endl;
+		if (memory->read(0x8190) > 0)
+			cerr << "Writing logo's end" << endl;
+		if (pc == 0xA7)
+			cerr << "Beginning logo's writing" << endl;
 	}
 
 
@@ -155,6 +159,16 @@ void Cpu::incrementDivider()
 
 void Cpu::readOpcode()
 {
+	//string const nomFichier("opcodesDebug.txt");
+	//ofstream monFlux(nomFichier.c_str(), std::ios::app);
+	//if (monFlux)
+	//{
+	//	monFlux << hex << (int)memory->read(pc) << endl;
+	//}
+	//else
+	//{
+	//	cout << "Error debug file not created." << endl;
+	//}
 	executeOpcode(memory->read(pc));//Execute opcode
 }
 
@@ -691,7 +705,7 @@ void Cpu::unpairRegisters(uint8_t& reg1, uint8_t& reg2, const uint16_t& register
 
 uint8_t Cpu::flagToByte(const Flag& flag)const
 {
-	uint8_t temp = (flag.Z << 7) + (flag.N << 6) + (flag.H << 5) + (flag.CY << 4);
+	uint8_t temp = ((flag.Z << 7) + (flag.N << 6) + (flag.H << 5) + (flag.CY << 4)) & 0xF0;
 	return temp;
 }
 
@@ -1047,7 +1061,7 @@ uint8_t Cpu::ADD_ADC_subFunctionFlag(const uint8_t& reg, const uint8_t& value)
 {
 	F.H = ((reg & 0xF) + (value & 0xF)) > 0xF;
 	F.CY = (reg + value) > 0xFF;
-	F.Z = !reg;
+	F.Z = (reg == 0);
 	F.N = 0;
 
 	return (reg + value);
@@ -1117,7 +1131,7 @@ uint8_t Cpu::SUB_SBC_subFunctionFlag(const uint8_t& reg, const uint8_t& value)
 {
 	F.H = (reg & 0x0F) < (value & 0x0F);
 	F.CY = (reg) < value;
-	F.Z = !reg;
+	F.Z = (reg == 0);
 	F.N = 1;
 
 	return (reg - value);
@@ -1255,7 +1269,7 @@ void Cpu::CP_A_aHL()
 
 
 void Cpu::CP_subFunctionFlag(const uint8_t& reg)
-{	
+{
 	F.Z = (A == reg);
 	F.H = (A & 0xF) < (reg & 0xF);
 	F.CY = (A < reg);

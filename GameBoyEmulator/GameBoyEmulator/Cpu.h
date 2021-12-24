@@ -13,7 +13,7 @@ using namespace std;
 class Cpu {
 
 private:
-	int cycles;					//Cycles to do (increasse after each instructions)
+	int cycles;					//Machine cycles for the previous instruction
 	double timeCycle;			//Time of a cycle
 
 	/// <summary>
