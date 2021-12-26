@@ -55,7 +55,6 @@ public:
 
 private:
 	void updateScreen();
-	uint8_t colorToRGB(uint8_t colorGameBoy);
 
 	/*------------------------------------------GLFW FUNCTIONS--------------------------------*/
 

@@ -196,38 +196,6 @@ void GameBoy::RenderGame()
 }
 
 
-uint8_t GameBoy::colorToRGB(uint8_t colorGameBoy)
-{
-	switch (colorGameBoy)
-	{
-	case(0b00):
-	{
-		return 0x00;
-		break;
-	}
-	case(0b01):
-	{
-		return 0x77;
-		break;
-	}
-	case(0b10):
-	{
-		return 0xCC;
-		break;
-	}
-	case(0b11):
-	{
-		return 0xFF;
-		break;
-	}
-	default:
-		cerr << "Error wrong data color";
-		exit(1);
-		break;
-	}
-}
-
-
 /*-----------------------------------------DEBUG----------------------------------------------*/
 
 bool GameBoy::debug = false;

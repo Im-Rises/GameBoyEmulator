@@ -27,24 +27,17 @@ int Cpu::doCycle()
 {
 	if (true)
 	{
+		if (pc == 0)
+			cout << "Program start" << endl;
 		if (pc == 0x00E9)
 			cerr << "Security block game" << endl;
-		//if (memory->read(0x8190) > 0)
-		//	cerr << "Writing logo's end" << endl;
-		//if (pc == 0x27)
-		//	cerr << "Beginning logo's writing" << endl;
-		//if (pc==0x32)
-		//	cerr << "Logo's comp" << endl;
-		//if (pc >= 0x95)
-		//	cerr << "Graphic routine" << endl;
-		//if (pc==0x13)
-		//	cerr << "STOP" << endl;
+		//if (pc==0x64)
+		//	cerr << "loop issue" << endl;
 	}
 
 
 	//Draw a line with the PPU
 	ppu->draw(cycles);
-	cycles = 0;
 
 	//Check timer
 	incrementTimer();
@@ -55,7 +48,9 @@ int Cpu::doCycle()
 
 	if (!halted && !stopped)//If CPU is not in halt mode neither stop mode
 	{
+		cycles = 0;
 		readOpcode();
+		//cycles *= 4;//Issue 
 	}
 	else if (halted)//If halt mode is enable
 	{
