@@ -29,10 +29,16 @@ int Cpu::doCycle()
 	{
 		if (pc == 0x00E9)
 			cerr << "Security block game" << endl;
-		if (memory->read(0x8190) > 0)
-			cerr << "Writing logo's end" << endl;
-		if (pc == 0xA7)
-			cerr << "Beginning logo's writing" << endl;
+		//if (memory->read(0x8190) > 0)
+		//	cerr << "Writing logo's end" << endl;
+		//if (pc == 0x27)
+		//	cerr << "Beginning logo's writing" << endl;
+		//if (pc==0x32)
+		//	cerr << "Logo's comp" << endl;
+		//if (pc >= 0x95)
+		//	cerr << "Graphic routine" << endl;
+		//if (pc==0x13)
+		//	cerr << "STOP" << endl;
 	}
 
 

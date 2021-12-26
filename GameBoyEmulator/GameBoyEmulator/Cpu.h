@@ -13,7 +13,7 @@ using namespace std;
 class Cpu {
 
 private:
-	int cycles;					//Machine cycles for the previous instruction
+	int cycles;					//Machine cycles from the previous instruction
 	double timeCycle;			//Time of a cycle
 
 	/// <summary>
@@ -51,7 +51,7 @@ private:
 	Ppu* ppu = nullptr;			//PPU of the console
 
 public:
-	Cpu(Memory* memory, Ppu* ppu);								//Constructor without bios
+	Cpu(Memory* memory, Ppu* ppu);						//Constructor without bios
 	void reset();										//Reset Cpu
 	int doCycle();										//Start Cpu
 	void writeInputs(const uint8_t& inputs);

@@ -8,7 +8,7 @@ Ppu::Ppu(Memory* memory)
 	{
 		for (int i = 0; i < DOTS_DISPLAY_X; i++)
 		{
-			lcdScreen[i][j] = 0;
+			lcdScreen[i][j] = 255;
 		}
 	}
 }
