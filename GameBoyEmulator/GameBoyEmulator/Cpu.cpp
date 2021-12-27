@@ -25,17 +25,6 @@ void Cpu::reset()
 
 int Cpu::doCycle()
 {
-	if (true)
-	{
-		if (pc == 0)
-			cout << "Program start" << endl;
-		if (pc == 0x00E9)
-			cerr << "Security block game" << endl;
-		//if (pc==0x64)
-		//	cerr << "loop issue" << endl;
-	}
-
-
 	//Draw a line with the PPU
 	ppu->draw(cycles);
 
@@ -90,6 +79,11 @@ void Cpu::writeInputs(const uint8_t& inputs)
 double Cpu::getTimeCycle()
 {
 	return timeCycle;
+}
+
+uint16_t Cpu::getPc()
+{
+	return pc;
 }
 
 uint16_t Cpu::haltSubFunction()

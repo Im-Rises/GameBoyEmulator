@@ -56,6 +56,7 @@ public:
 	int doCycle();										//Start Cpu
 	void writeInputs(const uint8_t& inputs);
 	double getTimeCycle();
+	uint16_t getPc();
 
 private:
 	uint16_t haltSubFunction();					//Halt mode function

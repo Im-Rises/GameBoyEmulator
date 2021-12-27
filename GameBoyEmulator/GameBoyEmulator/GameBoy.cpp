@@ -36,11 +36,11 @@ void GameBoy::loadGame(const string& gamePath)
 {
 	if (memory.getBiosInMemeory())//If there is a bios
 	{
-
+		memory.loadRomInMemory(gamePath, 0x100);
 	}
 	else//If there's no bios
 	{
-		memory.loadRomInMemory(gamePath);
+		memory.loadRomInMemory(gamePath,0);
 		//Set memory and CPU like after bios
 	}
 }
@@ -108,7 +108,15 @@ void GameBoy::launch()
 		//Read one opcode
 		cycles = cpu.doCycle();
 		//cycles *= 4;
-
+		if (true)
+		{
+			if (cpu.getPc() == 0x00E9)
+			{
+				writeScreenToFile();
+				writeAllTiles();
+				cerr << "Security block game" << endl;
+			}
+		}
 
 		//SwapBuffers
 		//glfwSwapBuffers(window);

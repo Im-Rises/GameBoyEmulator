@@ -17,6 +17,8 @@ void Memory::reset()
 
 uint8_t Memory::read(const uint16_t index)const
 {
+	//if (index == 0x8190)
+	//	cout << "Working" << endl;
 	return memoryArray[index];
 }
 
@@ -57,15 +59,16 @@ bool Memory::loadBiosInMemory(const string& biosPath)
 	}
 }
 
-bool Memory::loadRomInMemory(const string& romPath)
+bool Memory::loadRomInMemory(const string& romPath,const int index)
 {
 	std::ifstream input(romPath, std::ios::binary);
 	if (input)
 	{
 		input.seekg(0, ios::end);
 		int romSize = input.tellg();
-		input.seekg(0, ios::beg);
-		for (int i = 0; (i < romSize) && (i < RAM_CHARACTER_DATA_BANK_0_DMG); i++)
+		//input.seekg(0, ios::beg);
+		input.seekg(index);
+		for (int i = index; (i < romSize) && (i < RAM_CHARACTER_DATA_BANK_0_DMG); i++)
 		{
 			memoryArray[i] = input.get();
 		}

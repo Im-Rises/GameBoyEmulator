@@ -68,7 +68,7 @@ public:
 	void increment(const uint16_t& index);
 	void decrement(const uint16_t& index);
 	bool loadBiosInMemory(const string& biosPath);
-	bool loadRomInMemory(const string& romPath);
+	bool loadRomInMemory(const string& romPath, const int index);
 	bool getBiosInMemeory();
 };
 
