@@ -39,7 +39,6 @@ private:
 	void drawSpritesLine();
 
 	uint8_t transformDotDataToColor(const uint8_t& dotData, const uint16_t& dataPaletteAddress);
-	uint8_t colorToRGB(uint8_t colorGameBoy);
 
 	uint8_t getBit(uint8_t byte, int bitIndex);
 	bool testBit(int value, int bitNumber);

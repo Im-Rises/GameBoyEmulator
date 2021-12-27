@@ -53,6 +53,8 @@ public:
 	void loadGame(const string& gamePath);
 	void launch();
 
+	uint8_t colorToRGB(uint8_t colorGameBoy);
+
 private:
 	void updateScreen();
 

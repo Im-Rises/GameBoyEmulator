@@ -86,6 +86,15 @@ void GameBoy::launch()
 	//glMatrixMode(GL_MODELVIEW);
 	//glLoadIdentity();
 
+	if (memory.getBiosInMemeory())//if there is a bios
+	{
+		//execute bios until its end. Once done replace the memory from 0 to 0x100 by the cartridge
+		//for (int i = 0; i < 0x100; i++)
+		//{
+
+		//}
+	}
+
 	int cycles = 0;
 	while (!glfwWindowShouldClose(window))//While window not closed
 	{
@@ -134,6 +143,36 @@ void GameBoy::launch()
 	glfwTerminate();//Terminate GLFW
 }
 
+uint8_t GameBoy::colorToRGB(uint8_t colorGameBoy)
+{
+	switch (colorGameBoy)
+	{
+	case(0b00):
+	{
+		return 0xFF;
+		break;
+	}
+	case(0b01):
+	{
+		return 0xCC;
+		break;
+	}
+	case(0b10):
+	{
+		return 0x77;
+		break;
+	}
+	case(0b11):
+	{
+		return 0x00;
+		break;
+	}
+	default:
+		cerr << "Error wrong data color";
+		exit(1);
+		break;
+	}
+}
 
 /*------------------------------------------GLFW FUNCTIONS--------------------------------*/
 
