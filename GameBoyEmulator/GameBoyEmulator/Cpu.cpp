@@ -13,7 +13,7 @@ Cpu::Cpu(Memory* memory, Ppu* ppu)
 
 void Cpu::reset()
 {
-	timeCycle = 1 / FREQUENCY_NORMAL_MODE;
+	timeCycle = 1 / CPU_FREQUENCY_NORMAL_MODE;
 	cycles = 0;
 	halted = 0;
 	resetTerminal = 1;

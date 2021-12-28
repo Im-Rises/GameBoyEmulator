@@ -1,18 +1,17 @@
 #include "GameBoy.h"
 
-GameBoy* GameBoy::gameboyInstance = 0;
+GameBoy *GameBoy::gameboyInstance = 0;
 uint8_t GameBoy::inputs = 0b00111111;
 bool GameBoy::pause = false;
 
-GameBoy::GameBoy() :cpu(&memory, &ppu), ppu(&memory)
+GameBoy::GameBoy() : cpu(&memory, &ppu), ppu(&memory)
 {
 	fullScreen = FULL_SCREEN;
 	useSaveFile = USE_SAVE_FILE;
 	pause = false;
 }
 
-
-GameBoy* GameBoy::getInstance()
+GameBoy *GameBoy::getInstance()
 {
 	if (gameboyInstance == 0)
 	{
@@ -29,19 +28,19 @@ void GameBoy::reset()
 	ppu.reset();
 }
 
-void GameBoy::loadBios(const string& biosPath)
+void GameBoy::loadBios(const string &biosPath)
 {
 	if (memory.loadBiosInMemory(biosPath) == false)
 		exit(1);
 }
 
-void GameBoy::loadGame(const string& gamePath)
+void GameBoy::loadGame(const string &gamePath)
 {
-	if (memory.getBiosInMemeory())//If there is a bios
+	if (memory.getBiosInMemeory()) //If there is a bios
 	{
 		memory.loadRomInMemory(gamePath, 0x100);
 	}
-	else//If there's no bios
+	else //If there's no bios
 	{
 		memory.loadRomInMemory(gamePath, 0);
 		//Set memory and CPU like after bios
@@ -53,15 +52,15 @@ void GameBoy::launch()
 	/// <summary>
 	/// GLFW initialisation
 	/// </summary>
-	if (!glfwInit())//Init GLFW
+	if (!glfwInit()) //Init GLFW
 	{
 		cerr << "Initialization failed" << endl;
 		exit(1);
 	}
 
-	glfwSetErrorCallback(error_callback);//Set callback error function
+	glfwSetErrorCallback(error_callback); //Set callback error function
 
-	GLFWwindow* window = glfwCreateWindow(EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y, PROJECT_NAME, NULL, NULL);//Create a window
+	GLFWwindow *window = glfwCreateWindow(EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y, PROJECT_NAME, NULL, NULL); //Create a window
 
 	if (!window)
 	{
@@ -69,13 +68,14 @@ void GameBoy::launch()
 		exit(1);
 	}
 
-	glfwSetKeyCallback(window, key_callback);//Set inputs Callback
+	glfwSetKeyCallback(window, key_callback); //Set inputs Callback
 
-	glfwMakeContextCurrent(window);//Make window current context
+	glfwMakeContextCurrent(window); //Make window current context
 
 	//Init glew
 	glewExperimental = true; // Needed in core profile
-	if (glewInit() != GLEW_OK) {
+	if (glewInit() != GLEW_OK)
+	{
 		cerr << "Failed to initialize GLEW" << endl;
 		exit(1);
 	}
@@ -89,9 +89,6 @@ void GameBoy::launch()
 	glClearColor(255.0f, 255.0f, 255.0f, 255.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	float timeRefresh = 1.0f / SCREEN_FREQUENCY;
-	int timeRefreshInt = timeRefresh * 1000;
-
 	//glViewport(0, 0, SCREEN_RESOLUTION_X, SCREEN_RESOLUTION_Y);
 	//glMatrixMode(GL_PROJECTION);
 	//glLoadIdentity();
@@ -99,7 +96,7 @@ void GameBoy::launch()
 	//glMatrixMode(GL_MODELVIEW);
 	//glLoadIdentity();
 
-	if (memory.getBiosInMemeory())//if there is a bios
+	if (memory.getBiosInMemeory()) //if there is a bios
 	{
 		//execute bios until its end. Once done replace the memory from 0 to 0x100 by the cartridge
 		//for (int i = 0; i < 0x100; i++)
@@ -114,28 +111,24 @@ void GameBoy::launch()
 		//memory.setMemoryWithoutBios();
 	}
 
-	if (useSaveFile && cpu.getPc() == 0x100)//Once game is launching put save into ram
+	if (useSaveFile && cpu.getPc() == 0x100) //Once game is launching put save into ram
 	{
 		loadSaveGame();
 	}
 
-
+	float timeRefresh = 1.0f / SCREEN_FREQUENCY;
+	int timeRefreshInt = timeRefresh * 1000;
 	auto timeRefresthScreenStart = std::chrono::high_resolution_clock::now();
 	auto timeRefresthScreenFinish = std::chrono::high_resolution_clock::now();
 
 	auto timeCpuStart = std::chrono::high_resolution_clock::now();
 	auto timeCpuFinish = std::chrono::high_resolution_clock::now();
-	int cycles = 0;
+	double timeCycle = (1.0 / CPU_FREQUENCY_NORMAL_MODE) * 1000000000; //time of a cyle in nanoseconds
+	int cycles = 0;													   //Machine cycle for the precedent operation
 
-	while (!glfwWindowShouldClose(window))//While window not closed
+	while (!glfwWindowShouldClose(window)) //While window not closed
 	{
-
-		//Write inputs to cpu that writes it to memory
-		cpu.writeInputs(inputs);
-
-		//Read one opcode
-		cycles = cpu.doCycle();
-
+		//Debug
 		if (true)
 		{
 			//if (debug)
@@ -153,9 +146,17 @@ void GameBoy::launch()
 			}
 		}
 
-		//Get evenements
-		glfwPollEvents();
+		//Write inputs to cpu that writes it to memory
+		int test = std::chrono::duration_cast<std::chrono::nanoseconds>(timeCpuFinish - timeCpuStart).count();
+		if (std::chrono::duration_cast<std::chrono::nanoseconds>(timeCpuFinish - timeCpuStart).count() > (cycles*timeCycle))
+		{
+			cpu.writeInputs(inputs);
+			timeCpuStart = std::chrono::high_resolution_clock::now();
+		}
 
+		//Read one opcode
+		//if ((timeCpuStart-timeCpuFinish)>timeCycle*cycles)
+		cycles = cpu.doCycle();
 
 		//Update screen
 		timeRefresthScreenFinish = std::chrono::high_resolution_clock::now();
@@ -165,12 +166,14 @@ void GameBoy::launch()
 			glfwSwapBuffers(window);
 			timeRefresthScreenStart = std::chrono::high_resolution_clock::now();
 		}
+
+		//Get evenements
+		glfwPollEvents();
 	}
 
-	glfwDestroyWindow(window);//Destroy window and context
-	glfwTerminate();//Terminate GLFW
+	glfwDestroyWindow(window); //Destroy window and context
+	glfwTerminate();		   //Terminate GLFW
 }
-
 
 /*------------------------------------------SCREEN FUNCTIONS--------------------------------*/
 
@@ -189,22 +192,22 @@ uint8_t GameBoy::colorToRGB(uint8_t colorGameBoy)
 {
 	switch (colorGameBoy)
 	{
-	case(0b00):
+	case (0b00):
 	{
 		return 0xFF;
 		break;
 	}
-	case(0b01):
+	case (0b01):
 	{
 		return 0xCC;
 		break;
 	}
-	case(0b10):
+	case (0b10):
 	{
 		return 0x77;
 		break;
 	}
-	case(0b11):
+	case (0b11):
 	{
 		return 0x00;
 		break;
@@ -218,12 +221,13 @@ uint8_t GameBoy::colorToRGB(uint8_t colorGameBoy)
 
 /*------------------------------------------CALLBACK FUNCTIONS--------------------------------*/
 
-void GameBoy::error_callback(int error, const char* description)
+void GameBoy::error_callback(int error, const char *description)
 {
-	cerr << "Error: " << description << "\n" << endl;
+	cerr << "Error: " << description << "\n"
+		 << endl;
 }
 
-void GameBoy::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+void GameBoy::key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
 	//Emulator controls
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
@@ -239,31 +243,30 @@ void GameBoy::key_callback(GLFWwindow* window, int key, int scancode, int action
 	//1: High signal (button not pressed)
 	inputs = 0b00000000;
 
-	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)//Right
+	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) //Right
 		inputs |= 0b00010001;
-	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)//Left
+	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) //Left
 		inputs |= 0b00010010;
-	if (key == GLFW_KEY_UP && action == GLFW_PRESS)//Up
+	if (key == GLFW_KEY_UP && action == GLFW_PRESS) //Up
 		inputs |= 0b00010100;
-	if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)//Down
+	if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) //Down
 		inputs |= 0b00011000;
-	if (key == GLFW_KEY_A && action == GLFW_PRESS)//A
+	if (key == GLFW_KEY_A && action == GLFW_PRESS) //A
 		inputs |= 0b00100001;
-	if (key == GLFW_KEY_B && action == GLFW_PRESS)//B
+	if (key == GLFW_KEY_B && action == GLFW_PRESS) //B
 		inputs |= 0b00100010;
-	if (key == GLFW_KEY_SEMICOLON && action == GLFW_PRESS)//Select
+	if (key == GLFW_KEY_SEMICOLON && action == GLFW_PRESS) //Select
 		inputs |= 0b00100100;
-	if (key == GLFW_KEY_SLASH && action == GLFW_PRESS)//Start
+	if (key == GLFW_KEY_SLASH && action == GLFW_PRESS) //Start
 		inputs |= 0b00101000;
 
 	inputs = ~inputs;
 }
 
-void GameBoy::framebuffer_size_callback(GLFWwindow* window, int width, int height)
+void GameBoy::framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
 	glViewport(0, 0, width, height);
 }
-
 
 /*-----------------------------------------DEBUG----------------------------------------------*/
 
@@ -290,7 +293,6 @@ void GameBoy::writeScreenToFile()
 	{
 		cout << "Error debug file not created." << endl;
 	}
-
 }
 
 void GameBoy::writeAllTiles()
@@ -323,7 +325,6 @@ void GameBoy::writeAllTiles()
 	{
 		cout << "Error debug file not created." << endl;
 	}
-
 }
 
 uint8_t GameBoy::getBit(uint8_t byte, int bitIndex)
