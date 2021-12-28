@@ -1,6 +1,6 @@
 #include "GameBoy.h"
 
-GameBoy *GameBoy::gameboyInstance = 0;
+GameBoy* GameBoy::gameboyInstance = 0;
 uint8_t GameBoy::inputs = 0b00111111;
 bool GameBoy::pause = false;
 
@@ -11,7 +11,7 @@ GameBoy::GameBoy() : cpu(&memory, &ppu), ppu(&memory)
 	pause = false;
 }
 
-GameBoy *GameBoy::getInstance()
+GameBoy* GameBoy::getInstance()
 {
 	if (gameboyInstance == 0)
 	{
@@ -28,13 +28,13 @@ void GameBoy::reset()
 	ppu.reset();
 }
 
-void GameBoy::loadBios(const string &biosPath)
+void GameBoy::loadBios(const string& biosPath)
 {
 	if (memory.loadBiosInMemory(biosPath) == false)
 		exit(1);
 }
 
-void GameBoy::loadGame(const string &gamePath)
+void GameBoy::loadGame(const string& gamePath)
 {
 	if (memory.getBiosInMemeory()) //If there is a bios
 	{
@@ -60,7 +60,7 @@ void GameBoy::launch()
 
 	glfwSetErrorCallback(error_callback); //Set callback error function
 
-	GLFWwindow *window = glfwCreateWindow(EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y, PROJECT_NAME, NULL, NULL); //Create a window
+	GLFWwindow* window = glfwCreateWindow(EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y, PROJECT_NAME, NULL, NULL); //Create a window
 
 	if (!window)
 	{
@@ -80,21 +80,30 @@ void GameBoy::launch()
 		exit(1);
 	}
 
-	glViewport(0, 0, EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y);
-
 	int pixelSize = std::min(EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y) / SCREEN_RESOLUTION_X;
 
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);//Set call-back when changing window's dimensions
 
+	glViewport(0, 0, DOTS_DISPLAY_X, DOTS_DISPLAY_Y);
+
+	//Set the background of the two buffers to white
+	glClearColor(255.0f, 255.0f, 255.0f, 255.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glfwSwapBuffers(window);
 	glClearColor(255.0f, 255.0f, 255.0f, 255.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	//glViewport(0, 0, SCREEN_RESOLUTION_X, SCREEN_RESOLUTION_Y);
-	//glMatrixMode(GL_PROJECTION);
-	//glLoadIdentity();
-	//glOrtho(0, 250.0, 0, 250.0, 0, 0);
-	//glMatrixMode(GL_MODELVIEW);
-	//glLoadIdentity();
+
+
+	float timeRefresh = 1.0f / SCREEN_FREQUENCY;
+	int timeRefreshInt = timeRefresh * 1000;
+	auto timeRefresthScreenStart = std::chrono::high_resolution_clock::now();
+	auto timeRefresthScreenFinish = std::chrono::high_resolution_clock::now();
+
+	auto timeCpuStart = std::chrono::high_resolution_clock::now();
+	auto timeCpuFinish = std::chrono::high_resolution_clock::now();
+	double timeCycle = (1.0 / CPU_FREQUENCY_NORMAL_MODE) * 1000000000; //time of a cyle in nanoseconds
+	int cycles = 0;													   //Machine cycle for the precedent operation
 
 	if (memory.getBiosInMemeory()) //if there is a bios
 	{
@@ -115,16 +124,6 @@ void GameBoy::launch()
 	{
 		loadSaveGame();
 	}
-
-	float timeRefresh = 1.0f / SCREEN_FREQUENCY;
-	int timeRefreshInt = timeRefresh * 1000;
-	auto timeRefresthScreenStart = std::chrono::high_resolution_clock::now();
-	auto timeRefresthScreenFinish = std::chrono::high_resolution_clock::now();
-
-	auto timeCpuStart = std::chrono::high_resolution_clock::now();
-	auto timeCpuFinish = std::chrono::high_resolution_clock::now();
-	double timeCycle = (1.0 / CPU_FREQUENCY_NORMAL_MODE) * 1000000000; //time of a cyle in nanoseconds
-	int cycles = 0;													   //Machine cycle for the precedent operation
 
 	while (!glfwWindowShouldClose(window)) //While window not closed
 	{
@@ -147,16 +146,13 @@ void GameBoy::launch()
 		}
 
 		//Write inputs to cpu that writes it to memory
-		int test = std::chrono::duration_cast<std::chrono::nanoseconds>(timeCpuFinish - timeCpuStart).count();
-		if (std::chrono::duration_cast<std::chrono::nanoseconds>(timeCpuFinish - timeCpuStart).count() > (cycles*timeCycle))
+		timeCpuFinish = std::chrono::high_resolution_clock::now();
+		if (std::chrono::duration_cast<std::chrono::nanoseconds>(timeCpuFinish - timeCpuStart).count() > (cycles * timeCycle))
 		{
 			cpu.writeInputs(inputs);
 			timeCpuStart = std::chrono::high_resolution_clock::now();
+			cycles = cpu.doCycle();
 		}
-
-		//Read one opcode
-		//if ((timeCpuStart-timeCpuFinish)>timeCycle*cycles)
-		cycles = cpu.doCycle();
 
 		//Update screen
 		timeRefresthScreenFinish = std::chrono::high_resolution_clock::now();
@@ -221,13 +217,12 @@ uint8_t GameBoy::colorToRGB(uint8_t colorGameBoy)
 
 /*------------------------------------------CALLBACK FUNCTIONS--------------------------------*/
 
-void GameBoy::error_callback(int error, const char *description)
+void GameBoy::error_callback(int error, const char* description)
 {
-	cerr << "Error: " << description << "\n"
-		 << endl;
+	cerr << "Error: " << description << "\n" << endl;
 }
 
-void GameBoy::key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
+void GameBoy::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	//Emulator controls
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
@@ -263,7 +258,7 @@ void GameBoy::key_callback(GLFWwindow *window, int key, int scancode, int action
 	inputs = ~inputs;
 }
 
-void GameBoy::framebuffer_size_callback(GLFWwindow *window, int width, int height)
+void GameBoy::framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
 }
