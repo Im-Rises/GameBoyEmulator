@@ -55,21 +55,21 @@ public:
 
 	void loadBios(const string& biosPath);
 	void loadGame(const string& gamePath);
+
 	void launch();
 
-	uint8_t colorToRGB(uint8_t colorGameBoy);
 
 private:
+	/*------------------------------------------SCREEN FUNCTIONS--------------------------------*/
 	void updateScreen();
+	uint8_t colorToRGB(uint8_t colorGameBoy);
 
-	/*------------------------------------------GLFW FUNCTIONS--------------------------------*/
+
+	/*------------------------------------------CALLBACK FUNCTIONS--------------------------------*/
 
 	static void error_callback(int error, const char* description);
 	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-
-	/*------------------------------------------OPENGL FUNCTIONS--------------------------------*/
-
-	void RenderGame();
+	static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 
 	/*------------------------------------------DEBUG--------------------------------*/

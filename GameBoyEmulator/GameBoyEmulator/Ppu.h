@@ -4,8 +4,8 @@
 #include <iostream>
 #include "Memory.h"
 
-#define DOTS_NUMBER_X 256
-#define DOTS_NUMBER_Y 256
+//#define DOTS_NUMBER_X 256
+//#define DOTS_NUMBER_Y 256
 
 #define DOTS_DISPLAY_X 160
 #define DOTS_DISPLAY_Y 144
@@ -30,6 +30,7 @@ private:
 
 public:
 	Ppu(Memory* memory);
+	void reset();
 	uint8_t getLcdScreenPixel(int indexX, int indexY);
 	void draw(const int& cycles);
 

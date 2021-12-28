@@ -4,6 +4,11 @@ Ppu::Ppu(Memory* memory)
 {
 	this->memory = memory;
 
+	reset();
+}
+
+void Ppu::reset()
+{
 	for (int j = 0; j < DOTS_DISPLAY_Y; j++)
 	{
 		for (int i = 0; i < DOTS_DISPLAY_X; i++)

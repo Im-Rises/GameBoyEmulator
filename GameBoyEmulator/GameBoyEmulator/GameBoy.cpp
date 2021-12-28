@@ -26,6 +26,7 @@ void GameBoy::reset()
 {
 	cpu.reset();
 	memory.reset();
+	ppu.reset();
 }
 
 void GameBoy::loadBios(const string& biosPath)
@@ -83,6 +84,14 @@ void GameBoy::launch()
 
 	int pixelSize = std::min(EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y) / SCREEN_RESOLUTION_X;
 
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+	glClearColor(255.0f, 255.0f, 255.0f, 255.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	float timeRefresh = 1.0f / SCREEN_FREQUENCY;
+	int timeRefreshInt = timeRefresh * 1000;
+
 	//glViewport(0, 0, SCREEN_RESOLUTION_X, SCREEN_RESOLUTION_Y);
 	//glMatrixMode(GL_PROJECTION);
 	//glLoadIdentity();
@@ -110,26 +119,32 @@ void GameBoy::launch()
 		loadSaveGame();
 	}
 
+
+	auto timeRefresthScreenStart = std::chrono::high_resolution_clock::now();
+	auto timeRefresthScreenFinish = std::chrono::high_resolution_clock::now();
+
+	auto timeCpuStart = std::chrono::high_resolution_clock::now();
+	auto timeCpuFinish = std::chrono::high_resolution_clock::now();
 	int cycles = 0;
+
 	while (!glfwWindowShouldClose(window))//While window not closed
 	{
-		if (debug)
-		{
-			writeScreenToFile();
-			writeAllTiles();
-			debug = false;
-		}
-
-		auto start = std::chrono::high_resolution_clock::now();
 
 		//Write inputs to cpu that writes it to memory
 		cpu.writeInputs(inputs);
 
 		//Read one opcode
 		cycles = cpu.doCycle();
-		//cycles *= 4;
+
 		if (true)
 		{
+			//if (debug)
+			//{
+			//	writeScreenToFile();
+			//	writeAllTiles();
+			//	debug = false;
+			//}
+
 			if (cpu.getPc() == 0x00E9)
 			{
 				writeScreenToFile();
@@ -138,25 +153,36 @@ void GameBoy::launch()
 			}
 		}
 
-		//SwapBuffers
-		//glfwSwapBuffers(window);
-
 		//Get evenements
 		glfwPollEvents();
-		// operation to be timed ...
 
-		auto finish = std::chrono::high_resolution_clock::now();
-		//std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(finish - start).count() << "ns\n";
-		
+
 		//Update screen
-		//if ((finish - start) > 0)
-		//{
-		//	updateScreen();
-		//}
+		timeRefresthScreenFinish = std::chrono::high_resolution_clock::now();
+		if (std::chrono::duration_cast<std::chrono::milliseconds>(timeRefresthScreenFinish - timeRefresthScreenStart).count() > timeRefreshInt)
+		{
+			updateScreen();
+			glfwSwapBuffers(window);
+			timeRefresthScreenStart = std::chrono::high_resolution_clock::now();
+		}
 	}
 
 	glfwDestroyWindow(window);//Destroy window and context
 	glfwTerminate();//Terminate GLFW
+}
+
+
+/*------------------------------------------SCREEN FUNCTIONS--------------------------------*/
+
+void GameBoy::updateScreen()
+{
+	for (int y = 0; y < DOTS_DISPLAY_Y; y++)
+	{
+		for (int x = 0; x < DOTS_DISPLAY_X; x++)
+		{
+			colorToRGB(ppu.getLcdScreenPixel(x, y));
+		}
+	}
 }
 
 uint8_t GameBoy::colorToRGB(uint8_t colorGameBoy)
@@ -190,7 +216,7 @@ uint8_t GameBoy::colorToRGB(uint8_t colorGameBoy)
 	}
 }
 
-/*------------------------------------------GLFW FUNCTIONS--------------------------------*/
+/*------------------------------------------CALLBACK FUNCTIONS--------------------------------*/
 
 void GameBoy::error_callback(int error, const char* description)
 {
@@ -233,29 +259,9 @@ void GameBoy::key_callback(GLFWwindow* window, int key, int scancode, int action
 	inputs = ~inputs;
 }
 
-
-/*-----------------------------------------OPENGL FUNCTIONS----------------------------------------------*/
-
-void GameBoy::updateScreen()
+void GameBoy::framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-	for (int y = 0; y < DOTS_NUMBER_Y; y++)
-	{
-		for (int x = 0; x < DOTS_DISPLAY_X; x++)
-		{
-			ppu.getLcdScreenPixel(x, y);
-			//Get memory data
-			//memory.read
-		}
-	}
-}
-
-void GameBoy::RenderGame()
-{
-	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//glLoadIdentity();
-	//glRasterPos2i(-1, 1);
-	//glPixelZoom(1, -1);
-	//glDrawPixels(160, 144, GL_RGB, GL_UNSIGNED_BYTE, ppu.lcdScreen);
+	glViewport(0, 0, width, height);
 }
 
 
