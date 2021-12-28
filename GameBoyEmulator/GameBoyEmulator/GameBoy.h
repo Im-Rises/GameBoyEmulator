@@ -26,7 +26,7 @@
 
 //Screen dimensions 4.4 x 4 cm
 
-#define SCREEN_FREQUENCY 59.7	//In fps
+#define SCREEN_FREQUENCY 60	//In fps
 
 /*
 * this class is used to made an interface between the CPU and the screen, buttons.

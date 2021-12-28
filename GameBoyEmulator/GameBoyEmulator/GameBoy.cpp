@@ -79,6 +79,8 @@ void GameBoy::launch()
 		exit(1);
 	}
 
+	glViewport(0, 0, EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y);
+
 	int pixelSize = std::min(EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y) / SCREEN_RESOLUTION_X;
 
 	//glViewport(0, 0, SCREEN_RESOLUTION_X, SCREEN_RESOLUTION_Y);
@@ -95,6 +97,12 @@ void GameBoy::launch()
 		//{
 
 		//}
+	}
+	else
+	{
+		//cpu.setPc(ROM_DATA_AREA);
+		//cpu.setCpuWithoutBios();
+		//memory.setMemoryWithoutBios();
 	}
 
 	if (useSaveFile && cpu.getPc() == 0x100)//Once game is launching put save into ram
@@ -113,10 +121,6 @@ void GameBoy::launch()
 		}
 
 		auto start = std::chrono::high_resolution_clock::now();
-
-
-		//Update screen
-
 
 		//Write inputs to cpu that writes it to memory
 		cpu.writeInputs(inputs);
@@ -142,8 +146,13 @@ void GameBoy::launch()
 		// operation to be timed ...
 
 		auto finish = std::chrono::high_resolution_clock::now();
-
 		//std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(finish - start).count() << "ns\n";
+		
+		//Update screen
+		//if ((finish - start) > 0)
+		//{
+		//	updateScreen();
+		//}
 	}
 
 	glfwDestroyWindow(window);//Destroy window and context

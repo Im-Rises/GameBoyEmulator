@@ -1,3 +1,10 @@
-﻿  GameBoy.cpp
-E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\GameBoy.cpp(191,9): warning C4552: '!=' : résultat de l'expression non utilisé
+﻿  Cpu.cpp
+  GameBoy.cpp
+E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\GameBoy.cpp(203,9): warning C4552: '!=' : résultat de l'expression non utilisé
+  Memory.cpp
+E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Memory.cpp(65,15): warning C4244: 'initialisation' : conversion de 'std::streamoff' en 'int', perte possible de données
+  Ppu.cpp
+  binaryLib.cpp
+  main.cpp
+  Génération de code en cours...
   GameBoyEmulator.vcxproj -> E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\x64\Debug\GameBoyEmulator.exe

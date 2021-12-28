@@ -12,7 +12,6 @@ void Memory::reset()
 	{
 		memoryArray[i] = 0;
 	}
-	memoryArray[LCDC_ADDRESS] = 0x01;
 }
 
 uint8_t Memory::read(const uint16_t index)const

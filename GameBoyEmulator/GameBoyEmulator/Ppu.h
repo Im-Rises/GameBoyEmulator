@@ -37,6 +37,7 @@ private:
 	void drawLineSimulation();
 	void drawBackgroundLine();
 	void drawSpritesLine();
+	void setRegisters();
 
 	uint8_t transformDotDataToColor(const uint8_t& dotData, const uint16_t& dataPaletteAddress);
 

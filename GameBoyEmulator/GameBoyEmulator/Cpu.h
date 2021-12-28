@@ -58,6 +58,7 @@ public:
 
 	double getTimeCycle();
 	uint16_t getPc();
+	void setPc(uint16_t pc);
 
 private:
 	uint16_t haltSubFunction();					//Halt mode function
@@ -84,7 +85,10 @@ private:
 	/// Mnemonic therms:
 	/// - R register
 	/// - RP registers pair (for example HL)
-	/// - d8 direct 8 bits following in the memory pointed by the pc
+	/// - d8 direct 8 
+	/// 
+	/// 
+	/// s following in the memory pointed by the pc
 	/// - d16 direct 16 bits following in the memory pointed by the pc and pc+1
 	/// - aRP value pointed in the memory by the registers pair value
 	/// - Ro means a register + an offset

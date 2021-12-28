@@ -8,7 +8,7 @@ Ppu::Ppu(Memory* memory)
 	{
 		for (int i = 0; i < DOTS_DISPLAY_X; i++)
 		{
-			lcdScreen[i][j] = 255;
+			lcdScreen[i][j] = 0;
 		}
 	}
 }
@@ -25,6 +25,8 @@ void Ppu::draw(const int& cycles)//Not working
 	{
 		drawLineSimulation();
 		drawBackgroundLine();
+		drawSpritesLine();
+		setRegisters();
 	}
 
 	if (memory->read(LY_ADDRESS) >= VERTICAL_BLANKING_LINES_NUMBER)
@@ -154,6 +156,18 @@ void Ppu::drawBackgroundLine()
 }
 
 void Ppu::drawSpritesLine()
+{
+	uint8_t lcdc = memory->read(LCDC_ADDRESS);
+
+	if (testBit(lcdc, 1))//if OBJ is ON
+	{
+		bool sprite8x16Dots = getBit(lcdc, 2); //0: 8 x 8 dots		1 : 8 x 16 dots
+
+
+	}
+}
+
+void Ppu::setRegisters()
 {
 
 }

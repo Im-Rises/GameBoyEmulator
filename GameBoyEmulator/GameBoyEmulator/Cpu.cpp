@@ -86,6 +86,11 @@ uint16_t Cpu::getPc()
 	return pc;
 }
 
+void Cpu::setPc(uint16_t pc)
+{
+	this->pc = pc;
+}
+
 uint16_t Cpu::haltSubFunction()
 {
 	IME = 0;
