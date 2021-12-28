@@ -50,6 +50,8 @@
 
 #define BG_PALETTE_DATA 0xFF47
 
+#define ETERNAL_EXPANSION_WORKING_RAM 0xA000
+
 
 using namespace std;
 

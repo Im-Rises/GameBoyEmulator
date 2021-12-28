@@ -3,8 +3,9 @@ e:\perso\developpement\programmes\programmes\c++\gameboyemulator\gameboyemulator
 e:\perso\developpement\programmes\programmes\c++\gameboyemulator\gameboyemulator\gameboyemulator\x64\debug\memory.obj
 e:\perso\developpement\programmes\programmes\c++\gameboyemulator\gameboyemulator\gameboyemulator\x64\debug\main.obj
 e:\perso\developpement\programmes\programmes\c++\gameboyemulator\gameboyemulator\gameboyemulator\x64\debug\ppu.obj
-e:\perso\developpement\programmes\programmes\c++\gameboyemulator\gameboyemulator\gameboyemulator\x64\debug\gameboy.obj
 e:\perso\developpement\programmes\programmes\c++\gameboyemulator\gameboyemulator\gameboyemulator\x64\debug\cpu.obj
+e:\perso\developpement\programmes\programmes\c++\gameboyemulator\gameboyemulator\gameboyemulator\x64\debug\binarylib.obj
+e:\perso\developpement\programmes\programmes\c++\gameboyemulator\gameboyemulator\gameboyemulator\x64\debug\gameboy.obj
 e:\perso\developpement\programmes\programmes\c++\gameboyemulator\gameboyemulator\x64\debug\gameboyemulator.exe
 e:\perso\developpement\programmes\programmes\c++\gameboyemulator\gameboyemulator\gameboyemulator\x64\debug\gameboyemulator.ilk
 e:\perso\developpement\programmes\programmes\c++\gameboyemulator\gameboyemulator\x64\debug\gameboyemulator.pdb

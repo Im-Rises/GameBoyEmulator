@@ -5,6 +5,8 @@
 #include <chrono>
 #include <fstream>
 
+#include "settings.h"
+
 #include "Cpu.h"
 #include "Memory.h"
 #include "Ppu.h"
@@ -44,6 +46,8 @@ private:
 
 	static bool pause;				//Emulator in pause
 	static uint8_t inputs;			//Game Boy inputs (Buttons)
+	bool fullScreen;
+	bool useSaveFile;
 
 public:
 	static GameBoy* getInstance();
@@ -74,6 +78,15 @@ private:
 	void writeScreenToFile();
 	void writeAllTiles();
 	uint8_t getBit(uint8_t byte, int bitIndex);
+
+
+	/*------------------------------------------SAVESTATE AND SAVEFILE--------------------------------*/
+
+	void writeSaveGame();
+	void loadSaveGame();
+
+	void writeSaveState();
+	void loadSaveState();
 
 };
 

@@ -17,8 +17,6 @@ void Memory::reset()
 
 uint8_t Memory::read(const uint16_t index)const
 {
-	//if (index == 0x8190)
-	//	cout << "Working" << endl;
 	return memoryArray[index];
 }
 
