@@ -214,11 +214,9 @@ void Ppu::drawSpritesLine()
 
 void Ppu::setRegisters()
 {
-	uint8_t stat = memory->read(STAT_ADDRESS);
 	uint8_t ly = memory->read(LY_ADDRESS);
 	uint8_t lyc = memory->read(LYC_ADDRESS);
-
-	//memory->write(STAT_ADDRESS, (ly == lyc));//RESUME HERE
+	memory->setResetBitMemory(STAT_ADDRESS, (ly == lyc), 2);
 }
 
 uint8_t Ppu::transformDotDataToColor(const uint8_t& dotData, const uint16_t& dataPaletteAddress)

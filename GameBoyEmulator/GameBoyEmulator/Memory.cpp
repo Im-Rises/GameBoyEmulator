@@ -62,7 +62,7 @@ bool Memory::loadBiosInMemory(const string& biosPath)
 	}
 }
 
-bool Memory::loadRomInMemory(const string& romPath,const int index)
+bool Memory::loadRomInMemory(const string& romPath, const int index)
 {
 	std::ifstream input(romPath, std::ios::binary);
 	if (input)
@@ -90,8 +90,25 @@ bool Memory::getBiosInMemeory()
 	return biosInMemory;
 }
 
-void Memory::setResetBitMemory(const uint16_t& address, const bool value, const int index)
+void Memory::setResetBitMemory(const uint16_t& address, const bool value, const int bitIndex)
 {
-	
-	//memoryArray[address]
+	if (value)
+		memoryArray[address] = setBit(memoryArray[address], bitIndex);
+	else
+		memoryArray[address] = resetBit(memoryArray[address], bitIndex);
+}
+
+uint8_t Memory::setBit(uint8_t byte, int bitIndex)
+{
+	return (byte | (1 << bitIndex));
+}
+
+uint8_t Memory::resetBit(uint8_t byte, int bitIndex)
+{
+	return (byte & (~(0b00000001 << bitIndex)));
+}
+
+bool Memory::testBit(int value, int bitNumber)
+{
+	return (((value >> bitNumber) & 0x1) == 1);
 }
