@@ -2,6 +2,8 @@
 
 GameBoy Emulator developped in C++ with Visual Studio 2019 using the GLFW and OpenGL libraries.
 
+https://user-images.githubusercontent.com/59691442/147654838-0d3e11d2-5b09-46fa-ac63-f884d138ea05.mp4
+
 ## Console specifications
 
 ## Task order
