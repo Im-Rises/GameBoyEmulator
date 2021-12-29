@@ -10,6 +10,7 @@ GameBoy::GameBoy() : cpu(&memory, &ppu), ppu(&memory)
 	useSaveFile = USE_SAVE_FILE;
 	pause = false;
 	fullSpeed = false;
+	pixelSize = 2.0f / (float)DOTS_DISPLAY_X;
 }
 
 GameBoy* GameBoy::getInstance()
@@ -86,12 +87,7 @@ void GameBoy::launch()
 	glViewport(0, 0, EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y);
 
 	//Set the background of the two buffers to white
-	glClearColor(255.0f, 255.0f, 255.0f, 255.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-	glfwSwapBuffers(window);
-	glClearColor(255.0f, 255.0f, 255.0f, 255.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-
+	setBackground(window);
 
 	float timeRefresh = 1.0f / SCREEN_FREQUENCY;
 	int timeRefreshInt = timeRefresh * 1000;
@@ -135,12 +131,12 @@ void GameBoy::launch()
 			//	debug = false;
 			//}
 
-			//if (cpu.getPc() == 0x00E9)
-			//{
-			//	writeScreenToFile();
-			//	writeAllTiles();
-			//	cerr << "Security block game" << endl;
-			//}
+			if (cpu.getPc() == 0x00E9)
+			{
+				writeScreenToFile();
+				writeAllTiles();
+				cerr << "Security block game" << endl;
+			}
 		}
 
 		//Write inputs to cpu that writes it to memory
@@ -173,7 +169,8 @@ void GameBoy::launch()
 
 void GameBoy::updateScreen()
 {
-	float rectangleSize = 2.0f / (float)DOTS_DISPLAY_X;
+	//float rectangleSize = 2.0f / (float)DOTS_DISPLAY_X;
+	float rectangleSize = pixelSize;
 
 	glBegin(GL_QUADS);
 	for (int y = 0; y < DOTS_DISPLAY_Y; y++)
@@ -272,6 +269,7 @@ void GameBoy::key_callback(GLFWwindow* window, int key, int scancode, int action
 
 void GameBoy::framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
+	setBackground(window);
 	glViewport(0, 0, width, height);
 }
 
@@ -339,7 +337,7 @@ uint8_t GameBoy::getBit(uint8_t byte, int bitIndex)
 	return (byte >> bitIndex) & 0x1;
 }
 
-/*------------------------------------------DEBUG--------------------------------*/
+/*------------------------------------------SAVESTATE AND SAVEFILE--------------------------------*/
 
 void GameBoy::writeSaveGame()
 {
@@ -394,4 +392,16 @@ void GameBoy::loadSaveState()
 {
 	//Read savestate
 	//Set every data
+}
+
+
+/*------------------------------------------OPENGL FUNCTIONS--------------------------------*/
+
+void GameBoy::setBackground(GLFWwindow* window)
+{
+	glClearColor(255.0f, 255.0f, 255.0f, 255.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glfwSwapBuffers(window);
+	glClearColor(255.0f, 255.0f, 255.0f, 255.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
 }

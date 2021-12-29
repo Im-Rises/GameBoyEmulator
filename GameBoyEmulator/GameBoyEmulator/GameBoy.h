@@ -47,6 +47,7 @@ private:
 	bool fullScreen;
 	bool useSaveFile;
 	bool fullSpeed;
+	float pixelSize;
 
 public:
 	static GameBoy* getInstance();
@@ -86,6 +87,11 @@ private:
 
 	void writeSaveState();
 	void loadSaveState();
+
+
+	/*------------------------------------------OPENGL FUNCTIONS--------------------------------*/
+
+	static void setBackground(GLFWwindow* window);
 
 };
 

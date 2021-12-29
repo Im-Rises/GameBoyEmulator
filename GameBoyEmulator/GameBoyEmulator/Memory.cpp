@@ -12,6 +12,12 @@ void Memory::reset()
 	{
 		memoryArray[i] = 0;
 	}
+
+	//For bootrom black square
+	for (int i = 0x100; i < 0x150; i++)
+	{
+		memoryArray[i] = 0xFF;
+	}
 }
 
 uint8_t Memory::read(const uint16_t index)const
