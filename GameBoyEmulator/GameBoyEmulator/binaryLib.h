@@ -11,6 +11,7 @@ typedef unsigned int       uint32;
 typedef unsigned long long uint64;
 
 uint8 getBit(uint8 byte, int bitIndex);
+uint8 setBit(uint8 byte, int bitIndex);
 bool testBit(int value, int bitNumber);
 
 

@@ -89,3 +89,9 @@ bool Memory::getBiosInMemeory()
 {
 	return biosInMemory;
 }
+
+void Memory::setResetBitMemory(const uint16_t& address, const bool value, const int index)
+{
+	
+	//memoryArray[address]
+}

@@ -2202,5 +2202,3 @@ void Cpu::STOP()
 	cycles++;
 	pc++;
 }
-
-

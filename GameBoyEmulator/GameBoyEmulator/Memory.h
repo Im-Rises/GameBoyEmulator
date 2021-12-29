@@ -82,6 +82,7 @@ public:
 	bool loadBiosInMemory(const string& biosPath);
 	bool loadRomInMemory(const string& romPath, const int index);
 	bool getBiosInMemeory();
+	void setResetBitMemory(const uint16_t& address, const bool value, const int index);
 };
 
 #endif
