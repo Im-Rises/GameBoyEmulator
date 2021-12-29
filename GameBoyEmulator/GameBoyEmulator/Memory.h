@@ -52,6 +52,8 @@
 
 #define ETERNAL_EXPANSION_WORKING_RAM 0xA000
 
+#define STAT_ADDRESS 0xFF41
+
 
 using namespace std;
 

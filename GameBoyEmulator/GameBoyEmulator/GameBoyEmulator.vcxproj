@@ -150,6 +150,7 @@
     <ClCompile Include="binaryLib.cpp" />
     <ClCompile Include="Cpu.cpp" />
     <ClCompile Include="GameBoy.cpp" />
+    <ClCompile Include="openGlLib.cpp" />
     <ClCompile Include="Ppu.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Memory.cpp" />
@@ -159,6 +160,7 @@
     <ClInclude Include="binaryLib.h" />
     <ClInclude Include="Cpu.h" />
     <ClInclude Include="GameBoy.h" />
+    <ClInclude Include="openGlLib.h" />
     <ClInclude Include="Ppu.h" />
     <ClInclude Include="Memory.h" />
     <ClInclude Include="settings.h" />

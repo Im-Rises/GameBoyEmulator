@@ -1,4 +1,3 @@
-﻿  GameBoy.cpp
-E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\GameBoy.cpp(97,21): warning C4244: 'initialisation' : conversion de 'float' en 'int', perte possible de données
-E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\GameBoy.cpp(229,9): warning C4552: '!=' : résultat de l'expression non utilisé
+﻿  Memory.cpp
+E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Memory.cpp(65,15): warning C4244: 'initialisation' : conversion de 'std::streamoff' en 'int', perte possible de données
   GameBoyEmulator.vcxproj -> E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\x64\Debug\GameBoyEmulator.exe

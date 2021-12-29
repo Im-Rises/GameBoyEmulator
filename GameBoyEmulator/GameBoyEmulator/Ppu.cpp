@@ -107,13 +107,7 @@ void Ppu::drawBackgroundLine()
 		else
 			yPos = scy + ly;
 
-		/// <summary>
-		/// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// </summary>
 		uint16_t tileRow = (yPos / 8) * 32;//Contains all precedents row 
-		/// <summary>
-		/// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// </summary>
 
 		for (int pixel = 0; pixel < DOTS_DISPLAY_X; pixel++)
 		{
@@ -124,26 +118,18 @@ void Ppu::drawBackgroundLine()
 
 			uint8_t tileColumn = xPos / 8;
 
-			/// <summary>
-			/// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			/// </summary>
 			int16_t tileNum;//Can be signed or unsigend depending of the tileDataArea
 
 			if (unsignedValue)
 				tileNum = (uint8_t)memory->read(backgroundMemoryCode + tileRow + tileColumn);
 			else
 				tileNum = (int8_t)memory->read(backgroundMemoryCode + tileRow + tileColumn);
-			/// <summary>
-			/// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			/// </summary>
 
 			uint16_t tileLocation;
 			if (unsignedValue)
 				tileLocation = tileDataArea + tileNum * 16;
 			else
 				tileLocation = tileDataArea + (tileNum + 128) * 16;
-
-			//cout << hex << (int)tileLocation << endl;
 
 			uint8_t line = (yPos % 8) * 2;
 			uint8_t dataLine1 = memory->read(tileLocation + line);
@@ -164,7 +150,7 @@ void Ppu::drawSpritesLine()
 {
 	uint8_t lcdc = memory->read(LCDC_ADDRESS);
 
-	if (testBit(lcdc, 1))//if OBJ is ON
+	if (testBit(lcdc, 1))//if OBJ FLAG is ON
 	{
 		bool sprite8x16Dots = getBit(lcdc, 2); //0: 8 x 8 dots		1 : 8 x 16 dots
 

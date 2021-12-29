@@ -21,10 +21,8 @@
 #define EMULATOR_SCREEN_SIZE_X 640
 #define EMULATOR_SCREEN_SIZE_Y 576
 
-#define SCREEN_RESOLUTION_X 160
-#define SCREEN_RESOLUTION_Y 144
-
-//Screen dimensions 4.4 x 4 cm
+//#define SCREEN_RESOLUTION_X 160
+//#define SCREEN_RESOLUTION_Y 144
 
 #define SCREEN_FREQUENCY 60	//In fps
 
@@ -48,6 +46,7 @@ private:
 	static uint8_t inputs;			//Game Boy inputs (Buttons)
 	bool fullScreen;
 	bool useSaveFile;
+	bool fullSpeed;
 
 public:
 	static GameBoy* getInstance();

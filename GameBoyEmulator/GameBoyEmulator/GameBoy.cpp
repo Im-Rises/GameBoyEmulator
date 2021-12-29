@@ -9,6 +9,7 @@ GameBoy::GameBoy() : cpu(&memory, &ppu), ppu(&memory)
 	fullScreen = FULL_SCREEN;
 	useSaveFile = USE_SAVE_FILE;
 	pause = false;
+	fullSpeed = false;
 }
 
 GameBoy* GameBoy::getInstance()
@@ -80,11 +81,9 @@ void GameBoy::launch()
 		exit(1);
 	}
 
-	int pixelSize = std::min(EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y) / SCREEN_RESOLUTION_X;
-
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);//Set call-back when changing window's dimensions
 
-	glViewport(0, 0, DOTS_DISPLAY_X, DOTS_DISPLAY_Y);
+	glViewport(0, 0, EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y);
 
 	//Set the background of the two buffers to white
 	glClearColor(255.0f, 255.0f, 255.0f, 255.0f);
@@ -92,7 +91,6 @@ void GameBoy::launch()
 	glfwSwapBuffers(window);
 	glClearColor(255.0f, 255.0f, 255.0f, 255.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
-
 
 
 	float timeRefresh = 1.0f / SCREEN_FREQUENCY;
@@ -137,12 +135,12 @@ void GameBoy::launch()
 			//	debug = false;
 			//}
 
-			if (cpu.getPc() == 0x00E9)
-			{
-				writeScreenToFile();
-				writeAllTiles();
-				cerr << "Security block game" << endl;
-			}
+			//if (cpu.getPc() == 0x00E9)
+			//{
+			//	writeScreenToFile();
+			//	writeAllTiles();
+			//	cerr << "Security block game" << endl;
+			//}
 		}
 
 		//Write inputs to cpu that writes it to memory
@@ -175,13 +173,27 @@ void GameBoy::launch()
 
 void GameBoy::updateScreen()
 {
+	float rectangleSize = 2.0f / (float)DOTS_DISPLAY_X;
+
+	glBegin(GL_QUADS);
 	for (int y = 0; y < DOTS_DISPLAY_Y; y++)
 	{
+		float yPos = +1.0f - y * rectangleSize;//Begin drawing on the upper part of the screen
+
 		for (int x = 0; x < DOTS_DISPLAY_X; x++)
 		{
-			colorToRGB(ppu.getLcdScreenPixel(x, y));
+			float xPos = -1.0f + x * rectangleSize;//Begin drawing from the left part of the screen
+
+			float color = (float)colorToRGB(ppu.getLcdScreenPixel(x, y)) / (float)255;
+			glColor3f(color, color, color);
+
+			glVertex2f(xPos, yPos);
+			glVertex2f(xPos + rectangleSize, yPos);
+			glVertex2f(xPos + rectangleSize, yPos + rectangleSize);
+			glVertex2f(xPos, yPos + rectangleSize);
 		}
 	}
+	glEnd();
 }
 
 uint8_t GameBoy::colorToRGB(uint8_t colorGameBoy)
