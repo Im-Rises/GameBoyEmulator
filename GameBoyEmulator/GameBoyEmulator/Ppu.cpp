@@ -154,7 +154,61 @@ void Ppu::drawSpritesLine()
 	{
 		bool sprite8x16Dots = getBit(lcdc, 2); //0: 8 x 8 dots		1 : 8 x 16 dots
 
+		for (int i = 0; i < SPRITES_NUMBER; i++)
+		{
+			int index = i * 4;//Sprites data are composed of 4 bytes of data
 
+			uint8_t yCoordinate = memory->read(OAM_Y_COODINATE + index) - 16;//From the Developper guide it is supposed to be 10 but that doesn't make sense
+			uint8_t xCoordinate = memory->read(OAM_X_COODINATE + index) - 8;
+			uint8_t chrCode = memory->read(OAM_CHR_CODE + index);
+			uint8_t attributeFlag = memory->read(OAM_ATTRIBUTE_FLAG + index);
+
+			bool horizontalFlip = testBit(lcdc, 5);
+			bool verticalFlip = testBit(lcdc, 6);
+			bool displayPriority = testBit(lcdc, 7);
+
+			uint8_t ly = memory->read(LY_ADDRESS);
+
+			uint8_t spriteSize = (sprite8x16Dots ? 16 : 8);
+
+			if ((ly >= yCoordinate) && (ly < (yCoordinate + spriteSize)))//Before drawing sprite, we verify if it is not out of screen
+			{
+				uint8_t lineSprite = ly - yCoordinate;//Get line to draw depending if the sprite is flipped horizontally or vertically
+
+				if (horizontalFlip)
+					lineSprite = (lineSprite - spriteSize) * -1;
+
+				lineSprite *= 2;
+				uint8_t dataLine1 = memory->read(0x8000 + chrCode * 16 + lineSprite);//Data line 1
+				uint8_t dataLine2 = memory->read(0x8000 + chrCode * 16 + lineSprite + 1);//Data line 2
+
+				for (int pixel = 0; pixel < 8; pixel++)
+				{
+					int pixelIndex = pixel;
+
+					if (verticalFlip)
+						pixelIndex = (pixelIndex - 7) * -1;
+
+					uint8_t colorCode = getBit(dataLine1, pixelIndex) + (getBit(dataLine2, (pixelIndex)) << 1);
+
+					uint8_t color;
+					if (testBit(lcdc, 4))
+						color = transformDotDataToColor(colorCode, OPB0_PALETTE_DATA);
+					else
+						color = transformDotDataToColor(colorCode, OPB1_PALETTE_DATA);
+
+					if (testBit(lcdc, 7))//Priority to background
+					{
+						//Do nothing (display pixel of background)
+					}
+					else//Priority to sprite
+					{
+						if (ly < DOTS_DISPLAY_Y)
+							lcdScreen[xCoordinate + pixel][ly] = color;
+					}
+				}
+			}
+		}
 	}
 }
 

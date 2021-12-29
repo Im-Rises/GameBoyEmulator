@@ -124,19 +124,19 @@ void GameBoy::launch()
 		//Debug
 		if (true)
 		{
-			//if (debug)
-			//{
-			//	writeScreenToFile();
-			//	writeAllTiles();
-			//	debug = false;
-			//}
-
-			if (cpu.getPc() == 0x00E9)
+			if (debug)
 			{
 				writeScreenToFile();
 				writeAllTiles();
-				cerr << "Security block game" << endl;
+				debug = false;
 			}
+
+			//if (cpu.getPc() == 0x00E9)
+			//{
+			//	writeScreenToFile();
+			//	writeAllTiles();
+			//	cerr << "Security block game" << endl;
+			//}
 		}
 
 		//Write inputs to cpu that writes it to memory

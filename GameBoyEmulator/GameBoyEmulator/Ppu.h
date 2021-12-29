@@ -18,6 +18,8 @@
 #define BLOCKS_MEMORY_X 32
 #define BLOCKS_MEMORY_Y 32
 
+#define SPRITES_NUMBER 40
+
 struct Block {
 
 };

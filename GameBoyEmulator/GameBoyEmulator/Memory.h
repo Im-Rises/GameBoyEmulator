@@ -54,6 +54,14 @@
 
 #define STAT_ADDRESS 0xFF41
 
+#define OAM_Y_COODINATE 0xFE00
+#define OAM_X_COODINATE 0xFE01
+#define OAM_CHR_CODE 0xFE02
+#define OAM_ATTRIBUTE_FLAG 0xFE03
+
+#define OPB0_PALETTE_DATA 0xFF48
+#define OPB1_PALETTE_DATA 0xFF49
+
 
 using namespace std;
 
