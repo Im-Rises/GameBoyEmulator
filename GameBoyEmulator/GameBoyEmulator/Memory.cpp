@@ -8,6 +8,7 @@ Memory::Memory()
 void Memory::reset()
 {
 	biosInMemory = false;
+	//Reset all the memory
 	for (int i = 0; i < MEMORY_SIZE; i++)
 	{
 		memoryArray[i] = 0;
@@ -20,6 +21,8 @@ void Memory::reset()
 	}
 }
 
+
+
 uint8 Memory::read(const uint16 index)const
 {
 	return memoryArray[index];
@@ -27,10 +30,9 @@ uint8 Memory::read(const uint16 index)const
 
 void Memory::write(const uint16& index, uint8 value)
 {
-	if (index == 0xFF0F)
-		cout << "test" << endl;
 	memoryArray[index] = value;
 }
+
 
 
 void Memory::increment(const uint16& index)
@@ -42,6 +44,8 @@ void Memory::decrement(const uint16& index)
 {
 	memoryArray[index]--;
 }
+
+
 
 bool Memory::loadBiosInMemory(const string& biosPath)
 {
@@ -109,10 +113,7 @@ void Memory::loadTempArrayInterruptRst()
 	}
 }
 
-bool Memory::getBiosInMemeory()
-{
-	return biosInMemory;
-}
+
 
 void Memory::setResetBitMemory(const uint16& address, const bool value, const int bitIndex)
 {
@@ -125,4 +126,11 @@ void Memory::setResetBitMemory(const uint16& address, const bool value, const in
 void Memory::setMemoryWithoutBios()
 {
 
+}
+
+
+
+bool Memory::getBiosInMemeory()
+{
+	return biosInMemory;
 }

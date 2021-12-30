@@ -9,12 +9,9 @@
 #include "Memory.h"
 #include "Ppu.h"
 
-#include "glew/include/GL/glew.h"
-#include "GLFW/include/glfw3.h"
-
 #include "settings.h"
 #include "binaryLib.h"
-#include "openGlLib.h"
+#include "GlfwOpenglLib.h"
 
 #define VER 0.1
 #define AUTHOR "Im-Rises"
@@ -58,39 +55,12 @@ public:
 
 
 private:
+	/*------------------------------------------INIT WITHOUT BIOS--------------------------------*/
 	void setGameBoyWithoutBios();
 
 	/*------------------------------------------SCREEN FUNCTIONS--------------------------------*/
-	void updateScreen();
+
 	uint8 colorToRGB(uint8 colorGameBoy);
-
-
-	/*------------------------------------------CALLBACK FUNCTIONS--------------------------------*/
-
-	static void error_callback(int error, const char* description);
-	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-	static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-
-
-	/*------------------------------------------DEBUG--------------------------------*/
-	
-	static bool debug;
-	void writeScreenToFile();
-	void writeAllTiles();
-
-
-	/*------------------------------------------SAVESTATE AND SAVEFILE--------------------------------*/
-
-	void writeSaveGame();
-	void loadSaveGame();
-
-	void writeSaveState();
-	void loadSaveState();
-
-
-	/*------------------------------------------OPENGL FUNCTIONS--------------------------------*/
-
-	static void setBackground(GLFWwindow* window);
 
 };
 

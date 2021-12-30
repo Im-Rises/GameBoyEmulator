@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="MyLibs">
+      <UniqueIdentifier>{e21c9b87-023f-499e-b64f-15814bdaa66b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EmulatorSettings">
+      <UniqueIdentifier>{47a48a13-5393-447f-81e6-ff51f04a0b09}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Memory.cpp">
@@ -30,14 +36,17 @@
     <ClCompile Include="GameBoy.cpp">
       <Filter>Fichiers de ressources</Filter>
     </ClCompile>
-    <ClCompile Include="binaryLib.cpp">
+    <ClCompile Include="debug.cpp">
       <Filter>Fichiers de ressources</Filter>
+    </ClCompile>
+    <ClCompile Include="binaryLib.cpp">
+      <Filter>MyLibs</Filter>
+    </ClCompile>
+    <ClCompile Include="GlfwOpenglLib.cpp">
+      <Filter>MyLibs</Filter>
     </ClCompile>
     <ClCompile Include="settings.cpp">
-      <Filter>Fichiers de ressources</Filter>
-    </ClCompile>
-    <ClCompile Include="openGlLib.cpp">
-      <Filter>Fichiers de ressources</Filter>
+      <Filter>EmulatorSettings</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -53,14 +62,17 @@
     <ClInclude Include="GameBoy.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="binaryLib.h">
+    <ClInclude Include="debug.h">
       <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="binaryLib.h">
+      <Filter>MyLibs</Filter>
+    </ClInclude>
+    <ClInclude Include="GlfwOpenglLib.h">
+      <Filter>MyLibs</Filter>
     </ClInclude>
     <ClInclude Include="settings.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="openGlLib.h">
-      <Filter>Fichiers d%27en-tête</Filter>
+      <Filter>EmulatorSettings</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

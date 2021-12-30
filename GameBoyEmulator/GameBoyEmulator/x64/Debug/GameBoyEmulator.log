@@ -1,3 +1,8 @@
-﻿  Memory.cpp
-E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Memory.cpp(73,15): warning C4244: 'initializing': conversion from 'std::streamoff' to 'int', possible loss of data
+﻿  Cpu.cpp
+  GameBoy.cpp
+E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\GameBoy.cpp(92,45): warning C4305: 'initializing': truncation from 'double' to 'float'
+E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\GameBoy.cpp(93,21): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\GameBoy.cpp(336,9): warning C4552: '!=': result of expression not used
+  main.cpp
+  Generating Code...
   GameBoyEmulator.vcxproj -> E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\x64\Debug\GameBoyEmulator.exe

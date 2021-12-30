@@ -77,16 +77,21 @@ private:
 public:
 	Memory();
 	void reset();
+
 	uint8 read(const uint16 index)const;
 	void write(const uint16& index, uint8 value);
+
 	void increment(const uint16& index);
 	void decrement(const uint16& index);
+
 	bool loadBiosInMemory(const string& biosPath);
 	bool loadRomInMemory(const string& romPath);
 	void loadTempArrayInterruptRst();
-	bool getBiosInMemeory();
+
 	void setResetBitMemory(const uint16& address, const bool value, const int bitIndex);
 	void setMemoryWithoutBios();
+
+	bool getBiosInMemeory();
 
 };
 

@@ -17,6 +17,8 @@ void Ppu::reset()
 	}
 }
 
+
+
 uint8 Ppu::getLcdScreenPixel(int indexX, int indexY)
 {
 	return lcdScreen[indexX][indexY];
@@ -32,7 +34,6 @@ void Ppu::draw(const int& cycles)//Not working
 		drawSpritesLine();
 		setRegisters();
 	}
-
 	if (memory->read(LY_ADDRESS) >= VERTICAL_BLANKING_LINES_NUMBER)
 		memory->write(LY_ADDRESS, 0);
 }

@@ -36,7 +36,9 @@ private:
 public:
 	Ppu(Memory* memory);
 	void reset();
+
 	uint8 getLcdScreenPixel(int indexX, int indexY);
+
 	void draw(const int& cycles);
 
 private:

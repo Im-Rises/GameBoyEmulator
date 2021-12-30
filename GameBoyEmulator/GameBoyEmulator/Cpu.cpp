@@ -81,6 +81,7 @@ void Cpu::writeInputs(const uint8& inputs)
 	memory->write(CONTROLLER_DATA_ADDRESS, inputs);
 }
 
+/*------------------------------------------GETTERS AND SETTERS--------------------------------*/
 double Cpu::getTimeCycle()
 {
 	return timeCycle;
@@ -95,6 +96,9 @@ void Cpu::setPc(uint16 pc)
 {
 	this->pc = pc;
 }
+
+
+
 
 uint16 Cpu::haltSubFunction()
 {
