@@ -4,6 +4,10 @@
 #define FULL_SCREEN false
 #define USE_SAVE_FILE true
 
+/*
+* File to look at the .ini file
+* 
+*/
 
 void readInitFile();
 

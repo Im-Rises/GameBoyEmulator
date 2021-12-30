@@ -30,6 +30,12 @@ void GameBoy::reset()
 	ppu.reset();
 }
 
+void GameBoy::setGameBoyWithoutBios()
+{
+	cpu.setCpuWithoutBios();
+	memory.setMemoryWithoutBios();
+}
+
 
 
 void GameBoy::loadBios(const string& biosPath)
@@ -53,140 +59,122 @@ void GameBoy::loadGame(const string& gamePath)
 
 void GameBoy::launch()
 {
-	//create GLFWOPENGLLIB HERE
+	GlfwOpenglLib glfwOpenglLib(EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y, PROJECT_NAME);//Create window
+	//Set the background of the two buffers to white
+	glfwOpenglLib.setBackground();
 
-
-	float timeRefresh = 1.0f / SCREEN_FREQUENCY;
-	int timeRefreshInt = timeRefresh * 1000;
-	auto timeRefresthScreenStart = std::chrono::high_resolution_clock::now();
-	auto timeRefresthScreenFinish = std::chrono::high_resolution_clock::now();
-
-	auto timeCpuStart = std::chrono::high_resolution_clock::now();
-	auto timeCpuFinish = std::chrono::high_resolution_clock::now();
-
-	double timeCycle = (1.0 / CPU_FREQUENCY_NORMAL_MODE) * 1000000000; //time of a cyle in nanoseconds
-	int cycles = 0;													   //Machine cycle for the precedent operation
-
-	if (memory.getBiosInMemeory()) //if there is a bios
+	while (glfwOpenglLib.windowIsActive())
 	{
-		//execute bios until its end. Once done replace the memory from 0 to 0x100 by the cartridge
-		while (cpu.getPc() < 0x100 && !glfwWindowShouldClose(window))
-		{
-			//Write inputs to cpu that writes it to memory
-			timeCpuFinish = std::chrono::high_resolution_clock::now();
-			if (std::chrono::duration_cast<std::chrono::nanoseconds>(timeCpuFinish - timeCpuStart).count() > (cycles * timeCycle))
-			{
-				cpu.writeInputs(inputs);
-				timeCpuStart = std::chrono::high_resolution_clock::now();
-				cycles = cpu.doCycle();
-			}
 
-			//Update screen
-			timeRefresthScreenFinish = std::chrono::high_resolution_clock::now();
-			if (std::chrono::duration_cast<std::chrono::milliseconds>(timeRefresthScreenFinish - timeRefresthScreenStart).count() > timeRefreshInt)
-			{
-				updateScreen();
-				glfwSwapBuffers(window);
-				timeRefresthScreenStart = std::chrono::high_resolution_clock::now();
-			}
-			//Get evenements
-			glfwPollEvents();
-		}
-		memory.loadTempArrayInterruptRst();
-	}
-	else
-	{
-		cpu.setPc(ROM_DATA_AREA);
-		cpu.setCpuWithoutBios();
-		memory.setMemoryWithoutBios();
+		glfwOpenglLib.updateScreen();
+		glfwOpenglLib.getEvenements();
 	}
 
 
-	if (useSaveFile && cpu.getPc() == 0x100) //Once game is launching put save into ram
-	{
-		loadSaveGame();
-	}
+	//float timeRefresh = 1.0f / SCREEN_FREQUENCY;
+	//int timeRefreshInt = timeRefresh * 1000;
+	//auto timeRefresthScreenStart = std::chrono::high_resolution_clock::now();
+	//auto timeRefresthScreenFinish = std::chrono::high_resolution_clock::now();
 
-	while (!glfwWindowShouldClose(window)) //While window not closed
-	{
-		//Debug
-		if (true)
-		{
-			//if (debug)
-			//{
-			//	writeScreenToFile();
-			//	writeAllTiles();
-			//	debug = false;
-			//}
+	//auto timeCpuStart = std::chrono::high_resolution_clock::now();
+	//auto timeCpuFinish = std::chrono::high_resolution_clock::now();
 
-			//if (cpu.getPc() >= 0x239)
-			//	cout << "test" << endl;
-		}
+	//double timeCycle = (1.0 / CPU_FREQUENCY_NORMAL_MODE) * 1000000000; //time of a cyle in nanoseconds
+	//int cycles = 0;													   //Machine cycle for the precedent operation
 
-		//Write inputs to cpu that writes it to memory
-		timeCpuFinish = std::chrono::high_resolution_clock::now();
-		if (std::chrono::duration_cast<std::chrono::nanoseconds>(timeCpuFinish - timeCpuStart).count() > (cycles * timeCycle))
-		{
-			cpu.writeInputs(inputs);
-			timeCpuStart = std::chrono::high_resolution_clock::now();
-			cycles = cpu.doCycle();
-		}
+	//if (memory.getBiosInMemeory()) //if there is a bios
+	//{
+	//	//execute bios until its end. Once done replace the memory from 0 to 0x100 by the cartridge
+	//	while (cpu.getPc() < 0x100 && !glfwWindowShouldClose(window))
+	//	{
+	//		//Write inputs to cpu that writes it to memory
+	//		timeCpuFinish = std::chrono::high_resolution_clock::now();
+	//		if (std::chrono::duration_cast<std::chrono::nanoseconds>(timeCpuFinish - timeCpuStart).count() > (cycles * timeCycle))
+	//		{
+	//			cpu.writeInputs(inputs);
+	//			timeCpuStart = std::chrono::high_resolution_clock::now();
+	//			cycles = cpu.doCycle();
+	//		}
 
-		//Update screen
-		timeRefresthScreenFinish = std::chrono::high_resolution_clock::now();
-		if (std::chrono::duration_cast<std::chrono::milliseconds>(timeRefresthScreenFinish - timeRefresthScreenStart).count() > timeRefreshInt)
-		{
-			updateScreen();
-			glfwSwapBuffers(window);
-			timeRefresthScreenStart = std::chrono::high_resolution_clock::now();
-		}
+	//		//Update screen
+	//		timeRefresthScreenFinish = std::chrono::high_resolution_clock::now();
+	//		if (std::chrono::duration_cast<std::chrono::milliseconds>(timeRefresthScreenFinish - timeRefresthScreenStart).count() > timeRefreshInt)
+	//		{
+	//			updateScreen();
+	//			glfwSwapBuffers(window);
+	//			timeRefresthScreenStart = std::chrono::high_resolution_clock::now();
+	//		}
+	//		//Get evenements
+	//		glfwPollEvents();
+	//	}
+	//	memory.loadTempArrayInterruptRst();
+	//}
+	//else
+	//{
+	//	cpu.setPc(ROM_DATA_AREA);
+	//	cpu.setCpuWithoutBios();
+	//	memory.setMemoryWithoutBios();
+	//}
 
-		//Get evenements
-		glfwPollEvents();
-	}
 
-	glfwDestroyWindow(window); //Destroy window and context
-	glfwTerminate();		   //Terminate GLFW
+	//if (useSaveFile && cpu.getPc() == 0x100) //Once game is launching put save into ram
+	//{
+	//	loadSaveGame();
+	//}
+
+	//while (!glfwWindowShouldClose(window)) //While window not closed
+	//{
+	//	//Debug
+	//	if (true)
+	//	{
+	//		//if (debug)
+	//		//{
+	//		//	writeScreenToFile();
+	//		//	writeAllTiles();
+	//		//	debug = false;
+	//		//}
+
+	//		//if (cpu.getPc() >= 0x239)
+	//		//	cout << "test" << endl;
+	//	}
+
+	//	//Write inputs to cpu that writes it to memory
+	//	timeCpuFinish = std::chrono::high_resolution_clock::now();
+	//	if (std::chrono::duration_cast<std::chrono::nanoseconds>(timeCpuFinish - timeCpuStart).count() > (cycles * timeCycle))
+	//	{
+	//		cpu.writeInputs(inputs);
+	//		timeCpuStart = std::chrono::high_resolution_clock::now();
+	//		cycles = cpu.doCycle();
+	//	}
+
+	//	//Update screen
+	//	timeRefresthScreenFinish = std::chrono::high_resolution_clock::now();
+	//	if (std::chrono::duration_cast<std::chrono::milliseconds>(timeRefresthScreenFinish - timeRefresthScreenStart).count() > timeRefreshInt)
+	//	{
+	//		updateScreen();
+	//		glfwSwapBuffers(window);
+	//		timeRefresthScreenStart = std::chrono::high_resolution_clock::now();
+	//	}
+
+
+	//}
 }
 
 
-void GameBoy::setGameBoyWithoutBios()
-{
-	cpu.setCpuWithoutBios();
-	memory.setMemoryWithoutBios();
-}
+
 
 
 
 /*------------------------------------------SCREEN FUNCTIONS--------------------------------*/
 
-uint8 GameBoy::colorToRGB(uint8 colorGameBoy)
+void GameBoy::updateScreen()
 {
-	switch (colorGameBoy)
+	for (int y = 0; y < DOTS_DISPLAY_Y; y++)
 	{
-	case (0b00):
-	{
-		return 0xFF;
-		break;
-	}
-	case (0b01):
-	{
-		return 0xCC;
-		break;
-	}
-	case (0b10):
-	{
-		return 0x77;
-		break;
-	}
-	case (0b11):
-	{
-		return 0x00;
-		break;
-	}
-	default:
-		cerr << "Error wrong data color";
-		exit(1);
-		break;
+		for (int x = 0; x < DOTS_DISPLAY_X; x++)
+		{
+			//glfwOpenglLib.drawRectangle(pixelSize, x, y, ppu.getLcdScreenPixel(x, y));
+		}
 	}
 }
+

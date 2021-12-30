@@ -141,7 +141,7 @@ void Ppu::drawBackgroundLine()
 			uint8 color = transformDotDataToColor(colorCode, BG_PALETTE_DATA);
 
 			if (ly < DOTS_DISPLAY_Y)
-				lcdScreen[pixel][ly] = color;
+				lcdScreen[pixel][ly] = colorToRGB(color);
 		}
 	}
 }
@@ -204,7 +204,7 @@ void Ppu::drawSpritesLine()
 					else//Priority to sprite
 					{
 						if (ly < DOTS_DISPLAY_Y)
-							lcdScreen[xCoordinate + pixel][ly] = color;
+							lcdScreen[xCoordinate + pixel][ly] = colorToRGB(color);
 					}
 				}
 			}
@@ -250,33 +250,34 @@ uint8 Ppu::transformDotDataToColor(const uint8& dotData, const uint16& dataPalet
 	}
 }
 
-//uint8 Ppu::colorToRGB(uint8 colorGameBoy)
-//{
-//	switch (colorGameBoy)
-//	{
-//	case(0b00):
-//	{
-//		return 0xFF;
-//		break;
-//	}
-//	case(0b01):
-//	{
-//		return 0xCC;
-//		break;
-//	}
-//	case(0b10):
-//	{
-//		return 0x77;
-//		break;
-//	}
-//	case(0b11):
-//	{
-//		return 0x00;
-//		break;
-//	}
-//	default:
-//		cerr << "Error wrong data color";
-//		exit(1);
-//		break;
-//	}
-//}
+uint8 Ppu::colorToRGB(uint8 colorGameBoy)
+{
+	switch (colorGameBoy)
+	{
+	case (0b00):
+	{
+		return 0xFF;
+		break;
+	}
+	case (0b01):
+	{
+		return 0xCC;
+		break;
+	}
+	case (0b10):
+	{
+		return 0x77;
+		break;
+	}
+	case (0b11):
+	{
+		return 0x00;
+		break;
+	}
+	default:
+		cerr << "Error wrong data color";
+		exit(1);
+		break;
+	}
+}
+

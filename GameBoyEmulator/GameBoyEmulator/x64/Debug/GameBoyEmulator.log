@@ -1,8 +1,8 @@
-﻿  Cpu.cpp
-  GameBoy.cpp
-E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\GameBoy.cpp(92,45): warning C4305: 'initializing': truncation from 'double' to 'float'
-E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\GameBoy.cpp(93,21): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\GameBoy.cpp(336,9): warning C4552: '!=': result of expression not used
+﻿  GameBoy.cpp
+  GlfwOpenglLib.cpp
+E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\GlfwOpenglLib.cpp(89,26): warning C4244: 'argument': conversion from 'const int' to 'GLfloat', possible loss of data
+E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\GlfwOpenglLib.cpp(89,19): warning C4244: 'argument': conversion from 'const int' to 'GLfloat', possible loss of data
+E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\GlfwOpenglLib.cpp(89,12): warning C4244: 'argument': conversion from 'const int' to 'GLfloat', possible loss of data
   main.cpp
   Generating Code...
   GameBoyEmulator.vcxproj -> E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\x64\Debug\GameBoyEmulator.exe

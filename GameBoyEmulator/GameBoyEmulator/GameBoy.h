@@ -32,14 +32,14 @@ private:
 	static GameBoy* gameboyInstance;
 	GameBoy();
 
-	//bool onOff;					//On off button state (1:ON, 2:OFF)
 	Cpu cpu;
 	Ppu ppu;
 	Memory memory;
 
-	static bool pause;				//Emulator in pause
 	static uint8 inputs;			//Game Boy inputs (Buttons)
-	bool fullScreen;
+
+	static bool pause;				//Emulator in pause
+	bool fullScreen;				//Full screen mode
 	bool useSaveFile;
 	bool fullSpeed;
 	float pixelSize;
@@ -47,6 +47,7 @@ private:
 public:
 	static GameBoy* getInstance();
 	void reset();
+	void setGameBoyWithoutBios();
 
 	void loadBios(const string& biosPath);
 	void loadGame(const string& gamePath);
@@ -55,12 +56,8 @@ public:
 
 
 private:
-	/*------------------------------------------INIT WITHOUT BIOS--------------------------------*/
-	void setGameBoyWithoutBios();
-
 	/*------------------------------------------SCREEN FUNCTIONS--------------------------------*/
-
-	uint8 colorToRGB(uint8 colorGameBoy);
+	void updateScreen();
 
 };
 
