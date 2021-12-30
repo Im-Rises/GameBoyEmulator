@@ -4,6 +4,8 @@
 #include <iostream>
 #include <fstream>
 
+#include "binaryLib.h"
+
 #define MEMORY_SIZE (0xFFFF + 0x0001)	//65535 KB
 #define ROM_DATA_AREA 0x100
 #define RAM_CHARACTER_DATA_BANK_0_DMG 0x8000
@@ -69,26 +71,23 @@ class Memory {
 
 private:
 	bool biosInMemory;
-	uint8_t memoryArray[MEMORY_SIZE];
-	//uint8_t memoryBios[0x100];
+	uint8 memoryArray[MEMORY_SIZE];
+	uint8 memoryTempInterruptRst[0x100];
 
 public:
 	Memory();
 	void reset();
-	uint8_t read(const uint16_t index)const;
-	void write(const uint16_t& index, uint8_t value);
-	void increment(const uint16_t& index);
-	void decrement(const uint16_t& index);
+	uint8 read(const uint16 index)const;
+	void write(const uint16& index, uint8 value);
+	void increment(const uint16& index);
+	void decrement(const uint16& index);
 	bool loadBiosInMemory(const string& biosPath);
-	bool loadRomInMemory(const string& romPath, const int index);
+	bool loadRomInMemory(const string& romPath);
+	void loadTempArrayInterruptRst();
 	bool getBiosInMemeory();
-	void setResetBitMemory(const uint16_t& address, const bool value, const int bitIndex);
+	void setResetBitMemory(const uint16& address, const bool value, const int bitIndex);
+	void setMemoryWithoutBios();
 
-	uint8_t getBit(uint8_t byte, int bitIndex);
-	uint8_t setBit(uint8_t byte, int bitIndex);
-	uint8_t resetBit(uint8_t byte, int bitIndex);
-
-	bool testBit(int value, int bitNumber);
 };
 
 #endif

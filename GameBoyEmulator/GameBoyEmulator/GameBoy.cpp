@@ -1,7 +1,7 @@
 #include "GameBoy.h"
 
 GameBoy* GameBoy::gameboyInstance = 0;
-uint8_t GameBoy::inputs = 0b00111111;
+uint8 GameBoy::inputs = 0b00111111;
 bool GameBoy::pause = false;
 
 GameBoy::GameBoy() : cpu(&memory, &ppu), ppu(&memory)
@@ -40,12 +40,12 @@ void GameBoy::loadGame(const string& gamePath)
 {
 	if (memory.getBiosInMemeory()) //If there is a bios
 	{
-		memory.loadRomInMemory(gamePath, 0x100);
+		memory.loadRomInMemory(gamePath);
 	}
 	else //If there's no bios
 	{
-		memory.loadRomInMemory(gamePath, 0);
-		//Set memory and CPU like after bios
+		memory.loadRomInMemory(gamePath);
+		setGameBoyWithoutBios();
 	}
 }
 
@@ -98,21 +98,41 @@ void GameBoy::launch()
 	auto timeCpuFinish = std::chrono::high_resolution_clock::now();
 	double timeCycle = (1.0 / CPU_FREQUENCY_NORMAL_MODE) * 1000000000; //time of a cyle in nanoseconds
 	int cycles = 0;													   //Machine cycle for the precedent operation
-
+	
 	if (memory.getBiosInMemeory()) //if there is a bios
 	{
 		//execute bios until its end. Once done replace the memory from 0 to 0x100 by the cartridge
-		//for (int i = 0; i < 0x100; i++)
-		//{
+		while (cpu.getPc() < 0x100 && !glfwWindowShouldClose(window))
+		{
+			//Write inputs to cpu that writes it to memory
+			timeCpuFinish = std::chrono::high_resolution_clock::now();
+			if (std::chrono::duration_cast<std::chrono::nanoseconds>(timeCpuFinish - timeCpuStart).count() > (cycles * timeCycle))
+			{
+				cpu.writeInputs(inputs);
+				timeCpuStart = std::chrono::high_resolution_clock::now();
+				cycles = cpu.doCycle();
+			}
 
-		//}
+			//Update screen
+			timeRefresthScreenFinish = std::chrono::high_resolution_clock::now();
+			if (std::chrono::duration_cast<std::chrono::milliseconds>(timeRefresthScreenFinish - timeRefresthScreenStart).count() > timeRefreshInt)
+			{
+				updateScreen();
+				glfwSwapBuffers(window);
+				timeRefresthScreenStart = std::chrono::high_resolution_clock::now();
+			}
+			//Get evenements
+			glfwPollEvents();
+		}
+		memory.loadTempArrayInterruptRst();
 	}
 	else
 	{
-		//cpu.setPc(ROM_DATA_AREA);
-		//cpu.setCpuWithoutBios();
-		//memory.setMemoryWithoutBios();
+		cpu.setPc(ROM_DATA_AREA);
+		cpu.setCpuWithoutBios();
+		memory.setMemoryWithoutBios();
 	}
+	
 
 	if (useSaveFile && cpu.getPc() == 0x100) //Once game is launching put save into ram
 	{
@@ -131,12 +151,8 @@ void GameBoy::launch()
 				debug = false;
 			}
 
-			//if (cpu.getPc() == 0x00E9)
-			//{
-			//	writeScreenToFile();
-			//	writeAllTiles();
-			//	cerr << "Security block game" << endl;
-			//}
+			if (cpu.getPc() >= 0x21B)
+				cout << "test" << endl;
 		}
 
 		//Write inputs to cpu that writes it to memory
@@ -163,6 +179,13 @@ void GameBoy::launch()
 
 	glfwDestroyWindow(window); //Destroy window and context
 	glfwTerminate();		   //Terminate GLFW
+}
+
+
+void GameBoy::setGameBoyWithoutBios()
+{
+	cpu.setCpuWithoutBios();
+	memory.setMemoryWithoutBios();
 }
 
 /*------------------------------------------SCREEN FUNCTIONS--------------------------------*/
@@ -193,7 +216,7 @@ void GameBoy::updateScreen()
 	glEnd();
 }
 
-uint8_t GameBoy::colorToRGB(uint8_t colorGameBoy)
+uint8 GameBoy::colorToRGB(uint8 colorGameBoy)
 {
 	switch (colorGameBoy)
 	{
@@ -309,14 +332,14 @@ void GameBoy::writeAllTiles()
 	{
 		for (int i = 0; i < 0x2000; i++)
 		{
-			uint8_t line1 = memory.read(i + 0x8000);
-			uint8_t line2 = memory.read(i + 1 + 0x8000);
+			uint8 line1 = memory.read(i + 0x8000);
+			uint8 line2 = memory.read(i + 1 + 0x8000);
 			i++;
 
 			for (int j = 0; j < 16; j++)
 			{
-				uint8_t bitLine1 = getBit(line1, j);
-				uint8_t bitLine2 = getBit(line2, j);
+				uint8 bitLine1 = getBit(line1, j);
+				uint8 bitLine2 = getBit(line2, j);
 				monFlux << (bitLine1 + (bitLine2 << 1));
 			}
 
@@ -332,10 +355,6 @@ void GameBoy::writeAllTiles()
 	}
 }
 
-uint8_t GameBoy::getBit(uint8_t byte, int bitIndex)
-{
-	return (byte >> bitIndex) & 0x1;
-}
 
 /*------------------------------------------SAVESTATE AND SAVEFILE--------------------------------*/
 
@@ -362,12 +381,12 @@ void GameBoy::writeSaveGame()
 void GameBoy::loadSaveGame()
 {
 	string fileLocation = "test.gb";
-	//fileLocation.sub
+	fileLocation = fileLocation.substr(0, fileLocation.find('.')) + ".sav";
 	ifstream monFlux(fileLocation.c_str());
 
 	if (monFlux)
 	{
-		uint8_t line;
+		uint8 line;
 		for (int i = 0; i < 0x2000; i++)
 		{
 			monFlux >> line;

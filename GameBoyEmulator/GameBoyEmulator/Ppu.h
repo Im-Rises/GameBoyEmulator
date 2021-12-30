@@ -2,7 +2,10 @@
 #define DEF_LCD 
 
 #include <iostream>
+
 #include "Memory.h"
+
+#include "binaryLib.h"
 
 //#define DOTS_NUMBER_X 256
 //#define DOTS_NUMBER_Y 256
@@ -28,12 +31,12 @@ class Ppu
 {
 private:
 	Memory* memory = nullptr;
-	uint8_t lcdScreen[DOTS_DISPLAY_X][DOTS_DISPLAY_Y];
+	uint8 lcdScreen[DOTS_DISPLAY_X][DOTS_DISPLAY_Y];
 
 public:
 	Ppu(Memory* memory);
 	void reset();
-	uint8_t getLcdScreenPixel(int indexX, int indexY);
+	uint8 getLcdScreenPixel(int indexX, int indexY);
 	void draw(const int& cycles);
 
 private:
@@ -42,10 +45,8 @@ private:
 	void drawSpritesLine();
 	void setRegisters();
 
-	uint8_t transformDotDataToColor(const uint8_t& dotData, const uint16_t& dataPaletteAddress);
+	uint8 transformDotDataToColor(const uint8& dotData, const uint16& dataPaletteAddress);
 
-	uint8_t getBit(uint8_t byte, int bitIndex);
-	bool testBit(int value, int bitNumber);
 };
 
 #endif

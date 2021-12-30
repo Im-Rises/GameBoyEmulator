@@ -20,23 +20,25 @@ void Memory::reset()
 	}
 }
 
-uint8_t Memory::read(const uint16_t index)const
+uint8 Memory::read(const uint16 index)const
 {
 	return memoryArray[index];
 }
 
-void Memory::write(const uint16_t& index, uint8_t value)
+void Memory::write(const uint16& index, uint8 value)
 {
+	if (index == 0xFF0F)
+		cout << "test" << endl;
 	memoryArray[index] = value;
 }
 
 
-void Memory::increment(const uint16_t& index)
+void Memory::increment(const uint16& index)
 {
 	memoryArray[index]++;
 }
 
-void Memory::decrement(const uint16_t& index)
+void Memory::decrement(const uint16& index)
 {
 	memoryArray[index]--;
 }
@@ -62,18 +64,32 @@ bool Memory::loadBiosInMemory(const string& biosPath)
 	}
 }
 
-bool Memory::loadRomInMemory(const string& romPath, const int index)
+bool Memory::loadRomInMemory(const string& romPath)
 {
 	std::ifstream input(romPath, std::ios::binary);
 	if (input)
 	{
 		input.seekg(0, ios::end);
 		int romSize = input.tellg();
-		//input.seekg(0, ios::beg);
-		input.seekg(index);
-		for (int i = index; (i < romSize) && (i < RAM_CHARACTER_DATA_BANK_0_DMG); i++)
+		input.seekg(0, ios::beg);
+
+		if (biosInMemory)
 		{
-			memoryArray[i] = input.get();
+			for (int i = 0; i < 0x100; i++)//Load RST and interrupt address in a temporary array
+			{
+				memoryTempInterruptRst[i] = input.get();
+			}
+			for (int i = 0x100; (i < romSize) && (i < RAM_CHARACTER_DATA_BANK_0_DMG); i++)
+			{
+				memoryArray[i] = input.get();
+			}
+		}
+		else
+		{
+			for (int i = 0; (i < romSize) && (i < RAM_CHARACTER_DATA_BANK_0_DMG); i++)
+			{
+				memoryArray[i] = input.get();
+			}
 		}
 		input.close();
 		return true;
@@ -85,12 +101,20 @@ bool Memory::loadRomInMemory(const string& romPath, const int index)
 	}
 }
 
+void Memory::loadTempArrayInterruptRst()
+{
+	for (int i = 0; i < 0x100; i++)
+	{
+		memoryArray[i] = memoryTempInterruptRst[i];
+	}
+}
+
 bool Memory::getBiosInMemeory()
 {
 	return biosInMemory;
 }
 
-void Memory::setResetBitMemory(const uint16_t& address, const bool value, const int bitIndex)
+void Memory::setResetBitMemory(const uint16& address, const bool value, const int bitIndex)
 {
 	if (value)
 		memoryArray[address] = setBit(memoryArray[address], bitIndex);
@@ -98,17 +122,7 @@ void Memory::setResetBitMemory(const uint16_t& address, const bool value, const 
 		memoryArray[address] = resetBit(memoryArray[address], bitIndex);
 }
 
-uint8_t Memory::setBit(uint8_t byte, int bitIndex)
+void Memory::setMemoryWithoutBios()
 {
-	return (byte | (1 << bitIndex));
-}
 
-uint8_t Memory::resetBit(uint8_t byte, int bitIndex)
-{
-	return (byte & (~(0b00000001 << bitIndex)));
-}
-
-bool Memory::testBit(int value, int bitNumber)
-{
-	return (((value >> bitNumber) & 0x1) == 1);
 }

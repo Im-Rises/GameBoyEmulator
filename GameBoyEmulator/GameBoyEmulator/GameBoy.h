@@ -5,8 +5,6 @@
 #include <chrono>
 #include <fstream>
 
-#include "settings.h"
-
 #include "Cpu.h"
 #include "Memory.h"
 #include "Ppu.h"
@@ -14,17 +12,17 @@
 #include "glew/include/GL/glew.h"
 #include "GLFW/include/glfw3.h"
 
+#include "settings.h"
+#include "binaryLib.h"
+#include "openGlLib.h"
+
 #define VER 0.1
 #define AUTHOR "Im-Rises"
 #define PROJECT_NAME "GameBoyEmulator"
 
 #define EMULATOR_SCREEN_SIZE_X 640
 #define EMULATOR_SCREEN_SIZE_Y 576
-
-//#define SCREEN_RESOLUTION_X 160
-//#define SCREEN_RESOLUTION_Y 144
-
-#define SCREEN_FREQUENCY 60	//In fps
+#define SCREEN_FREQUENCY 59.7	//In fps
 
 /*
 * this class is used to made an interface between the CPU and the screen, buttons.
@@ -43,7 +41,7 @@ private:
 	Memory memory;
 
 	static bool pause;				//Emulator in pause
-	static uint8_t inputs;			//Game Boy inputs (Buttons)
+	static uint8 inputs;			//Game Boy inputs (Buttons)
 	bool fullScreen;
 	bool useSaveFile;
 	bool fullSpeed;
@@ -60,9 +58,11 @@ public:
 
 
 private:
+	void setGameBoyWithoutBios();
+
 	/*------------------------------------------SCREEN FUNCTIONS--------------------------------*/
 	void updateScreen();
-	uint8_t colorToRGB(uint8_t colorGameBoy);
+	uint8 colorToRGB(uint8 colorGameBoy);
 
 
 	/*------------------------------------------CALLBACK FUNCTIONS--------------------------------*/
@@ -77,7 +77,6 @@ private:
 	static bool debug;
 	void writeScreenToFile();
 	void writeAllTiles();
-	uint8_t getBit(uint8_t byte, int bitIndex);
 
 
 	/*------------------------------------------SAVESTATE AND SAVEFILE--------------------------------*/

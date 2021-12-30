@@ -1,1 +1,5 @@
-#pragma once
+#ifndef OPENGLLIB
+#define OPENGLLIB
+
+
+#endif
