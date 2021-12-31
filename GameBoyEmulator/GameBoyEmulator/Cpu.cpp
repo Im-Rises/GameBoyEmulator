@@ -30,8 +30,8 @@ void Cpu::setCpuWithoutBios()
 
 int Cpu::doCycle()
 {
-	//if (pc == 0x5d)
-	//	cout << "fontionne" << endl;
+	if (pc == 0x0278)
+		cout << "error" << endl;
 
 	//Draw a line with the PPU
 	ppu->draw(cycles);
@@ -47,7 +47,6 @@ int Cpu::doCycle()
 	{
 		cycles = 0;
 		readOpcode();
-		//cycles *= 4;//Issue 
 	}
 	else if (halted)//If halt mode is enable
 	{
@@ -69,7 +68,10 @@ int Cpu::doCycle()
 		cerr << "STOP MODE ENABLED. WAITING FOR USER INPUT." << endl;
 		stopped = !((memory->read(CONTROLLER_DATA_ADDRESS) & 0b00001111) < 15);//If low signal on P10, P11, P12 or P13 the stopped mode is disable
 		if (!stopped)
+		{
 			cycles += 217;
+			memory->setResetBitMemory(LCDC_ADDRESS, 1, 7);//LCD Controller Operation Stop Flag (0: LCDC Off)
+		}
 	}
 
 	if (!resetTerminal)
@@ -2200,6 +2202,7 @@ void Cpu::HALT()
 void Cpu::STOP()
 {
 	stopped = 1;
+	memory->setResetBitMemory(LCDC_ADDRESS, 0, 7);//LCD Controller Operation Stop Flag (0: LCDC Off)
 	cycles++;
 	pc++;
 }

@@ -30,6 +30,8 @@ uint8 Memory::read(const uint16 index)const
 
 void Memory::write(const uint16& index, uint8 value)
 {
+	//if (index == 0x8030)
+	//	cout << "error" << endl;
 	memoryArray[index] = value;
 }
 

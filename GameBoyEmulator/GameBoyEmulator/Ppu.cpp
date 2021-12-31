@@ -31,12 +31,17 @@ void Ppu::draw(const int& cycles)//Not working
 
 	uint8 lcdc = memory->read(LCDC_ADDRESS);
 
+	setRegisters(lcdc);
+
 	for (int i = 0; i < cycles; i++)
 	{
-		drawLineSimulation();
-		drawBackgroundLine(lcdc);
-		drawSpritesLine(lcdc);
-		setRegisters();
+
+	drawLineSimulation();
+
+	drawBackgroundLine(lcdc);
+	drawSpritesLine(lcdc);
+
+
 	}
 	if (memory->read(LY_ADDRESS) >= VERTICAL_BLANKING_LINES_NUMBER)
 		memory->write(LY_ADDRESS, 0);
@@ -212,10 +217,21 @@ void Ppu::drawSpritesLine(uint8 lcdc)
 	}
 }
 
-void Ppu::setRegisters()
+void Ppu::setRegisters(uint8 lcdc)
 {
+	uint8 stat = memory->read(STAT_ADDRESS);
 	uint8 ly = memory->read(LY_ADDRESS);
 	uint8 lyc = memory->read(LYC_ADDRESS);
+
+	if (testBit(lcdc, 7))//LCD Controller Operation ON
+	{
+		
+	}
+	else//LCD Controller Operation ON
+	{
+
+	}
+
 	memory->setResetBitMemory(STAT_ADDRESS, (ly == lyc), 2);
 	memory->setResetBitMemory(STAT_ADDRESS, 1, 7);//Always at one
 }

@@ -43,7 +43,7 @@ private:
 	void drawLineSimulation();
 	void drawBackgroundLine(uint8 lcdc);
 	void drawSpritesLine(uint8 lcdc);
-	void setRegisters();
+	void setRegisters(uint8 lcdc);
 
 	uint8 transformDotDataToColor(const uint8& dotData, const uint16& dataPaletteAddress);
 	uint8 colorToRGB(uint8 colorGameBoy);

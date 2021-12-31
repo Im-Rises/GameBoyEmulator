@@ -98,6 +98,14 @@ void GameBoy::launch()
 
 void GameBoy::doGameBoyCycle(GlfwOpenglLib& glfwOpenglLib, std::chrono::steady_clock::time_point& timeRefresthScreenStart, std::chrono::steady_clock::time_point& timeCpuStart, int& timeRefreshInt, double& timeCycle, int& cycles)
 {
+	if (true)
+	{
+		//if (GlfwOpenglLib.debug)
+		//{
+
+		//}
+	}
+
 	//Write inputs to cpu that writes it to memory
 	if (std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - timeCpuStart).count() > (cycles * timeCycle))
 	{
