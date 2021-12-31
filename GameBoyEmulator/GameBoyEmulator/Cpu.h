@@ -14,7 +14,7 @@ using namespace std;
 class Cpu {
 
 private:
-	int cycles;					//Machine cycles from the previous instruction
+	int cycles;					//Machine cycles
 	double timeCycle;			//Time of a cycle
 
 	/// <summary>
@@ -58,7 +58,7 @@ public:
 	int doCycle();										//Start Cpu
 	void writeInputs(const uint8& inputs);			//Write inputs to memory
 
-	double getTimeCycle();
+	//double getTimeCycle();
 	uint16 getPc();
 	void setPc(uint16 pc);
 

@@ -115,9 +115,9 @@ void Memory::loadTempArrayInterruptRst()
 
 
 
-void Memory::setResetBitMemory(const uint16& address, const bool value, const int bitIndex)
+void Memory::setResetBitMemory(const uint16& address, const bool bit, const int bitIndex)
 {
-	if (value)
+	if (bit)
 		memoryArray[address] = setBit(memoryArray[address], bitIndex);
 	else
 		memoryArray[address] = resetBit(memoryArray[address], bitIndex);

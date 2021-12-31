@@ -12,7 +12,7 @@ void Ppu::reset()
 	{
 		for (int i = 0; i < DOTS_DISPLAY_X; i++)
 		{
-			lcdScreen[i][j] = 0;
+			lcdScreen[i][j] = 0xFF;
 		}
 	}
 }
@@ -27,11 +27,15 @@ uint8 Ppu::getLcdScreenPixel(int indexX, int indexY)
 
 void Ppu::draw(const int& cycles)//Not working
 {
+	//LY = 144 every 4 cycles
+
+	uint8 lcdc = memory->read(LCDC_ADDRESS);
+
 	for (int i = 0; i < cycles; i++)
 	{
 		drawLineSimulation();
-		drawBackgroundLine();
-		drawSpritesLine();
+		drawBackgroundLine(lcdc);
+		drawSpritesLine(lcdc);
 		setRegisters();
 	}
 	if (memory->read(LY_ADDRESS) >= VERTICAL_BLANKING_LINES_NUMBER)
@@ -50,10 +54,8 @@ void Ppu::drawLineSimulation()
 		memory->write(LY_ADDRESS, 0);
 }
 
-void Ppu::drawBackgroundLine()
+void Ppu::drawBackgroundLine(uint8 lcdc)
 {
-
-	uint8 lcdc = memory->read(LCDC_ADDRESS);
 
 	if (testBit(lcdc, 0))
 	{
@@ -146,10 +148,8 @@ void Ppu::drawBackgroundLine()
 	}
 }
 
-void Ppu::drawSpritesLine()
+void Ppu::drawSpritesLine(uint8 lcdc)
 {
-	uint8 lcdc = memory->read(LCDC_ADDRESS);
-
 	if (testBit(lcdc, 1))//if OBJ FLAG is ON
 	{
 		bool sprite8x16Dots = getBit(lcdc, 2); //0: 8 x 8 dots		1 : 8 x 16 dots
@@ -217,6 +217,7 @@ void Ppu::setRegisters()
 	uint8 ly = memory->read(LY_ADDRESS);
 	uint8 lyc = memory->read(LYC_ADDRESS);
 	memory->setResetBitMemory(STAT_ADDRESS, (ly == lyc), 2);
+	memory->setResetBitMemory(STAT_ADDRESS, 1, 7);//Always at one
 }
 
 uint8 Ppu::transformDotDataToColor(const uint8& dotData, const uint16& dataPaletteAddress)

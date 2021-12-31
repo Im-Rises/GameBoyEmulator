@@ -31,18 +31,16 @@ class GameBoy
 private:
 	static GameBoy* gameboyInstance;
 	GameBoy();
+	~GameBoy();//Put GlfwOpenglLib destructor in here to destroy video
 
 	Cpu cpu;
 	Ppu ppu;
 	Memory memory;
 
-	static uint8 inputs;			//Game Boy inputs (Buttons)
-
-	static bool pause;				//Emulator in pause
-	bool fullScreen;				//Full screen mode
-	bool useSaveFile;
-	bool fullSpeed;
-	float pixelSize;
+	//static bool pause;
+	//bool useSaveFile;
+	//bool fullSpeed;
+	//float pixelSize;
 
 public:
 	static GameBoy* getInstance();
@@ -56,8 +54,10 @@ public:
 
 
 private:
+	void doGameBoyCycle(GlfwOpenglLib& glfwOpenglLib, std::chrono::steady_clock::time_point& timeRefresthScreenStart, std::chrono::steady_clock::time_point& timeCpuStart, int& timeRefreshInt, double& timeCycle, int& cycles);
+
 	/*------------------------------------------SCREEN FUNCTIONS--------------------------------*/
-	void updateScreen();
+	void updateScreen(GlfwOpenglLib& glfwOpenglLib);
 
 };
 

@@ -1,43 +1,27 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Fichiers sources">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Fichiers d%27en-tête">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Fichiers de ressources">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="MyLibs">
       <UniqueIdentifier>{e21c9b87-023f-499e-b64f-15814bdaa66b}</UniqueIdentifier>
     </Filter>
     <Filter Include="EmulatorSettings">
       <UniqueIdentifier>{47a48a13-5393-447f-81e6-ff51f04a0b09}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameBoy">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Main">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="DebugGameBoy">
+      <UniqueIdentifier>{9bb2e946-29a8-408a-a409-ace7215e4b61}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Memory.cpp">
-      <Filter>Fichiers de ressources</Filter>
-    </ClCompile>
-    <ClCompile Include="Cpu.cpp">
-      <Filter>Fichiers de ressources</Filter>
-    </ClCompile>
-    <ClCompile Include="Ppu.cpp">
-      <Filter>Fichiers de ressources</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="GameBoy.cpp">
-      <Filter>Fichiers de ressources</Filter>
-    </ClCompile>
-    <ClCompile Include="debug.cpp">
-      <Filter>Fichiers de ressources</Filter>
+      <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="binaryLib.cpp">
       <Filter>MyLibs</Filter>
@@ -48,22 +32,34 @@
     <ClCompile Include="settings.cpp">
       <Filter>EmulatorSettings</Filter>
     </ClCompile>
+    <ClCompile Include="Cpu.cpp">
+      <Filter>GameBoy</Filter>
+    </ClCompile>
+    <ClCompile Include="GameBoy.cpp">
+      <Filter>GameBoy</Filter>
+    </ClCompile>
+    <ClCompile Include="Memory.cpp">
+      <Filter>GameBoy</Filter>
+    </ClCompile>
+    <ClCompile Include="Ppu.cpp">
+      <Filter>GameBoy</Filter>
+    </ClCompile>
+    <ClCompile Include="debug.cpp">
+      <Filter>DebugGameBoy</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cpu.h">
-      <Filter>Fichiers d%27en-tête</Filter>
+      <Filter>GameBoy</Filter>
     </ClInclude>
     <ClInclude Include="Memory.h">
-      <Filter>Fichiers d%27en-tête</Filter>
+      <Filter>GameBoy</Filter>
     </ClInclude>
     <ClInclude Include="Ppu.h">
-      <Filter>Fichiers d%27en-tête</Filter>
+      <Filter>GameBoy</Filter>
     </ClInclude>
     <ClInclude Include="GameBoy.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="debug.h">
-      <Filter>Fichiers d%27en-tête</Filter>
+      <Filter>GameBoy</Filter>
     </ClInclude>
     <ClInclude Include="binaryLib.h">
       <Filter>MyLibs</Filter>
@@ -73,6 +69,9 @@
     </ClInclude>
     <ClInclude Include="settings.h">
       <Filter>EmulatorSettings</Filter>
+    </ClInclude>
+    <ClInclude Include="debug.h">
+      <Filter>DebugGameBoy</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

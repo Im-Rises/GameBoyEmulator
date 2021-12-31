@@ -30,6 +30,9 @@ void Cpu::setCpuWithoutBios()
 
 int Cpu::doCycle()
 {
+	//if (pc == 0x5d)
+	//	cout << "fontionne" << endl;
+
 	//Draw a line with the PPU
 	ppu->draw(cycles);
 
@@ -82,10 +85,10 @@ void Cpu::writeInputs(const uint8& inputs)
 }
 
 /*------------------------------------------GETTERS AND SETTERS--------------------------------*/
-double Cpu::getTimeCycle()
-{
-	return timeCycle;
-}
+//double Cpu::getTimeCycle()
+//{
+//	return timeCycle;
+//}
 
 uint16 Cpu::getPc()
 {

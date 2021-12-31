@@ -88,7 +88,7 @@ public:
 	bool loadRomInMemory(const string& romPath);
 	void loadTempArrayInterruptRst();
 
-	void setResetBitMemory(const uint16& address, const bool value, const int bitIndex);
+	void setResetBitMemory(const uint16& address, const bool bit, const int bitIndex);
 	void setMemoryWithoutBios();
 
 	bool getBiosInMemeory();

@@ -41,8 +41,8 @@ public:
 
 private:
 	void drawLineSimulation();
-	void drawBackgroundLine();
-	void drawSpritesLine();
+	void drawBackgroundLine(uint8 lcdc);
+	void drawSpritesLine(uint8 lcdc);
 	void setRegisters();
 
 	uint8 transformDotDataToColor(const uint8& dotData, const uint16& dataPaletteAddress);

@@ -16,10 +16,15 @@ class GlfwOpenglLib
 {
 private:
 	/*------------------------------------------WINDOW--------------------------------*/
-	GLFWwindow* window = nullptr;
-	int width;
-	int height;
-	bool fullScreen;
+	//const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+	static GLFWwindow* window;
+
+	static int width;//Windowed mode width
+	static int height;//Windowed mode height
+	static int positionX;//Windowed mode x position
+	static int positionY;//Windowed mode y position
+
+	static bool fullScreen;
 
 public:
 	/*------------------------------------------CONSTRUCTOR AND DESTRUCTOR--------------------------------*/
@@ -32,16 +37,16 @@ public:
 
 	/*------------------------------------------SCREEN METHODS--------------------------------*/
 
+	static void toggleWindowedFullScreen();
 	void setBackground();
-	void toggleWindowedFullScreen();
 	void drawRectangle(const float& pixelSize, const int& x, const int& y, const int& color);
-	void updateScreen();
+	void swapBuffers();
 
 	/*------------------------------------------CALLBACK METHODS--------------------------------*/
 
 	static void error_callback(int error, const char* description);
 	static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-	//static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 };
 
