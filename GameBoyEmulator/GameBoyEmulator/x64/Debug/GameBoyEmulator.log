@@ -1,3 +1,5 @@
-﻿  GameBoy.cpp
-E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\GameBoy.cpp(61,21): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+﻿  Cpu.cpp
+  GameBoy.cpp
+E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\GameBoy.cpp(64,21): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+  Generating Code...
   GameBoyEmulator.vcxproj -> E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\x64\Debug\GameBoyEmulator.exe

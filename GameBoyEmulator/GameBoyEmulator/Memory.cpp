@@ -30,7 +30,7 @@ uint8 Memory::read(const uint16 index)const
 
 void Memory::write(const uint16& index, uint8 value)
 {
-	//if (index == 0x8030)
+	//if (index == 0xFF41)
 	//	cout << "error" << endl;
 	memoryArray[index] = value;
 }
@@ -127,7 +127,37 @@ void Memory::setResetBitMemory(const uint16& address, const bool bit, const int 
 
 void Memory::setMemoryWithoutBios()
 {
-
+	memoryArray[0xFF05] = 0x00;
+	memoryArray[0xFF06] = 0x00;
+	memoryArray[0xFF07] = 0x00;
+	memoryArray[0xFF10] = 0x80;
+	memoryArray[0xFF11] = 0xBF;
+	memoryArray[0xFF12] = 0xF3;
+	memoryArray[0xFF14] = 0xBF;
+	memoryArray[0xFF16] = 0x3F;
+	memoryArray[0xFF17] = 0x00;
+	memoryArray[0xFF19] = 0xBF;
+	memoryArray[0xFF1A] = 0x7F;
+	memoryArray[0xFF1B] = 0xFF;
+	memoryArray[0xFF1C] = 0x9F;
+	memoryArray[0xFF1E] = 0xBF;
+	memoryArray[0xFF20] = 0xFF;
+	memoryArray[0xFF21] = 0x00;
+	memoryArray[0xFF22] = 0x00;
+	memoryArray[0xFF23] = 0xBF;
+	memoryArray[0xFF24] = 0x77;
+	memoryArray[0xFF25] = 0xF3;
+	memoryArray[0xFF26] = 0xF1;
+	memoryArray[0xFF40] = 0x91;
+	memoryArray[0xFF42] = 0x00;
+	memoryArray[0xFF43] = 0x00;
+	memoryArray[0xFF45] = 0x00;
+	memoryArray[0xFF47] = 0xFC;
+	memoryArray[0xFF48] = 0xFF;
+	memoryArray[0xFF49] = 0xFF;
+	memoryArray[0xFF4A] = 0x00;
+	memoryArray[0xFF4B] = 0x00;
+	memoryArray[0xFFFF] = 0x00;
 }
 
 

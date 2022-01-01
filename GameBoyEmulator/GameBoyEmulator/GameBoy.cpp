@@ -28,6 +28,7 @@ void GameBoy::setGameBoyWithoutBios()
 {
 	cpu.setCpuWithoutBios();
 	memory.setMemoryWithoutBios();
+	ppu.reset();
 }
 
 
@@ -36,6 +37,8 @@ void GameBoy::loadBios(const string& biosPath)
 {
 	if (memory.loadBiosInMemory(biosPath) == false)
 		exit(1);
+
+	cpu.setCpuWithBios();
 }
 
 void GameBoy::loadGame(const string& gamePath)

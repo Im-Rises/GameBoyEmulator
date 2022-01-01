@@ -4,11 +4,15 @@ Cpu::Cpu(Memory* memory, Ppu* ppu)
 {
 	this->memory = memory;
 	this->ppu = ppu;
-	reset();
-	//pc = ROM_DATA_AREA;
-	pc = 0;
+
+	timeCycle = 1 / CPU_FREQUENCY_NORMAL_MODE;
+	cycles = 0;
+	halted = 0;
+	resetTerminal = 1;
+	stopped = 0;
 	sp = CPU_WORK_RAM_OR_AND_STACK_END;
 	IME = 0;
+	setCpuWithoutBios();
 }
 
 void Cpu::reset()
@@ -18,20 +22,55 @@ void Cpu::reset()
 	halted = 0;
 	resetTerminal = 1;
 	stopped = 0;
+	sp = CPU_WORK_RAM_OR_AND_STACK_END;
+	IME = 0;
+
+	if (memory->getBiosInMemeory())
+	{
+		setCpuWithBios();
+	}
+	else
+	{
+		setCpuWithoutBios();
+	}
+}
+
+void Cpu::setCpuWithBios()
+{
+	pc = 0;
+
 	A = 0;
-	B = C = D = E = H = L = 0;
 	F.Z = F.N = F.H = F.CY = 0;
+
+	B = C = D = E = H = L = 0;
 }
 
 void Cpu::setCpuWithoutBios()
 {
+	pc = 0x100;
 
+	A = 0x01;
+
+	//F=0xB0
+	F.Z = 1;
+	F.N = 0;
+	F.H = 1;
+	F.CY = 1;
+
+	B = 0x00;
+	C = 0x13;
+
+	D = 0x00;
+	E = 0xD8;
+
+	H = 0x01;
+	L = 0x4D;
 }
 
 int Cpu::doCycle()
 {
-	if (pc == 0x0278)
-		cout << "error" << endl;
+	//if (pc >= 0x0100)
+	//	cout << "error" << endl;
 
 	//Draw a line with the PPU
 	ppu->draw(cycles);

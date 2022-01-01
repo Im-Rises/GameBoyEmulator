@@ -27,41 +27,33 @@ uint8 Ppu::getLcdScreenPixel(int indexX, int indexY)
 
 void Ppu::draw(const int& cycles)//Not working
 {
-	//LY = 144 every 4 cycles
-
-	uint8 lcdc = memory->read(LCDC_ADDRESS);
-
-	setRegisters(lcdc);
-
 	for (int i = 0; i < cycles; i++)
 	{
+		if (testBit(memory->read(LCDC_ADDRESS), 7))
+			memory->increment(LY_ADDRESS);
+		else
+			memory->write(LY_ADDRESS, 0);
 
-	drawLineSimulation();
-
-	drawBackgroundLine(lcdc);
-	drawSpritesLine(lcdc);
-
-
+		drawLine();
 	}
+
 	if (memory->read(LY_ADDRESS) >= VERTICAL_BLANKING_LINES_NUMBER)
 		memory->write(LY_ADDRESS, 0);
 }
 
-void Ppu::drawLineSimulation()
+void Ppu::drawLine()
 {
-	/// <summary>
-	/// Function that simulate the drawing of a line each cycle of the CPU (in pixel not block) 
-	/// </summary>
+	uint8 lcdc = memory->read(LCDC_ADDRESS);
 
-	if (testBit(memory->read(LCDC_ADDRESS), 7))
-		memory->increment(LY_ADDRESS);
-	else
-		memory->write(LY_ADDRESS, 0);
+	if (testBit(lcdc, 7))//If LCD Controller Operation Stop Flag is on
+	{
+		drawBackgroundLine(lcdc);
+		drawSpritesLine(lcdc);
+	}
 }
 
 void Ppu::drawBackgroundLine(uint8 lcdc)
 {
-
 	if (testBit(lcdc, 0))
 	{
 		uint8 scx = memory->read(SCX_ADDRESS);
@@ -215,25 +207,6 @@ void Ppu::drawSpritesLine(uint8 lcdc)
 			}
 		}
 	}
-}
-
-void Ppu::setRegisters(uint8 lcdc)
-{
-	uint8 stat = memory->read(STAT_ADDRESS);
-	uint8 ly = memory->read(LY_ADDRESS);
-	uint8 lyc = memory->read(LYC_ADDRESS);
-
-	if (testBit(lcdc, 7))//LCD Controller Operation ON
-	{
-		
-	}
-	else//LCD Controller Operation ON
-	{
-
-	}
-
-	memory->setResetBitMemory(STAT_ADDRESS, (ly == lyc), 2);
-	memory->setResetBitMemory(STAT_ADDRESS, 1, 7);//Always at one
 }
 
 uint8 Ppu::transformDotDataToColor(const uint8& dotData, const uint16& dataPaletteAddress)
