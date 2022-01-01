@@ -70,23 +70,30 @@ using namespace std;
 class Memory {
 
 private:
-	bool biosInMemory;
 	uint8 memoryArray[MEMORY_SIZE];
+
+	bool biosInMemory;
 	uint8 memoryTempInterruptRst[0x100];
+
+	bool memoryBanking1;
+	bool memoryBanking2;
+	uint8 currentRomMemoryBank;
 
 public:
 	Memory();
 	void reset();
 
-	uint8 read(const uint16 index)const;
-	void write(const uint16& index, uint8 value);
-
-	void increment(const uint16& index);
-	void decrement(const uint16& index);
-
 	bool loadBiosInMemory(const string& biosPath);
 	bool loadRomInMemory(const string& romPath);
 	void loadTempArrayInterruptRst();
+
+	void checkMemoryBankingUsed();
+
+	uint8 read(const uint16 address)const;
+	void write(const uint16& address, uint8 value);
+
+	void increment(const uint16& address);
+	void decrement(const uint16& address);
 
 	void setResetBitMemory(const uint16& address, const bool bit, const int bitIndex);
 	void setMemoryWithoutBios();

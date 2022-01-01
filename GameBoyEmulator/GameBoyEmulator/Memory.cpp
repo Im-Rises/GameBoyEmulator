@@ -19,34 +19,11 @@ void Memory::reset()
 	{
 		memoryArray[i] = 0xFF;
 	}
+
+	memoryBanking1 = false;
+	memoryBanking2 = false;
+	currentRomMemoryBank = 1;//Always begin with bank 1 (bank 0 bnever change)
 }
-
-
-
-uint8 Memory::read(const uint16 index)const
-{
-	return memoryArray[index];
-}
-
-void Memory::write(const uint16& index, uint8 value)
-{
-	//if (index == 0xFF41)
-	//	cout << "error" << endl;
-	memoryArray[index] = value;
-}
-
-
-
-void Memory::increment(const uint16& index)
-{
-	memoryArray[index]++;
-}
-
-void Memory::decrement(const uint16& index)
-{
-	memoryArray[index]--;
-}
-
 
 
 bool Memory::loadBiosInMemory(const string& biosPath)
@@ -97,6 +74,9 @@ bool Memory::loadRomInMemory(const string& romPath)
 				memoryArray[i] = input.get();
 			}
 		}
+
+		checkMemoryBankingUsed();
+
 		input.close();
 		return true;
 	}
@@ -113,6 +93,94 @@ void Memory::loadTempArrayInterruptRst()
 	{
 		memoryArray[i] = memoryTempInterruptRst[i];
 	}
+}
+
+void Memory::checkMemoryBankingUsed()
+{
+	/*
+	* Game Boy programing manual V1.1 (p298)
+	*/
+	switch (memoryArray[0x147])
+	{
+	case(1):
+	{
+		memoryBanking1 = true;
+		break;
+	}
+	case(2):
+	{
+		memoryBanking1 = true;
+		break;
+	}
+	case(3):
+	{
+		memoryBanking1 = true;
+		break;
+	}
+	case(5):
+	{
+		memoryBanking2 = true;
+		break;
+	}
+	case(6):
+	{
+		memoryBanking2 = true;
+		break;
+	}
+	}
+}
+
+
+uint8 Memory::read(const uint16 address)const
+{
+	return memoryArray[address];
+}
+
+void Memory::write(const uint16& address, uint8 value)
+{
+	//if (index == 0xFF41)
+	//	cout << "error" << endl;
+
+	if (address < 0x8000)
+	{
+		cerr << "Error: Writting in the read only area" << endl;
+		exit(1);
+	}
+	else if (address >= 0xE000 && address < 0xFE00)
+	{
+		cerr << "Error: Writting in the first reserved area" << endl;
+		/*
+		* According to pandocs "Game BoyTM CPU Manual":
+		* The addresses E000-FE00 appear to access the internal
+		* RAM the same as C000-DE00. (i.e. If you write a byte to
+		* address E000 it will appear at C000 and E000.
+		* Similarly, writing a byte to C000 will appear at C000
+		* and E000.)
+		*/
+		memoryArray[address] = value;
+		memoryArray[address - 0x2000] = value;
+	}
+	else if ((address >= 0xFEA0) && (address < 0xFEFF))
+	{
+		cerr << "Error: Writting in the second reserved area" << endl;
+		exit(1);
+	}
+	else
+	{
+		memoryArray[address] = value;
+	}
+}
+
+
+
+void Memory::increment(const uint16& address)
+{
+	memoryArray[address]++;
+}
+
+void Memory::decrement(const uint16& address)
+{
+	memoryArray[address]--;
 }
 
 
