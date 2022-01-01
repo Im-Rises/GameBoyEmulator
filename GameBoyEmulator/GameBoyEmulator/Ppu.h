@@ -1,14 +1,11 @@
 #ifndef DEF_LCD
 #define DEF_LCD 
 
-#include <iostream>
-
 #include "Memory.h"
 
+#include <iostream>
 #include "binaryLib.h"
 
-//#define DOTS_NUMBER_X 256
-//#define DOTS_NUMBER_Y 256
 
 #define DOTS_DISPLAY_X 160
 #define DOTS_DISPLAY_Y 144
@@ -22,6 +19,8 @@
 #define BLOCKS_MEMORY_Y 32
 
 #define SPRITES_NUMBER 40
+#define SPRITES_NUMBER_PER_LINE 10
+
 
 struct Block {
 
@@ -36,16 +35,19 @@ private:
 public:
 	Ppu(Memory* memory);
 	void reset();
-	uint8 getLcdScreenPixel(int indexX, int indexY);
 	void draw(const int& cycles);
+
+	uint8 getLcdScreenPixel(int indexX, int indexY);
 
 private:
 	void drawLineSimulation();
-	void drawBackgroundLine();
-	void drawSpritesLine();
-	void setRegisters();
+	void setRegisters(uint8 lcdc);
+	void drawLine();
+	void drawBackgroundLine(uint8 lcdc);
+	void drawSpritesLine(uint8 lcdc);
 
 	uint8 transformDotDataToColor(const uint8& dotData, const uint16& dataPaletteAddress);
+	uint8 colorToRGB(uint8 colorGameBoy);
 
 };
 

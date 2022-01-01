@@ -1,0 +1,53 @@
+/*
+void Ppu::draw(const int& cycles)//Not working
+{
+	//LY = 144 every 4 cycles
+
+	uint8 lcdc = memory->read(LCDC_ADDRESS);
+
+	setRegisters(lcdc);
+
+	for (int i = 0; i < cycles; i++)
+	{
+
+		drawLineSimulation();
+
+
+
+
+	}
+	if (memory->read(LY_ADDRESS) >= VERTICAL_BLANKING_LINES_NUMBER)
+		memory->write(LY_ADDRESS, 0);
+
+}
+		*/
+		//void Ppu::setRegisters(uint8 lcdc)
+		//{
+		//	uint8 stat = memory->read(STAT_ADDRESS);
+		//	uint8 ly = memory->read(LY_ADDRESS);
+		//	uint8 lyc = memory->read(LYC_ADDRESS);
+		//
+		//	if (testBit(lcdc, 7))//LCD Controller Operation ON
+		//	{
+		//
+		//	}
+		//	else//LCD Controller Operation ON
+		//	{
+		//
+		//	}
+		//
+		//	memory->setResetBitMemory(STAT_ADDRESS, (ly == lyc), 2);
+		//	memory->setResetBitMemory(STAT_ADDRESS, 1, 7);//Always at one
+		//}
+
+		//void Ppu::drawLineSimulation()
+		//{
+		//	/// <summary>
+		//	/// Function that simulate the drawing of a line each cycle of the CPU (in pixel not block) 
+		//	/// </summary>
+		//
+		//	if (testBit(memory->read(LCDC_ADDRESS), 7))
+		//		memory->increment(LY_ADDRESS);
+		//	else
+		//		memory->write(LY_ADDRESS, 0);
+		//}

@@ -5,16 +5,15 @@
 #include <chrono>
 #include <fstream>
 
-#include "Cpu.h"
-#include "Memory.h"
-#include "Ppu.h"
-
-#include "glew/include/GL/glew.h"
-#include "GLFW/include/glfw3.h"
+#include "debug.h"
 
 #include "settings.h"
 #include "binaryLib.h"
-#include "openGlLib.h"
+#include "GlfwOpenglLib.h"
+
+#include "Cpu.h"
+#include "Memory.h"
+#include "Ppu.h"
 
 #define VER 0.1
 #define AUTHOR "Im-Rises"
@@ -22,7 +21,7 @@
 
 #define EMULATOR_SCREEN_SIZE_X 640
 #define EMULATOR_SCREEN_SIZE_Y 576
-#define SCREEN_FREQUENCY 59.7	//In fps
+#define SCREEN_FREQUENCY 60	//In fps
 
 /*
 * this class is used to made an interface between the CPU and the screen, buttons.
@@ -34,22 +33,22 @@ class GameBoy
 private:
 	static GameBoy* gameboyInstance;
 	GameBoy();
+	~GameBoy();//Put GlfwOpenglLib destructor in here to destroy video if it is memeber of the class
 
-	//bool onOff;					//On off button state (1:ON, 2:OFF)
 	Cpu cpu;
 	Ppu ppu;
 	Memory memory;
+	//GlfwOpenglLib lcdScreenInputs;
 
-	static bool pause;				//Emulator in pause
-	static uint8 inputs;			//Game Boy inputs (Buttons)
-	bool fullScreen;
-	bool useSaveFile;
-	bool fullSpeed;
-	float pixelSize;
+	//static bool pause;
+	//bool useSaveFile;
+	//bool fullSpeed;
+	//float pixelSize;
 
 public:
 	static GameBoy* getInstance();
 	void reset();
+	void setGameBoyWithoutBios();
 
 	void loadBios(const string& biosPath);
 	void loadGame(const string& gamePath);
@@ -58,39 +57,11 @@ public:
 
 
 private:
-	void setGameBoyWithoutBios();
+	/*------------------------------------------GAME BOY CYCLE--------------------------------*/
+	void doGameBoyCycle(GlfwOpenglLib& glfwOpenglLib, std::chrono::steady_clock::time_point& timeRefresthScreenStart, std::chrono::steady_clock::time_point& timeCpuStart, int& timeRefreshInt, double& timeCycle, int& cycles);
 
 	/*------------------------------------------SCREEN FUNCTIONS--------------------------------*/
-	void updateScreen();
-	uint8 colorToRGB(uint8 colorGameBoy);
-
-
-	/*------------------------------------------CALLBACK FUNCTIONS--------------------------------*/
-
-	static void error_callback(int error, const char* description);
-	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-	static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-
-
-	/*------------------------------------------DEBUG--------------------------------*/
-	
-	static bool debug;
-	void writeScreenToFile();
-	void writeAllTiles();
-
-
-	/*------------------------------------------SAVESTATE AND SAVEFILE--------------------------------*/
-
-	void writeSaveGame();
-	void loadSaveGame();
-
-	void writeSaveState();
-	void loadSaveState();
-
-
-	/*------------------------------------------OPENGL FUNCTIONS--------------------------------*/
-
-	static void setBackground(GLFWwindow* window);
+	void updateScreen(GlfwOpenglLib& glfwOpenglLib);
 
 };
 

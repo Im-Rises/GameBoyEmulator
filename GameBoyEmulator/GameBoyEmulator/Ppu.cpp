@@ -12,10 +12,12 @@ void Ppu::reset()
 	{
 		for (int i = 0; i < DOTS_DISPLAY_X; i++)
 		{
-			lcdScreen[i][j] = 0;
+			lcdScreen[i][j] = 0xFF;
 		}
 	}
 }
+
+
 
 uint8 Ppu::getLcdScreenPixel(int indexX, int indexY)
 {
@@ -27,33 +29,31 @@ void Ppu::draw(const int& cycles)//Not working
 {
 	for (int i = 0; i < cycles; i++)
 	{
-		drawLineSimulation();
-		drawBackgroundLine();
-		drawSpritesLine();
-		setRegisters();
+		if (testBit(memory->read(LCDC_ADDRESS), 7))
+			memory->increment(LY_ADDRESS);
+		else
+			memory->write(LY_ADDRESS, 0);
+
+		drawLine();
 	}
 
 	if (memory->read(LY_ADDRESS) >= VERTICAL_BLANKING_LINES_NUMBER)
 		memory->write(LY_ADDRESS, 0);
 }
 
-void Ppu::drawLineSimulation()
+void Ppu::drawLine()
 {
-	/// <summary>
-	/// Function that simulate the drawing of a line each cycle of the CPU (in pixel not block) 
-	/// </summary>
-
-	if (testBit(memory->read(LCDC_ADDRESS), 7))
-		memory->increment(LY_ADDRESS);
-	else
-		memory->write(LY_ADDRESS, 0);
-}
-
-void Ppu::drawBackgroundLine()
-{
-
 	uint8 lcdc = memory->read(LCDC_ADDRESS);
 
+	if (testBit(lcdc, 7))//If LCD Controller Operation Stop Flag is on
+	{
+		drawBackgroundLine(lcdc);
+		drawSpritesLine(lcdc);
+	}
+}
+
+void Ppu::drawBackgroundLine(uint8 lcdc)
+{
 	if (testBit(lcdc, 0))
 	{
 		uint8 scx = memory->read(SCX_ADDRESS);
@@ -140,15 +140,13 @@ void Ppu::drawBackgroundLine()
 			uint8 color = transformDotDataToColor(colorCode, BG_PALETTE_DATA);
 
 			if (ly < DOTS_DISPLAY_Y)
-				lcdScreen[pixel][ly] = color;
+				lcdScreen[pixel][ly] = colorToRGB(color);
 		}
 	}
 }
 
-void Ppu::drawSpritesLine()
+void Ppu::drawSpritesLine(uint8 lcdc)
 {
-	uint8 lcdc = memory->read(LCDC_ADDRESS);
-
 	if (testBit(lcdc, 1))//if OBJ FLAG is ON
 	{
 		bool sprite8x16Dots = getBit(lcdc, 2); //0: 8 x 8 dots		1 : 8 x 16 dots
@@ -203,19 +201,12 @@ void Ppu::drawSpritesLine()
 					else//Priority to sprite
 					{
 						if (ly < DOTS_DISPLAY_Y)
-							lcdScreen[xCoordinate + pixel][ly] = color;
+							lcdScreen[xCoordinate + pixel][ly] = colorToRGB(color);
 					}
 				}
 			}
 		}
 	}
-}
-
-void Ppu::setRegisters()
-{
-	uint8 ly = memory->read(LY_ADDRESS);
-	uint8 lyc = memory->read(LYC_ADDRESS);
-	memory->setResetBitMemory(STAT_ADDRESS, (ly == lyc), 2);
 }
 
 uint8 Ppu::transformDotDataToColor(const uint8& dotData, const uint16& dataPaletteAddress)
@@ -249,33 +240,34 @@ uint8 Ppu::transformDotDataToColor(const uint8& dotData, const uint16& dataPalet
 	}
 }
 
-//uint8 Ppu::colorToRGB(uint8 colorGameBoy)
-//{
-//	switch (colorGameBoy)
-//	{
-//	case(0b00):
-//	{
-//		return 0xFF;
-//		break;
-//	}
-//	case(0b01):
-//	{
-//		return 0xCC;
-//		break;
-//	}
-//	case(0b10):
-//	{
-//		return 0x77;
-//		break;
-//	}
-//	case(0b11):
-//	{
-//		return 0x00;
-//		break;
-//	}
-//	default:
-//		cerr << "Error wrong data color";
-//		exit(1);
-//		break;
-//	}
-//}
+uint8 Ppu::colorToRGB(uint8 colorGameBoy)
+{
+	switch (colorGameBoy)
+	{
+	case (0b00):
+	{
+		return 0xFF;
+		break;
+	}
+	case (0b01):
+	{
+		return 0xCC;
+		break;
+	}
+	case (0b10):
+	{
+		return 0x77;
+		break;
+	}
+	case (0b11):
+	{
+		return 0x00;
+		break;
+	}
+	default:
+		cerr << "Error wrong data color";
+		exit(1);
+		break;
+	}
+}
+

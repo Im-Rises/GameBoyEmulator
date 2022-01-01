@@ -4,11 +4,15 @@ Cpu::Cpu(Memory* memory, Ppu* ppu)
 {
 	this->memory = memory;
 	this->ppu = ppu;
-	reset();
-	//pc = ROM_DATA_AREA;
-	pc = 0;
+
+	timeCycle = 1 / CPU_FREQUENCY_NORMAL_MODE;
+	cycles = 0;
+	halted = 0;
+	resetTerminal = 1;
+	stopped = 0;
 	sp = CPU_WORK_RAM_OR_AND_STACK_END;
 	IME = 0;
+	setCpuWithoutBios();
 }
 
 void Cpu::reset()
@@ -18,18 +22,56 @@ void Cpu::reset()
 	halted = 0;
 	resetTerminal = 1;
 	stopped = 0;
+	sp = CPU_WORK_RAM_OR_AND_STACK_END;
+	IME = 0;
+
+	if (memory->getBiosInMemeory())
+	{
+		setCpuWithBios();
+	}
+	else
+	{
+		setCpuWithoutBios();
+	}
+}
+
+void Cpu::setCpuWithBios()
+{
+	pc = 0;
+
 	A = 0;
-	B = C = D = E = H = L = 0;
 	F.Z = F.N = F.H = F.CY = 0;
+
+	B = C = D = E = H = L = 0;
 }
 
 void Cpu::setCpuWithoutBios()
 {
+	pc = 0x100;
 
+	A = 0x01;
+
+	//F=0xB0
+	F.Z = 1;
+	F.N = 0;
+	F.H = 1;
+	F.CY = 1;
+
+	B = 0x00;
+	C = 0x13;
+
+	D = 0x00;
+	E = 0xD8;
+
+	H = 0x01;
+	L = 0x4D;
 }
 
 int Cpu::doCycle()
 {
+	//if (pc >= 0x0100)
+	//	cout << "error" << endl;
+
 	//Draw a line with the PPU
 	ppu->draw(cycles);
 
@@ -44,7 +86,6 @@ int Cpu::doCycle()
 	{
 		cycles = 0;
 		readOpcode();
-		//cycles *= 4;//Issue 
 	}
 	else if (halted)//If halt mode is enable
 	{
@@ -66,7 +107,10 @@ int Cpu::doCycle()
 		cerr << "STOP MODE ENABLED. WAITING FOR USER INPUT." << endl;
 		stopped = !((memory->read(CONTROLLER_DATA_ADDRESS) & 0b00001111) < 15);//If low signal on P10, P11, P12 or P13 the stopped mode is disable
 		if (!stopped)
+		{
 			cycles += 217;
+			memory->setResetBitMemory(LCDC_ADDRESS, 1, 7);//LCD Controller Operation Stop Flag (0: LCDC Off)
+		}
 	}
 
 	if (!resetTerminal)
@@ -81,10 +125,11 @@ void Cpu::writeInputs(const uint8& inputs)
 	memory->write(CONTROLLER_DATA_ADDRESS, inputs);
 }
 
-double Cpu::getTimeCycle()
-{
-	return timeCycle;
-}
+/*------------------------------------------GETTERS AND SETTERS--------------------------------*/
+//double Cpu::getTimeCycle()
+//{
+//	return timeCycle;
+//}
 
 uint16 Cpu::getPc()
 {
@@ -95,6 +140,9 @@ void Cpu::setPc(uint16 pc)
 {
 	this->pc = pc;
 }
+
+
+
 
 uint16 Cpu::haltSubFunction()
 {
@@ -2193,6 +2241,7 @@ void Cpu::HALT()
 void Cpu::STOP()
 {
 	stopped = 1;
+	memory->setResetBitMemory(LCDC_ADDRESS, 0, 7);//LCD Controller Operation Stop Flag (0: LCDC Off)
 	cycles++;
 	pc++;
 }

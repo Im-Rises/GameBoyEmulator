@@ -20,3 +20,8 @@ https://user-images.githubusercontent.com/59691442/147654838-0d3e11d2-5b09-46fa-
 <https://archive.org/details/GameBoyProgManVer1.1/mode/2up>  
 <https://gbdev.gg8.se/wiki/articles/Gameboy_Bootstrap_ROM>  
 <https://www.pastraiser.com/cpu/gameboy/gameboy_opcodes.html>  
+
+## To do
+
+Background is working, sprites also seem to work.
+There's an issue with the Video register, in particulat LY (0xFF44) that is not incrememented like it should preventing the prog from leaving loop that are waiting for the last line of the screen from being drawn.
