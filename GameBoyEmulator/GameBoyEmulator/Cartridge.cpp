@@ -5,6 +5,11 @@ Cartridge::Cartridge(const string& romPath)
 	//Instead of loading all the rom to the ram of the computer, perhaps i should open the file and read it 
 	gameRom = new uint8[0x800000];
 
+	for (int i = 0; i < 0x800000; i++)
+	{
+		gameRom[i] = 0;
+	}
+
 	ifstream input(romPath, std::ios::binary);
 	if (input)
 	{
@@ -26,6 +31,7 @@ Cartridge::Cartridge(const string& romPath)
 	currentRomBank = 1;
 	currentRamBank = 0;
 
+	ramBanking = false;
 
 
 	for (int i = 0; i < 11; i++)
@@ -81,7 +87,6 @@ Cartridge::Cartridge(const string& romPath)
 	externalRamSize = gameRom[0x149];
 
 	destination = gameRom[0x014A];
-
 }
 
 Cartridge::~Cartridge()
@@ -102,9 +107,34 @@ uint8 Cartridge::getCurrentRomBank()
 	return currentRomBank;
 }
 
-uint8  Cartridge::getCurrentRamBank()
+uint8 Cartridge::getCurrentRamBank()
 {
 	return currentRamBank;
+}
+
+CartridgeType Cartridge::getMBC()
+{
+	return MBC;
+}
+
+bool Cartridge::getRamBanking()
+{
+	return ramBanking;
+}
+
+bool Cartridge::getRank(int index)
+{
+	return ramBank[index];
+}
+
+void Cartridge::setRamBanking(bool state)
+{
+	ramBanking = state;
+}
+
+void Cartridge::setRamBank(uint16 index, uint8 data)
+{
+	ramBank[index] = data;
 }
 
 string toString();

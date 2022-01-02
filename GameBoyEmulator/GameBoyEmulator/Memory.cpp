@@ -49,57 +49,21 @@ bool Memory::loadBiosInMemory(const string& biosPath)
 	}
 }
 
-bool Memory::loadRomInMemory(const string& romPath)
+void Memory::loadRomInMemory()
 {
 	//Load rom from cartridge
+	int	startIndex = 0;
 
-	//std::ifstream input(romPath, std::ios::binary);
-	//if (input)
-	//{
-	//	input.seekg(0, ios::end);
-	//	int romSize = input.tellg();
-	//	input.seekg(0, ios::beg);
-
-	//	if (biosInMemory)
-	//	{
-	//		for (int i = 0; i < 0x100; i++)//Load RST and interrupt address in a temporary array
-	//		{
-	//			//memoryTempInterruptRst[i] = input.get();
-	//		}
-	//		for (int i = 0x100; (i < romSize) && (i < RAM_CHARACTER_DATA_BANK_0_DMG); i++)
-	//		{
-	//			memoryArray[i] = input.get();
-	//		}
-	//	}
-	//	else
-	//	{
-	//		for (int i = 0; (i < romSize) && (i < RAM_CHARACTER_DATA_BANK_0_DMG); i++)
-	//		{
-	//			memoryArray[i] = input.get();
-	//		}
-	//	}
-
-	//	//checkMemoryBankingUsed();
-	//	gameInMemory = true;
-	//	input.close();
-	//	return true;
-	//}
-	//else
-	//{
-	//	cout << "Can't open rom file" << endl;
-	//	return false;
-	//}
+	if (biosInMemory)
+		startIndex = 0x100;
 
 
+	for (int i = startIndex; i < RAM_CHARACTER_DATA_BANK_0_DMG; i++)
+	{
+		memoryArray[i] = cartridge->readRomBank(i);
+	}
 }
 
-//void Memory::loadTempArrayInterruptRst()
-//{
-//	for (int i = 0; i < 0x100; i++)
-//	{
-//		//memoryArray[i] = memoryTempInterruptRst[i];
-//	}
-//}
 
 void Memory::setMemoryWithoutBios()
 {
@@ -136,41 +100,6 @@ void Memory::setMemoryWithoutBios()
 	memoryArray[0xFFFF] = 0x00;
 }
 
-//void Memory::checkMemoryBankingUsed()
-//{
-//	/*
-//	* Game Boy programing manual V1.1 (p298)
-//	*/
-//	switch (memoryArray[0x147])
-//	{
-//	case(1):
-//	{
-//		mbc1 = true;
-//		break;
-//	}
-//	case(2):
-//	{
-//		mbc1 = true;
-//		break;
-//	}
-//	case(3):
-//	{
-//		mbc1 = true;
-//		break;
-//	}
-//	case(5):
-//	{
-//		mbc2 = true;
-//		break;
-//	}
-//	case(6):
-//	{
-//		mbc2 = true;
-//		break;
-//	}
-//	}
-//}
-
 
 uint8 Memory::read(const uint16 address)const
 {
@@ -182,7 +111,7 @@ uint8 Memory::read(const uint16 address)const
 	{
 		return cartridge->readRomBank(address - 0xA000 + cartridge->getCurrentRomBank() * 0x2000);
 	}
-	else//Read in base game (bank 0)
+	else//Read everywhere else in the memory
 	{
 		return memoryArray[address];
 	}
@@ -190,13 +119,16 @@ uint8 Memory::read(const uint16 address)const
 
 void Memory::write(const uint16& address, uint8 value)
 {
-	//if (index == 0xFF41)
-	//	cout << "error" << endl;
-
 	if (address < 0x8000)
 	{
-		cerr << "Error: Writting in the read only area" << endl;
-		exit(1);
+		handleBanking(address, value);
+	}
+	else if (address >= 0xA000 && address < 0xC000)//External expension ram wrtting
+	{
+		if (cartridge->getRamBanking())
+		{
+			cartridge->setRamBank((address - 0xA000 + cartridge->getCurrentRamBank() * 0x2000), value);
+		}
 	}
 	else if (address >= 0xE000 && address < 0xFE00)
 	{
@@ -217,12 +149,57 @@ void Memory::write(const uint16& address, uint8 value)
 		cerr << "Error: Writting in the second reserved area" << endl;
 		exit(1);
 	}
-	else
+	else//Write everywhere else (Character Data, BG Display Data 1, BG Display Data 2, OAM etc...
 	{
 		memoryArray[address] = value;
 	}
 }
 
+void Memory::handleBanking(const uint16& address, const uint8 data)
+{
+	//Developper guide p215
+	CartridgeType cartridgeType = cartridge->getMBC();
+
+	if (address < 0x2000)
+	{
+		if (cartridgeType != ROM)
+		{
+			enableDisableRamBank(address, data);
+		}
+	}
+	else if ((address >= 0x2000) && (address < 0x4000))
+	{
+
+	}
+	else if ((address >= 0x4000) && (address < 0x6000))
+	{
+
+	}
+	else if ((address >= 0x6000) && (address < 0x8000))
+	{
+
+	}
+}
+
+
+void Memory::enableDisableRamBank(const uint16& address, const uint8 data)
+{
+	//Developper guide p215
+	//Register 0
+	if (cartridge->getMBC() == MBC2 || address < 0x1000)
+	{
+		cerr << "Error enable MBC2 RAMCS banking by writting in the wrong address ?" << endl;
+		return;//Do nothing 
+	}
+
+	uint8 testData = data & 0x0F;
+	if (testData == 0x0A)
+		cartridge->setRamBanking(true);
+	else
+		cartridge->setRamBanking(false);
+
+	//If MBC3 or MBC5 to implement
+}
 
 
 void Memory::increment(const uint16& address)
@@ -234,6 +211,14 @@ void Memory::decrement(const uint16& address)
 {
 	memoryArray[address]--;
 }
+
+
+
+
+
+
+
+
 
 
 

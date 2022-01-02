@@ -27,8 +27,8 @@ Main documentation i used:
 Helped me a lot to understand PPU timing and Rom/Ram banking:
 <http://www.codeslinger.co.uk/pages/projects/gameboy/beginning.html>  ❤️  
 
-
 ## To do
 
-Background is working, sprites also seem to work.
-There's an issue with the Video register, in particulat LY (0xFF44) that is not incrememented like it should preventing the prog from leaving loop that are waiting for the last line of the screen from being drawn.
+Verify Rom/Ram banking addresses types (int or long or ...)
+
+To implement banking with MBC3 and MBC5

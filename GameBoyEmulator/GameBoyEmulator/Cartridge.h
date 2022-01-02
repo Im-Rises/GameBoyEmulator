@@ -8,6 +8,14 @@
 
 using namespace std;
 
+enum CartridgeType {
+	ROM,
+	MBC1,
+	MBC2,
+	MBC3,
+	MBC5
+};
+
 class Cartridge
 {
 private:
@@ -18,14 +26,9 @@ private:
 	uint8 currentRomBank;
 	uint8 currentRamBank;
 
-	//uint8 MBC;
-	enum cartridgeType {
-		ROM,
-		MBC1,
-		MBC2,
-		MBC3,
-		MBC5
-	}MBC;
+	bool ramBanking;
+
+	CartridgeType MBC;
 
 	string gameName;
 	string gameCode;
@@ -45,6 +48,12 @@ public:
 
 	uint8 getCurrentRomBank();
 	uint8 getCurrentRamBank();
+	CartridgeType getMBC();
+	bool getRamBanking();
+	bool getRank(int index);
+
+	void setRamBanking(bool state);
+	void setRamBank(uint16 index, uint8 data);
 
 	string toString();
 };
