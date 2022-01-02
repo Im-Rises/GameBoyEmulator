@@ -50,6 +50,9 @@
     <ClCompile Include="Cartridge.cpp">
       <Filter>GameBoy</Filter>
     </ClCompile>
+    <ClCompile Include="readWriteFiles.cpp">
+      <Filter>MyLibs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cpu.h">
@@ -78,6 +81,9 @@
     </ClInclude>
     <ClInclude Include="Cartridge.h">
       <Filter>GameBoy</Filter>
+    </ClInclude>
+    <ClInclude Include="readWriteFiles.h">
+      <Filter>MyLibs</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

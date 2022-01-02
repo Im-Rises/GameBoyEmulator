@@ -1,10 +1,14 @@
-﻿  Cartridge.cpp
-  Cpu.cpp
+﻿  Cpu.cpp
   GameBoy.cpp
-E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\GameBoy.cpp(64,21): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\GameBoy.cpp(50,21): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\GameBoy.cpp(65,10): error C2039: 'loadTempArrayInterruptRst': is not a member of 'Memory'
+E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Memory.h(72): message : see declaration of 'Memory'
   Memory.cpp
-E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Memory.cpp(62,15): warning C4244: 'initializing': conversion from 'std::streamoff' to 'int', possible loss of data
   Ppu.cpp
+E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Ppu.cpp(18,23): warning C4305: '=': truncation from 'int' to 'uint8'
+E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Ppu.cpp(18,20): warning C4309: '=': truncation of constant value
+E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Ppu.cpp(37,25): warning C4305: '=': truncation from 'int' to 'uint8'
+E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Ppu.cpp(37,22): warning C4309: '=': truncation of constant value
   main.cpp
   Generating Code...
-  GameBoyEmulator.vcxproj -> E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\x64\Debug\GameBoyEmulator.exe
+E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Memory.cpp(94): error C4716: 'Memory::loadRomInMemory': must return a value

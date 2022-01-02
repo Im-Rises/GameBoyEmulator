@@ -3,9 +3,8 @@
 
 #include <iostream>
 #include <chrono>
-#include <fstream>
 
-#include "debug.h"
+//#include "debug.h"
 
 #include "settings.h"
 #include "binaryLib.h"
@@ -40,25 +39,23 @@ private:
 	Ppu ppu;
 	Memory memory;
 	//GlfwOpenglLib lcdScreenInputs;
-	Cartridge cartridge;
-
-	//static bool pause;
-	//bool useSaveFile;
-	//bool fullSpeed;
-	//float pixelSize;
+	Cartridge* cartridge = nullptr;
 
 public:
 	static GameBoy* getInstance();
 	void reset();
-	void setGameBoyWithoutBios();
 
 	void loadBios(const string& biosPath);
-	void loadGame(const string& gamePath);
+	void insertGame(Cartridge* cartridge);//void loadGame(const string& gamePath);
 
 	void launch();
 
+	bool getBiosInMemory();
+
 
 private:
+	void setGameBoyWithoutBios();
+
 	/*------------------------------------------GAME BOY CYCLE--------------------------------*/
 	void doGameBoyCycle(GlfwOpenglLib& glfwOpenglLib, std::chrono::steady_clock::time_point& timeRefresthScreenStart, std::chrono::steady_clock::time_point& timeCpuStart, int& timeRefreshInt, double& timeCycle, int& cycles);
 

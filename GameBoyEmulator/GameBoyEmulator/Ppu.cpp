@@ -37,7 +37,7 @@ void Ppu::draw(const int& cycles)//Not working
 			scanLineCounter = 456;
 			memory->increment(0xFF44);
 			uint8 scanLine = memory->read(0xFF44);
-
+	 
 			//if (scanLine == 144)
 
 		}

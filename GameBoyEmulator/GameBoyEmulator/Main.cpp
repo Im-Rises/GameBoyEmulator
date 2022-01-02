@@ -9,25 +9,38 @@ int main(int argc, char* argv[])
 	string biosPath;
 	string romPath;
 
+	GameBoy* gameBoy = GameBoy::getInstance();//Game Boy creation
+
 	if (true)//Debug
 	{
 		biosPath = "../../Bios_Games/dmg_boot.bin";
 		romPath = "../../Bios_Games/Tetris.GB";
 		argc = 2;
+		gameBoy->loadBios(biosPath);
 	}
+
+	//if (settings.isBiosPresent())
+	//{
+	//	gameBoy->loadBios(biosPath);
+	//}
 
 	if (argc > 1)//If a game is loaded
 	{
 		//romPath = argv[1];
+		//File name
 		Cartridge cartridge(romPath);
+		//cartridge.toString();
 
-		GameBoy* gameBoy = GameBoy::getInstance();
-		if (true)
-		{
-			gameBoy->loadBios(biosPath);
-		}
-		gameBoy->loadGame(romPath);
+		gameBoy->insertGame(&cartridge);
 		gameBoy->launch();
+	}
+	else if (gameBoy->getBiosInMemory())//If no game but bios is present
+	{
+		gameBoy->launch();
+	}
+	else
+	{
+		//Write usage
 	}
 
 	return 0;

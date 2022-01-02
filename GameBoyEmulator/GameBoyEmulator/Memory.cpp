@@ -8,6 +8,7 @@ Memory::Memory()
 void Memory::reset()
 {
 	biosInMemory = false;
+	gameInMemory = false;
 	//Reset all the memory
 	for (int i = 0; i < MEMORY_SIZE; i++)
 	{
@@ -19,16 +20,11 @@ void Memory::reset()
 	{
 		memoryArray[i] = 0xFF;
 	}
+}
 
-	mbc1 = false;
-	mbc2 = false;
-	currentMBC = 1;//Always begin with bank 1 (bank 0 bnever change)
-
-	currentRamBank = 0;
-	for (int i = 0; i < 0x8000; i++)
-	{
-		ramBank[i] = 0;
-	}
+void Memory::connectCartridge(Cartridge* cartridge)
+{
+	this->cartridge = cartridge;
 }
 
 
@@ -55,51 +51,55 @@ bool Memory::loadBiosInMemory(const string& biosPath)
 
 bool Memory::loadRomInMemory(const string& romPath)
 {
-	std::ifstream input(romPath, std::ios::binary);
-	if (input)
-	{
-		input.seekg(0, ios::end);
-		int romSize = input.tellg();
-		input.seekg(0, ios::beg);
+	//Load rom from cartridge
 
-		if (biosInMemory)
-		{
-			for (int i = 0; i < 0x100; i++)//Load RST and interrupt address in a temporary array
-			{
-				memoryTempInterruptRst[i] = input.get();
-			}
-			for (int i = 0x100; (i < romSize) && (i < RAM_CHARACTER_DATA_BANK_0_DMG); i++)
-			{
-				memoryArray[i] = input.get();
-			}
-		}
-		else
-		{
-			for (int i = 0; (i < romSize) && (i < RAM_CHARACTER_DATA_BANK_0_DMG); i++)
-			{
-				memoryArray[i] = input.get();
-			}
-		}
+	//std::ifstream input(romPath, std::ios::binary);
+	//if (input)
+	//{
+	//	input.seekg(0, ios::end);
+	//	int romSize = input.tellg();
+	//	input.seekg(0, ios::beg);
 
-		checkMemoryBankingUsed();
+	//	if (biosInMemory)
+	//	{
+	//		for (int i = 0; i < 0x100; i++)//Load RST and interrupt address in a temporary array
+	//		{
+	//			//memoryTempInterruptRst[i] = input.get();
+	//		}
+	//		for (int i = 0x100; (i < romSize) && (i < RAM_CHARACTER_DATA_BANK_0_DMG); i++)
+	//		{
+	//			memoryArray[i] = input.get();
+	//		}
+	//	}
+	//	else
+	//	{
+	//		for (int i = 0; (i < romSize) && (i < RAM_CHARACTER_DATA_BANK_0_DMG); i++)
+	//		{
+	//			memoryArray[i] = input.get();
+	//		}
+	//	}
 
-		input.close();
-		return true;
-	}
-	else
-	{
-		cout << "Can't open rom file" << endl;
-		return false;
-	}
+	//	//checkMemoryBankingUsed();
+	//	gameInMemory = true;
+	//	input.close();
+	//	return true;
+	//}
+	//else
+	//{
+	//	cout << "Can't open rom file" << endl;
+	//	return false;
+	//}
+
+
 }
 
-void Memory::loadTempArrayInterruptRst()
-{
-	for (int i = 0; i < 0x100; i++)
-	{
-		memoryArray[i] = memoryTempInterruptRst[i];
-	}
-}
+//void Memory::loadTempArrayInterruptRst()
+//{
+//	for (int i = 0; i < 0x100; i++)
+//	{
+//		//memoryArray[i] = memoryTempInterruptRst[i];
+//	}
+//}
 
 void Memory::setMemoryWithoutBios()
 {
@@ -136,46 +136,56 @@ void Memory::setMemoryWithoutBios()
 	memoryArray[0xFFFF] = 0x00;
 }
 
-void Memory::checkMemoryBankingUsed()
-{
-	/*
-	* Game Boy programing manual V1.1 (p298)
-	*/
-	switch (memoryArray[0x147])
-	{
-	case(1):
-	{
-		mbc1 = true;
-		break;
-	}
-	case(2):
-	{
-		mbc1 = true;
-		break;
-	}
-	case(3):
-	{
-		mbc1 = true;
-		break;
-	}
-	case(5):
-	{
-		mbc2 = true;
-		break;
-	}
-	case(6):
-	{
-		mbc2 = true;
-		break;
-	}
-	}
-}
+//void Memory::checkMemoryBankingUsed()
+//{
+//	/*
+//	* Game Boy programing manual V1.1 (p298)
+//	*/
+//	switch (memoryArray[0x147])
+//	{
+//	case(1):
+//	{
+//		mbc1 = true;
+//		break;
+//	}
+//	case(2):
+//	{
+//		mbc1 = true;
+//		break;
+//	}
+//	case(3):
+//	{
+//		mbc1 = true;
+//		break;
+//	}
+//	case(5):
+//	{
+//		mbc2 = true;
+//		break;
+//	}
+//	case(6):
+//	{
+//		mbc2 = true;
+//		break;
+//	}
+//	}
+//}
 
 
 uint8 Memory::read(const uint16 address)const
 {
-	//RESUME HERE
-	return memoryArray[address];
+	if ((address >= 0x4000) && (address <= 0x7FFF))//Read in rom bank area
+	{
+		return cartridge->readRomBank(address - 0x4000 + cartridge->getCurrentRomBank() * 0x4000);
+	}
+	else if ((address >= 0x1000) && (address <= 0xBFFF))//Read in ram bank area
+	{
+		return cartridge->readRomBank(address - 0xA000 + cartridge->getCurrentRomBank() * 0x2000);
+	}
+	else//Read in base game (bank 0)
+	{
+		return memoryArray[address];
+	}
 }
 
 void Memory::write(const uint16& address, uint8 value)

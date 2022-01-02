@@ -6,6 +6,8 @@
 
 #include "binaryLib.h"
 
+#include "Cartridge.h"
+
 #define MEMORY_SIZE (0xFFFF + 0x0001)	//65535 KB
 #define ROM_DATA_AREA 0x100
 #define RAM_CHARACTER_DATA_BANK_0_DMG 0x8000
@@ -71,33 +73,31 @@ class Memory {
 
 private:
 	uint8 memoryArray[MEMORY_SIZE];
-
 	bool biosInMemory;
-	uint8 memoryTempInterruptRst[0x100];
-
-	bool mbc1;
-	bool mbc2;
-	uint8 currentMBC;
-
-	uint8 ramBank[0x8000];
-	uint8 currentRamBank;
+	bool gameInMemory;
+	Cartridge* cartridge = nullptr;
 
 public:
 	Memory();
 	void reset();
 
+	void connectCartridge(Cartridge* cartridge);
+
 	bool loadBiosInMemory(const string& biosPath);
 	bool loadRomInMemory(const string& romPath);
-	void loadTempArrayInterruptRst();
 	void setMemoryWithoutBios();
 
-	void checkMemoryBankingUsed();
-
+	//Memory operations
 	uint8 read(const uint16 address)const;
 	void write(const uint16& address, uint8 value);
 
 	void increment(const uint16& address);
 	void decrement(const uint16& address);
+
+
+
+
+
 
 	void setResetBitMemory(const uint16& address, const bool bit, const int bitIndex);
 

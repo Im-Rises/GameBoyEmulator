@@ -24,13 +24,6 @@ void GameBoy::reset()
 	ppu.reset();
 }
 
-void GameBoy::setGameBoyWithoutBios()
-{
-	cpu.setCpuWithoutBios();
-	memory.setMemoryWithoutBios();
-	ppu.reset();
-}
-
 
 
 void GameBoy::loadBios(const string& biosPath)
@@ -41,17 +34,10 @@ void GameBoy::loadBios(const string& biosPath)
 	cpu.setCpuWithBios();
 }
 
-void GameBoy::loadGame(const string& gamePath)
+void GameBoy::insertGame(Cartridge* cartridge)
 {
-	if (memory.getBiosInMemeory()) //If there is a bios
-	{
-		memory.loadRomInMemory(gamePath);
-	}
-	else //If there's no bios
-	{
-		memory.loadRomInMemory(gamePath);
-		setGameBoyWithoutBios();
-	}
+	this->cartridge = cartridge;
+	memory.connectCartridge(cartridge);
 }
 
 void GameBoy::launch()
@@ -76,7 +62,7 @@ void GameBoy::launch()
 		}
 
 		//Load temporary array in memory
-		memory.loadTempArrayInterruptRst();
+		//memory.loadTempArrayInterruptRst();
 	}
 	else
 	{
@@ -94,6 +80,18 @@ void GameBoy::launch()
 	{
 		doGameBoyCycle(glfwOpenglLib, timeRefresthScreenStart, timeCpuStart, timeRefreshInt, timeCycle, cycles);
 	}
+}
+
+bool GameBoy::getBiosInMemory()
+{
+	return memory.getBiosInMemeory();
+}
+
+void GameBoy::setGameBoyWithoutBios()
+{
+	cpu.setCpuWithoutBios();
+	memory.setMemoryWithoutBios();
+	ppu.reset();
 }
 
 
