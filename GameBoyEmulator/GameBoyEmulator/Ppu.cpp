@@ -15,6 +15,7 @@ void Ppu::reset()
 			lcdScreen[i][j] = 0xFF;
 		}
 	}
+	scanLineCounter = 456;//Number of clock cycles to draw one scanline
 }
 
 
@@ -27,18 +28,38 @@ uint8 Ppu::getLcdScreenPixel(int indexX, int indexY)
 
 void Ppu::draw(const int& cycles)//Not working
 {
-	for (int i = 0; i < cycles; i++)
+	if (testBit(memory->read(0xFF40), 7))
 	{
-		if (testBit(memory->read(LCDC_ADDRESS), 7))
-			memory->increment(LY_ADDRESS);
-		else
-			memory->write(LY_ADDRESS, 0);
+		scanLineCounter -= cycles;
 
-		drawLine();
+		if (scanLineCounter <= 0)
+		{
+			scanLineCounter = 456;
+			memory->increment(0xFF44);
+			uint8 scanLine = memory->read(0xFF44);
+
+			//if (scanLine == 144)
+
+		}
 	}
 
-	if (memory->read(LY_ADDRESS) >= VERTICAL_BLANKING_LINES_NUMBER)
-		memory->write(LY_ADDRESS, 0);
+
+
+
+
+
+
+
+	//for (int i = 0; i < cycles; i++)
+	//{
+	//	if (testBit(memory->read(LCDC_ADDRESS), 7))
+	//		memory->increment(LY_ADDRESS);
+	//	else
+	//		memory->write(LY_ADDRESS, 0);
+	//	drawLine();
+	//}
+	//if (memory->read(LY_ADDRESS) >= VERTICAL_BLANKING_LINES_NUMBER)
+	//	memory->write(LY_ADDRESS, 0);
 }
 
 void Ppu::drawLine()
@@ -139,8 +160,8 @@ void Ppu::drawBackgroundLine(uint8 lcdc)
 
 			uint8 color = transformDotDataToColor(colorCode, BG_PALETTE_DATA);
 
-			if (ly < DOTS_DISPLAY_Y)
-				lcdScreen[pixel][ly] = colorToRGB(color);
+
+			lcdScreen[pixel][ly] = colorToRGB(color);
 		}
 	}
 }
@@ -200,8 +221,7 @@ void Ppu::drawSpritesLine(uint8 lcdc)
 					}
 					else//Priority to sprite
 					{
-						if (ly < DOTS_DISPLAY_Y)
-							lcdScreen[xCoordinate + pixel][ly] = colorToRGB(color);
+						lcdScreen[xCoordinate + pixel][ly] = colorToRGB(color);
 					}
 				}
 			}

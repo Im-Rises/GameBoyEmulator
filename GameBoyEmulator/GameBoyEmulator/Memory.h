@@ -75,9 +75,12 @@ private:
 	bool biosInMemory;
 	uint8 memoryTempInterruptRst[0x100];
 
-	bool memoryBanking1;
-	bool memoryBanking2;
-	uint8 currentRomMemoryBank;
+	bool mbc1;
+	bool mbc2;
+	uint8 currentMBC;
+
+	uint8 ramBank[0x8000];
+	uint8 currentRamBank;
 
 public:
 	Memory();
@@ -86,6 +89,7 @@ public:
 	bool loadBiosInMemory(const string& biosPath);
 	bool loadRomInMemory(const string& romPath);
 	void loadTempArrayInterruptRst();
+	void setMemoryWithoutBios();
 
 	void checkMemoryBankingUsed();
 
@@ -96,7 +100,6 @@ public:
 	void decrement(const uint16& address);
 
 	void setResetBitMemory(const uint16& address, const bool bit, const int bitIndex);
-	void setMemoryWithoutBios();
 
 	bool getBiosInMemeory();
 

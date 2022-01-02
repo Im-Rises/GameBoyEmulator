@@ -47,6 +47,9 @@
     <ClCompile Include="debug.cpp">
       <Filter>DebugGameBoy</Filter>
     </ClCompile>
+    <ClCompile Include="Cartridge.cpp">
+      <Filter>GameBoy</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cpu.h">
@@ -72,6 +75,9 @@
     </ClInclude>
     <ClInclude Include="debug.h">
       <Filter>DebugGameBoy</Filter>
+    </ClInclude>
+    <ClInclude Include="Cartridge.h">
+      <Filter>GameBoy</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

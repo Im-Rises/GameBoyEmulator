@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "GameBoy.h"
+#include "Cartridge.h"
 
 int main(int argc, char* argv[])
 {
@@ -18,6 +19,8 @@ int main(int argc, char* argv[])
 	if (argc > 1)//If a game is loaded
 	{
 		//romPath = argv[1];
+		Cartridge cartridge(romPath);
+
 		GameBoy* gameBoy = GameBoy::getInstance();
 		if (true)
 		{

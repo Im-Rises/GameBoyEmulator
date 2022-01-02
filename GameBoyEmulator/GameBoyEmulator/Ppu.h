@@ -22,15 +22,12 @@
 #define SPRITES_NUMBER_PER_LINE 10
 
 
-struct Block {
-
-};
-
 class Ppu
 {
 private:
 	Memory* memory = nullptr;
 	uint8 lcdScreen[DOTS_DISPLAY_X][DOTS_DISPLAY_Y];
+	uint8 scanLineCounter;
 
 public:
 	Ppu(Memory* memory);

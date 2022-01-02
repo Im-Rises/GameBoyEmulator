@@ -6,6 +6,8 @@
 
 #include "binaryLib.h"
 
+#include <iostream>
+
 #define CPU_FREQUENCY_NORMAL_MODE 1050000 //In Hz (1.05 MHz)
 #define CPU_FREQUENCY_DOUBLE_SPEED_MODE 2*FREQUENCY_NORMAL_MODE 
 

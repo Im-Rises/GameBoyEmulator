@@ -148,6 +148,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="binaryLib.cpp" />
+    <ClCompile Include="Cartridge.cpp" />
     <ClCompile Include="Cpu.cpp" />
     <ClCompile Include="debug.cpp" />
     <ClCompile Include="GameBoy.cpp" />
@@ -159,6 +160,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="binaryLib.h" />
+    <ClInclude Include="Cartridge.h" />
     <ClInclude Include="Cpu.h" />
     <ClInclude Include="debug.h" />
     <ClInclude Include="GameBoy.h" />
