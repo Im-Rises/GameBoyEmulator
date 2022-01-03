@@ -8,6 +8,12 @@
 
 #include <iostream>
 
+#define TIMA 0xFF05
+#define TMA 0xFF06
+#define TAC 0xFF07
+
+#define CLOCK_FREQUENCY 4194304 //In Hz
+
 #define CPU_FREQUENCY_NORMAL_MODE 1050000 //In Hz (1.05 MHz)
 #define CPU_FREQUENCY_DOUBLE_SPEED_MODE 2*FREQUENCY_NORMAL_MODE 
 
@@ -18,6 +24,7 @@ class Cpu {
 private:
 	int cycles;					//Machine cycles
 	double timeCycle;			//Time of a cycle
+	int timerCounter=CLOCK_FREQUENCY/frequency;
 
 	/// <summary>
 	/// CPU mode
@@ -69,8 +76,8 @@ private:
 	uint16 haltSubFunction();					//Halt mode function
 
 	void writeUserInput();						//Function to write user inputs
-	void incrementTimer();
-	void incrementDivider();
+	void incrementTimers(const int& cycles);
+	void incrementDivider(const int& cycles);
 
 	void readOpcode();							//Read an opcode
 	void executeOpcode(uint8 opcode);			//Execute an opcode

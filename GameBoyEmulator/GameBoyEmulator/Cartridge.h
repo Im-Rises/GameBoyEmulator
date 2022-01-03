@@ -20,40 +20,64 @@ class Cartridge
 {
 private:
 	//ifstream romFile;
-	uint8* gameRom;//uint8 gameRom[0x100000];//Max GB rom size 8Mb, 1Mo
-	uint8 ramBank[0x8000];//Ram bank of size 0x2000 (maximum of 4 ram bank)
+
+	CartridgeType cartridgeType;
+
+	//Rom and Ram banking
+	uint8* rom;//uint8 gameRom[0x100000];//Max GB rom size 8Mb, 1Mo
+	uint8 ram[0x8000];//Ram bank of size 0x2000 (maximum of 4 ram bank)
 
 	uint8 currentRomBank;
 	uint8 currentRamBank;
 
-	bool ramBanking;
+	bool romBankingEnable;
+	bool ramBankingEnable;
 
-	CartridgeType MBC;
 
+	//Other data p299
 	string gameName;
 	string gameCode;
-	uint8 CGBsupport;
+	uint8 cgbSupport;
 	uint8 romSize;
 	uint8 externalRamSize;
 	string destination;
 
-
 public:
+	//Constructor and destructor
 	Cartridge(const string& romPath);
 	~Cartridge();
 
-	uint8 readRomBank(int address);
-	uint8 readRamBank();
-	uint8 writeRamBank();
+
+	//Read and write
+	uint8 readRomBank(const uint16& address)const;
+
+	uint8 readRamBank(const uint16& address)const;
+	void writeRamBank(const uint16& address, const uint8& data);
+
+private:
+	//Handle rom and ram banking
+	void handleBanking(const uint16& address, const uint8& data);
+	void mbcRegister0(const uint16& address, const uint8& data);
+	void mbcRegister1(const uint16& address, const uint8& data);
+	void mbcRegister2(const uint16& address, const uint8& data);
+	void mbcRegister3(const uint16& address, const uint8& data);
+
+public:
+	//Getters and setters
+
+	CartridgeType getCartridgeType();
+
+	uint8 getCurrentRamBank();
+	void setCurrentRamBank(uint8 value);
 
 	uint8 getCurrentRomBank();
-	uint8 getCurrentRamBank();
-	CartridgeType getMBC();
-	bool getRamBanking();
-	bool getRank(int index);
+	void setCurrentRomBank(uint8 value);
 
-	void setRamBanking(bool state);
-	void setRamBank(uint16 index, uint8 data);
+	bool getRamBankingEnable();
+	void setRamBankingEnable(bool state);
+
+
+	//toString
 
 	string toString();
 };

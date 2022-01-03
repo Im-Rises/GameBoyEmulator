@@ -92,10 +92,6 @@ public:
 	uint8 read(const uint16 address)const;
 	void write(const uint16& address, uint8 value);
 
-	//Handle rom and ram banking
-	void handleBanking(const uint16& address,const uint8 data);
-	void enableDisableRamBank(const uint16& address, const uint8 data);
-
 	void increment(const uint16& address);
 	void decrement(const uint16& address);
 

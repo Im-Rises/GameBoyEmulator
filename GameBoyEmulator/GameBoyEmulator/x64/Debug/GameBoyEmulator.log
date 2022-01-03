@@ -1,5 +1,12 @@
 ﻿  Cartridge.cpp
 E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cartridge.cpp(17,15): warning C4244: 'initializing': conversion from 'std::streamoff' to 'int', possible loss of data
+E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cartridge.cpp(123,1): error C3646: 'uint8': unknown override specifier
+E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cartridge.cpp(123,18): error C2061: syntax error: identifier 'getCurrentRomBank'
+E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cartridge.cpp(124,1): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cartridge.cpp(124,1): error C2556: 'int Cartridge::getCurrentRomBank(void)': overloaded function differs only by return type from 'uint8 Cartridge::getCurrentRomBank(void)'
+E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cartridge.h(56): message : see declaration of 'Cartridge::getCurrentRomBank'
+E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cartridge.cpp(123,18): error C2371: 'Cartridge::getCurrentRomBank': redefinition; different basic types
+E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cartridge.h(56): message : see declaration of 'Cartridge::getCurrentRomBank'
   Cpu.cpp
   GameBoy.cpp
 E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\GameBoy.cpp(50,21): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
@@ -11,4 +18,3 @@ E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator
   main.cpp
   Memory.cpp
   Generating Code...
-E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Memory.cpp(66): error C4716: 'Memory::loadRomInMemory': must return a value

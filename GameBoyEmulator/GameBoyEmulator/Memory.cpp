@@ -101,33 +101,33 @@ void Memory::setMemoryWithoutBios()
 }
 
 
-uint8 Memory::read(const uint16 address)const
+uint8 Memory::read(const uint16 address)const//OK
 {
-	if ((address >= 0x4000) && (address <= 0x7FFF))//Read in rom bank area
+	if ((address >= 0x4000) && (address <= 0x7FFF))//Read in rom bank area (Cartridge)
 	{
-		return cartridge->readRomBank(address - 0x4000 + cartridge->getCurrentRomBank() * 0x4000);
+		return cartridge->readRomBank(address);
 	}
-	else if ((address >= 0x1000) && (address <= 0xBFFF))//Read in ram bank area
+	else if ((address >= 0xA000) && (address <= 0xBFFF))//Read in ram bank also known as External Expansion Working RAM (Cartridge)
 	{
-		return cartridge->readRomBank(address - 0xA000 + cartridge->getCurrentRomBank() * 0x2000);
+		return cartridge->readRamBank(address);
 	}
-	else//Read everywhere else in the memory
+	else//Read everywhere else in the memory (memory)
 	{
 		return memoryArray[address];
 	}
 }
 
-void Memory::write(const uint16& address, uint8 value)
+void Memory::write(const uint16& address, uint8 value)//NOK
 {
-	if (address < 0x8000)
+	if (address < 0x8000)//Writting in this area change the used banks in the cartridge
 	{
-		handleBanking(address, value);
+		cartridge->handleBanking(address, value);
 	}
 	else if (address >= 0xA000 && address < 0xC000)//External expension ram wrtting
 	{
-		if (cartridge->getRamBanking())
+		if (cartridge->getRamBankingEnable())
 		{
-			cartridge->setRamBank((address - 0xA000 + cartridge->getCurrentRamBank() * 0x2000), value);
+			cartridge->writeRamBank(address, value);
 		}
 	}
 	else if (address >= 0xE000 && address < 0xFE00)
@@ -155,71 +155,22 @@ void Memory::write(const uint16& address, uint8 value)
 	}
 }
 
-void Memory::handleBanking(const uint16& address, const uint8 data)
-{
-	//Developper guide p215
-	CartridgeType cartridgeType = cartridge->getMBC();
 
-	if (address < 0x2000)
-	{
-		if (cartridgeType != ROM)
-		{
-			enableDisableRamBank(address, data);
-		}
-	}
-	else if ((address >= 0x2000) && (address < 0x4000))
-	{
-
-	}
-	else if ((address >= 0x4000) && (address < 0x6000))
-	{
-
-	}
-	else if ((address >= 0x6000) && (address < 0x8000))
-	{
-
-	}
-}
-
-
-void Memory::enableDisableRamBank(const uint16& address, const uint8 data)
-{
-	//Developper guide p215
-	//Register 0
-	if (cartridge->getMBC() == MBC2 || address < 0x1000)
-	{
-		cerr << "Error enable MBC2 RAMCS banking by writting in the wrong address ?" << endl;
-		return;//Do nothing 
-	}
-
-	uint8 testData = data & 0x0F;
-	if (testData == 0x0A)
-		cartridge->setRamBanking(true);
-	else
-		cartridge->setRamBanking(false);
-
-	//If MBC3 or MBC5 to implement
-}
 
 
 void Memory::increment(const uint16& address)
 {
-	memoryArray[address]++;
+	cout << "Not implemented 'memory address increment'" << endl;
+	exit(2);
+	//memoryArray[address]++;
 }
 
 void Memory::decrement(const uint16& address)
 {
-	memoryArray[address]--;
+	cout << "Not implemented 'memory address decrement'" << endl;
+	exit(2);
+	//memoryArray[address]--;
 }
-
-
-
-
-
-
-
-
-
 
 
 void Memory::setResetBitMemory(const uint16& address, const bool bit, const int bitIndex)

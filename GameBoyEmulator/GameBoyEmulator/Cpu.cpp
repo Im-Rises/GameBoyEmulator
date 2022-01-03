@@ -76,8 +76,7 @@ int Cpu::doCycle()
 	ppu->draw(cycles);
 
 	//Check timer
-	incrementTimer();
-	incrementDivider();
+	incrementTimers();
 
 	//Put user inputs here in the memory registers
 	writeUserInput();
@@ -178,32 +177,19 @@ void Cpu::writeUserInput()
 	memory->write(INTERRUPT_FLAG_IF_ADDRESS, (memory->read(INTERRUPT_FLAG_IF_ADDRESS) | 0b00010000));//Put to enable IF flag controller
 }
 
-void Cpu::incrementTimer()
+void Cpu::incrementTimers(const int& cycles)
 {
-	if ((memory->read(TIMER_REGISTER_TAC_ADDRESS) & 0b00000110) > 0)//If timer enable
-	{
-		//Increment timer here regarding of its speed defined in the TAC
-		/*
-		* 00: f/210 (4.096 KHz)
-		* 01: f/24 (262.144 KHz)
-		* 10: f/26 (65.536 KHz)
-		* 11: f/28 (16.384 KHz)
-		*/
+	incrementDivider(cycles);
 
-		if ((memory->read(TIMER_REGISTER_TIMA_ADDRESS) + cycles) > 0xFFFF)
-		{
-			//overflow
-			memory->write(TIMER_REGISTER_TIMA_ADDRESS, memory->read(TIMER_REGISTER_TMA_ADDRESS));
-		}
-		else
-		{
-			memory->write(TIMER_REGISTER_TIMA_ADDRESS, memory->read(TIMER_REGISTER_TIMA_ADDRESS) + cycles);
-		}
+	if (testBit(memory->read(TAC), 2))//If timer enable
+	{
+		
 	}
+
 }
 
 
-void Cpu::incrementDivider()
+void Cpu::incrementDivider(const int& cycles)
 {
 	memory->write(DIVIDER_REGISTER_ADDRESS, memory->read(DIVIDER_REGISTER_ADDRESS) + cycles);
 }
