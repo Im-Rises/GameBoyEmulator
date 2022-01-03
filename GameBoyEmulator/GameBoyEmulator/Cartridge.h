@@ -54,9 +54,10 @@ public:
 	uint8 readRamBank(const uint16& address)const;
 	void writeRamBank(const uint16& address, const uint8& data);
 
+	void handleBanking(const uint16& address, const uint8& data);
+
 private:
 	//Handle rom and ram banking
-	void handleBanking(const uint16& address, const uint8& data);
 	void mbcRegister0(const uint16& address, const uint8& data);
 	void mbcRegister1(const uint16& address, const uint8& data);
 	void mbcRegister2(const uint16& address, const uint8& data);

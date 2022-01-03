@@ -8,23 +8,29 @@
 
 #include <iostream>
 
-#define TIMA 0xFF05
-#define TMA 0xFF06
-#define TAC 0xFF07
+#define DIV 0xFF04
 
-#define CLOCK_FREQUENCY 4194304 //In Hz
+#define TIMA 0xFF05	//timer counter
+#define TMA 0xFF06 //timer modulo register
+#define TAC 0xFF07 //timer control register
 
-#define CPU_FREQUENCY_NORMAL_MODE 1050000 //In Hz (1.05 MHz)
-#define CPU_FREQUENCY_DOUBLE_SPEED_MODE 2*FREQUENCY_NORMAL_MODE 
+#define CLOCK_FREQUENCY 4194304 //In Hz (number of clock frequency by second)
+//#define CPU_FREQUENCY CLOCK_FREQUENCY/4 //In Hz (number of machine cycle by second)
 
 using namespace std;
 
 class Cpu {
 
 private:
-	int cycles;					//Machine cycles
-	double timeCycle;			//Time of a cycle
-	int timerCounter=CLOCK_FREQUENCY/frequency;
+	/// <summary>
+	/// Cycles
+	/// </summary>
+	int clockCycles;			//Machine cycles after opcode
+
+	/// <summary>
+	/// Timer
+	/// </summary>
+	int timerCounter;
 
 	/// <summary>
 	/// CPU mode
@@ -37,7 +43,7 @@ private:
 	/// 8 bits registers
 	/// </summary>
 	uint8 A;					//Accumulator A
-	uint8 B, C, D, E, H, L;	//Auxiliary registers of the accumulator A, they work by pairs (BC, DE, HL)
+	uint8 B, C, D, E, H, L;		//Auxiliary registers of the accumulator A, they work by pairs (BC, DE, HL)
 
 	/// <summary>
 	/// Flags
@@ -65,30 +71,20 @@ public:
 	void reset();										//Reset Cpu
 	void setCpuWithBios();								//Set cpu with bios
 	void setCpuWithoutBios();							//Set cpu without bios
-	int doCycle();										//Do cpu cycle
-	void writeInputs(const uint8& inputs);				//Write inputs to memory
 
-	//double getTimeCycle();
-	uint16 getPc();
-	void setPc(uint16 pc);
+	//void writeInputs(const uint8& inputs);				//Write inputs to memory
+
+	int doCycle();										//Do cpu cycle
 
 private:
-	uint16 haltSubFunction();					//Halt mode function
-
-	void writeUserInput();						//Function to write user inputs
-	void incrementTimers(const int& cycles);
-	void incrementDivider(const int& cycles);
-
-	void readOpcode();							//Read an opcode
 	void executeOpcode(uint8 opcode);			//Execute an opcode
 	void executeOpcodeFollowingCB();			//Execute an opcode on two bytes (following the CB opcode) 
 
+	void handleTimers();
+	void handleDividerTimer();
+	void setTimerCounter();
 
-	uint16 pairRegisters(const uint8 reg1, const uint8 reg2)const;					//Function to pair registers
-	void unpairRegisters(uint8& reg1, uint8& reg2, const uint16& registersPair);	//Function to unpair registers
-
-	uint8 flagToByte(const Flag& flag)const;//Function to convert from flag to byte
-	Flag byteToFlag(const uint8& byte)const;//Function to convert from byte to flag
+	void writeMemory(const uint16& address, const uint8& data);
 
 	/*-----------------------------------------NORMAL OPCODES OPERATIONS------------------------------------------*/
 
@@ -270,6 +266,15 @@ private:
 
 	void HALT();
 	void STOP();
+
+
+	/*-----------------------------------------SUB FUNCTIONS------------------------------------------*/
+
+	uint16 pairRegisters(const uint8 reg1, const uint8 reg2)const;					//Function to pair registers
+	void unpairRegisters(uint8& reg1, uint8& reg2, const uint16& registersPair);	//Function to unpair registers
+
+	uint8 flagToByte(const Flag& flag)const;//Function to convert from flag to byte
+	Flag byteToFlag(const uint8& byte)const;//Function to convert from byte to flag
 };
 
 #endif

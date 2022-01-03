@@ -17,6 +17,7 @@ GameBoy* GameBoy::getInstance()
 	return gameboyInstance;
 }
 
+
 void GameBoy::reset()
 {
 	cpu.reset();
@@ -24,7 +25,12 @@ void GameBoy::reset()
 	ppu.reset();
 }
 
-
+void GameBoy::setGameBoyWithoutBios()
+{
+	cpu.setCpuWithoutBios();
+	memory.setMemoryWithoutBios();
+	ppu.reset();
+}
 
 void GameBoy::loadBios(const string& biosPath)
 {
@@ -40,8 +46,33 @@ void GameBoy::insertGame(Cartridge* cartridge)
 	memory.connectCartridge(cartridge);
 }
 
-void GameBoy::launch()
+void GameBoy::start()
 {
+	GlfwOpenglLib glfwOpenglLib(EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y, PROJECT_NAME);//Create window
+	glfwOpenglLib.setBackground();	//Set the background of the two buffers to white
+
+
+	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!IN MACHINES CYCLES!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	const int cyclesNumberToDo = CLOCK_FREQUENCY / 60;//Calcul the number of cycles for the update of the screen
+
+	while (glfwOpenglLib.windowIsActive())//As long as we don't leave program
+	{
+		int performedCycles = 0;
+
+		while (performedCycles < cyclesNumberToDo)
+		{
+			//get user inputs from the doCycle function or a separate function ?
+
+			performedCycles += cpu.doCycle();
+
+			glfwOpenglLib.getEvenements();
+		}
+
+		updateScreen(glfwOpenglLib);
+	}
+
+
+	/*
 	GlfwOpenglLib glfwOpenglLib(EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y, PROJECT_NAME);//Create window
 	glfwOpenglLib.setBackground();	//Set the background of the two buffers to white
 
@@ -80,49 +111,7 @@ void GameBoy::launch()
 	{
 		doGameBoyCycle(glfwOpenglLib, timeRefresthScreenStart, timeCpuStart, timeRefreshInt, timeCycle, cycles);
 	}
-}
-
-bool GameBoy::getBiosInMemory()
-{
-	return memory.getBiosInMemeory();
-}
-
-void GameBoy::setGameBoyWithoutBios()
-{
-	cpu.setCpuWithoutBios();
-	memory.setMemoryWithoutBios();
-	ppu.reset();
-}
-
-
-/*------------------------------------------GAME BOY CYCLE--------------------------------*/
-
-void GameBoy::doGameBoyCycle(GlfwOpenglLib& glfwOpenglLib, std::chrono::steady_clock::time_point& timeRefresthScreenStart, std::chrono::steady_clock::time_point& timeCpuStart, int& timeRefreshInt, double& timeCycle, int& cycles)
-{
-	if (true)
-	{
-		//if (GlfwOpenglLib.debug)
-		//{
-
-		//}
-	}
-
-	//Write inputs to cpu that writes it to memory
-	if (std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - timeCpuStart).count() > (cycles * timeCycle))
-	{
-		//cpu.writeInputs(inputs);
-		timeCpuStart = std::chrono::high_resolution_clock::now();
-		cycles = cpu.doCycle();
-	}
-
-	//Update screen
-	if (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - timeRefresthScreenStart).count() > timeRefreshInt)
-	{
-		updateScreen(glfwOpenglLib);
-		timeRefresthScreenStart = std::chrono::high_resolution_clock::now();
-	}
-	//Get evenements
-	glfwOpenglLib.getEvenements();
+	*/
 }
 
 
@@ -142,3 +131,10 @@ void GameBoy::updateScreen(GlfwOpenglLib& glfwOpenglLib)
 	glfwOpenglLib.swapBuffers();
 }
 
+
+/*------------------------------------------GETTERS--------------------------------*/
+
+bool GameBoy::getBiosInMemory()
+{
+	return memory.getBiosInMemeory();
+}

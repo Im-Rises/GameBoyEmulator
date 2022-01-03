@@ -5,8 +5,7 @@
 #include <chrono>
 
 //#include "debug.h"
-
-#include "settings.h"
+//#include "settings.h"
 #include "binaryLib.h"
 #include "GlfwOpenglLib.h"
 
@@ -21,6 +20,7 @@
 
 #define EMULATOR_SCREEN_SIZE_X 640
 #define EMULATOR_SCREEN_SIZE_Y 576
+
 #define SCREEN_FREQUENCY 60	//In fps
 
 /*
@@ -44,24 +44,23 @@ private:
 public:
 	static GameBoy* getInstance();
 	void reset();
-
-	void loadBios(const string& biosPath);
-	void insertGame(Cartridge* cartridge);//void loadGame(const string& gamePath);
-
-	void launch();
-
-	bool getBiosInMemory();
-
-
-private:
 	void setGameBoyWithoutBios();
 
+	void loadBios(const string& biosPath);
+	void insertGame(Cartridge* cartridge);
+
+	void start();
+
+private:
 	/*------------------------------------------GAME BOY CYCLE--------------------------------*/
 	void doGameBoyCycle(GlfwOpenglLib& glfwOpenglLib, std::chrono::steady_clock::time_point& timeRefresthScreenStart, std::chrono::steady_clock::time_point& timeCpuStart, int& timeRefreshInt, double& timeCycle, int& cycles);
 
 	/*------------------------------------------SCREEN FUNCTIONS--------------------------------*/
 	void updateScreen(GlfwOpenglLib& glfwOpenglLib);
 
+public:
+	/*------------------------------------------GETTERS--------------------------------*/
+	bool getBiosInMemory();
 };
 
 #endif

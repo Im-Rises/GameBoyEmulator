@@ -4,9 +4,8 @@ Cpu::Cpu(Memory* memory, Ppu* ppu)
 {
 	this->memory = memory;
 	this->ppu = ppu;
-
-	timeCycle = 1 / CPU_FREQUENCY_NORMAL_MODE;
-	cycles = 0;
+	setTimerCounter();
+	clockCycles = 0;
 	halted = 0;
 	resetTerminal = 1;
 	stopped = 0;
@@ -17,8 +16,8 @@ Cpu::Cpu(Memory* memory, Ppu* ppu)
 
 void Cpu::reset()
 {
-	timeCycle = 1 / CPU_FREQUENCY_NORMAL_MODE;
-	cycles = 0;
+	//timeCycle = 1 / CPU_FREQUENCY_NORMAL_MODE;
+	clockCycles = 0;
 	halted = 0;
 	resetTerminal = 1;
 	stopped = 0;
@@ -33,6 +32,7 @@ void Cpu::reset()
 	{
 		setCpuWithoutBios();
 	}
+	setTimerCounter();
 }
 
 void Cpu::setCpuWithBios()
@@ -69,136 +69,104 @@ void Cpu::setCpuWithoutBios()
 
 int Cpu::doCycle()
 {
-	//if (pc >= 0x0100)
-	//	cout << "error" << endl;
+	executeOpcode(memory->read(pc));//Execute opcode
+	clockCycles *= 4;
 
-	//Draw a line with the PPU
-	ppu->draw(cycles);
+	//The cylce value has changed, now we can update the timers, draw and manage the interrupts
+	handleTimers();
+	//manageInterrupts();
+	ppu->draw(clockCycles);
 
-	//Check timer
-	incrementTimers();
-
-	//Put user inputs here in the memory registers
-	writeUserInput();
-
-	if (!halted && !stopped)//If CPU is not in halt mode neither stop mode
-	{
-		cycles = 0;
-		readOpcode();
-	}
-	else if (halted)//If halt mode is enable
-	{
-		if ((memory->read(INTERRUPT_FLAG_IE_ADDRESS) | memory->read(INTERRUPT_FLAG_IF_ADDRESS)) > 0)//If one of the request flag (IF) is activated and its corresponding flag (IE) is activated the halted mode is canceled
-		{
-			halted = false;
-			if (IME)
-			{
-				pc = haltSubFunction();
-			}
-			else
-			{
-				pc = pc;
-			}
-		}
-	}
-	else//If stop mode is enable
-	{
-		cerr << "STOP MODE ENABLED. WAITING FOR USER INPUT." << endl;
-		stopped = !((memory->read(CONTROLLER_DATA_ADDRESS) & 0b00001111) < 15);//If low signal on P10, P11, P12 or P13 the stopped mode is disable
-		if (!stopped)
-		{
-			cycles += 217;
-			memory->setResetBitMemory(LCDC_ADDRESS, 1, 7);//LCD Controller Operation Stop Flag (0: LCDC Off)
-		}
-	}
-
-	if (!resetTerminal)
-	{
-		reset();
-	}
-	return cycles;
-}
-
-void Cpu::writeInputs(const uint8& inputs)
-{
-	memory->write(CONTROLLER_DATA_ADDRESS, inputs);
-}
-
-/*------------------------------------------GETTERS AND SETTERS--------------------------------*/
-//double Cpu::getTimeCycle()
-//{
-//	return timeCycle;
-//}
-
-uint16 Cpu::getPc()
-{
-	return pc;
-}
-
-void Cpu::setPc(uint16 pc)
-{
-	this->pc = pc;
+	return clockCycles;
 }
 
 
-
-
-uint16 Cpu::haltSubFunction()
+void Cpu::handleTimers()
 {
-	IME = 0;
-	uint8 tempIE = memory->read(INTERRUPT_FLAG_IE_ADDRESS);
-	uint8 tempIF = memory->read(INTERRUPT_FLAG_IF_ADDRESS);
-	memory->write(INTERRUPT_FLAG_IE_ADDRESS, 0x00);//The resetting of the IF register that initiates the interrupt is a hardware reset.
-
-	//PUSH pc
-	memory->write(sp - 1, (pc >> 8));
-	memory->write(sp - 2, (pc & 0x00FF));
-	sp -= 2;
-
-	//cycles += ?;	//Cycle or not ???
-
-	if (((tempIE & tempIF) >> 4) & 0x1)//P10-P13 input signal goes low
-		return 0x0060;
-	else if (((tempIE & tempIF) >> 3) & 0x1)//Serial transfer completion
-		return 0x0058;
-	else if (((tempIE & tempIF) >> 2) & 0x1)//Timer overflow
-		return 0x0050;
-	else if (((tempIE & tempIF) >> 1) & 0x1)//LCDC status interrupt
-		return 0x0048;
-	else//Vertical blanking
-		return 0x0040;
-}
-
-void Cpu::writeUserInput()
-{
-	//To be implemented
-	memory->write(CONTROLLER_DATA_ADDRESS, 0b11111111);
-	//Get inputs and write them: memory->write(CONTROLLER_DATA_ADDRESS, );
-	memory->write(INTERRUPT_FLAG_IF_ADDRESS, (memory->read(INTERRUPT_FLAG_IF_ADDRESS) | 0b00010000));//Put to enable IF flag controller
-}
-
-void Cpu::incrementTimers(const int& cycles)
-{
-	incrementDivider(cycles);
+	handleDividerTimer();//Incremented every cycles
 
 	if (testBit(memory->read(TAC), 2))//If timer enable
 	{
-		
+		timerCounter -= clockCycles;
+
+		if (timerCounter <= 0)
+		{
+			setTimerCounter();//Set timer clock
+
+			if (memory->read(TIMA) == 0xFF)
+			{
+				memory->write(TIMA, memory->read(TMA));
+				requestInterrupt(2);
+			}
+			else
+			{
+				memory->write(TIMA, memory->read(TIMA) + 1);
+			}
+		}
 	}
-
 }
 
 
-void Cpu::incrementDivider(const int& cycles)
+void Cpu::handleDividerTimer()
 {
-	memory->write(DIVIDER_REGISTER_ADDRESS, memory->read(DIVIDER_REGISTER_ADDRESS) + cycles);
+	memory->timerWrite(DIV, memory->timerRead(DIV) + clockCycles);
 }
 
-
-void Cpu::readOpcode()
+void Cpu::setTimerCounter()
 {
-	executeOpcode(memory->read(pc));//Execute opcode
+	switch (memory->read(TAC) & 0b00000011)
+	{
+	case (0b00)://Freq 4096
+	{
+		timerCounter = CLOCK_FREQUENCY / 4096;
+		break;
+	}
+	case (0b01)://Freq 262144
+	{
+		timerCounter = CLOCK_FREQUENCY / 262144;
+		break;
+	}
+	case (0b10)://Freq 65536
+	{
+		timerCounter = CLOCK_FREQUENCY / 65536;
+		break;
+	}
+	case (0b11)://Freq 16382
+	{
+		timerCounter = CLOCK_FREQUENCY / 16382;
+		break;
+	}
+	default:
+	{
+		cerr << "Error frequency selection impossible" << endl;
+		exit(1);
+		break;
+	}
+	}
 }
+
+
+
+void Cpu::writeMemory(const uint16& address, const uint8& data)
+{
+	if (address == TAC)
+	{
+		uint8 currentTimerFrequency = memory->read(TAC) & 0b00000011;//Get current frequency
+		memory->timerWrite(address, data);//write new frequency
+		uint8 newTimerFrequency = memory->read(TAC) & 0b00000011;//Get current frequency
+		if (currentTimerFrequency != newTimerFrequency)
+			setTimerCounter();
+	}
+	else if (address == DIV)
+	{
+		memory->timerWrite(DIV, 0);
+	}
+	else
+	{
+		memory->write(address, data);
+	}
+}
+
 
 
 void Cpu::executeOpcode(uint8 opcode)
@@ -718,40 +686,6 @@ void Cpu::executeOpcodeFollowingCB()
 }
 
 
-/*-----------------------------------------SUB FUNCTIONS------------------------------------------*/
-
-uint16 Cpu::pairRegisters(const uint8 reg1, const uint8 reg2)const
-{
-	return ((reg1 << 8) + reg2);
-}
-
-void Cpu::unpairRegisters(uint8& reg1, uint8& reg2, const uint16& registersPair)
-{
-	reg1 = (registersPair >> 8) & 0x00FF;//The & 0x00FF is not an obligation
-	reg2 = registersPair & 0x00FF;
-}
-
-uint8 Cpu::flagToByte(const Flag& flag)const
-{
-	uint8 temp = ((flag.Z << 7) + (flag.N << 6) + (flag.H << 5) + (flag.CY << 4)) & 0xF0;
-	return temp;
-}
-
-
-Cpu::Flag Cpu::byteToFlag(const uint8& byte)const
-{
-	Flag temp;
-	temp.Z = (byte >> 7) & 0x1;
-	temp.N = (byte >> 6) & 0x1;
-	temp.H = (byte >> 5) & 0x1;
-	temp.CY = (byte >> 4) & 0x1;
-	return temp;
-}
-
-
-
-
-
 /*-----------------------------------------NORMAL OPCODES OPERATIONS------------------------------------------*/
 
 /*-------------------------------------8bits TRANSFER AND INPUT/OUTPUT INSTRUCTIONS---------------------------------------*/
@@ -759,7 +693,7 @@ Cpu::Flag Cpu::byteToFlag(const uint8& byte)const
 void Cpu::LD_R_R(uint8& reg1, const uint8& reg2) {
 	reg1 = reg2;
 	pc++;
-	cycles++;
+	clockCycles++;
 }
 
 void Cpu::LD_R_d8(uint8& reg)
@@ -767,14 +701,14 @@ void Cpu::LD_R_d8(uint8& reg)
 	pc++;
 	reg = memory->read(pc);
 	pc++;
-	cycles += 2;
+	clockCycles += 2;
 }
 
 void Cpu::LD_R_aHL(uint8& reg)
 {
 	reg = memory->read(pairRegisters(H, L));
 	pc++;
-	cycles += 2;
+	clockCycles += 2;
 }
 
 
@@ -783,7 +717,7 @@ void Cpu::LD_aHL_R(const uint8& reg)
 {
 	memory->write(pairRegisters(H, L), reg);
 	pc++;
-	cycles += 2;
+	clockCycles += 2;
 }
 
 void Cpu::LD_aHL_d8()
@@ -791,21 +725,21 @@ void Cpu::LD_aHL_d8()
 	pc++;
 	memory->write(pairRegisters(H, L), memory->read(pc));
 	pc++;
-	cycles += 3;
+	clockCycles += 3;
 }
 
 void Cpu::LD_A_aBC()
 {
 	A = memory->read(pairRegisters(B, C));
 	pc++;
-	cycles += 2;
+	clockCycles += 2;
 }
 
 void Cpu::LD_A_aDE()
 {
 	A = memory->read(pairRegisters(D, E));
 	pc++;
-	cycles += 2;
+	clockCycles += 2;
 }
 
 
@@ -814,7 +748,7 @@ void Cpu::LD_A_aCo()
 {
 	A = memory->read(INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + C);
 	pc++;
-	cycles += 2;
+	clockCycles += 2;
 }
 
 void Cpu::LD_aCo_A()
@@ -828,7 +762,7 @@ void Cpu::LD_aCo_A()
 	{
 		memory->write(addressMemory, A);
 	}
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -838,7 +772,7 @@ void Cpu::LD_A_a8o()
 {
 	pc++;
 	A = memory->read((INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + memory->read(pc)));
-	cycles += 3;
+	clockCycles += 3;
 	pc++;
 }
 
@@ -854,7 +788,7 @@ void Cpu::LD_a8o_A()
 	{
 		memory->write(addressToWrite, A);
 	}
-	cycles += 3;
+	clockCycles += 3;
 	pc++;
 }
 
@@ -862,7 +796,7 @@ void Cpu::LD_A_a16()
 {
 	pc++;
 	A = memory->read(((memory->read(pc + 1) << 8) + memory->read(pc)));//the n are the less significant bits, the n+1 are the most significant bits.
-	cycles += 4;
+	clockCycles += 4;
 	pc += 2;
 }
 
@@ -870,7 +804,7 @@ void Cpu::LD_a16_A()
 {
 	pc++;
 	memory->write(((memory->read(pc + 1) << 8) + memory->read(pc)), A);//the n are the less significant bits, the n+1 are the most significant bits.
-	cycles += 4;
+	clockCycles += 4;
 	pc += 2;
 }
 
@@ -880,7 +814,7 @@ void Cpu::LD_A_aHL_HLI()
 	A = memory->read(tempHL);
 	tempHL++;
 	unpairRegisters(H, L, tempHL);
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -890,21 +824,21 @@ void Cpu::LD_A_aHL_HLD()
 	A = memory->read(tempHL);
 	tempHL--;
 	unpairRegisters(H, L, tempHL);
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
 void Cpu::LD_aBC_A()
 {
 	memory->write(pairRegisters(B, C), A);
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
 void Cpu::LD_aDE_A()
 {
 	memory->write(pairRegisters(D, E), A);
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -914,7 +848,7 @@ void Cpu::LD_aHL_A_HLI()
 	memory->write(tempHL, A);
 	tempHL++;
 	unpairRegisters(H, L, tempHL);
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -924,7 +858,7 @@ void Cpu::LD_aHL_A_HLD()
 	memory->write(tempHL, A);
 	tempHL--;
 	unpairRegisters(H, L, tempHL);
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -933,7 +867,7 @@ void Cpu::LD_RP_d16(uint8& reg1, uint8& reg2)
 {
 	pc++;
 	unpairRegisters(reg1, reg2, ((memory->read(pc + 1) << 8) + memory->read(pc)));
-	cycles += 3;
+	clockCycles += 3;
 	pc += 2;
 }
 
@@ -941,14 +875,14 @@ void Cpu::LD_RP_d16(uint16& regsPair)
 {
 	pc++;
 	sp = ((memory->read(pc + 1) << 8) + memory->read(pc));
-	cycles += 3;
+	clockCycles += 3;
 	pc += 2;
 }
 
 void Cpu::LD_SP_HL()
 {
 	sp = pairRegisters(H, L);
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -958,7 +892,7 @@ void Cpu::PUSH_RP(const uint8& regPair1, const uint8& regPair2)
 	memory->write(sp - 1, regPair1);
 	memory->write(sp - 2, regPair2);
 	sp -= 2;
-	cycles += 4;
+	clockCycles += 4;
 	pc++;
 }
 
@@ -974,7 +908,7 @@ void Cpu::POP_RP(uint8& regPair1, uint8& regPair2)
 	regPair2 = memory->read(sp);
 	regPair1 = memory->read(sp + 1);
 	sp += 2;
-	cycles += 3;
+	clockCycles += 3;
 	pc++;
 }
 
@@ -984,7 +918,7 @@ void Cpu::POP_RP(uint8& regPair1, Flag& flagPair)
 	flagPair = byteToFlag(temp);
 	regPair1 = memory->read(sp + 1);
 	sp += 2;
-	cycles += 3;
+	clockCycles += 3;
 	pc++;
 }
 
@@ -1009,7 +943,7 @@ void Cpu::LDHL_SP_e()
 	unpairRegisters(H, L, (sp + e));
 	F.Z = 0;
 	F.N = 0;
-	cycles += 3;
+	clockCycles += 3;
 	pc++;
 }
 
@@ -1019,7 +953,7 @@ void Cpu::LD_a16_SP()
 	uint16 nnBits = (memory->read(pc + 1) << 8) + memory->read(pc);
 	memory->write(nnBits, (sp & 0x00FF));
 	memory->write(nnBits + 1, ((sp & 0xFF00) >> 8));
-	cycles += 5;
+	clockCycles += 5;
 	pc += 2;
 }
 
@@ -1027,7 +961,7 @@ void Cpu::LD_a16_SP()
 void Cpu::ADD_A_R(const uint8& reg)
 {
 	A = ADD_ADC_subFunctionFlag(A, reg);
-	cycles++;
+	clockCycles++;
 	pc++;
 }
 
@@ -1035,7 +969,7 @@ void Cpu::ADD_A_d8()
 {
 	pc++;
 	A = ADD_ADC_subFunctionFlag(A, memory->read(pc));
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -1043,7 +977,7 @@ void Cpu::ADD_A_d8()
 void Cpu::ADD_A_aHL()
 {
 	A = ADD_ADC_subFunctionFlag(A, memory->read(pairRegisters(H, L)));
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -1056,7 +990,7 @@ void Cpu::ADC_A_R_CY(const uint8& reg)
 	A = ADD_ADC_subFunctionFlag(A, reg);
 	F.CY |= tempCY;
 	F.H |= tempH;
-	cycles++;
+	clockCycles++;
 	pc++;
 }
 
@@ -1069,7 +1003,7 @@ void Cpu::ADC_A_d8_CY()
 	A = ADD_ADC_subFunctionFlag(A, memory->read(pc));
 	F.CY |= tempCY;
 	F.H |= tempH;
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -1081,7 +1015,7 @@ void Cpu::ADC_A_aHL_CY(const uint8& regPair1, const uint8& regPair2)
 	A = ADD_ADC_subFunctionFlag(A, memory->read(pairRegisters(regPair1, regPair2)));
 	F.CY |= tempCY;
 	F.H |= tempH;
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -1099,7 +1033,7 @@ uint8 Cpu::ADD_ADC_subFunctionFlag(const uint8& reg, const uint8& value)
 void Cpu::SUB_A_R(const uint8& reg)
 {
 	A = SUB_SBC_subFunctionFlag(A, reg);
-	cycles++;
+	clockCycles++;
 	pc++;
 }
 
@@ -1107,14 +1041,14 @@ void Cpu::SUB_A_d8()
 {
 	pc++;
 	A = SUB_SBC_subFunctionFlag(A, memory->read(pc));
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
 void Cpu::SUB_A_aHL(const uint8& regPair1, const uint8& regPair2)
 {
 	A = SUB_SBC_subFunctionFlag(A, memory->read(pairRegisters(regPair1, regPair2)));
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -1126,7 +1060,7 @@ void Cpu::SBC_A_R_CY(const uint8& reg)
 	A = SUB_SBC_subFunctionFlag(A, reg);
 	F.CY |= tempCY;
 	F.H |= tempH;
-	cycles++;
+	clockCycles++;
 	pc++;
 }
 
@@ -1139,7 +1073,7 @@ void Cpu::SBC_A_d8_CY()
 	A = SUB_SBC_subFunctionFlag(A, memory->read(pc));
 	F.CY |= tempCY;
 	F.H |= tempH;
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -1151,7 +1085,7 @@ void Cpu::SBC_A_aHL_CY(const uint8& regPair1, const uint8& regPair2)
 	A = SUB_SBC_subFunctionFlag(A, memory->read(pairRegisters(regPair1, regPair2)));
 	F.CY |= tempCY;
 	F.H |= tempH;
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -1172,7 +1106,7 @@ void Cpu::AND_A_R(const uint8& reg)
 	F.H = 1;
 	F.N = 0;
 	F.CY = 0;
-	cycles++;
+	clockCycles++;
 	pc++;
 }
 
@@ -1184,7 +1118,7 @@ void Cpu::AND_A_d8()
 	F.H = 1;
 	F.N = 0;
 	F.CY = 0;
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -1195,7 +1129,7 @@ void Cpu::AND_A_aHL()
 	F.H = 1;
 	F.N = 0;
 	F.CY = 0;
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -1207,7 +1141,7 @@ void Cpu::OR_A_R(const uint8& reg)
 	F.H = 0;
 	F.N = 0;
 	F.CY = 0;
-	cycles++;
+	clockCycles++;
 	pc++;
 }
 
@@ -1219,7 +1153,7 @@ void Cpu::OR_A_d8()
 	F.H = 0;
 	F.N = 0;
 	F.CY = 0;
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -1230,7 +1164,7 @@ void Cpu::OR_A_aHL()
 	F.H = 0;
 	F.N = 0;
 	F.CY = 0;
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -1244,7 +1178,7 @@ void Cpu::XOR_A_R(const uint8& reg)
 	F.H = 0;
 	F.N = 0;
 	F.CY = 0;
-	cycles++;
+	clockCycles++;
 	pc++;
 }
 
@@ -1256,7 +1190,7 @@ void Cpu::XOR_A_d8()
 	F.H = 0;
 	F.N = 0;
 	F.CY = 0;
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -1267,7 +1201,7 @@ void Cpu::XOR_A_aHL()
 	F.H = 0;
 	F.N = 0;
 	F.CY = 0;
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -1276,7 +1210,7 @@ void Cpu::XOR_A_aHL()
 void Cpu::CP_A_R(const uint8& reg)
 {
 	CP_subFunctionFlag(reg);
-	cycles++;
+	clockCycles++;
 	pc++;
 }
 
@@ -1284,14 +1218,14 @@ void Cpu::CP_A_d8()
 {
 	pc++;
 	CP_subFunctionFlag(memory->read(pc));
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
 void Cpu::CP_A_aHL()
 {
 	CP_subFunctionFlag(memory->read(pairRegisters(H, L)));
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -1308,7 +1242,7 @@ void Cpu::CP_subFunctionFlag(const uint8& reg)
 void Cpu::INC_R(uint8& reg)
 {
 	INC_subFunctionFlag(reg);
-	cycles++;
+	clockCycles++;
 	pc++;
 }
 
@@ -1318,7 +1252,7 @@ void Cpu::INC_aHL()
 	uint8 memTemp = memory->read(pairRegisters(H, L));
 	INC_subFunctionFlag(memTemp);
 	memory->write(pairRegisters(H, L), memTemp);
-	cycles += 3;
+	clockCycles += 3;
 	pc++;
 }
 
@@ -1335,7 +1269,7 @@ void Cpu::INC_subFunctionFlag(uint8& reg)
 void Cpu::DEC_R(uint8& reg)
 {
 	DEC_subFunctionFlag(reg);
-	cycles++;
+	clockCycles++;
 	pc++;
 }
 
@@ -1345,7 +1279,7 @@ void Cpu::DEC_aHL()
 	uint8 memTemp = memory->read(pairRegisters(H, L));
 	DEC_subFunctionFlag(memTemp);
 	memory->write(pairRegisters(H, L), memTemp);
-	cycles += 3;
+	clockCycles += 3;
 	pc++;
 }
 
@@ -1369,7 +1303,7 @@ void Cpu::ADD_HL_RP(const uint16& regsPair)
 	F.H = ((regsPairHL & 0xFFF) + (regsPair & 0xFFF)) > 0xFFF;
 	F.CY = ((regsPairHL + regsPair) > 0xFFFF);
 	unpairRegisters(H, L, (regsPairHL + regsPair));
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -1397,7 +1331,7 @@ void Cpu::ADD_SP_e()
 	sp += e;
 	F.Z = 0;
 	F.N = 0;
-	cycles += 4;
+	clockCycles += 4;
 	pc++;
 }
 
@@ -1406,7 +1340,7 @@ void Cpu::INC_RP(uint8& regPair1, uint8& regPair2)
 	uint16 regsPair = pairRegisters(regPair1, regPair2);
 	regsPair++;
 	unpairRegisters(regPair1, regPair2, regsPair);
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -1424,7 +1358,7 @@ void Cpu::DEC_RP(uint8& regPair1, uint8& regPair2)
 	regsPair--;
 	regPair1 = regsPair >> 8;
 	regPair2 = regsPair & 0b00001111;
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -1449,7 +1383,7 @@ void Cpu::RLCA()
 	A <<= 1;
 	A &= 0b11111110;
 	A += F.CY;
-	cycles++;
+	clockCycles++;
 	pc++;
 }
 
@@ -1463,7 +1397,7 @@ void Cpu::RLA()
 	A <<= 1;
 	A &= 0b11111110;
 	A += oldCarry;
-	cycles++;
+	clockCycles++;
 	pc++;
 }
 
@@ -1477,7 +1411,7 @@ void Cpu::RRCA()
 	A >>= 1;
 	A &= 0b01111111;
 	A += (F.CY << 7);
-	cycles++;
+	clockCycles++;
 	pc++;
 }
 
@@ -1491,7 +1425,7 @@ void Cpu::RRA()
 	A >>= 1;
 	A &= 0b01111111;
 	A |= (oldCarry << 7);
-	cycles++;
+	clockCycles++;
 	pc++;
 }
 
@@ -1508,7 +1442,7 @@ void Cpu::RLC_R(uint8& reg)
 	reg &= 0b11111110;
 	reg += F.CY;
 	F.Z = (reg == 0);
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -1523,7 +1457,7 @@ void Cpu::RLC_aHL()
 	temp += F.CY;
 	memory->write(pairRegisters(H, L), temp);
 	F.Z = (temp == 0);
-	cycles += 4;
+	clockCycles += 4;
 	pc++;
 }
 
@@ -1538,7 +1472,7 @@ void Cpu::RL_R(uint8& reg)
 	reg &= 0b11111110;
 	reg += oldCarry;
 	F.Z = (reg == 0);
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -1554,7 +1488,7 @@ void Cpu::RL_aHL()
 	temp += oldCarry;
 	memory->write(pairRegisters(H, L), temp);
 	F.Z = (temp == 0);
-	cycles += 4;
+	clockCycles += 4;
 	pc++;
 }
 
@@ -1569,7 +1503,7 @@ void Cpu::RRC_R(uint8& reg)
 	reg &= 0b01111111;
 	reg += (F.CY << 7);
 	F.Z = (reg == 0);
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -1585,7 +1519,7 @@ void Cpu::RRC_aHL()
 	temp += (F.CY << 7);
 	memory->write(pairRegisters(H, L), temp);
 	F.Z = (temp == 0);
-	cycles += 4;
+	clockCycles += 4;
 	pc++;
 }
 
@@ -1600,7 +1534,7 @@ void Cpu::RR_R(uint8& reg)
 	reg &= 0b01111111;
 	reg += (oldCarry << 7);
 	F.Z = (reg == 0);
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -1617,7 +1551,7 @@ void Cpu::RR_aHL()
 	temp |= (oldCarry << 7);
 	memory->write(pairRegisters(H, L), temp);
 	F.Z = (temp == 0);
-	cycles += 4;
+	clockCycles += 4;
 	pc++;
 }
 
@@ -1632,7 +1566,7 @@ void Cpu::SLA_R(uint8& reg)
 	reg <<= 1;
 	reg &= 0b11111110;
 	F.Z = (reg == 0);
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -1641,7 +1575,7 @@ void Cpu::SLA_aHL()
 	uint8 temp = memory->read(pairRegisters(H, L));
 	SLA_R(temp);
 	memory->write(pairRegisters(H, L), temp);
-	cycles += 2;
+	clockCycles += 2;
 }
 
 
@@ -1655,7 +1589,7 @@ void Cpu::SRA_R(uint8& reg)
 	reg &= 0b01111111;
 	reg += (bit7 << 7);
 	F.Z = (reg == 0);
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -1664,7 +1598,7 @@ void Cpu::SRA_aHL()
 	uint8 temp = memory->read(pairRegisters(H, L));
 	SRA_R(temp);
 	memory->write(pairRegisters(H, L), temp);
-	cycles += 2;
+	clockCycles += 2;
 }
 
 
@@ -1677,7 +1611,7 @@ void Cpu::SRL_R(uint8& reg)
 	reg >>= 1;
 	reg &= 0b01111111;
 	F.Z = (reg == 0);
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -1686,7 +1620,7 @@ void Cpu::SRL_aHL()
 	uint8 temp = memory->read(pairRegisters(H, L));
 	SRL_R(temp);
 	memory->write(pairRegisters(H, L), temp);
-	cycles += 2;
+	clockCycles += 2;
 }
 
 
@@ -1700,7 +1634,7 @@ void Cpu::SWAP_R(uint8& reg)
 	reg &= 0x0F;
 	reg |= (nibbleL << 4);
 	F.Z = (reg == 0);
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 void Cpu::SWAP_aHL()
@@ -1708,7 +1642,7 @@ void Cpu::SWAP_aHL()
 	uint8 temp = memory->read(pairRegisters(H, L));
 	SWAP_R(temp);
 	memory->write(pairRegisters(H, L), temp);
-	cycles += 2;
+	clockCycles += 2;
 }
 
 
@@ -1720,21 +1654,21 @@ void Cpu::BIT_b_R(const uint8& indexBit, const uint8& reg)
 	F.N = 0;
 	uint8 date8Bits = memory->read(pc);//Get the data byte
 	F.Z = !((reg & (0b00000001 << indexBit)) >> (indexBit));//Attribute to F.Z the bit's complement of the reg pointed by the index calculated previously
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
 void Cpu::BIT_b_aHL(const uint8& indexBit)
 {
 	BIT_b_R(memory->read(pairRegisters(H, L)), indexBit);
-	cycles++;
+	clockCycles++;
 }
 
 void Cpu::SET_b_R(const uint8& indexBit, uint8& reg)
 {
 	uint8 date8Bits = memory->read(pc);//Get the data byte
 	reg |= (0b00000001 << indexBit);//Se the bit pointed by the index calculated previously
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -1745,7 +1679,7 @@ void Cpu::SET_b_aHL(const uint8& indexBit)
 	uint8 temp = memory->read(pairRegisters(H, L));
 	SET_b_R(indexBit, temp);
 	memory->write(pairRegisters(H, L), temp);
-	cycles += 2;
+	clockCycles += 2;
 }
 
 
@@ -1755,7 +1689,7 @@ void Cpu::RES_b_R(const uint8& indexBit, uint8& reg)
 	uint8 mask = (0b00000001 << indexBit);//Shift the bit to set to 0 to the right position
 	mask = ~mask;//Invert the ma
 	reg &= mask;
-	cycles += 2;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -1764,7 +1698,7 @@ void Cpu::RES_b_aHL(const uint8& indexBit)
 	uint8 temp = memory->read(pairRegisters(H, L));
 	SET_b_R(indexBit, temp);
 	memory->write(pairRegisters(H, L), temp);
-	cycles += 2;
+	clockCycles += 2;
 }
 
 /*-------------------------------------JUMP INSTRUCTIONS---------------------------------------*/
@@ -1774,7 +1708,7 @@ void Cpu::JP_d16()
 {
 	pc++;
 	pc = (memory->read(pc + 1) << 8) + (memory->read(pc));
-	cycles += 4;
+	clockCycles += 4;
 }
 
 void Cpu::JP_cc_d16()
@@ -1792,11 +1726,11 @@ void Cpu::JP_cc_d16()
 		if (!F.Z)
 		{
 			pc = (highByte << 8) + lowByte;
-			cycles += 4;
+			clockCycles += 4;
 		}
 		else
 		{
-			cycles += 3;
+			clockCycles += 3;
 			pc++;
 		}
 		break;
@@ -1806,11 +1740,11 @@ void Cpu::JP_cc_d16()
 		if (F.Z)
 		{
 			pc = (highByte << 8) + lowByte;
-			cycles += 4;
+			clockCycles += 4;
 		}
 		else
 		{
-			cycles += 3;
+			clockCycles += 3;
 			pc++;
 		}
 		break;
@@ -1820,11 +1754,11 @@ void Cpu::JP_cc_d16()
 		if (!F.CY)
 		{
 			pc = (highByte << 8) + lowByte;
-			cycles += 4;
+			clockCycles += 4;
 		}
 		else
 		{
-			cycles += 3;
+			clockCycles += 3;
 			pc++;
 		}
 		break;
@@ -1834,12 +1768,12 @@ void Cpu::JP_cc_d16()
 		if (F.CY)
 		{
 			pc = (highByte << 8) + lowByte;
-			cycles += 4;
+			clockCycles += 4;
 		}
 		else
 		{
 			pc++;
-			cycles += 3;
+			clockCycles += 3;
 		}
 		break;
 	}
@@ -1852,7 +1786,7 @@ void Cpu::JR_e()
 	pc++;
 	int8_t e = memory->read(pc);//LOOK AT THE Z80 CPU MANUAL
 	pc++;
-	cycles += 3;
+	clockCycles += 3;
 	pc += e;
 }
 
@@ -1863,7 +1797,7 @@ void Cpu::JR_cc_e()
 	pc++;
 	int8_t e = memory->read(pc);
 	pc++;
-	cycles += 2;
+	clockCycles += 2;
 
 	switch (condition)
 	{
@@ -1872,7 +1806,7 @@ void Cpu::JR_cc_e()
 		if (!F.Z)
 		{
 			pc += e;
-			cycles++;
+			clockCycles++;
 		}
 		break;
 	}
@@ -1881,7 +1815,7 @@ void Cpu::JR_cc_e()
 		if (F.Z)
 		{
 			pc += e;
-			cycles++;
+			clockCycles++;
 		}
 		break;
 	}
@@ -1890,7 +1824,7 @@ void Cpu::JR_cc_e()
 		if (!F.CY)
 		{
 			pc += e;
-			cycles++;
+			clockCycles++;
 		}
 		break;
 	}
@@ -1899,7 +1833,7 @@ void Cpu::JR_cc_e()
 		if (F.CY)
 		{
 			pc += e;
-			cycles++;
+			clockCycles++;
 		}
 		break;
 	}
@@ -1909,7 +1843,7 @@ void Cpu::JR_cc_e()
 void Cpu::JP_HL()
 {
 	pc = pairRegisters(H, L);
-	cycles++;
+	clockCycles++;
 }
 
 
@@ -1920,7 +1854,7 @@ void Cpu::CALL()
 	memory->write(sp - 2, (pc & 0x00FF));
 	pc = (memory->read(pc - 1) << 8) + memory->read(pc - 2);
 	sp -= 2;
-	cycles += 6;
+	clockCycles += 6;
 }
 
 void Cpu::CALL_cc()
@@ -1937,7 +1871,7 @@ void Cpu::CALL_cc()
 		else
 		{
 			pc += 3;
-			cycles += 3;
+			clockCycles += 3;
 		}
 		break;
 	}
@@ -1950,7 +1884,7 @@ void Cpu::CALL_cc()
 		else
 		{
 			pc += 3;
-			cycles += 3;
+			clockCycles += 3;
 		}
 		break;
 	}
@@ -1963,7 +1897,7 @@ void Cpu::CALL_cc()
 		else
 		{
 			pc += 3;
-			cycles += 3;
+			clockCycles += 3;
 		}
 		break;
 	}
@@ -1976,7 +1910,7 @@ void Cpu::CALL_cc()
 		else
 		{
 			pc += 3;
-			cycles += 3;
+			clockCycles += 3;
 		}
 		break;
 	}
@@ -1988,7 +1922,7 @@ void Cpu::RET()
 {
 	pc = (memory->read(sp + 1) << 8) + memory->read(sp);
 	sp += 2;
-	cycles += 4;
+	clockCycles += 4;
 }
 
 void Cpu::RETI()
@@ -1996,14 +1930,14 @@ void Cpu::RETI()
 	pc = (memory->read(sp + 1) << 8) + memory->read(sp);
 	sp += 2;
 	IME = 1;
-	cycles += 4;
+	clockCycles += 4;
 }
 
 
 void Cpu::RET_cc()
 {
 	uint8 condition = ((memory->read(pc) & 0b00011000) >> 3);
-	cycles++;
+	clockCycles++;
 	switch (condition)
 	{
 	case(0b00)://NZ
@@ -2014,7 +1948,7 @@ void Cpu::RET_cc()
 		}
 		else
 		{
-			cycles++;
+			clockCycles++;
 			pc++;
 		}
 		break;
@@ -2027,7 +1961,7 @@ void Cpu::RET_cc()
 		}
 		else
 		{
-			cycles++;
+			clockCycles++;
 			pc++;
 		}
 		break;
@@ -2040,7 +1974,7 @@ void Cpu::RET_cc()
 		}
 		else
 		{
-			cycles++;
+			clockCycles++;
 			pc++;
 		}
 		break;
@@ -2053,7 +1987,7 @@ void Cpu::RET_cc()
 		}
 		else
 		{
-			cycles++;
+			clockCycles++;
 			pc++;
 		}
 		break;
@@ -2069,7 +2003,7 @@ void Cpu::RST()
 	memory->write(sp - 1, (pc >> 8));
 	memory->write(sp - 2, (pc & 0x00FF));
 	sp -= 2;
-	cycles += 4;
+	clockCycles += 4;
 
 	uint8 condition = ((opcode & 0b00111000) >> 3);
 
@@ -2123,7 +2057,7 @@ void Cpu::RST()
 void Cpu::DAA()
 {
 	cerr << "May bug now, because of opcode DAA" << endl;
-	cycles += 1;
+	clockCycles += 1;
 
 	if (!F.N)//If previsous opcode is one of the ADD opcodes
 	{
@@ -2171,14 +2105,14 @@ void Cpu::CPL()
 	A = ~A;
 	F.H = 1;
 	F.N = 1;
-	cycles++;
+	clockCycles++;
 	pc++;
 }
 
 
 void Cpu::NOP()
 {
-	cycles++;
+	clockCycles++;
 	pc++;
 }
 
@@ -2187,7 +2121,7 @@ void Cpu::CCF()
 	F.CY = !F.CY;
 	F.H = 0;
 	F.N = 0;
-	cycles++;
+	clockCycles++;
 	pc++;
 }
 
@@ -2197,21 +2131,21 @@ void Cpu::SCF()
 	F.CY = 1;
 	F.H = 0;
 	F.N = 0;
-	cycles++;
+	clockCycles++;
 	pc++;
 }
 
 void Cpu::EI()
 {
 	IME = 1;
-	cycles++;
+	clockCycles++;
 	pc++;
 }
 
 void Cpu::DI()
 {
 	IME = 0;
-	cycles++;
+	clockCycles++;
 	pc++;
 }
 
@@ -2220,7 +2154,7 @@ void Cpu::DI()
 void Cpu::HALT()
 {
 	halted = 1;
-	cycles++;
+	clockCycles++;
 	pc++;
 }
 
@@ -2228,6 +2162,37 @@ void Cpu::STOP()
 {
 	stopped = 1;
 	memory->setResetBitMemory(LCDC_ADDRESS, 0, 7);//LCD Controller Operation Stop Flag (0: LCDC Off)
-	cycles++;
+	clockCycles++;
 	pc++;
+}
+
+
+/*-----------------------------------------SUB FUNCTIONS------------------------------------------*/
+
+uint16 Cpu::pairRegisters(const uint8 reg1, const uint8 reg2)const
+{
+	return ((reg1 << 8) + reg2);
+}
+
+void Cpu::unpairRegisters(uint8& reg1, uint8& reg2, const uint16& registersPair)
+{
+	reg1 = (registersPair >> 8) & 0x00FF;//The & 0x00FF is not an obligation
+	reg2 = registersPair & 0x00FF;
+}
+
+uint8 Cpu::flagToByte(const Flag& flag)const
+{
+	uint8 temp = ((flag.Z << 7) + (flag.N << 6) + (flag.H << 5) + (flag.CY << 4)) & 0xF0;
+	return temp;
+}
+
+
+Cpu::Flag Cpu::byteToFlag(const uint8& byte)const
+{
+	Flag temp;
+	temp.Z = (byte >> 7) & 0x1;
+	temp.N = (byte >> 6) & 0x1;
+	temp.H = (byte >> 5) & 0x1;
+	temp.CY = (byte >> 4) & 0x1;
+	return temp;
 }

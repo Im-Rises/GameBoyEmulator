@@ -90,7 +90,9 @@ public:
 
 	//Read and write to cartridge or memory
 	uint8 read(const uint16 address)const;
-	void write(const uint16& address, uint8 value);
+	void write(const uint16& address, const uint8 value);
+	uint8 timerRead(const uint16& address)const;
+	void timerWrite(const uint16& address, const uint8& value);
 
 	void increment(const uint16& address);
 	void decrement(const uint16& address);

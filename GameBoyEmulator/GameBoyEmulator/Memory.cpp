@@ -117,7 +117,7 @@ uint8 Memory::read(const uint16 address)const//OK
 	}
 }
 
-void Memory::write(const uint16& address, uint8 value)//NOK
+void Memory::write(const uint16& address, const uint8 value)
 {
 	if (address < 0x8000)//Writting in this area change the used banks in the cartridge
 	{
@@ -155,6 +155,17 @@ void Memory::write(const uint16& address, uint8 value)//NOK
 	}
 }
 
+uint8 Memory::timerRead(const uint16& address)const
+{
+	return memoryArray[address];
+}
+
+void Memory::timerWrite(const uint16& address, const uint8& value)
+{
+	//This function write in the memory without taking care of the ram/rom banks
+	//It is used for the timers that needs to write to the memory without being treated like it was from the user program
+	memoryArray[address] = value;
+}
 
 
 

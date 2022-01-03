@@ -32,11 +32,11 @@ int main(int argc, char* argv[])
 		//cartridge.toString();
 
 		gameBoy->insertGame(&cartridge);
-		gameBoy->launch();
+		gameBoy->start();
 	}
 	else if (gameBoy->getBiosInMemory())//If no game but bios is present
 	{
-		gameBoy->launch();
+		gameBoy->start();
 	}
 	else
 	{
