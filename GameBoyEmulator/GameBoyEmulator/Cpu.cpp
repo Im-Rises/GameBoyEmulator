@@ -69,12 +69,13 @@ void Cpu::setCpuWithoutBios()
 
 int Cpu::doCycle()
 {
+	clockCycles = 0;
 	executeOpcode(memory->read(pc));//Execute opcode
 	clockCycles *= 4;
 
 	//The cylce value has changed, now we can update the timers, draw and manage the interrupts
 	handleTimers();
-	//manageInterrupts();
+	handleInterupt();
 	ppu->draw(clockCycles);
 
 	return clockCycles;
@@ -95,12 +96,12 @@ void Cpu::handleTimers()
 
 			if (memory->read(TIMA) == 0xFF)
 			{
-				memory->write(TIMA, memory->read(TMA));
+				writeMemory(TIMA, memory->read(TMA));
 				requestInterrupt(2);
 			}
 			else
 			{
-				memory->write(TIMA, memory->read(TIMA) + 1);
+				writeMemory(TIMA, memory->read(TIMA) + 1);
 			}
 		}
 	}
@@ -149,6 +150,8 @@ void Cpu::setTimerCounter()
 
 void Cpu::writeMemory(const uint16& address, const uint8& data)
 {
+	//Handle program writting to memory on timers etc...
+
 	if (address == TAC)
 	{
 		uint8 currentTimerFrequency = memory->read(TAC) & 0b00000011;//Get current frequency
@@ -165,6 +168,79 @@ void Cpu::writeMemory(const uint16& address, const uint8& data)
 	{
 		memory->write(address, data);
 	}
+}
+
+
+void Cpu::handleInterupt()//Thanks codesLinger.com
+{
+	if (IME)
+	{
+		uint8 ifRegister = memory->read(INTERRUPT_FLAG_IF_ADDRESS);
+		uint8 ieRegister = memory->read(INTERRUPT_FLAG_IE_ADDRESS);
+
+		if ((ifRegister & ieRegister) > 0)//If an interupt is enable and requested
+		{
+			if (testBit(ieRegister, 0))
+				doInterupt(1);
+			else if (testBit(ieRegister, 1))
+				doInterupt(2);
+			else if (testBit(ieRegister, 2))
+				doInterupt(3);
+			else if (testBit(ieRegister, 3))
+				doInterupt(4);
+			else if (testBit(ieRegister, 4))
+				doInterupt(5);
+		}
+	}
+}
+
+
+void Cpu::doInterupt(const uint8& interruptCode)
+{
+	IME = false;
+	uint8 ifRegister = memory->read(INTERRUPT_FLAG_IF_ADDRESS);
+	ifRegister = resetBit(ifRegister, interruptCode - 1);
+	memory->write(INTERRUPT_FLAG_IF_ADDRESS, interruptCode - 1);
+
+	writeMemory(sp - 1, (pc & 0xF0));
+	writeMemory(sp - 2, (pc & 0x0F));
+	sp -= 2;
+
+	switch (interruptCode)
+	{
+	case(1):
+	{
+		pc = 0x40;
+		break;
+	}
+	case(2):
+	{
+		pc = 0x48;
+		break;
+	}
+	case(3):
+	{
+		pc = 0x50;
+		break;
+	}
+	case(4):
+	{
+		pc = 0x58;
+		break;
+	}
+	case(5):
+	{
+		pc = 0x60;
+		break;
+	}
+	}
+}
+
+void Cpu::requestInterrupt(const uint8& interruptCode)
+{
+	uint8 ifRegister = memory->read(INTERRUPT_FLAG_IF_ADDRESS);
+	ifRegister = setBit(ifRegister, interruptCode);
+	memory->write(INTERRUPT_FLAG_IF_ADDRESS, ifRegister);
 }
 
 
@@ -715,7 +791,7 @@ void Cpu::LD_R_aHL(uint8& reg)
 
 void Cpu::LD_aHL_R(const uint8& reg)
 {
-	memory->write(pairRegisters(H, L), reg);
+	writeMemory(pairRegisters(H, L), reg);
 	pc++;
 	clockCycles += 2;
 }
@@ -723,7 +799,7 @@ void Cpu::LD_aHL_R(const uint8& reg)
 void Cpu::LD_aHL_d8()
 {
 	pc++;
-	memory->write(pairRegisters(H, L), memory->read(pc));
+	writeMemory(pairRegisters(H, L), memory->read(pc));
 	pc++;
 	clockCycles += 3;
 }
@@ -754,14 +830,7 @@ void Cpu::LD_A_aCo()
 void Cpu::LD_aCo_A()
 {
 	uint16 addressMemory = (INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + C);
-	if (DIVIDER_REGISTER_ADDRESS == addressMemory)
-	{
-		memory->write(addressMemory, 0);
-	}
-	else
-	{
-		memory->write(addressMemory, A);
-	}
+	writeMemory(addressMemory, A);
 	clockCycles += 2;
 	pc++;
 }
@@ -780,14 +849,7 @@ void Cpu::LD_a8o_A()
 {
 	pc++;
 	uint16 addressToWrite = INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + memory->read(pc);
-	if (addressToWrite == DIVIDER_REGISTER_ADDRESS)
-	{
-		memory->write(addressToWrite, 0);
-	}
-	else
-	{
-		memory->write(addressToWrite, A);
-	}
+	writeMemory(addressToWrite, A);
 	clockCycles += 3;
 	pc++;
 }
@@ -803,7 +865,7 @@ void Cpu::LD_A_a16()
 void Cpu::LD_a16_A()
 {
 	pc++;
-	memory->write(((memory->read(pc + 1) << 8) + memory->read(pc)), A);//the n are the less significant bits, the n+1 are the most significant bits.
+	writeMemory(((memory->read(pc + 1) << 8) + memory->read(pc)), A);//the n are the less significant bits, the n+1 are the most significant bits.
 	clockCycles += 4;
 	pc += 2;
 }
@@ -830,14 +892,14 @@ void Cpu::LD_A_aHL_HLD()
 
 void Cpu::LD_aBC_A()
 {
-	memory->write(pairRegisters(B, C), A);
+	writeMemory(pairRegisters(B, C), A);
 	clockCycles += 2;
 	pc++;
 }
 
 void Cpu::LD_aDE_A()
 {
-	memory->write(pairRegisters(D, E), A);
+	writeMemory(pairRegisters(D, E), A);
 	clockCycles += 2;
 	pc++;
 }
@@ -845,7 +907,7 @@ void Cpu::LD_aDE_A()
 void Cpu::LD_aHL_A_HLI()
 {
 	uint16 tempHL = pairRegisters(H, L);
-	memory->write(tempHL, A);
+	writeMemory(tempHL, A);
 	tempHL++;
 	unpairRegisters(H, L, tempHL);
 	clockCycles += 2;
@@ -855,7 +917,7 @@ void Cpu::LD_aHL_A_HLI()
 void Cpu::LD_aHL_A_HLD()
 {
 	uint16 tempHL = pairRegisters(H, L);
-	memory->write(tempHL, A);
+	writeMemory(tempHL, A);
 	tempHL--;
 	unpairRegisters(H, L, tempHL);
 	clockCycles += 2;
@@ -889,8 +951,8 @@ void Cpu::LD_SP_HL()
 
 void Cpu::PUSH_RP(const uint8& regPair1, const uint8& regPair2)
 {
-	memory->write(sp - 1, regPair1);
-	memory->write(sp - 2, regPair2);
+	writeMemory(sp - 1, regPair1);
+	writeMemory(sp - 2, regPair2);
 	sp -= 2;
 	clockCycles += 4;
 	pc++;
@@ -951,8 +1013,8 @@ void Cpu::LD_a16_SP()
 {
 	pc++;
 	uint16 nnBits = (memory->read(pc + 1) << 8) + memory->read(pc);
-	memory->write(nnBits, (sp & 0x00FF));
-	memory->write(nnBits + 1, ((sp & 0xFF00) >> 8));
+	writeMemory(nnBits, (sp & 0x00FF));
+	writeMemory(nnBits + 1, ((sp & 0xFF00) >> 8));
 	clockCycles += 5;
 	pc += 2;
 }
@@ -1251,7 +1313,7 @@ void Cpu::INC_aHL()
 	//INC_subFunctionFlag(memory->read(pairRegisters(regPair1, regPair2)));//C++ initial value of reference to non-const must be an lvalue
 	uint8 memTemp = memory->read(pairRegisters(H, L));
 	INC_subFunctionFlag(memTemp);
-	memory->write(pairRegisters(H, L), memTemp);
+	writeMemory(pairRegisters(H, L), memTemp);
 	clockCycles += 3;
 	pc++;
 }
@@ -1278,7 +1340,7 @@ void Cpu::DEC_aHL()
 	//INC_subFunctionFlag(memory->read(pairRegisters(regPair1, regPair2)));//C++ initial value of reference to non-const must be an lvalue
 	uint8 memTemp = memory->read(pairRegisters(H, L));
 	DEC_subFunctionFlag(memTemp);
-	memory->write(pairRegisters(H, L), memTemp);
+	writeMemory(pairRegisters(H, L), memTemp);
 	clockCycles += 3;
 	pc++;
 }
@@ -1455,7 +1517,7 @@ void Cpu::RLC_aHL()
 	temp <<= 1;
 	temp &= 0b11111110;
 	temp += F.CY;
-	memory->write(pairRegisters(H, L), temp);
+	writeMemory(pairRegisters(H, L), temp);
 	F.Z = (temp == 0);
 	clockCycles += 4;
 	pc++;
@@ -1486,7 +1548,7 @@ void Cpu::RL_aHL()
 	temp <<= 1;
 	temp &= 0b11111110;
 	temp += oldCarry;
-	memory->write(pairRegisters(H, L), temp);
+	writeMemory(pairRegisters(H, L), temp);
 	F.Z = (temp == 0);
 	clockCycles += 4;
 	pc++;
@@ -1517,7 +1579,7 @@ void Cpu::RRC_aHL()
 	temp >>= 1;
 	temp &= 0b01111111;
 	temp += (F.CY << 7);
-	memory->write(pairRegisters(H, L), temp);
+	writeMemory(pairRegisters(H, L), temp);
 	F.Z = (temp == 0);
 	clockCycles += 4;
 	pc++;
@@ -1549,7 +1611,7 @@ void Cpu::RR_aHL()
 	temp >>= 1;
 	temp &= 0b01111111;
 	temp |= (oldCarry << 7);
-	memory->write(pairRegisters(H, L), temp);
+	writeMemory(pairRegisters(H, L), temp);
 	F.Z = (temp == 0);
 	clockCycles += 4;
 	pc++;
@@ -1574,7 +1636,7 @@ void Cpu::SLA_aHL()
 {
 	uint8 temp = memory->read(pairRegisters(H, L));
 	SLA_R(temp);
-	memory->write(pairRegisters(H, L), temp);
+	writeMemory(pairRegisters(H, L), temp);
 	clockCycles += 2;
 }
 
@@ -1597,7 +1659,7 @@ void Cpu::SRA_aHL()
 {
 	uint8 temp = memory->read(pairRegisters(H, L));
 	SRA_R(temp);
-	memory->write(pairRegisters(H, L), temp);
+	writeMemory(pairRegisters(H, L), temp);
 	clockCycles += 2;
 }
 
@@ -1619,7 +1681,7 @@ void Cpu::SRL_aHL()
 {
 	uint8 temp = memory->read(pairRegisters(H, L));
 	SRL_R(temp);
-	memory->write(pairRegisters(H, L), temp);
+	writeMemory(pairRegisters(H, L), temp);
 	clockCycles += 2;
 }
 
@@ -1641,7 +1703,7 @@ void Cpu::SWAP_aHL()
 {
 	uint8 temp = memory->read(pairRegisters(H, L));
 	SWAP_R(temp);
-	memory->write(pairRegisters(H, L), temp);
+	writeMemory(pairRegisters(H, L), temp);
 	clockCycles += 2;
 }
 
@@ -1678,7 +1740,7 @@ void Cpu::SET_b_aHL(const uint8& indexBit)
 {
 	uint8 temp = memory->read(pairRegisters(H, L));
 	SET_b_R(indexBit, temp);
-	memory->write(pairRegisters(H, L), temp);
+	writeMemory(pairRegisters(H, L), temp);
 	clockCycles += 2;
 }
 
@@ -1697,7 +1759,7 @@ void Cpu::RES_b_aHL(const uint8& indexBit)
 {
 	uint8 temp = memory->read(pairRegisters(H, L));
 	SET_b_R(indexBit, temp);
-	memory->write(pairRegisters(H, L), temp);
+	writeMemory(pairRegisters(H, L), temp);
 	clockCycles += 2;
 }
 
@@ -1850,8 +1912,8 @@ void Cpu::JP_HL()
 void Cpu::CALL()
 {
 	pc += 3;
-	memory->write(sp - 1, (pc >> 8));
-	memory->write(sp - 2, (pc & 0x00FF));
+	writeMemory(sp - 1, (pc >> 8));
+	writeMemory(sp - 2, (pc & 0x00FF));
 	pc = (memory->read(pc - 1) << 8) + memory->read(pc - 2);
 	sp -= 2;
 	clockCycles += 6;
@@ -2000,8 +2062,8 @@ void Cpu::RST()
 {
 	uint8 opcode = memory->read(pc);
 	pc++;
-	memory->write(sp - 1, (pc >> 8));
-	memory->write(sp - 2, (pc & 0x00FF));
+	writeMemory(sp - 1, (pc >> 8));
+	writeMemory(sp - 2, (pc & 0x00FF));
 	sp -= 2;
 	clockCycles += 4;
 

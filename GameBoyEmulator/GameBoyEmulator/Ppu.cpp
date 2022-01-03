@@ -28,6 +28,19 @@ uint8 Ppu::getLcdScreenPixel(int indexX, int indexY)
 
 void Ppu::draw(const int& cycles)//Not working
 {
+
+
+
+
+
+
+
+
+
+
+
+
+
 	if (testBit(memory->read(0xFF40), 7))
 	{
 		scanLineCounter -= cycles;

@@ -51,8 +51,6 @@ void GameBoy::start()
 	GlfwOpenglLib glfwOpenglLib(EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y, PROJECT_NAME);//Create window
 	glfwOpenglLib.setBackground();	//Set the background of the two buffers to white
 
-
-	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!IN MACHINES CYCLES!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	const int cyclesNumberToDo = CLOCK_FREQUENCY / 60;//Calcul the number of cycles for the update of the screen
 
 	while (glfwOpenglLib.windowIsActive())//As long as we don't leave program

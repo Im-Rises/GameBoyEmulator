@@ -86,6 +86,10 @@ private:
 
 	void writeMemory(const uint16& address, const uint8& data);
 
+	void handleInterupt();
+	void doInterupt(const uint8& intertuptCode);
+	void requestInterrupt(const uint8& intertuptCode);
+
 	/*-----------------------------------------NORMAL OPCODES OPERATIONS------------------------------------------*/
 
 	/// <summary>

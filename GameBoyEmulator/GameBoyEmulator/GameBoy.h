@@ -52,9 +52,6 @@ public:
 	void start();
 
 private:
-	/*------------------------------------------GAME BOY CYCLE--------------------------------*/
-	void doGameBoyCycle(GlfwOpenglLib& glfwOpenglLib, std::chrono::steady_clock::time_point& timeRefresthScreenStart, std::chrono::steady_clock::time_point& timeCpuStart, int& timeRefreshInt, double& timeCycle, int& cycles);
-
 	/*------------------------------------------SCREEN FUNCTIONS--------------------------------*/
 	void updateScreen(GlfwOpenglLib& glfwOpenglLib);
 
