@@ -166,7 +166,7 @@ void Memory::write(const uint16& address, const uint8 value)
 	else if ((address >= 0xFEA0) && (address < 0xFEFF))
 	{
 		cerr << "Error: Writting in the second reserved area" << endl;
-		exit(1);
+		//exit(1);
 	}
 	else//Write everywhere else (Character Data, BG Display Data 1, BG Display Data 2, OAM etc...
 	{

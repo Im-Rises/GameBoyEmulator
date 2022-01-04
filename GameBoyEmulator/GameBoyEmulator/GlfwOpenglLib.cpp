@@ -113,7 +113,9 @@ void GlfwOpenglLib::drawRectangle(const float& pixelSize, const int& x, const in
 	float yPos = +1.0f - y * pixelSize;//Begin drawing on the upper part of the screen
 	float xPos = -1.0f + x * pixelSize;//Begin drawing from the left part of the screen
 
-	glColor3f(color, color, color);//Set color
+	float colorOpenGL = ((float)color) / 255;//Transform color to openGl color
+
+	glColor3f(colorOpenGL, colorOpenGL, colorOpenGL);//Set color
 
 	//Draw points
 	glVertex2f(xPos, yPos);

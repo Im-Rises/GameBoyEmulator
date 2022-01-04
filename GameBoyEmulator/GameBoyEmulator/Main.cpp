@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
 	if (true)//Debug
 	{
 		biosPath = "../../Bios_Games/dmg_boot.bin";
-		romPath = "../../Bios_Games/Games/TENNIS.GB";
+		romPath = "../../Bios_Games/Games/Tennis.gb";
 		//romPath = "../../Bios_Games/cpu_instrs.gb";
 		//romPath = "../../Bios_Games/cpu_instrs/individual/";
 		argc = 2;
