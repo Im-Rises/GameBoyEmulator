@@ -16,3 +16,6 @@ Main documentation i used:
 
 Helped me a lot to understand PPU timing and Rom/Ram banking:
 <http://www.codeslinger.co.uk/pages/projects/gameboy/beginning.html>  ❤️  
+
+Test roms i use to debug my emulator:
+<https://gbdev.gg8.se/files/roms/blargg-gb-tests/>  

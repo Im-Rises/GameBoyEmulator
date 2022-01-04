@@ -78,6 +78,8 @@ int Cpu::doCycle()
 	handleInterupt();
 	ppu->draw(clockCycles);
 
+	//Implement halt and stop mode here !!!
+
 	return clockCycles;
 }
 
@@ -2135,6 +2137,8 @@ void Cpu::RST()
 
 void Cpu::DAA()
 {
+	error here 
+	/*
 	cerr << "May bug now, because of opcode DAA" << endl;
 	clockCycles += 1;
 
@@ -2176,6 +2180,7 @@ void Cpu::DAA()
 	F.H = 0;
 	F.Z = (A == 0);
 	pc++;
+	*/
 }
 
 

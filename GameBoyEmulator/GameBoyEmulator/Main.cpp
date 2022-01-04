@@ -3,6 +3,11 @@
 #include "GameBoy.h"
 #include "Cartridge.h"
 
+void writeUsage()
+{
+	cout << "In console mode you have to add a parameter that correspond to the game path" << endl;
+}
+
 int main(int argc, char* argv[])
 {
 	std::cout << "Nintendo GameBoy Emulator" << std::endl;
@@ -14,15 +19,18 @@ int main(int argc, char* argv[])
 	if (true)//Debug
 	{
 		biosPath = "../../Bios_Games/dmg_boot.bin";
-		romPath = "../../Bios_Games/TENNIS.GB";
+		//romPath = "../../Bios_Games/TENNIS.GB";
+		romPath = "../../Bios_Games/cpu_instrs.gb";
+		//romPath = "../../Bios_Games/cpu_instrs/individual/11-op a,(hl).gb";
 		argc = 2;
-		gameBoy->loadBios(biosPath);
 	}
 
-	//if (settings.isBiosPresent())
-	//{
-	//	gameBoy->loadBios(biosPath);
-	//}
+
+
+	if (false)//settings.isBiosPresent()
+	{
+		gameBoy->loadBios(biosPath);
+	}
 
 	if (argc > 1)//If a game is loaded
 	{
@@ -36,11 +44,12 @@ int main(int argc, char* argv[])
 	}
 	else if (gameBoy->getBiosInMemory())//If no game but bios is present
 	{
+		writeUsage();
 		gameBoy->start();
 	}
-	else
+	else//Write usage
 	{
-		//Write usage
+		writeUsage();
 	}
 
 	return 0;
