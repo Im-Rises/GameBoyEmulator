@@ -5,7 +5,7 @@
 *.jfm
 
 # Ignore folder
-/Bios_Games/**
+/Bios_Games
 
 # Ignore GLFW libs doc
 /GameBoyEmulator/GameBoyEmulator/GLFW/docs

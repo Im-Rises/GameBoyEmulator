@@ -69,6 +69,9 @@ void Cpu::setCpuWithoutBios()
 
 int Cpu::doCycle()
 {
+	//if (pc > 0x215)
+	//	cout << "test" << endl;
+
 	clockCycles = 0;
 	executeOpcode(memory->read(pc));//Execute opcode
 	clockCycles *= 4;
@@ -1065,6 +1068,12 @@ void Cpu::ADD_A_aHL()
 
 void Cpu::ADC_A_R_CY(const uint8& reg)
 {
+	error
+	/// <summary>
+	/// RESUME HERE
+	/// </summary>
+	/// <param name="reg"></param>
+
 	A = ADD_ADC_subFunctionFlag(A, F.CY);
 	bool tempCY = F.CY;
 	bool tempH = F.H;
@@ -1438,7 +1447,7 @@ void Cpu::DEC_RP(uint8& regPair1, uint8& regPair2)
 	uint16 regsPair = pairRegisters(regPair1, regPair2);
 	regsPair--;
 	regPair1 = regsPair >> 8;
-	regPair2 = regsPair & 0b00001111;
+	regPair2 = regsPair & 0x00FF;
 	clockCycles += 2;
 	pc++;
 }
@@ -2137,41 +2146,26 @@ void Cpu::RST()
 
 void Cpu::DAA()
 {
-	error here 
-	/*
-	cerr << "May bug now, because of opcode DAA" << endl;
-	clockCycles += 1;
-
 	if (!F.N)//If previsous opcode is one of the ADD opcodes
 	{
-		if (((A & 0xF0) > 0x90) || F.CY)
+		if (F.CY || A > 0X99)
 		{
 			A += 0x60;
 			F.CY = 1;
 		}
-		else
-		{
-			F.CY = 0;
-		}
 
-		if (((A & 0x0F) > 0x09) || F.H)
+		if (F.H || (A & 0x0F) > 0x09)
 		{
-			A += 0x06;
+			A += 0x6;
 		}
 	}
 	else//If previsous opcode is one of the SUB opcodes
 	{
-		if (((A & 0xF0) > 0x90) || F.CY)
+		if (F.CY)
 		{
 			A -= 0x60;
-			F.CY = 1;
 		}
-		else
-		{
-			F.CY = 0;
-		}
-
-		if (((A & 0x0F) > 0x09) || F.H)
+		if (F.H)
 		{
 			A -= 0x06;
 		}
@@ -2179,8 +2173,8 @@ void Cpu::DAA()
 
 	F.H = 0;
 	F.Z = (A == 0);
+	clockCycles += 1;
 	pc++;
-	*/
 }
 
 

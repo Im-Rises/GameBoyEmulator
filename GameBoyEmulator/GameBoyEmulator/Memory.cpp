@@ -25,8 +25,12 @@ void Memory::reset()
 void Memory::connectCartridge(Cartridge* cartridge)
 {
 	this->cartridge = cartridge;
+	int index = 0;
 
-	for (int i = 0x100; i < 0x8000;i++)
+	if (biosInMemory)
+		index = 0x100;
+
+	for (int i = index; i < 0x8000;i++)
 	{
 		memoryArray[i] = cartridge->getRomFromIndex(i);
 	}

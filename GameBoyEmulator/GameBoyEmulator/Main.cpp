@@ -20,8 +20,8 @@ int main(int argc, char* argv[])
 	{
 		biosPath = "../../Bios_Games/dmg_boot.bin";
 		//romPath = "../../Bios_Games/TENNIS.GB";
-		romPath = "../../Bios_Games/cpu_instrs.gb";
-		//romPath = "../../Bios_Games/cpu_instrs/individual/11-op a,(hl).gb";
+		//romPath = "../../Bios_Games/cpu_instrs.gb";
+		romPath = "../../Bios_Games/cpu_instrs/individual/09-op r,r.gb";
 		argc = 2;
 	}
 
