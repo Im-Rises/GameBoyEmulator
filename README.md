@@ -4,13 +4,12 @@ GameBoy Emulator developped in C++ with Visual Studio 2019 using the GLFW and Op
 
 https://user-images.githubusercontent.com/59691442/147654838-0d3e11d2-5b09-46fa-ac63-f884d138ea05.mp4
 
+![tennisMenu](https://user-images.githubusercontent.com/59691442/148118719-07c4e68b-ac7d-42dd-9f7c-bce0cbdd9c89.png)  
+
 ## Documentations  
 
 Video overview of the Game Boy, to understand the fundamental:
 <https://www.youtube.com/watch?v=HyzD8pNlpwI>  
-
-![tennisMenu](https://user-images.githubusercontent.com/59691442/148118719-07c4e68b-ac7d-42dd-9f7c-bce0cbdd9c89.png)  
-
 
 Main documentation i used:
 <https://archive.org/details/GameBoyProgManVer1.1/mode/2up>  (The main documentation for everything about the console)
