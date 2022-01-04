@@ -1009,19 +1009,18 @@ void Cpu::POP_RP(uint8& regPair1, Flag& flagPair)
 
 void Cpu::LDHL_SP_e()
 {
-	cerr << "LDHL OPCODE MAY CAUSE ISSUE" << endl;
 	pc++;
 	int8_t e = memory->read(pc);
 
-	if (e >= 0)//WORKING
+	if (e >= 0)
 	{
-		F.CY = ((sp & 0xFFFF) + e) > 0xFFFF;
-		F.H = ((sp & 0xFFF) + (e & 0xFFF)) > 0xFFF;
+		F.CY = ((sp & 0xFF) + e) > 0xFF;
+		F.H = ((sp & 0xF) + e) > 0xF;
 	}
-	else//WORKING
+	else
 	{
-		F.H = (sp & 0x0FFF) < (e & 0x0FFF);
-		F.CY = (sp) < e;
+		F.CY = (sp & 0xFF) > ((sp + e) & 0xFF);
+		F.H = (sp & 0xF) > ((sp + e) & 0xF);
 	}
 
 	unpairRegisters(H, L, (sp + e));
@@ -1068,18 +1067,14 @@ void Cpu::ADD_A_aHL()
 
 void Cpu::ADC_A_R_CY(const uint8& reg)
 {
-	error
-	/// <summary>
-	/// RESUME HERE
-	/// </summary>
-	/// <param name="reg"></param>
-
-	A = ADD_ADC_subFunctionFlag(A, F.CY);
+	//I implemented tempA instead of modifying directly A prevent from an error (test rom09).
+	uint8 tempA = ADD_ADC_subFunctionFlag(A, F.CY);
 	bool tempCY = F.CY;
 	bool tempH = F.H;
-	A = ADD_ADC_subFunctionFlag(A, reg);
+	A = ADD_ADC_subFunctionFlag(tempA, reg);
 	F.CY |= tempCY;
 	F.H |= tempH;
+
 	clockCycles++;
 	pc++;
 }
@@ -1144,10 +1139,11 @@ void Cpu::SUB_A_aHL(const uint8& regPair1, const uint8& regPair2)
 
 void Cpu::SBC_A_R_CY(const uint8& reg)
 {
-	A = SUB_SBC_subFunctionFlag(A, F.CY);
+	//I implemented tempA instead of modifying directly A prevent from an error (test rom09).
+	uint8 tempA = SUB_SBC_subFunctionFlag(A, F.CY);
 	bool tempCY = F.CY;
 	bool tempH = F.H;
-	A = SUB_SBC_subFunctionFlag(A, reg);
+	A = SUB_SBC_subFunctionFlag(tempA, reg);
 	F.CY |= tempCY;
 	F.H |= tempH;
 	clockCycles++;
@@ -1404,21 +1400,22 @@ void Cpu::ADD_HL_RP(const uint8& regPair1, const uint8& regPair2)
 
 void Cpu::ADD_SP_e()
 {
-	cerr << "Program may bug here, thanks to opcode ADD_SP_e" << endl;
-
 	pc++;
-	int8_t e = memory->read(pc);
-	if (e >= 0)//WORKING
+	int8 e = memory->read(pc);
+
+	if (e >= 0)
 	{
-		F.CY = ((sp & 0xFFFF) + e) > 0xFFFF;
-		F.H = ((sp & 0xFFF) + (e & 0xFFF)) > 0xFFF;
+		F.CY = ((sp & 0xFF) + e) > 0xFF;
+		F.H = ((sp & 0xF) + e) > 0xF;
 	}
 	else
 	{
-		F.H = (sp & 0x0FFF) < (e & 0x0FFF);
-		F.CY = (sp) < e;
+		F.CY = (sp & 0xFF) > ((sp + e) & 0xFF);
+		F.H = (sp & 0xF) > ((sp + e) & 0xF);
 	}
+
 	sp += e;
+
 	F.Z = 0;
 	F.N = 0;
 	clockCycles += 4;
@@ -1750,7 +1747,8 @@ void Cpu::BIT_b_R(const uint8& indexBit, const uint8& reg)
 
 void Cpu::BIT_b_aHL(const uint8& indexBit)
 {
-	BIT_b_R(memory->read(pairRegisters(H, L)), indexBit);
+	//Error corrected
+	BIT_b_R(indexBit, memory->read(pairRegisters(H, L)));
 	clockCycles++;
 }
 
@@ -1786,7 +1784,7 @@ void Cpu::RES_b_R(const uint8& indexBit, uint8& reg)
 void Cpu::RES_b_aHL(const uint8& indexBit)
 {
 	uint8 temp = memory->read(pairRegisters(H, L));
-	SET_b_R(indexBit, temp);
+	RES_b_R(indexBit, temp);
 	writeMemory(pairRegisters(H, L), temp);
 	clockCycles += 2;
 }
