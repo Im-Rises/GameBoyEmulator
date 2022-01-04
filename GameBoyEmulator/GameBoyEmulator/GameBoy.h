@@ -52,7 +52,7 @@ public:
 	void start();
 
 private:
-	void doGameBoyCycle(GlfwOpenglLib& glfwOpenglLib);
+	void doGameBoyCycle(GlfwOpenglLib& glfwOpenglLib, const int cyclesNumberToDo);
 
 	/*------------------------------------------SCREEN FUNCTIONS--------------------------------*/
 	void updateScreen(GlfwOpenglLib& glfwOpenglLib);

@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
 	if (true)//Debug
 	{
 		biosPath = "../../Bios_Games/dmg_boot.bin";
-		romPath = "../../Bios_Games/Tetris.GB";
+		romPath = "../../Bios_Games/TENNIS.GB";
 		argc = 2;
 		gameBoy->loadBios(biosPath);
 	}

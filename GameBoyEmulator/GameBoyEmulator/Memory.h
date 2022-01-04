@@ -70,6 +70,7 @@ public:
 	void connectCartridge(Cartridge* cartridge);
 
 	void loadRomInMemory();
+	void loadRomBeginning();
 	void setMemoryWithoutBios();
 
 	//Read and write to cartridge or memory

@@ -70,6 +70,15 @@ void Memory::loadRomInMemory()
 }
 
 
+void Memory::loadRomBeginning()
+{
+	for (int i = 0; i < 0x100; i++)
+	{
+		memoryArray[i] = cartridge->getRomFromIndex(i);
+	}
+}
+
+
 void Memory::setMemoryWithoutBios()
 {
 	memoryArray[0xFF05] = 0x00;
