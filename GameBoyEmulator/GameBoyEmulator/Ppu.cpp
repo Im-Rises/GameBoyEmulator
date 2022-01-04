@@ -19,71 +19,111 @@ void Ppu::reset()
 }
 
 
-
-uint8 Ppu::getLcdScreenPixel(int indexX, int indexY)
-{
-	return lcdScreen[indexX][indexY];
-}
-
-
 void Ppu::draw(const int& cycles)//Not working
 {
+	updateStatRegister();
+	uint8 lcdc = memory->read(LCDC_ADDRESS);
 
-
-
-
-
-
-
-
-
-
-
-
-
-	if (testBit(memory->read(0xFF40), 7))
+	if (testBit(lcdc, 7))
 	{
 		scanLineCounter -= cycles;
 
 		if (scanLineCounter <= 0)
 		{
+			memory->write(LY_ADDRESS, memory->read(LY_ADDRESS) + 1);
+			uint8 scanLine = memory->read(LY_ADDRESS);
 			scanLineCounter = 456;
-			memory->increment(0xFF44);
-			uint8 scanLine = memory->read(0xFF44);
-	 
-			//if (scanLine == 144)
 
+			if (scanLine == 144)
+				requestInterrupt(1);
+			else if (scanLine >= 154)
+				memory->directWrite(LY_ADDRESS, 0);
+			else if (scanLine < 144)
+				drawLine();
 		}
 	}
+}
 
+void Ppu::updateStatRegister()//Thanks to http://www.codeslinger.co.uk/pages/projects/gameboy/lcd.html
+{
+	uint8 lcdc = memory->read(LCDC_ADDRESS);
+	uint8 stat = memory->read(STAT_ADDRESS);
 
+	if (!testBit(lcdc, 7))//If LCD is disable reset it
+	{
+		scanLineCounter = 456;
+		memory->directWrite(LY_ADDRESS, 0);
+		stat &= 0b11111000;
+		stat = testBit(stat, 0);
+		memory->directWrite(STAT_ADDRESS, stat);
+	}
+	else
+	{
+		uint8 scanLine = memory->read(LY_ADDRESS);
+		uint8 currentMode = stat & 0b00000111;
+		uint8 mode = 0;
+		bool interruptSelection = 0;
 
+		if (scanLine >= 144)
+		{
+			mode = 1;
+			stat = setBit(stat, 0);
+			stat = resetBit(stat, 1);
+			interruptSelection = testBit(stat, 4);
+		}
+		else
+		{
+			int mode2bounds = 456 - 80;
+			int mode3bounds = mode2bounds - 172;
 
+			if (scanLine >= mode2bounds)
+			{
+				mode = 2;
+				stat = setBit(stat, 1);
+				stat = resetBit(stat, 0);
+				interruptSelection = testBit(stat, 5);
+			}
+			else if (scanLine >= mode3bounds)
+			{
+				mode = 3;
+				stat = setBit(stat, 1);
+				stat = setBit(stat, 0);
+			}
+			else
+			{
+				mode = 0;
+				stat = resetBit(stat, 1);
+				stat = resetBit(stat, 0);
+				interruptSelection = testBit(stat, 3);
+			}
+		}
 
+		if (interruptSelection && (mode != currentMode))
+		{
+			requestInterrupt(2);
+		}
 
-
-
-	//for (int i = 0; i < cycles; i++)
-	//{
-	//	if (testBit(memory->read(LCDC_ADDRESS), 7))
-	//		memory->increment(LY_ADDRESS);
-	//	else
-	//		memory->write(LY_ADDRESS, 0);
-	//	drawLine();
-	//}
-	//if (memory->read(LY_ADDRESS) >= VERTICAL_BLANKING_LINES_NUMBER)
-	//	memory->write(LY_ADDRESS, 0);
+		if (scanLine == memory->read(LYC_ADDRESS))
+		{
+			stat = setBit(stat, 2);
+			if (testBit(stat, 6))
+			{
+				requestInterrupt(0);
+			}
+		}
+		else
+		{
+			stat = resetBit(stat, 2);
+		}
+		memory->write(STAT_ADDRESS, stat);
+	}
 }
 
 void Ppu::drawLine()
 {
 	uint8 lcdc = memory->read(LCDC_ADDRESS);
-
-	if (testBit(lcdc, 7))//If LCD Controller Operation Stop Flag is on
-	{
-		drawBackgroundLine(lcdc);
-		drawSpritesLine(lcdc);
-	}
+	drawBackgroundLine(lcdc);
+	drawSpritesLine(lcdc);
 }
 
 void Ppu::drawBackgroundLine(uint8 lcdc)
@@ -304,3 +344,14 @@ uint8 Ppu::colorToRGB(uint8 colorGameBoy)
 	}
 }
 
+void Ppu::requestInterrupt(const uint8& interruptCode)
+{
+	uint8 ifRegister = memory->read(INTERRUPT_FLAG_IF_ADDRESS);
+	ifRegister = setBit(ifRegister, interruptCode);
+	memory->write(INTERRUPT_FLAG_IF_ADDRESS, ifRegister);
+}
+
+uint8 Ppu::getLcdScreenPixel(int indexX, int indexY)
+{
+	return lcdScreen[indexX][indexY];
+}

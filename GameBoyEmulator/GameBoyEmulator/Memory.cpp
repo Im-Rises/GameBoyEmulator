@@ -25,6 +25,11 @@ void Memory::reset()
 void Memory::connectCartridge(Cartridge* cartridge)
 {
 	this->cartridge = cartridge;
+
+	for (int i = 0x100; i < 0x8000;i++)
+	{
+		memoryArray[i] = cartridge->getRomFromIndex(i);
+	}
 }
 
 
@@ -155,12 +160,12 @@ void Memory::write(const uint16& address, const uint8 value)
 	}
 }
 
-uint8 Memory::timerRead(const uint16& address)const
+uint8 Memory::directRead(const uint16& address)const
 {
 	return memoryArray[address];
 }
 
-void Memory::timerWrite(const uint16& address, const uint8& value)
+void Memory::directWrite(const uint16& address, const uint8& value)
 {
 	//This function write in the memory without taking care of the ram/rom banks
 	//It is used for the timers that needs to write to the memory without being treated like it was from the user program

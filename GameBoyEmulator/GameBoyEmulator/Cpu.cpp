@@ -110,7 +110,7 @@ void Cpu::handleTimers()
 
 void Cpu::handleDividerTimer()
 {
-	memory->timerWrite(DIV, memory->timerRead(DIV) + clockCycles);
+	memory->directWrite(DIV, memory->directRead(DIV) + clockCycles);
 }
 
 void Cpu::setTimerCounter()
@@ -155,14 +155,26 @@ void Cpu::writeMemory(const uint16& address, const uint8& data)
 	if (address == TAC)
 	{
 		uint8 currentTimerFrequency = memory->read(TAC) & 0b00000011;//Get current frequency
-		memory->timerWrite(address, data);//write new frequency
+		memory->directWrite(address, data);//write new frequency
 		uint8 newTimerFrequency = memory->read(TAC) & 0b00000011;//Get current frequency
 		if (currentTimerFrequency != newTimerFrequency)
 			setTimerCounter();
 	}
 	else if (address == DIV)
 	{
-		memory->timerWrite(DIV, 0);
+		memory->directWrite(DIV, 0);
+	}
+	else if (address == LY_ADDRESS)
+	{
+		memory->directWrite(LY_ADDRESS, 0);
+	}
+	else if (address == DMA_ADDRESS)
+	{
+		uint16 address = data << 8;
+		for (int i = 0; i < 0xA0; i++)
+		{
+			memory->write(0xFE00 + i, memory->read(address + i));
+		}
 	}
 	else
 	{
@@ -243,6 +255,11 @@ void Cpu::requestInterrupt(const uint8& interruptCode)
 	memory->write(INTERRUPT_FLAG_IF_ADDRESS, ifRegister);
 }
 
+
+uint16 Cpu::getPc()
+{
+	return pc;
+}
 
 
 void Cpu::executeOpcode(uint8 opcode)

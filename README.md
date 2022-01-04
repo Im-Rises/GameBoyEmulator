@@ -4,16 +4,6 @@ GameBoy Emulator developped in C++ with Visual Studio 2019 using the GLFW and Op
 
 https://user-images.githubusercontent.com/59691442/147654838-0d3e11d2-5b09-46fa-ac63-f884d138ea05.mp4
 
-## Console specifications
-
-## Task order
-
-1. CPU opcodes implementation
-2. Interrupts
-3. Controls
-4. Video (PPU)
-5. Audio
-
 ## Documentations  
 
 Video overview of the Game Boy, to understand the fundamental:
@@ -26,9 +16,3 @@ Main documentation i used:
 
 Helped me a lot to understand PPU timing and Rom/Ram banking:
 <http://www.codeslinger.co.uk/pages/projects/gameboy/beginning.html>  ❤️  
-
-## To do
-
-Verify Rom/Ram banking addresses types (int or long or ...)
-
-To implement banking with MBC3 and MBC5

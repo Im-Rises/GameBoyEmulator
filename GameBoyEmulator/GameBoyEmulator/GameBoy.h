@@ -52,6 +52,8 @@ public:
 	void start();
 
 private:
+	void doGameBoyCycle(GlfwOpenglLib& glfwOpenglLib);
+
 	/*------------------------------------------SCREEN FUNCTIONS--------------------------------*/
 	void updateScreen(GlfwOpenglLib& glfwOpenglLib);
 

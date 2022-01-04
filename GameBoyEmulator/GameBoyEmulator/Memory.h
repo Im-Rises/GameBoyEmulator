@@ -36,6 +36,19 @@
 #define ETERNAL_EXPANSION_WORKING_RAM 0xA000
 
 #define STAT_ADDRESS 0xFF41
+#define BG_PALETTE_DATA 0xFF47
+#define WX_ADDRESS 0xFF4B
+#define WY_ADDRESS 0xFF4A
+
+#define OAM_Y_COODINATE 0xFE00
+#define OAM_X_COODINATE 0xFE01
+#define OAM_CHR_CODE 0xFE02
+#define OAM_ATTRIBUTE_FLAG 0xFE03
+
+#define OPB0_PALETTE_DATA 0xFF48
+#define OPB1_PALETTE_DATA 0xFF49
+
+#define DMA_ADDRESS 0xFF46
 
 
 using namespace std;
@@ -62,8 +75,8 @@ public:
 	//Read and write to cartridge or memory
 	uint8 read(const uint16 address)const;
 	void write(const uint16& address, const uint8 value);
-	uint8 timerRead(const uint16& address)const;
-	void timerWrite(const uint16& address, const uint8& value);
+	uint8 directRead(const uint16& address)const;
+	void directWrite(const uint16& address, const uint8& value);
 
 	void increment(const uint16& address);
 	void decrement(const uint16& address);

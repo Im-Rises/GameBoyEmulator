@@ -46,7 +46,7 @@ Cartridge::Cartridge(const string& romPath)
 
 	cgbSupport = rom[0x143];
 
-	switch (rom[0x127])
+	switch (rom[0x147])
 	{
 	case(0):
 	{
@@ -375,9 +375,16 @@ void Cartridge::setRamBankingEnable(bool state)
 }
 
 
+uint8 Cartridge::getRomFromIndex(int index)
+{
+	return rom[index];
+}
+
+
 //toString
 
 string Cartridge::toString()
 {
-
+	return "test";
 }
+

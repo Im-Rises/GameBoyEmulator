@@ -77,6 +77,8 @@ public:
 	bool getRamBankingEnable();
 	void setRamBankingEnable(bool state);
 
+	uint8 getRomFromIndex(int index);
+
 
 	//toString
 

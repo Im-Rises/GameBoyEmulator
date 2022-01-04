@@ -90,6 +90,10 @@ private:
 	void doInterupt(const uint8& intertuptCode);
 	void requestInterrupt(const uint8& intertuptCode);
 
+public:
+	uint16 getPc();
+
+private:
 	/*-----------------------------------------NORMAL OPCODES OPERATIONS------------------------------------------*/
 
 	/// <summary>

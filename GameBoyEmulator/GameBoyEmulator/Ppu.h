@@ -27,25 +27,28 @@ class Ppu
 private:
 	Memory* memory = nullptr;
 	uint8 lcdScreen[DOTS_DISPLAY_X][DOTS_DISPLAY_Y];
-	uint8 scanLineCounter;
+
+	int scanLineCounter;
 
 public:
 	Ppu(Memory* memory);
 	void reset();
 	void draw(const int& cycles);
 
-	uint8 getLcdScreenPixel(int indexX, int indexY);
 
 private:
-	void drawLineSimulation();
-	void setRegisters(uint8 lcdc);
+	void updateStatRegister();
 	void drawLine();
 	void drawBackgroundLine(uint8 lcdc);
 	void drawSpritesLine(uint8 lcdc);
 
 	uint8 transformDotDataToColor(const uint8& dotData, const uint16& dataPaletteAddress);
-	uint8 colorToRGB(uint8 colorGameBoy);
+	uint8 colorToRGB(uint8 colorGameBoy);	
+	
+	void requestInterrupt(const uint8& intertuptCode);
 
+public:
+	uint8 getLcdScreenPixel(int indexX, int indexY);
 };
 
 #endif

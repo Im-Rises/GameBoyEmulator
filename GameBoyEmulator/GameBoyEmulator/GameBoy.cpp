@@ -69,8 +69,7 @@ void GameBoy::start()
 		updateScreen(glfwOpenglLib);
 	}
 
-
-	/*
+/*
 	GlfwOpenglLib glfwOpenglLib(EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y, PROJECT_NAME);//Create window
 	glfwOpenglLib.setBackground();	//Set the background of the two buffers to white
 
@@ -82,12 +81,11 @@ void GameBoy::start()
 	double timeCycle = (1.0 / CPU_FREQUENCY_NORMAL_MODE) * 1000000000; //time of a cyle in nanoseconds
 	int cycles = 0;													   //Machine cycle for the precedent operation
 
-
 	if (memory.getBiosInMemeory()) //if there is a bios
 	{
 		while (cpu.getPc() < 0x100 && glfwOpenglLib.windowIsActive())
 		{
-			doGameBoyCycle(glfwOpenglLib, timeRefresthScreenStart, timeCpuStart, timeRefreshInt, timeCycle, cycles);
+
 		}
 
 		//Load temporary array in memory
@@ -105,11 +103,13 @@ void GameBoy::start()
 		//loadSaveGame();
 	}
 
-	while (glfwOpenglLib.windowIsActive())//Play game
-	{
-		doGameBoyCycle(glfwOpenglLib, timeRefresthScreenStart, timeCpuStart, timeRefreshInt, timeCycle, cycles);
-	}
-	*/
+*/
+}
+
+
+void GameBoy::doGameBoyCycle(GlfwOpenglLib& glfwOpenglLib)
+{
+
 }
 
 
