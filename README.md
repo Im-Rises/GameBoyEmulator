@@ -1,6 +1,6 @@
 # GameBoyEmulator
 
-GameBoy Emulator developped in C++ with Visual Studio 2019 using the GLFW and OpenGL libraries.
+GameBoy Emulator developped in C++ with Visual Studio 2019 using the GLFW, glew and OpenGL libraries.
 
 https://user-images.githubusercontent.com/59691442/147654838-0d3e11d2-5b09-46fa-ac63-f884d138ea05.mp4
 
@@ -12,15 +12,20 @@ https://user-images.githubusercontent.com/59691442/147654838-0d3e11d2-5b09-46fa-
 
 ## Documentations  
 
-Video overview of the Game Boy, to understand the fundamental:
+Video overview of the Game Boy, to understand the fundamental  
 <https://www.youtube.com/watch?v=HyzD8pNlpwI>  
 
-Main documentation i used:
-<https://archive.org/details/GameBoyProgManVer1.1/mode/2up>  (The main documentation for everything about the console)
-<https://gbdev.gg8.se/wiki/articles/Gameboy_Bootstrap_ROM>  (The bootrom)
+The main documentation about the console:  
+<https://archive.org/details/GameBoyProgManVer1.1/mode/2up>  
 
-<https://www.pastraiser.com/cpu/gameboy/gameboy_opcodes.html>  (A map of all the opcodes)
-<http://www.codeslinger.co.uk/pages/projects/gameboy/beginning.html>  ❤️ (Help me a lot to understand PPU timing and Rom/Ram banking)  
+The bootrom  
+<https://gbdev.gg8.se/wiki/articles/Gameboy_Bootstrap_ROM>  
 
-Test roms i use to debug my emulator:
+Opcodes map  
+<https://www.pastraiser.com/cpu/gameboy/gameboy_opcodes.html>  
+
+PPU timing and Rom/Ram banking  
+<http://www.codeslinger.co.uk/pages/projects/gameboy/beginning.html>  ❤️  
+
+Test roms i use to debug my emulator  
 <https://gbdev.gg8.se/files/roms/blargg-gb-tests/>  
