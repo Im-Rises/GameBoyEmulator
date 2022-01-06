@@ -30,7 +30,7 @@ void Memory::connectCartridge(Cartridge* cartridge)
 	if (biosInMemory)
 		index = 0x100;
 
-	for (int i = index; i < 0x8000;i++)
+	for (int i = index; i < 0x8000; i++)
 	{
 		memoryArray[i] = cartridge->getRomFromIndex(i);
 	}
@@ -185,7 +185,6 @@ void Memory::directWrite(const uint16& address, const uint8& value)
 	//It is used for the timers that needs to write to the memory without being treated like it was from the user program
 	memoryArray[address] = value;
 }
-
 
 
 void Memory::increment(const uint16& address)

@@ -33,6 +33,7 @@ void Cpu::reset()
 		setCpuWithoutBios();
 	}
 	setTimerCounter();
+	operationNumber = 0;
 }
 
 void Cpu::setCpuWithBios()
@@ -69,20 +70,36 @@ void Cpu::setCpuWithoutBios()
 
 int Cpu::doCycle()
 {
-	//if (pc > 0x215)
-	//	cout << "test" << endl;
+	//if (operationNumber > 61270)
+	//	cout << "Big error" << endl;
+
+	//if (pc >= 0x27A3)
+	//	cout << "Big error" << endl;
+
+
+
+	//if (pc==0xC246)
+	//	cout << "Big error" << endl;
+
+	//if (pc == 0xC7F4)
+	//	cout << "Big error" << endl;
+
 
 	clockCycles = 0;
-	executeOpcode(memory->read(pc));//Execute opcode
+	if (!halted)//If not halted
+	{
+		executeOpcode(memory->read(pc));//Execute opcode
+	}
+	else//If halted
+	{
+		clockCycles++;
+	}
 	clockCycles *= 4;
 
-	//The cylce value has changed, now we can update the timers, draw and manage the interrupts
+	ppu->draw(clockCycles);
 	handleTimers();
 	handleInterupt();
-	ppu->draw(clockCycles);
-
-	//Implement halt and stop mode here !!!
-
+	operationNumber++;
 	return clockCycles;
 }
 
@@ -155,8 +172,6 @@ void Cpu::setTimerCounter()
 
 void Cpu::writeMemory(const uint16& address, const uint8& data)
 {
-	//Handle program writting to memory on timers etc...
-
 	if (address == TAC)
 	{
 		uint8 currentTimerFrequency = memory->read(TAC) & 0b00000011;//Get current frequency
@@ -190,23 +205,50 @@ void Cpu::writeMemory(const uint16& address, const uint8& data)
 
 void Cpu::handleInterupt()//Thanks codesLinger.com
 {
-	if (IME)
+	if (IME || halted)//If IME is enable or the cpu is halted thant we  check if IE and IF flags are enabled
 	{
-		uint8 ifRegister = memory->read(INTERRUPT_FLAG_IF_ADDRESS);
-		uint8 ieRegister = memory->read(INTERRUPT_FLAG_IE_ADDRESS);
+		//uint8 ifRegister = memory->read(INTERRUPT_FLAG_IF_ADDRESS);
+		//uint8 ieRegister = memory->read(INTERRUPT_FLAG_IE_ADDRESS);
 
-		if ((ifRegister & ieRegister) > 0)//If an interupt is enable and requested
+		//if ((ifRegister & ieRegister) > 0)//If an interupt is enable and requested
+		//{
+		//	if (!halted)//If not halted the program jump to the address of the interrupt
+		//	{
+		//		if (testBit(ieRegister, 0))
+		//			doInterupt(1);
+		//		else if (testBit(ieRegister, 1))
+		//			doInterupt(2);
+		//		else if (testBit(ieRegister, 2))
+		//			doInterupt(3);
+		//		else if (testBit(ieRegister, 3))
+		//			doInterupt(4);
+		//		else if (testBit(ieRegister, 4))
+		//			doInterupt(5);
+		//	}
+		//	else//If the cpu is halted and an interrupt is activated than leaving halt mode
+		//	{
+		//		halted = false;
+		//	}
+		//}
+
+		// has anything requested an interrupt?
+		uint8 requestFlag = memory->read(0xFF0F);
+		if (requestFlag > 0)
 		{
-			if (testBit(ieRegister, 0))
-				doInterupt(1);
-			else if (testBit(ieRegister, 1))
-				doInterupt(2);
-			else if (testBit(ieRegister, 2))
-				doInterupt(3);
-			else if (testBit(ieRegister, 3))
-				doInterupt(4);
-			else if (testBit(ieRegister, 4))
-				doInterupt(5);
+			// which requested interrupt has the lowest priority?
+			for (int bit = 0; bit < 8; bit++)
+			{
+				if (TestBit(requestFlag, bit))
+				{
+					// this interupt has been requested. But is it enabled?
+					BYTE enabledReg = ReadMemory(0xFFFF);
+					if (TestBit(enabledReg, bit))
+					{
+						// yup it is enabled, so lets DOOOOO ITTTTT
+						ServiceInterrupt(bit);
+					}
+				}
+			}
 		}
 	}
 }
@@ -214,15 +256,15 @@ void Cpu::handleInterupt()//Thanks codesLinger.com
 
 void Cpu::doInterupt(const uint8& interruptCode)
 {
-	IME = false;
+	IME = 0;
 	uint8 ifRegister = memory->read(INTERRUPT_FLAG_IF_ADDRESS);
 	ifRegister = resetBit(ifRegister, interruptCode - 1);
 	memory->write(INTERRUPT_FLAG_IF_ADDRESS, interruptCode - 1);
 
-	writeMemory(sp - 1, (pc & 0xF0));
-	writeMemory(sp - 2, (pc & 0x0F));
+	writeMemory(sp - 1, (pc >> 8));
+	writeMemory(sp - 2, (pc & 0x00FF));
 	sp -= 2;
-
+	halted = false;
 	switch (interruptCode)
 	{
 	case(1):

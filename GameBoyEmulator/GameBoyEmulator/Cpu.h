@@ -22,6 +22,9 @@ using namespace std;
 class Cpu {
 
 private:
+
+	long operationNumber;
+
 	/// <summary>
 	/// Cycles
 	/// </summary>
@@ -128,8 +131,8 @@ private:
 	void LD_A_aDE();
 	void LD_A_aCo();
 	void LD_aCo_A();
-	void LD_A_a8o();//WORKING NOT SURE ABOUT IF IT'S INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + memory.read(pc) OR INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + memory.read(memory.read(pc))
-	void LD_a8o_A();//WORKING NOT SURE ...
+	void LD_A_a8o();
+	void LD_a8o_A();
 	void LD_A_a16();
 	void LD_a16_A();
 	void LD_A_aHL_HLI();
@@ -205,7 +208,6 @@ private:
 	void DEC_RP(uint16& regsPair);
 
 	/*-------------------------------------ROTATE SHIFT INSTRUCTION---------------------------------------*/
-	//WORKING BUT MIGHT HAVE AN ISSUE WITH Z FLAG THAT MAY BE TO SET OR UNSET (the doc said no but still represent it in the calculs)
 	void RLCA();
 	void RLA();
 	void RRCA();
@@ -256,7 +258,7 @@ private:
 	void CALL_cc();
 
 	void RET();
-	void RETI();//TO CHECK, TO IMPLEMENT THE MIE (Master Interrupt Enable)
+	void RETI();
 	void RET_cc();
 
 	void RST();

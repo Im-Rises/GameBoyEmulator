@@ -35,7 +35,7 @@ void Ppu::draw(const int& cycles)//Not working
 			scanLineCounter = 456;
 
 			if (scanLine == 144)
-				requestInterrupt(1);
+				requestInterrupt(0);
 			else if (scanLine >= 154)
 				memory->directWrite(LY_ADDRESS, 0);
 			else if (scanLine < 144)
@@ -100,7 +100,7 @@ void Ppu::updateStatRegister()//Thanks to http://www.codeslinger.co.uk/pages/pro
 
 		if (interruptSelection && (mode != currentMode))
 		{
-			requestInterrupt(2);
+			requestInterrupt(1);
 		}
 
 		if (scanLine == memory->read(LYC_ADDRESS))
@@ -108,7 +108,7 @@ void Ppu::updateStatRegister()//Thanks to http://www.codeslinger.co.uk/pages/pro
 			stat = setBit(stat, 2);
 			if (testBit(stat, 6))
 			{
-				requestInterrupt(0);
+				requestInterrupt(1);
 			}
 		}
 		else

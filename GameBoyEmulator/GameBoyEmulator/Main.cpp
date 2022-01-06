@@ -18,10 +18,12 @@ int main(int argc, char* argv[])
 
 	if (true)//Debug
 	{
-		biosPath = "../../Bios_Games/dmg_boot.bin";
-		romPath = "../../Bios_Games/Games/Tennis.gb";
-		//romPath = "../../Bios_Games/cpu_instrs.gb";
-		//romPath = "../../Bios_Games/cpu_instrs/individual/";
+		biosPath = "../../Bios_Games/Bios/dmg_boot.bin";
+		//romPath = "../../Bios_Games/cpu_instrs/individual/02-interrupts.gb";
+		//romPath = "../../Bios_Games/Games/Tetris.gb";
+		//romPath = "../../Bios_Games/cpu_instrs/cpu_instrs.gb";
+		//romPath = "../../Bios_Games/halt_bug.gb";
+		//romPath = "../../Bios_Games/instr_timing/instr_timing.gb";
 		argc = 2;
 	}
 
