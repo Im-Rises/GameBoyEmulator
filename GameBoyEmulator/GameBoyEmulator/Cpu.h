@@ -78,6 +78,7 @@ public:
 	//void writeInputs(const uint8& inputs);				//Write inputs to memory
 
 	int doCycle();										//Do cpu cycle
+	void writeInputs();
 
 private:
 	void executeOpcode(uint8 opcode);			//Execute an opcode

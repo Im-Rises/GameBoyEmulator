@@ -53,7 +53,6 @@ void GameBoy::start()
 
 	const int cyclesNumberToDo = CLOCK_FREQUENCY / 60;//Calcul the number of cycles for the update of the screen
 
-
 	if (memory.getBiosInMemeory()) //if there is a bios
 	{
 		while (cpu.getPc() < 0x100 && glfwOpenglLib.windowIsActive())

@@ -76,15 +76,13 @@ int Cpu::doCycle()
 	//if (pc >= 0x27A3)
 	//	cout << "Big error" << endl;
 
-
-
 	//if (pc==0xC246)
 	//	cout << "Big error" << endl;
 
-	//if (pc == 0xC7F4)
+	//if (pc == 0xC00A)
 	//	cout << "Big error" << endl;
 
-
+	writeInputs();
 	clockCycles = 0;
 	if (!halted)//If not halted
 	{
@@ -101,6 +99,11 @@ int Cpu::doCycle()
 	handleInterupt();
 	operationNumber++;
 	return clockCycles;
+}
+
+void Cpu::writeInputs()
+{
+	memory->write(0xFF00, 0xFF);
 }
 
 
@@ -207,47 +210,26 @@ void Cpu::handleInterupt()//Thanks codesLinger.com
 {
 	if (IME || halted)//If IME is enable or the cpu is halted thant we  check if IE and IF flags are enabled
 	{
-		//uint8 ifRegister = memory->read(INTERRUPT_FLAG_IF_ADDRESS);
-		//uint8 ieRegister = memory->read(INTERRUPT_FLAG_IE_ADDRESS);
-
-		//if ((ifRegister & ieRegister) > 0)//If an interupt is enable and requested
-		//{
-		//	if (!halted)//If not halted the program jump to the address of the interrupt
-		//	{
-		//		if (testBit(ieRegister, 0))
-		//			doInterupt(1);
-		//		else if (testBit(ieRegister, 1))
-		//			doInterupt(2);
-		//		else if (testBit(ieRegister, 2))
-		//			doInterupt(3);
-		//		else if (testBit(ieRegister, 3))
-		//			doInterupt(4);
-		//		else if (testBit(ieRegister, 4))
-		//			doInterupt(5);
-		//	}
-		//	else//If the cpu is halted and an interrupt is activated than leaving halt mode
-		//	{
-		//		halted = false;
-		//	}
-		//}
-
-		// has anything requested an interrupt?
-		uint8 requestFlag = memory->read(0xFF0F);
-		if (requestFlag > 0)
+		uint8 ifRegister = memory->read(INTERRUPT_FLAG_IF_ADDRESS);
+		uint8 ieRegister = memory->read(INTERRUPT_FLAG_IE_ADDRESS);
+		if ((ifRegister & ieRegister) > 0)//If an interupt is enable and requested
 		{
-			// which requested interrupt has the lowest priority?
-			for (int bit = 0; bit < 8; bit++)
+			if (!halted)//If not halted the program jump to the address of the interrupt
 			{
-				if (TestBit(requestFlag, bit))
-				{
-					// this interupt has been requested. But is it enabled?
-					BYTE enabledReg = ReadMemory(0xFFFF);
-					if (TestBit(enabledReg, bit))
-					{
-						// yup it is enabled, so lets DOOOOO ITTTTT
-						ServiceInterrupt(bit);
-					}
-				}
+				if (testBit(ieRegister, 0))
+					doInterupt(1);
+				else if (testBit(ieRegister, 1))
+					doInterupt(2);
+				else if (testBit(ieRegister, 2))
+					doInterupt(3);
+				else if (testBit(ieRegister, 3))
+					doInterupt(4);
+				else if (testBit(ieRegister, 4))
+					doInterupt(5);
+			}
+			else//If the cpu is halted and an interrupt is activated than leaving halt mode
+			{
+				halted = false;
 			}
 		}
 	}
