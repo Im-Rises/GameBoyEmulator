@@ -27,6 +27,8 @@ private:
 	static bool fullScreen;
 
 public:
+	//static uint8 gameBoyInputs;
+
 	/*------------------------------------------CONSTRUCTOR AND DESTRUCTOR--------------------------------*/
 	GlfwOpenglLib(int width, int height, string title);//Constructor
 	~GlfwOpenglLib();//Destructor

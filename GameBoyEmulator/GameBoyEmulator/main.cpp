@@ -20,7 +20,8 @@ int main(int argc, char* argv[])
 	{
 		biosPath = "../../Bios_Games/Bios/dmg_boot.bin";
 		//romPath = "../../Bios_Games/cpu_instrs/individual/03-op sp,hl.gb";
-		romPath = "../../Bios_Games/Games/Tetris.gb";
+		romPath = "../../Bios_Games/Games/Kirby's dream land.gb";
+		//romPath = "../../Bios_Games/Games/Tetris.gb";
 		//romPath = "../../Bios_Games/cpu_instrs/cpu_instrs.gb";
 		//romPath = "../../Bios_Games/halt_bug.gb";
 		//romPath = "../../Bios_Games/instr_timing/instr_timing.gb";

@@ -83,6 +83,7 @@ int Cpu::doCycle()
 	//	cout << "Big error" << endl;
 
 	writeInputs();
+
 	clockCycles = 0;
 	if (!halted)//If not halted
 	{
@@ -98,6 +99,7 @@ int Cpu::doCycle()
 	handleTimers();
 	handleInterupt();
 	operationNumber++;
+
 	return clockCycles;
 }
 
@@ -545,7 +547,9 @@ void Cpu::executeOpcode(uint8 opcode)
 
 void Cpu::executeOpcodeFollowingCB()
 {
+	clockCycles++;
 	pc++;
+
 	switch (memory->read(pc)) {
 	case(0x00): {RLC_R(B); break; }
 	case(0x01): {RLC_R(C); break; }
@@ -1773,7 +1777,7 @@ void Cpu::BIT_b_aHL(const uint8& indexBit)
 {
 	//Error corrected
 	BIT_b_R(indexBit, memory->read(pairRegisters(H, L)));
-	clockCycles++;
+	clockCycles += 2;
 }
 
 void Cpu::SET_b_R(const uint8& indexBit, uint8& reg)

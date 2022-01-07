@@ -229,24 +229,25 @@ void Ppu::drawSpritesLine(uint8 lcdc)
 		{
 			int index = i * 4;//Sprites data are composed of 4 bytes of data
 
-			uint8 yCoordinate = memory->read(OAM_Y_COODINATE + index) - 16;//From the Developper guide it is supposed to be 10 but that doesn't make sense
+			uint8 yCoordinate = memory->read(OAM_Y_COODINATE + index) - 16;//In the official documentation it is written 10 because it is in hexa 0x10 so 16 in decimal
 			uint8 xCoordinate = memory->read(OAM_X_COODINATE + index) - 8;
 			uint8 chrCode = memory->read(OAM_CHR_CODE + index);
 			uint8 attributeFlag = memory->read(OAM_ATTRIBUTE_FLAG + index);
 
-			bool horizontalFlip = testBit(lcdc, 5);
-			bool verticalFlip = testBit(lcdc, 6);
-			bool displayPriority = testBit(lcdc, 7);
+			bool horizontalFlip = testBit(attributeFlag, 5);//xFlip
+			bool verticalFlip = testBit(attributeFlag, 6);//yFlip
+			bool displayPriorityBG = testBit(attributeFlag, 7);//Display priority
+
 
 			uint8 ly = memory->read(LY_ADDRESS);
 
-			uint8 spriteSize = (sprite8x16Dots ? 16 : 8);
+			uint8 spriteSize = sprite8x16Dots ? 16 : 8;
 
 			if ((ly >= yCoordinate) && (ly < (yCoordinate + spriteSize)))//Before drawing sprite, we verify if it is not out of screen
 			{
 				uint8 lineSprite = ly - yCoordinate;//Get line to draw depending if the sprite is flipped horizontally or vertically
 
-				if (horizontalFlip)
+				if (verticalFlip)
 					lineSprite = (lineSprite - spriteSize) * -1;
 
 				lineSprite *= 2;
@@ -257,24 +258,26 @@ void Ppu::drawSpritesLine(uint8 lcdc)
 				{
 					int pixelIndex = pixel;
 
-					if (verticalFlip)
+					if (!horizontalFlip)
 						pixelIndex = (pixelIndex - 7) * -1;
 
 					uint8 colorCode = getBit(dataLine1, pixelIndex) + (getBit(dataLine2, (pixelIndex)) << 1);
 
 					uint8 color;
-					if (testBit(lcdc, 4))
+					if (!testBit(attributeFlag, 4))
 						color = transformDotDataToColor(colorCode, OPB0_PALETTE_DATA);
 					else
 						color = transformDotDataToColor(colorCode, OPB1_PALETTE_DATA);
 
-					if (testBit(lcdc, 7))//Priority to background
+					if (displayPriorityBG)//Priority to background or sprite pixel is white (testBit(attributeFlag, 7) || colorToRGB(color) == 0xFF)
 					{
 						//Do nothing (display pixel of background)
 					}
 					else//Priority to sprite
 					{
-						lcdScreen[xCoordinate + pixel][ly] = colorToRGB(color);
+						int x = xCoordinate + pixel;
+						if (0 <= x && x < 160)// && 0 <= ly && ly < 144
+							lcdScreen[xCoordinate + pixel][ly] = colorToRGB(color);
 					}
 				}
 			}
