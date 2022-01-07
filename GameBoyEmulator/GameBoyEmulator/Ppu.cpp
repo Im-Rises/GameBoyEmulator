@@ -213,7 +213,6 @@ void Ppu::drawBackgroundLine(uint8 lcdc)
 
 			uint8 color = transformDotDataToColor(colorCode, BG_PALETTE_DATA);
 
-
 			lcdScreen[pixel][ly] = colorToRGB(color);
 		}
 	}
@@ -269,16 +268,20 @@ void Ppu::drawSpritesLine(uint8 lcdc)
 					else
 						color = transformDotDataToColor(colorCode, OPB1_PALETTE_DATA);
 
-					if (displayPriorityBG)//Priority to background or sprite pixel is white (testBit(attributeFlag, 7) || colorToRGB(color) == 0xFF)
+
+
+					if (colorCode == 0)//If color code is 0 than displaying background's pixel !displayPriorityBG && colorCode == 0
 					{
 						//Do nothing (display pixel of background)
 					}
-					else//Priority to sprite
+					else
 					{
 						int x = xCoordinate + pixel;
-						if (0 <= x && x < 160)// && 0 <= ly && ly < 144
-							lcdScreen[xCoordinate + pixel][ly] = colorToRGB(color);
+						if (0 <= x && x < 160)// Verify if pixel is not out of screen
+							lcdScreen[x][ly] = colorToRGB(color);
 					}
+
+					//Another way would be to stock in the lcdScreen the colorCode
 				}
 			}
 		}

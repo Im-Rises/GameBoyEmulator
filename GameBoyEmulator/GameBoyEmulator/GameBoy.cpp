@@ -108,9 +108,8 @@ void GameBoy::doGameBoyCycle(GlfwOpenglLib& glfwOpenglLib, const int cyclesNumbe
 		//get user inputs from the doCycle function or a separate function ?
 
 		performedCycles += cpu.doCycle();
-
-		glfwOpenglLib.getEvenements();
 	}
+	glfwOpenglLib.getEvenements();
 
 	updateScreen(glfwOpenglLib);
 }
