@@ -26,7 +26,12 @@ class Ppu
 {
 private:
 	Memory* memory = nullptr;
-	uint8 lcdScreen[DOTS_DISPLAY_X][DOTS_DISPLAY_Y];
+
+	struct Screen {
+		uint8 colorRGB;
+		bool backgroundTransparent;
+	}
+	lcdScreen[DOTS_DISPLAY_X][DOTS_DISPLAY_Y];
 
 	int scanLineCounter;
 
@@ -43,8 +48,8 @@ private:
 	void drawSpritesLine(uint8 lcdc);
 
 	uint8 transformDotDataToColor(const uint8& dotData, const uint16& dataPaletteAddress);
-	uint8 colorToRGB(uint8 colorGameBoy);	
-	
+	uint8 colorToRGB(uint8 colorGameBoy);
+
 	void requestInterrupt(const uint8& intertuptCode);
 
 public:

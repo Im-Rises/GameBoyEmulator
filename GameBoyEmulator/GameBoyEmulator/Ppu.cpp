@@ -12,7 +12,8 @@ void Ppu::reset()
 	{
 		for (int i = 0; i < DOTS_DISPLAY_X; i++)
 		{
-			lcdScreen[i][j] = 0xFF;
+			lcdScreen[i][j].colorRGB = 0xFF;
+			lcdScreen[i][j].backgroundTransparent = false;
 		}
 	}
 	scanLineCounter = 456;//Number of clock cycles to draw one scanline
@@ -213,7 +214,8 @@ void Ppu::drawBackgroundLine(uint8 lcdc)
 
 			uint8 color = transformDotDataToColor(colorCode, BG_PALETTE_DATA);
 
-			lcdScreen[pixel][ly] = colorToRGB(color);
+			lcdScreen[pixel][ly].colorRGB = colorToRGB(color);
+			lcdScreen[pixel][ly].backgroundTransparent = (colorCode == 0);
 		}
 	}
 }
@@ -262,26 +264,41 @@ void Ppu::drawSpritesLine(uint8 lcdc)
 
 					uint8 colorCode = getBit(dataLine1, pixelIndex) + (getBit(dataLine2, (pixelIndex)) << 1);
 
-					uint8 color;
-					if (!testBit(attributeFlag, 4))
-						color = transformDotDataToColor(colorCode, OPB0_PALETTE_DATA);
-					else
-						color = transformDotDataToColor(colorCode, OPB1_PALETTE_DATA);
+					bool transparent = (colorCode == 0);
 
 
 
-					if (colorCode == 0)//If color code is 0 than displaying background's pixel !displayPriorityBG && colorCode == 0
-					{
-						//Do nothing (display pixel of background)
-					}
-					else
-					{
-						int x = xCoordinate + pixel;
-						if (0 <= x && x < 160)// Verify if pixel is not out of screen
-							lcdScreen[x][ly] = colorToRGB(color);
-					}
+
+					//if (colorCode == 0)//If color code is 0 than displaying background's pixel !displayPriorityBG && colorCode == 0
+					//{
+					//	//Do nothing (display pixel of background)
+					//}
+					//else
+					//{
+					//	int x = xCoordinate + pixel;
+					//	if (0 <= x && x < 160)// Verify if pixel is not out of screen
+					//		lcdScreen[x][ly] = colorToRGB(color);
+					//}
 
 					//Another way would be to stock in the lcdScreen the colorCode
+					int x = xCoordinate + pixel;
+					if (0 <= x && x < 160)
+					{
+						if ((!displayPriorityBG && !transparent) || (displayPriorityBG && !transparent && lcdScreen[x][ly].backgroundTransparent))//Display OBJ's pixel
+						{
+							uint8 color;
+							if (!testBit(attributeFlag, 4))
+								color = transformDotDataToColor(colorCode, OPB0_PALETTE_DATA);
+							else
+								color = transformDotDataToColor(colorCode, OPB1_PALETTE_DATA);
+
+							lcdScreen[x][ly].colorRGB = colorToRGB(color);
+						}
+						else//Display BG' pixel
+						{
+
+						}
+					}
 				}
 			}
 		}
@@ -359,5 +376,5 @@ void Ppu::requestInterrupt(const uint8& interruptCode)
 
 uint8 Ppu::getLcdScreenPixel(int indexX, int indexY)
 {
-	return lcdScreen[indexX][indexY];
+	return lcdScreen[indexX][indexY].colorRGB;
 }

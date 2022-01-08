@@ -82,7 +82,7 @@ int Cpu::doCycle()
 	//if (pc == 0xC00A)
 	//	cout << "Big error" << endl;
 
-	writeInputs();
+	//writeInputs();
 
 	clockCycles = 0;
 	if (!halted)//If not halted
@@ -103,9 +103,9 @@ int Cpu::doCycle()
 	return clockCycles;
 }
 
-void Cpu::writeInputs()
+void Cpu::writeInputs(const uint8& inputs)
 {
-	memory->write(0xFF00, 0xFF);
+	memory->write(0xFF00, inputs);
 }
 
 

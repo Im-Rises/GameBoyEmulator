@@ -9,6 +9,8 @@ int GlfwOpenglLib::positionY;
 
 bool GlfwOpenglLib::fullScreen = false;
 
+uint8_t GlfwOpenglLib::gameBoyInputs = 0b00111111;
+
 GlfwOpenglLib::GlfwOpenglLib(int width, int height, string title)
 {
 	/// <summary>
@@ -159,7 +161,7 @@ void GlfwOpenglLib::key_callback(GLFWwindow* window, int key, int scancode, int 
 	////Game Boy controls
 	////0: Low signal (button pressed)
 	////1: High signal (button not pressed)
-	//uint8_t inputs = 0b00000000;
+
 
 	//if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) //Right
 	//	inputs |= 0b00010001;
@@ -177,8 +179,101 @@ void GlfwOpenglLib::key_callback(GLFWwindow* window, int key, int scancode, int 
 	//	inputs |= 0b00100100;
 	//if (key == GLFW_KEY_SLASH && action == GLFW_PRESS) //Start
 	//	inputs |= 0b00101000;
-
 	//inputs = ~inputs;
+
+	uint8_t inputs = 0b00000000;
+
+	if (action == GLFW_PRESS)
+	{
+		if (key == GLFW_KEY_RIGHT)
+		{
+			inputs = setBit(inputs, 0);
+			inputs = setBit(inputs, 4);
+		}
+		if (key == GLFW_KEY_LEFT)
+		{
+			inputs = setBit(inputs, 1);
+			inputs = setBit(inputs, 4);
+		}
+		if (key == GLFW_KEY_UP)
+		{
+			inputs = setBit(inputs, 2);
+			inputs = setBit(inputs, 4);
+		}
+		if (key == GLFW_KEY_DOWN)
+		{
+			inputs = setBit(inputs, 3);
+			inputs = setBit(inputs, 4);
+		}
+		if (key == GLFW_KEY_A)
+		{
+			inputs = setBit(inputs, 0);
+			inputs = setBit(inputs, 5);
+		}
+		if (key == GLFW_KEY_B)
+		{
+			inputs = setBit(inputs, 1);
+			inputs = setBit(inputs, 5);
+		}
+		if (key == GLFW_KEY_SEMICOLON)
+		{
+			inputs = setBit(inputs, 2);
+			inputs = setBit(inputs, 5);
+		}
+		if (key == GLFW_KEY_SLASH)
+		{
+			inputs = setBit(inputs, 3);
+			inputs = setBit(inputs, 5);
+		}
+
+	}
+
+	if (action == GLFW_RELEASE)
+	{
+		if (key == GLFW_KEY_RIGHT)
+		{
+			inputs = resetBit(inputs, 0);
+			inputs = resetBit(inputs, 4);
+		}
+		if (key == GLFW_KEY_LEFT)
+		{
+			inputs = resetBit(inputs, 1);
+			inputs = resetBit(inputs, 4);
+		}
+		if (key == GLFW_KEY_UP)
+		{
+			inputs = resetBit(inputs, 2);
+			inputs = resetBit(inputs, 4);
+		}
+		if (key == GLFW_KEY_DOWN)
+		{
+			inputs = resetBit(inputs, 3);
+			inputs = resetBit(inputs, 4);
+		}
+		if (key == GLFW_KEY_A)
+		{
+			inputs = resetBit(inputs, 0);
+			inputs = resetBit(inputs, 5);
+		}
+		if (key == GLFW_KEY_B)
+		{
+			inputs = resetBit(inputs, 1);
+			inputs = resetBit(inputs, 5);
+		}
+		if (key == GLFW_KEY_SEMICOLON)
+		{
+			inputs = resetBit(inputs, 2);
+			inputs = resetBit(inputs, 5);
+		}
+		if (key == GLFW_KEY_SLASH)
+		{
+			inputs = resetBit(inputs, 3);
+			inputs = resetBit(inputs, 5);
+		}
+	}
+
+	gameBoyInputs = ~inputs;
+	gameBoyInputs &= 0b00111111;
 }
 
 

@@ -6,6 +6,8 @@
 #include "glew/include/GL/glew.h"
 #include "GLFW/include/glfw3.h"
 
+#include "binaryLib.h"
+
 using namespace std;
 
 /// <summary>
@@ -27,7 +29,7 @@ private:
 	static bool fullScreen;
 
 public:
-	//static uint8 gameBoyInputs;
+	static uint8 gameBoyInputs;
 
 	/*------------------------------------------CONSTRUCTOR AND DESTRUCTOR--------------------------------*/
 	GlfwOpenglLib(int width, int height, string title);//Constructor

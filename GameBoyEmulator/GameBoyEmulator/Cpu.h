@@ -5,6 +5,7 @@
 #include "Ppu.h"
 
 #include "binaryLib.h"
+#include "GlfwOpenglLib.h"
 
 #include <iostream>
 
@@ -78,7 +79,7 @@ public:
 	//void writeInputs(const uint8& inputs);				//Write inputs to memory
 
 	int doCycle();										//Do cpu cycle
-	void writeInputs();
+	void writeInputs(const uint8& inputs);
 
 private:
 	void executeOpcode(uint8 opcode);			//Execute an opcode
