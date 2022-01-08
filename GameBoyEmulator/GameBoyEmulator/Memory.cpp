@@ -86,6 +86,8 @@ void Memory::loadRomBeginning()
 
 void Memory::setMemoryWithoutBios()
 {
+	//memoryArray[0xFF00] = 0b00111111;//Controller
+
 	memoryArray[0xFF05] = 0x00;
 	memoryArray[0xFF06] = 0x00;
 	memoryArray[0xFF07] = 0x00;
@@ -187,19 +189,19 @@ void Memory::directWrite(const uint16& address, const uint8& value)
 }
 
 
-void Memory::increment(const uint16& address)
-{
-	cout << "Not implemented 'memory address increment'" << endl;
-	exit(2);
-	//memoryArray[address]++;
-}
-
-void Memory::decrement(const uint16& address)
-{
-	cout << "Not implemented 'memory address decrement'" << endl;
-	exit(2);
-	//memoryArray[address]--;
-}
+//void Memory::increment(const uint16& address)
+//{
+//	cout << "Not implemented 'memory address increment'" << endl;
+//	exit(2);
+//	//memoryArray[address]++;
+//}
+//
+//void Memory::decrement(const uint16& address)
+//{
+//	cout << "Not implemented 'memory address decrement'" << endl;
+//	exit(2);
+//	//memoryArray[address]--;
+//}
 
 
 void Memory::setResetBitMemory(const uint16& address, const bool bit, const int bitIndex)

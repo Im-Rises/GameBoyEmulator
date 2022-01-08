@@ -385,6 +385,6 @@ uint8 Cartridge::getRomFromIndex(int index)
 
 string Cartridge::toString()
 {
-	return "test";
+	return "Game name: " + gameName + "\nCartridge type: "+"\nDestination:";
 }
 

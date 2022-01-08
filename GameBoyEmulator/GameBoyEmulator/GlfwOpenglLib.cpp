@@ -9,7 +9,7 @@ int GlfwOpenglLib::positionY;
 
 bool GlfwOpenglLib::fullScreen = false;
 
-uint8_t GlfwOpenglLib::gameBoyInputs = 0b00111111;
+uint8_t GlfwOpenglLib::gameBoyInputs = 0b11111111;
 
 GlfwOpenglLib::GlfwOpenglLib(int width, int height, string title)
 {
@@ -154,76 +154,52 @@ void GlfwOpenglLib::key_callback(GLFWwindow* window, int key, int scancode, int 
 		toggleWindowedFullScreen();
 	//if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
 	//	pause != pause;
-	if (key == GLFW_KEY_ENTER && action == GLFW_PRESS)
-	{
-		//debug = true;
-	}
+	//if (key == GLFW_KEY_ENTER && action == GLFW_PRESS)
+	//{
+	//	//debug = true;
+	//}
+
+
+
 	////Game Boy controls
 	////0: Low signal (button pressed)
 	////1: High signal (button not pressed)
 
-
-	//if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) //Right
-	//	inputs |= 0b00010001;
-	//if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) //Left
-	//	inputs |= 0b00010010;
-	//if (key == GLFW_KEY_UP && action == GLFW_PRESS) //Up
-	//	inputs |= 0b00010100;
-	//if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) //Down
-	//	inputs |= 0b00011000;
-	//if (key == GLFW_KEY_A && action == GLFW_PRESS) //A
-	//	inputs |= 0b00100001;
-	//if (key == GLFW_KEY_B && action == GLFW_PRESS) //B
-	//	inputs |= 0b00100010;
-	//if (key == GLFW_KEY_SEMICOLON && action == GLFW_PRESS) //Select
-	//	inputs |= 0b00100100;
-	//if (key == GLFW_KEY_SLASH && action == GLFW_PRESS) //Start
-	//	inputs |= 0b00101000;
-	//inputs = ~inputs;
-
-	uint8_t inputs = 0b00000000;
+	uint8_t inputs = gameBoyInputs;
 
 	if (action == GLFW_PRESS)
 	{
 		if (key == GLFW_KEY_RIGHT)
 		{
-			inputs = setBit(inputs, 0);
-			inputs = setBit(inputs, 4);
+			inputs = resetBit(inputs, 0);
 		}
 		if (key == GLFW_KEY_LEFT)
 		{
-			inputs = setBit(inputs, 1);
-			inputs = setBit(inputs, 4);
+			inputs = resetBit(inputs, 1);
 		}
 		if (key == GLFW_KEY_UP)
 		{
-			inputs = setBit(inputs, 2);
-			inputs = setBit(inputs, 4);
+			inputs = resetBit(inputs, 2);
 		}
 		if (key == GLFW_KEY_DOWN)
 		{
-			inputs = setBit(inputs, 3);
-			inputs = setBit(inputs, 4);
+			inputs = resetBit(inputs, 3);
 		}
-		if (key == GLFW_KEY_A)
+		if (key == GLFW_KEY_D)
 		{
-			inputs = setBit(inputs, 0);
-			inputs = setBit(inputs, 5);
+			inputs = resetBit(inputs, 4);
 		}
-		if (key == GLFW_KEY_B)
+		if (key == GLFW_KEY_S)
 		{
-			inputs = setBit(inputs, 1);
-			inputs = setBit(inputs, 5);
+			inputs = resetBit(inputs, 5);
 		}
-		if (key == GLFW_KEY_SEMICOLON)
+		if (key == GLFW_KEY_SPACE)
 		{
-			inputs = setBit(inputs, 2);
-			inputs = setBit(inputs, 5);
+			inputs = resetBit(inputs, 6);
 		}
-		if (key == GLFW_KEY_SLASH)
+		if (key == GLFW_KEY_ENTER)
 		{
-			inputs = setBit(inputs, 3);
-			inputs = setBit(inputs, 5);
+			inputs = resetBit(inputs, 7);
 		}
 
 	}
@@ -232,48 +208,37 @@ void GlfwOpenglLib::key_callback(GLFWwindow* window, int key, int scancode, int 
 	{
 		if (key == GLFW_KEY_RIGHT)
 		{
-			inputs = resetBit(inputs, 0);
-			inputs = resetBit(inputs, 4);
+			inputs = setBit(inputs, 0);
 		}
 		if (key == GLFW_KEY_LEFT)
 		{
-			inputs = resetBit(inputs, 1);
-			inputs = resetBit(inputs, 4);
+			inputs = setBit(inputs, 1);
 		}
 		if (key == GLFW_KEY_UP)
 		{
-			inputs = resetBit(inputs, 2);
-			inputs = resetBit(inputs, 4);
+			inputs = setBit(inputs, 2);
 		}
 		if (key == GLFW_KEY_DOWN)
 		{
-			inputs = resetBit(inputs, 3);
-			inputs = resetBit(inputs, 4);
+			inputs = setBit(inputs, 3);
 		}
-		if (key == GLFW_KEY_A)
+		if (key == GLFW_KEY_D)
 		{
-			inputs = resetBit(inputs, 0);
-			inputs = resetBit(inputs, 5);
+			inputs = setBit(inputs, 4);
 		}
-		if (key == GLFW_KEY_B)
+		if (key == GLFW_KEY_S)
 		{
-			inputs = resetBit(inputs, 1);
-			inputs = resetBit(inputs, 5);
+			inputs = setBit(inputs, 5);
 		}
-		if (key == GLFW_KEY_SEMICOLON)
+		if (key == GLFW_KEY_SPACE)
 		{
-			inputs = resetBit(inputs, 2);
-			inputs = resetBit(inputs, 5);
+			inputs = setBit(inputs, 6);
 		}
-		if (key == GLFW_KEY_SLASH)
+		if (key == GLFW_KEY_ENTER)
 		{
-			inputs = resetBit(inputs, 3);
-			inputs = resetBit(inputs, 5);
+			inputs = setBit(inputs, 7);
 		}
 	}
 
-	gameBoyInputs = ~inputs;
-	gameBoyInputs &= 0b00111111;
+	gameBoyInputs = inputs;
 }
-
-

@@ -79,8 +79,8 @@ public:
 	uint8 directRead(const uint16& address)const;
 	void directWrite(const uint16& address, const uint8& value);
 
-	void increment(const uint16& address);
-	void decrement(const uint16& address);
+	//void increment(const uint16& address);
+	//void decrement(const uint16& address);
 
 
 

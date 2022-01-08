@@ -14,7 +14,7 @@
 #include "Ppu.h"
 #include "Cartridge.h"
 
-#define VER 0.1
+#define VER 0.5
 #define AUTHOR "Im-Rises"
 #define PROJECT_NAME "GameBoyEmulator"
 
@@ -38,7 +38,7 @@ private:
 	Cpu cpu;
 	Ppu ppu;
 	Memory memory;
-	//GlfwOpenglLib lcdScreenInputs;
+	//GlfwOpenglLib lcdScreen;
 	Cartridge* cartridge = nullptr;
 
 public:
@@ -53,6 +53,10 @@ public:
 
 private:
 	void doGameBoyCycle(GlfwOpenglLib& glfwOpenglLib, const int cyclesNumberToDo);
+
+	/*------------------------------------------INPUTS--------------------------------*/
+
+	void handleInputs(const uint8& userInputs);
 
 	/*------------------------------------------SCREEN FUNCTIONS--------------------------------*/
 	void updateScreen(GlfwOpenglLib& glfwOpenglLib);

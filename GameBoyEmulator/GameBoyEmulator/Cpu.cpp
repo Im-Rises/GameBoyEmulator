@@ -82,8 +82,6 @@ int Cpu::doCycle()
 	//if (pc == 0xC00A)
 	//	cout << "Big error" << endl;
 
-	//writeInputs();
-
 	clockCycles = 0;
 	if (!halted)//If not halted
 	{
@@ -103,10 +101,10 @@ int Cpu::doCycle()
 	return clockCycles;
 }
 
-void Cpu::writeInputs(const uint8& inputs)
-{
-	memory->write(0xFF00, inputs);
-}
+//void Cpu::writeInputs(const uint8& inputs)
+//{
+//	memory->write(0xFF00, inputs);
+//}
 
 
 void Cpu::handleTimers()

@@ -77,21 +77,10 @@ void GameBoy::start()
 	}
 
 
-
 	while (glfwOpenglLib.windowIsActive())//As long as we don't leave program
 	{
 		doGameBoyCycle(glfwOpenglLib, cyclesToDo);
 	}
-
-	/*
-		GlfwOpenglLib glfwOpenglLib(EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y, PROJECT_NAME);//Create window
-		glfwOpenglLib.setBackground();	//Set the background of the two buffers to white
-
-
-		int timeRefreshInt = timeRefresh * 1000;
-		int cycles = 0;													   //Machine cycle for the precedent operation
-
-	*/
 }
 
 
@@ -105,9 +94,7 @@ void GameBoy::doGameBoyCycle(GlfwOpenglLib& glfwOpenglLib, const int cyclesToDo)
 	{
 		std::chrono::steady_clock::time_point timeCpuStart = std::chrono::high_resolution_clock::now();
 
-		//get user inputs from the doCycle function or a separate function ?
-
-		cpu.writeInputs(GlfwOpenglLib::gameBoyInputs);
+		handleInputs(GlfwOpenglLib::gameBoyInputs);
 		uint8 cycles = cpu.doCycle();
 		performedCycles += cycles;
 
@@ -116,9 +103,45 @@ void GameBoy::doGameBoyCycle(GlfwOpenglLib& glfwOpenglLib, const int cyclesToDo)
 			//Wait
 		}
 	}
-	glfwOpenglLib.getEvenements();
 
+	glfwOpenglLib.getEvenements();
 	updateScreen(glfwOpenglLib);
+}
+
+
+/*------------------------------------------INPUTS--------------------------------*/
+
+void GameBoy::handleInputs(const uint8& userInputs)
+{
+	/*
+	* User inputs bits:
+	* Right  = 0b00000001
+	* Left   = 0b00000010
+	* Up     = 0b00000100
+	* Down   = 0b00001000
+	* A      = 0b00010000
+	* B      = 0b00100000
+	* Select = 0b01000000
+	* Start  = 0b10000000
+	*/
+
+	uint8 memoryInputs = memory.read(0xFF00);
+
+	if (!testBit(memoryInputs, 4))
+	{
+		memoryInputs &= 0xF0;
+		memoryInputs |= (userInputs & 0xF);
+		memory.write(0xFF00, memoryInputs);
+	}
+	else if (!testBit(memoryInputs, 5))
+	{
+		userInputs >= 4;
+		//cout << "test";
+		memory.write(0xFF00, 0xFF);
+		memoryInputs &= 0xF0;
+		memoryInputs |= (userInputs >> 4);
+		memory.write(0xFF00, memoryInputs);
+	}
 }
 
 
