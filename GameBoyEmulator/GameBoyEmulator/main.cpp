@@ -45,8 +45,7 @@ int main(int argc, char* argv[])
 
 		if (argc > 1)//If a game is loaded
 		{
-			//romPath = argv[1];
-			//File name
+			romPath = argv[1];
 			Cartridge cartridge(romPath);
 			cout << cartridge.toString() << endl;
 
