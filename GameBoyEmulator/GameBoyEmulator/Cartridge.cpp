@@ -342,7 +342,7 @@ CartridgeType Cartridge::getCartridgeType()
 
 
 
-uint8 Cartridge::getCurrentRamBank()
+uint8 Cartridge::getCurrentRamBank()const
 {
 	return currentRamBank;
 }
@@ -353,7 +353,7 @@ void Cartridge::setCurrentRamBank(uint8 value)
 }
 
 
-uint8 Cartridge::getCurrentRomBank()
+uint8 Cartridge::getCurrentRomBank()const
 {
 	return currentRomBank;
 }
@@ -364,7 +364,7 @@ void Cartridge::setCurrentRomBank(uint8 value)
 }
 
 
-bool Cartridge::getRamBankingEnable()
+bool Cartridge::getRamBankingEnable()const
 {
 	return ramBankingEnable;
 }
@@ -375,7 +375,7 @@ void Cartridge::setRamBankingEnable(bool state)
 }
 
 
-uint8 Cartridge::getRomFromIndex(int index)
+uint8 Cartridge::getRomFromIndex(int index)const
 {
 	return rom[index];
 }
@@ -383,7 +383,7 @@ uint8 Cartridge::getRomFromIndex(int index)
 
 //toString
 
-string Cartridge::toString()
+string Cartridge::toString()const
 {
 	return "Game name: " + gameName + "\nCartridge type: "+"\nDestination:";
 }

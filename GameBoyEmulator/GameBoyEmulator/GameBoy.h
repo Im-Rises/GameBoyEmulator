@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <chrono>
+#include <thread>
 
 //#include "debug.h"
 //#include "settings.h"
@@ -38,7 +39,7 @@ private:
 	Cpu cpu;
 	Ppu ppu;
 	Memory memory;
-	//GlfwOpenglLib lcdScreen;
+	//GlfwOpenglLib lcdScreenInputs;
 	Cartridge* cartridge = nullptr;
 
 public:
@@ -54,9 +55,8 @@ public:
 private:
 	void doGameBoyCycle(GlfwOpenglLib& glfwOpenglLib, const int cyclesNumberToDo);
 
-	/*------------------------------------------INPUTS--------------------------------*/
-
-	void handleInputs(const uint8& userInputs);
+	///*------------------------------------------INPUTS--------------------------------*/
+	//void handleInputs(const uint8& userInputs);
 
 	/*------------------------------------------SCREEN FUNCTIONS--------------------------------*/
 	void updateScreen(GlfwOpenglLib& glfwOpenglLib);

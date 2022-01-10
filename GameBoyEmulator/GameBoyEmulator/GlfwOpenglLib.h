@@ -27,13 +27,15 @@ private:
 	static int positionY;//Windowed mode y position
 
 	static bool fullScreen;
+	uint8 gameBoyInputs;
 
 public:
-	static uint8 gameBoyInputs;
-
 	/*------------------------------------------CONSTRUCTOR AND DESTRUCTOR--------------------------------*/
 	GlfwOpenglLib(int width, int height, string title);//Constructor
 	~GlfwOpenglLib();//Destructor
+
+
+	uint8 readGameBoyButtonsInputs();
 
 	/*------------------------------------------GET EVENEMENTS--------------------------------*/
 	void getEvenements();

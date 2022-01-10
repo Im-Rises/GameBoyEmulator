@@ -89,7 +89,7 @@ public:
 
 	void setResetBitMemory(const uint16& address, const bool bit, const int bitIndex);
 
-	bool getBiosInMemeory();
+	bool getBiosInMemeory()const;
 
 };
 

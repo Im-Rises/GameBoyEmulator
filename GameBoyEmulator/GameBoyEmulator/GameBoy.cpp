@@ -35,9 +35,13 @@ void GameBoy::setGameBoyWithoutBios()
 void GameBoy::loadBios(const string& biosPath)
 {
 	if (memory.loadBiosInMemory(biosPath) == false)
+	{
 		exit(1);
-
-	cpu.setCpuWithBios();
+	}
+	else
+	{
+		cpu.setCpuWithBios();
+	}
 }
 
 void GameBoy::insertGame(Cartridge* cartridge)
@@ -94,13 +98,13 @@ void GameBoy::doGameBoyCycle(GlfwOpenglLib& glfwOpenglLib, const int cyclesToDo)
 	{
 		std::chrono::steady_clock::time_point timeCpuStart = std::chrono::high_resolution_clock::now();
 
-		handleInputs(GlfwOpenglLib::gameBoyInputs);
-		uint8 cycles = cpu.doCycle();
+		uint8 cycles = cpu.doCycle(glfwOpenglLib.readGameBoyButtonsInputs());
 		performedCycles += cycles;
 
-		while ((std::chrono::high_resolution_clock::now() - timeCpuStart).count() < timeCycle * cycles)
+		int timeElapsed = (std::chrono::high_resolution_clock::now() - timeCpuStart).count();
+
+		while ((std::chrono::high_resolution_clock::now() - timeCpuStart).count() < (timeCycle * cycles))
 		{
-			//Wait
 		}
 	}
 
@@ -109,39 +113,9 @@ void GameBoy::doGameBoyCycle(GlfwOpenglLib& glfwOpenglLib, const int cyclesToDo)
 }
 
 
-/*------------------------------------------INPUTS--------------------------------*/
-
-void GameBoy::handleInputs(const uint8& userInputs)
+void getInputs()
 {
-	/*
-	* User inputs bits:
-	* Right  = 0b00000001
-	* Left   = 0b00000010
-	* Up     = 0b00000100
-	* Down   = 0b00001000
-	* A      = 0b00010000
-	* B      = 0b00100000
-	* Select = 0b01000000
-	* Start  = 0b10000000
-	*/
 
-	uint8 memoryInputs = memory.read(0xFF00);
-
-	if (!testBit(memoryInputs, 4))
-	{
-		memoryInputs &= 0xF0;
-		memoryInputs |= (userInputs & 0xF);
-		memory.write(0xFF00, memoryInputs);
-	}
-	else if (!testBit(memoryInputs, 5))
-	{
-		userInputs >= 4;
-		//cout << "test";
-		memory.write(0xFF00, 0xFF);
-		memoryInputs &= 0xF0;
-		memoryInputs |= (userInputs >> 4);
-		memory.write(0xFF00, memoryInputs);
-	}
 }
 
 

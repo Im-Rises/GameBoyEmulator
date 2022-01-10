@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "GameBoy.h"
 #include "Cartridge.h"
+#include "GameBoy.h"
 
 void writeUsage(const char* appName)
 {
@@ -22,19 +22,22 @@ int main(int argc, char* argv[])
 
 		GameBoy* gameBoy = GameBoy::getInstance();//Game Boy creation
 
-		if (false)//Debug
+		if (true)//Debug
 		{
-			//biosPath = "../../Bios_Games/Bios/dmg_boot.bin";
-			//romPath = "../../Bios_Games/cpu_instrs/individual/03-op sp,hl.gb";
+			biosPath = "../../Bios_Games/Bios/dmg_boot.bin";
+			romPath = "../../Bios_Games/cpu_instrs/cpu_instrs.gb";
 			//romPath = "../../Bios_Games/Games/Kirby's dream land.gb";
 			//romPath = "../../Bios_Games/Games/bgbtest.gb";
 			//romPath = "../../Bios_Games/Games/Gremlins 2.gb";
-			//romPath = "../../Bios_Games/Games/Tetris.gb";
+			//romPath = "../../Bios_Games/Games/Tennis.gb";
 			//romPath = "../../Bios_Games/Games/Zelda Link's Awakening.gb";
 			//romPath = "../../Bios_Games/cpu_instrs/cpu_instrs.gb";
+			//romPath = "../../Bios_Games/oam_bug/oam_bug.gb";
 			//romPath = "../../Bios_Games/halt_bug.gb";
 			//romPath = "../../Bios_Games/instr_timing/instr_timing.gb";
-			//argc = 2;
+			//romPath = "../../Bios_Games/oam_bug/rom_singles/1-lcd_sync.gb";
+			//romPath = "../../Bios_Games/mem_timing/mem_timing.gb";
+			argc = 2;
 		}
 
 
@@ -45,7 +48,7 @@ int main(int argc, char* argv[])
 
 		if (argc > 1)//If a game is loaded
 		{
-			romPath = argv[1];
+			//romPath = argv[1];
 			Cartridge cartridge(romPath);
 			cout << cartridge.toString() << endl;
 

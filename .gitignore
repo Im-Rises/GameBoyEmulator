@@ -6,6 +6,7 @@
 
 # Ignore folder
 /Bios_Games
+/SDL_version
 
 # Ignore GLFW libs doc
 /GameBoyEmulator/GameBoyEmulator/GLFW/docs

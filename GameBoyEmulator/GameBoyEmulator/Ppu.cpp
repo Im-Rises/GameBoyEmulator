@@ -266,21 +266,6 @@ void Ppu::drawSpritesLine(uint8 lcdc)
 
 					bool transparent = (colorCode == 0);
 
-
-
-
-					//if (colorCode == 0)//If color code is 0 than displaying background's pixel !displayPriorityBG && colorCode == 0
-					//{
-					//	//Do nothing (display pixel of background)
-					//}
-					//else
-					//{
-					//	int x = xCoordinate + pixel;
-					//	if (0 <= x && x < 160)// Verify if pixel is not out of screen
-					//		lcdScreen[x][ly] = colorToRGB(color);
-					//}
-
-					//Another way would be to stock in the lcdScreen the colorCode
 					int x = xCoordinate + pixel;
 					if (0 <= x && x < 160)
 					{
@@ -374,7 +359,7 @@ void Ppu::requestInterrupt(const uint8& interruptCode)
 	memory->write(INTERRUPT_FLAG_IF_ADDRESS, ifRegister);
 }
 
-uint8 Ppu::getLcdScreenPixel(int indexX, int indexY)
+uint8 Ppu::getLcdScreenPixel(int indexX, int indexY)const
 {
 	return lcdScreen[indexX][indexY].colorRGB;
 }

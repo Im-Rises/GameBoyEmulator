@@ -68,21 +68,21 @@ public:
 
 	CartridgeType getCartridgeType();
 
-	uint8 getCurrentRamBank();
+	uint8 getCurrentRamBank()const;
 	void setCurrentRamBank(uint8 value);
 
-	uint8 getCurrentRomBank();
+	uint8 getCurrentRomBank()const;
 	void setCurrentRomBank(uint8 value);
 
-	bool getRamBankingEnable();
+	bool getRamBankingEnable()const;
 	void setRamBankingEnable(bool state);
 
-	uint8 getRomFromIndex(int index);
+	uint8 getRomFromIndex(int index)const;
 
 
 	//toString
 
-	string toString();
+	string toString()const;
 };
 
 #endif

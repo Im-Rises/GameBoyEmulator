@@ -53,7 +53,7 @@ private:
 	void requestInterrupt(const uint8& intertuptCode);
 
 public:
-	uint8 getLcdScreenPixel(int indexX, int indexY);
+	uint8 getLcdScreenPixel(int indexX, int indexY)const;
 };
 
 #endif

@@ -9,7 +9,6 @@ https://user-images.githubusercontent.com/59691442/147654838-0d3e11d2-5b09-46fa-
 ![tetrisTitleScreen](https://user-images.githubusercontent.com/59691442/148459342-d5d14584-cf54-42a2-a39d-dbbb0f0963e7.png)  
 ![zeldaTitleScreen](https://user-images.githubusercontent.com/59691442/148459344-a1933191-6d57-47ec-8dee-be6eb2c36914.png)  
 
-
 ## Documentations  
 
 Video overview of the Game Boy, to understand the fundamental  
@@ -26,6 +25,9 @@ Opcodes map
 
 PPU timing and Rom/Ram banking  
 <http://www.codeslinger.co.uk/pages/projects/gameboy/beginning.html>  ❤️  
+<http://imrannazar.com/GameBoy-Emulation-in-JavaScript:-Interrupts>
+<https://hacktixme.ga/GBEDG/>
+<https://emudev.de/gameboy-emulator/throttling-the-emulation/>
 
 Test roms i use to debug my emulator  
 <https://gbdev.gg8.se/files/roms/blargg-gb-tests/>  

@@ -77,12 +77,13 @@ public:
 
 	//void writeInputs(const uint8& inputs);				//Write inputs to memory
 
-	int doCycle();										//Do cpu cycle
-	//void writeInputs(const uint8& inputs);
+	int doCycle(const uint8& userInputs);					//Do cpu cycle
 
 private:
 	void executeOpcode(uint8 opcode);			//Execute an opcode
 	void executeOpcodeFollowingCB();			//Execute an opcode on two bytes (following the CB opcode) 
+
+	void handleInputs(const uint8& userInputs);
 
 	void handleTimers();
 	void handleDividerTimer();
@@ -95,7 +96,7 @@ private:
 	void requestInterrupt(const uint8& intertuptCode);
 
 public:
-	uint16 getPc();
+	uint16 getPc()const;
 
 private:
 	/*-----------------------------------------NORMAL OPCODES OPERATIONS------------------------------------------*/

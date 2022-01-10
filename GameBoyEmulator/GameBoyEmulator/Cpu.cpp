@@ -68,7 +68,7 @@ void Cpu::setCpuWithoutBios()
 	L = 0x4D;
 }
 
-int Cpu::doCycle()
+int Cpu::doCycle(const uint8& userInputs)
 {
 	//if (operationNumber > 61270)
 	//	cout << "Big error" << endl;
@@ -81,6 +81,8 @@ int Cpu::doCycle()
 
 	//if (pc == 0xC00A)
 	//	cout << "Big error" << endl;
+
+	handleInputs(userInputs);
 
 	clockCycles = 0;
 	if (!halted)//If not halted
@@ -101,10 +103,50 @@ int Cpu::doCycle()
 	return clockCycles;
 }
 
-//void Cpu::writeInputs(const uint8& inputs)
-//{
-//	memory->write(0xFF00, inputs);
-//}
+/*------------------------------------------INPUTS--------------------------------*/
+
+void Cpu::handleInputs(const uint8& userInputs)
+{
+	/*
+	* User inputs bits:
+	* Right  =
+	* Left   =
+	* Up     =
+	* Down   =
+	* A      =
+	* B      =
+	* Select =
+	* Start  =
+	*/
+
+	uint8 memoryInputs = memory->read(0xFF00);
+
+	if (!testBit(memoryInputs, 4))
+	{
+		memoryInputs &= 0xF0;
+		memoryInputs |= (userInputs & 0xF);
+		memory->write(0xFF00, memoryInputs);
+	}
+	else if (!testBit(memoryInputs, 5))
+	{
+		memory->write(0xFF00, 0xFF);
+		memoryInputs &= 0xF0;
+		memoryInputs |= (userInputs >> 4);
+		memory->write(0xFF00, memoryInputs);
+	}
+
+	//Implement button interrupts
+
+	if (!testBit(memoryInputs, 4) && ((userInputs & 0x0F) < 15))
+	{
+		requestInterrupt(4);
+	}
+
+	if (!testBit(memoryInputs, 5) && ((userInputs & 0xF0) < 240))
+	{
+		requestInterrupt(4);
+	}
+}
 
 
 void Cpu::handleTimers()
@@ -212,19 +254,20 @@ void Cpu::handleInterupt()//Thanks codesLinger.com
 	{
 		uint8 ifRegister = memory->read(INTERRUPT_FLAG_IF_ADDRESS);
 		uint8 ieRegister = memory->read(INTERRUPT_FLAG_IE_ADDRESS);
-		if ((ifRegister & ieRegister) > 0)//If an interupt is enable and requested
+		uint8 interFlag = (ifRegister & ieRegister);
+		if (interFlag > 0)//If an interupt is enable and requested
 		{
 			if (!halted)//If not halted the program jump to the address of the interrupt
 			{
-				if (testBit(ieRegister, 0))
+				if (testBit(interFlag, 0))
 					doInterupt(1);
-				else if (testBit(ieRegister, 1))
+				else if (testBit(interFlag, 1))
 					doInterupt(2);
-				else if (testBit(ieRegister, 2))
+				else if (testBit(interFlag, 2))
 					doInterupt(3);
-				else if (testBit(ieRegister, 3))
+				else if (testBit(interFlag, 3))
 					doInterupt(4);
-				else if (testBit(ieRegister, 4))
+				else if (testBit(interFlag, 4))
 					doInterupt(5);
 			}
 			else//If the cpu is halted and an interrupt is activated than leaving halt mode
@@ -285,7 +328,7 @@ void Cpu::requestInterrupt(const uint8& interruptCode)
 }
 
 
-uint16 Cpu::getPc()
+uint16 Cpu::getPc()const
 {
 	return pc;
 }
