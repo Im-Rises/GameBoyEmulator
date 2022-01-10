@@ -5,6 +5,11 @@ Memory::Memory()
 	reset();
 }
 
+Memory::~Memory()
+{
+	delete[] memoryArray;
+}
+
 void Memory::reset()
 {
 	biosInMemory = false;

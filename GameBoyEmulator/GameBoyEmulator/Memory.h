@@ -56,13 +56,14 @@ using namespace std;
 class Memory {
 
 private:
-	uint8 memoryArray[MEMORY_SIZE];
+	uint8* memoryArray = new uint8[MEMORY_SIZE];
 	bool biosInMemory;
 	bool gameInMemory;
 	Cartridge* cartridge = nullptr;
 
 public:
 	Memory();
+	~Memory();
 	void reset();
 
 	bool loadBiosInMemory(const string& biosPath);

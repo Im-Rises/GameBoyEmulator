@@ -1,9 +1,7 @@
-﻿  GameBoy.cpp
-  SdlLib.cpp
-  main.cpp
+﻿  main.cpp
   Generating code
-  6 of 375 functions ( 1.6%) were compiled, the rest were copied from previous compilation.
+  1 of 380 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    7 functions had inline decision re-evaluated but remain unchanged
+    2 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
-  GameBoyEmulator.vcxproj -> E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\SDL_version\GameBoyEmulator\Release\GameBoyEmulator.exe
+  GameBoyEmulator.vcxproj -> E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\Release\GameBoyEmulator.exe

@@ -93,6 +93,7 @@ Cartridge::Cartridge(const string& romPath)
 Cartridge::~Cartridge()
 {
 	delete[] rom;//Not call if program crash
+	delete[] ram;
 }
 
 

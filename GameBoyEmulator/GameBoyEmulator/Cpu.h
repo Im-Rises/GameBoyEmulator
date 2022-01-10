@@ -22,9 +22,6 @@ using namespace std;
 class Cpu {
 
 private:
-
-	long operationNumber;
-
 	/// <summary>
 	/// Cycles
 	/// </summary>
@@ -39,8 +36,7 @@ private:
 	/// CPU mode
 	/// </summary>
 	bool halted;				//CPU is halted
-	bool stopped;				//CPU is stopped
-	bool resetTerminal;			//CPU terminal state
+	bool stopped;
 
 	/// <summary>
 	/// 8 bits registers
@@ -87,11 +83,13 @@ private:
 	void handleDividerTimer();
 	void setTimerCounter();
 
-	void writeMemory(const uint16& address, const uint8& data);
-
 	void handleInterupt();
 	void doInterupt(const uint8& intertuptCode);
 	void requestInterrupt(const uint8& intertuptCode);
+
+	void writeMemory(const uint16& address, const uint8& data);
+
+
 
 public:
 	uint16 getPc()const;

@@ -7,8 +7,7 @@ Cpu::Cpu(Memory* memory, Ppu* ppu)
 	setTimerCounter();
 	clockCycles = 0;
 	halted = 0;
-	resetTerminal = 1;
-	stopped = 0;
+	stopped = false;
 	sp = CPU_WORK_RAM_OR_AND_STACK_END;
 	IME = 0;
 	setCpuWithoutBios();
@@ -16,11 +15,8 @@ Cpu::Cpu(Memory* memory, Ppu* ppu)
 
 void Cpu::reset()
 {
-	//timeCycle = 1 / CPU_FREQUENCY_NORMAL_MODE;
 	clockCycles = 0;
 	halted = 0;
-	resetTerminal = 1;
-	stopped = 0;
 	sp = CPU_WORK_RAM_OR_AND_STACK_END;
 	IME = 0;
 
@@ -33,7 +29,6 @@ void Cpu::reset()
 		setCpuWithoutBios();
 	}
 	setTimerCounter();
-	operationNumber = 0;
 }
 
 void Cpu::setCpuWithBios()
@@ -98,7 +93,6 @@ int Cpu::doCycle(const uint8& userInputs)
 	ppu->draw(clockCycles);
 	handleTimers();
 	handleInterupt();
-	operationNumber++;
 
 	return clockCycles;
 }
@@ -136,6 +130,7 @@ void Cpu::handleInputs(const uint8& userInputs)
 	}
 
 	//Implement button interrupts
+	//To implements we need to know if the cycle before the buttons were pressed
 }
 
 
@@ -204,40 +199,6 @@ void Cpu::setTimerCounter()
 }
 
 
-
-void Cpu::writeMemory(const uint16& address, const uint8& data)
-{
-	if (address == TAC)
-	{
-		uint8 currentTimerFrequency = memory->read(TAC) & 0b00000011;//Get current frequency
-		memory->directWrite(address, data);//write new frequency
-		uint8 newTimerFrequency = memory->read(TAC) & 0b00000011;//Get current frequency
-		if (currentTimerFrequency != newTimerFrequency)
-			setTimerCounter();
-	}
-	else if (address == DIV)
-	{
-		memory->directWrite(DIV, 0);
-	}
-	else if (address == LY_ADDRESS)
-	{
-		memory->directWrite(LY_ADDRESS, 0);
-	}
-	else if (address == DMA_ADDRESS)
-	{
-		uint16 address = data << 8;
-		for (int i = 0; i < 0xA0; i++)
-		{
-			memory->write(0xFE00 + i, memory->read(address + i));
-		}
-	}
-	else
-	{
-		memory->write(address, data);
-	}
-}
-
-
 void Cpu::handleInterupt()//Thanks codesLinger.com
 {
 	if (IME || halted)//If IME is enable or the cpu is halted thant we  check if IE and IF flags are enabled
@@ -274,7 +235,6 @@ void Cpu::doInterupt(const uint8& interruptCode)
 	uint8 ifRegister = memory->read(INTERRUPT_FLAG_IF_ADDRESS);
 	ifRegister = resetBit(ifRegister, interruptCode - 1);
 	memory->write(INTERRUPT_FLAG_IF_ADDRESS, interruptCode - 1);
-
 	writeMemory(sp - 1, (pc >> 8));
 	writeMemory(sp - 2, (pc & 0x00FF));
 	sp -= 2;
@@ -316,6 +276,37 @@ void Cpu::requestInterrupt(const uint8& interruptCode)
 	memory->write(INTERRUPT_FLAG_IF_ADDRESS, ifRegister);
 }
 
+void Cpu::writeMemory(const uint16& address, const uint8& data)
+{
+	if (address == TAC)
+	{
+		uint8 currentTimerFrequency = memory->read(TAC) & 0b00000011;//Get current frequency
+		memory->directWrite(address, data);//write new frequency
+		uint8 newTimerFrequency = memory->read(TAC) & 0b00000011;//Get current frequency
+		if (currentTimerFrequency != newTimerFrequency)
+			setTimerCounter();
+	}
+	else if (address == DIV)
+	{
+		memory->directWrite(DIV, 0);
+	}
+	else if (address == LY_ADDRESS)
+	{
+		memory->directWrite(LY_ADDRESS, 0);
+	}
+	else if (address == DMA_ADDRESS)
+	{
+		uint16 address = data << 8;
+		for (int i = 0; i < 0xA0; i++)
+		{
+			memory->write(0xFE00 + i, memory->read(address + i));
+		}
+	}
+	else
+	{
+		memory->write(address, data);
+	}
+}
 
 uint16 Cpu::getPc()const
 {

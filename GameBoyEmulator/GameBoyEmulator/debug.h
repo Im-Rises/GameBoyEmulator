@@ -10,6 +10,8 @@
 
 using namespace std;
 
+bool readInitFile();
+
 static bool debug;
 void writeScreenToFile();
 void writeAllTiles();

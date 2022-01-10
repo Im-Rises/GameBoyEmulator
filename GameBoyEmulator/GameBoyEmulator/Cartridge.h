@@ -24,8 +24,8 @@ private:
 	CartridgeType cartridgeType;
 
 	//Rom and Ram banking
-	uint8* rom;//uint8 gameRom[0x100000];//Max GB rom size 8Mb, 1Mo
-	uint8 ram[0x8000];//Ram bank of size 0x2000 (maximum of 4 ram bank)
+	uint8* rom;//uint8 gameRom[0x100000];//Max rom size 8Mb, 1Mo
+	uint8* ram = new uint8[0x8000];//Ram bank of size 0x2000 (maximum of 4 ram bank)
 
 	uint8 currentRomBank;
 	uint8 currentRamBank;

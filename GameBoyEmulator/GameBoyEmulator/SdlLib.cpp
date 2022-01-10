@@ -2,6 +2,8 @@
 
 SdlLib::SdlLib(int width, int height, string title)
 {
+	windowTitle = title;
+
 	if (SDL_Init(SDL_INIT_VIDEO) != 0)
 	{
 		std::cout << "Error SDL init.\n" << SDL_GetError() << std::endl;
@@ -102,4 +104,10 @@ bool SdlLib::readExitInputs()
 bool SdlLib::isRunning()
 {
 	return running;
+}
+
+void SdlLib::setFps(const int fps)
+{
+	//string temp = windowTitle.;
+	//SDL_SetWindowTitle(window, fps);
 }

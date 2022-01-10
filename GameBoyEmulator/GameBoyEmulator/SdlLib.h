@@ -14,6 +14,8 @@ private:
 	SDL_Renderer* renderer;
 	SDL_Event event;
 
+	string windowTitle;
+
 	int pixelsSize;
 	bool running;
 
@@ -39,6 +41,8 @@ public:
 	bool readExitInputs();
 
 	bool isRunning();
+
+	void setFps(const int fps);
 };
 
 #endif 

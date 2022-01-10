@@ -4,7 +4,8 @@ GameBoy* GameBoy::gameboyInstance = 0;
 
 GameBoy::GameBoy() : cpu(&memory, &ppu), ppu(&memory)
 {
-
+	fps = 0;
+	fpsStartTime = 0;
 }
 
 GameBoy* GameBoy::getInstance()
@@ -49,9 +50,10 @@ void GameBoy::insertGame(Cartridge* cartridge)
 void GameBoy::start()
 {
 	SdlLib sdlLib(EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y, PROJECT_NAME);//Create window
-	//sdlLib.setBackground();	//Set the background of the two buffers to white
 
 	const int cyclesToDo = CLOCK_FREQUENCY / 60;//Calcul the number of cycles for the update of the screen
+
+	fpsStartTime = sdlLib.getTicks();
 
 	if (memory.getBiosInMemeory()) //if there is a bios
 	{
@@ -107,26 +109,22 @@ void GameBoy::doGameBoyCycle(SdlLib& sdlLib, const int cyclesToDo)
 
 	updateScreen(sdlLib);
 	sdlLib.renderPresent();
+	fps++;
 
 	double elapsedTime = (sdlLib.getTicks() - startTime);
 
-	while (elapsedTime < 16.67)
+	if (elapsedTime < 16.67)
 	{
-		elapsedTime = (sdlLib.getTicks() - startTime);
+		SDL_Delay(16.67 - elapsedTime);
+		//	elapsedTime = (sdlLib.getTicks() - startTime);
 	}
-}
 
-
-void getInputs()
-{
-
-}
-
-/*------------------------------------------INPUTS--------------------------------*/
-
-void handleInputs(const uint8& userInputs)
-{
-
+	if (sdlLib.getTicks() - fpsStartTime >= 1000)
+	{
+		cout << (int)fps << endl;
+		fpsStartTime = sdlLib.getTicks();
+		fps = 0;
+	}
 }
 
 /*------------------------------------------SCREEN FUNCTIONS--------------------------------*/

@@ -5,11 +5,8 @@
 #include <chrono>
 #include <thread>
 
-//#include "debug.h"
-//#include "settings.h"
-#include "binaryLib.h"
-//#include "GlfwOpenglLib.h"
 #include "SdlLib.h"
+#include "binaryLib.h"
 
 #include "Cpu.h"
 #include "Memory.h"
@@ -35,13 +32,17 @@ class GameBoy
 private:
 	static GameBoy* gameboyInstance;
 	GameBoy();
-	~GameBoy();//Put GlfwOpenglLib destructor in here to destroy video if it is memeber of the class
+	//~GameBoy();//Put GlfwOpenglLib destructor in here to destroy video if it is memeber of the class
 
+
+	Memory memory;
 	Cpu cpu;
 	Ppu ppu;
-	Memory memory;
 	//GlfwOpenglLib lcdScreenInputs;
 	Cartridge* cartridge = nullptr;
+
+	uint8 fps;
+	uint32_t fpsStartTime;
 
 public:
 	static GameBoy* getInstance();
@@ -54,10 +55,8 @@ public:
 	void start();
 
 private:
+	/*------------------------------------------Game Boy Cycle--------------------------------*/
 	void doGameBoyCycle(SdlLib& glfwOpenglLib, const int cyclesNumberToDo);
-
-	/*------------------------------------------INPUTS--------------------------------*/
-	void handleInputs(const uint8& userInputs);
 
 	/*------------------------------------------SCREEN FUNCTIONS--------------------------------*/
 	void updateScreen(SdlLib& glfwOpenglLib);
