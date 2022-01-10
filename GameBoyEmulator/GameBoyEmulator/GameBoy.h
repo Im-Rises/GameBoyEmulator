@@ -8,7 +8,8 @@
 //#include "debug.h"
 //#include "settings.h"
 #include "binaryLib.h"
-#include "GlfwOpenglLib.h"
+//#include "GlfwOpenglLib.h"
+#include "SdlLib.h"
 
 #include "Cpu.h"
 #include "Memory.h"
@@ -53,13 +54,13 @@ public:
 	void start();
 
 private:
-	void doGameBoyCycle(GlfwOpenglLib& glfwOpenglLib, const int cyclesNumberToDo);
+	void doGameBoyCycle(SdlLib& glfwOpenglLib, const int cyclesNumberToDo);
 
-	///*------------------------------------------INPUTS--------------------------------*/
-	//void handleInputs(const uint8& userInputs);
+	/*------------------------------------------INPUTS--------------------------------*/
+	void handleInputs(const uint8& userInputs);
 
 	/*------------------------------------------SCREEN FUNCTIONS--------------------------------*/
-	void updateScreen(GlfwOpenglLib& glfwOpenglLib);
+	void updateScreen(SdlLib& glfwOpenglLib);
 
 public:
 	/*------------------------------------------GETTERS--------------------------------*/

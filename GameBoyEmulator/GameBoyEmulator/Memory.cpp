@@ -136,13 +136,6 @@ uint8 Memory::read(const uint16 address)const//OK
 	{
 		return memoryArray[address];
 	}
-	//else if (address == 0xFF00)
-//{
-//	uint8 inputs = memoryArray[address];
-//	if (testBit(inputs,4))
-
-//	return memoryArray[address];
-//}
 }
 
 void Memory::write(const uint16& address, const uint8 value)
@@ -194,6 +187,21 @@ void Memory::directWrite(const uint16& address, const uint8& value)
 	//It is used for the timers that needs to write to the memory without being treated like it was from the user program
 	memoryArray[address] = value;
 }
+
+
+//void Memory::increment(const uint16& address)
+//{
+//	cout << "Not implemented 'memory address increment'" << endl;
+//	exit(2);
+//	//memoryArray[address]++;
+//}
+//
+//void Memory::decrement(const uint16& address)
+//{
+//	cout << "Not implemented 'memory address decrement'" << endl;
+//	exit(2);
+//	//memoryArray[address]--;
+//}
 
 
 void Memory::setResetBitMemory(const uint16& address, const bool bit, const int bitIndex)

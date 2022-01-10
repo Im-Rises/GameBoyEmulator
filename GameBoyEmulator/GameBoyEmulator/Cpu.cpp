@@ -109,14 +109,14 @@ void Cpu::handleInputs(const uint8& userInputs)
 {
 	/*
 	* User inputs bits:
-	* Right  =
-	* Left   =
-	* Up     =
-	* Down   =
-	* A      =
-	* B      =
-	* Select =
-	* Start  =
+	* Right  = 0b00000001
+	* Left   = 0b00000010
+	* Up     = 0b00000100
+	* Down   = 0b00001000
+	* A      = 0b00010000
+	* B      = 0b00100000
+	* Select = 0b01000000
+	* Start  = 0b10000000
 	*/
 
 	uint8 memoryInputs = memory->read(0xFF00);
@@ -136,16 +136,6 @@ void Cpu::handleInputs(const uint8& userInputs)
 	}
 
 	//Implement button interrupts
-
-	if (!testBit(memoryInputs, 4) && ((userInputs & 0x0F) < 15))
-	{
-		requestInterrupt(4);
-	}
-
-	if (!testBit(memoryInputs, 5) && ((userInputs & 0xF0) < 240))
-	{
-		requestInterrupt(4);
-	}
 }
 
 
@@ -254,20 +244,19 @@ void Cpu::handleInterupt()//Thanks codesLinger.com
 	{
 		uint8 ifRegister = memory->read(INTERRUPT_FLAG_IF_ADDRESS);
 		uint8 ieRegister = memory->read(INTERRUPT_FLAG_IE_ADDRESS);
-		uint8 interFlag = (ifRegister & ieRegister);
-		if (interFlag > 0)//If an interupt is enable and requested
+		if ((ifRegister & ieRegister) > 0)//If an interupt is enable and requested
 		{
 			if (!halted)//If not halted the program jump to the address of the interrupt
 			{
-				if (testBit(interFlag, 0))
+				if (testBit(ieRegister, 0))
 					doInterupt(1);
-				else if (testBit(interFlag, 1))
+				else if (testBit(ieRegister, 1))
 					doInterupt(2);
-				else if (testBit(interFlag, 2))
+				else if (testBit(ieRegister, 2))
 					doInterupt(3);
-				else if (testBit(interFlag, 3))
+				else if (testBit(ieRegister, 3))
 					doInterupt(4);
-				else if (testBit(interFlag, 4))
+				else if (testBit(ieRegister, 4))
 					doInterupt(5);
 			}
 			else//If the cpu is halted and an interrupt is activated than leaving halt mode

@@ -1,10 +1,2 @@
-﻿GameBoy.obj : error LNK2019: symbole externe non résolu _glfwInit référencé dans la fonction "public: void __thiscall GameBoy::launch(void)" (?launch@GameBoy@@QAEXXZ)
-GameBoy.obj : error LNK2019: symbole externe non résolu _glfwTerminate référencé dans la fonction "public: void __thiscall GameBoy::launch(void)" (?launch@GameBoy@@QAEXXZ)
-GameBoy.obj : error LNK2019: symbole externe non résolu _glfwCreateWindow référencé dans la fonction "public: void __thiscall GameBoy::launch(void)" (?launch@GameBoy@@QAEXXZ)
-GameBoy.obj : error LNK2019: symbole externe non résolu _glfwDestroyWindow référencé dans la fonction "public: void __thiscall GameBoy::launch(void)" (?launch@GameBoy@@QAEXXZ)
-GameBoy.obj : error LNK2019: symbole externe non résolu _glfwGetKey référencé dans la fonction "private: bool __thiscall GameBoy::readInputs(struct GLFWwindow *)" (?readInputs@GameBoy@@AAE_NPAUGLFWwindow@@@Z)
-GameBoy.obj : error LNK2019: symbole externe non résolu _glfwMakeContextCurrent référencé dans la fonction "public: void __thiscall GameBoy::launch(void)" (?launch@GameBoy@@QAEXXZ)
-.\GLFW\lib-vc2019\glfw3.lib : warning LNK4272: type d'ordinateur bibliothèque 'x64' en conflit avec le type d'ordinateur cible 'x86'
-.\GLFW\lib-vc2019\glfw3_mt.lib : warning LNK4272: type d'ordinateur bibliothèque 'x64' en conflit avec le type d'ordinateur cible 'x86'
-.\GLFW\lib-vc2019\glfw3dll.lib : warning LNK4272: type d'ordinateur bibliothèque 'x64' en conflit avec le type d'ordinateur cible 'x86'
-E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\Debug\GameBoyEmulator.exe : fatal error LNK1120: 6 externes non résolus
+﻿  SdlLib.cpp
+  GameBoyEmulator.vcxproj -> E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\SDL_version\GameBoyEmulator\Debug\GameBoyEmulator.exe

@@ -35,13 +35,9 @@ void GameBoy::setGameBoyWithoutBios()
 void GameBoy::loadBios(const string& biosPath)
 {
 	if (memory.loadBiosInMemory(biosPath) == false)
-	{
 		exit(1);
-	}
-	else
-	{
-		cpu.setCpuWithBios();
-	}
+
+	cpu.setCpuWithBios();
 }
 
 void GameBoy::insertGame(Cartridge* cartridge)
@@ -52,16 +48,16 @@ void GameBoy::insertGame(Cartridge* cartridge)
 
 void GameBoy::start()
 {
-	GlfwOpenglLib glfwOpenglLib(EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y, PROJECT_NAME);//Create window
-	glfwOpenglLib.setBackground();	//Set the background of the two buffers to white
+	SdlLib sdlLib(EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y, PROJECT_NAME);//Create window
+	//sdlLib.setBackground();	//Set the background of the two buffers to white
 
 	const int cyclesToDo = CLOCK_FREQUENCY / 60;//Calcul the number of cycles for the update of the screen
 
 	if (memory.getBiosInMemeory()) //if there is a bios
 	{
-		while (cpu.getPc() < 0x100 && glfwOpenglLib.windowIsActive())
+		while (sdlLib.readExitInputs() && cpu.getPc() < 0x100)//cpu.getPc() < 0x100 && glfwOpenglLib.windowIsActive()
 		{
-			doGameBoyCycle(glfwOpenglLib, cyclesToDo);
+			doGameBoyCycle(sdlLib, cyclesToDo);
 		}
 
 		//Load temporary array in memory
@@ -81,35 +77,43 @@ void GameBoy::start()
 	}
 
 
-	while (glfwOpenglLib.windowIsActive())//As long as we don't leave program
+	while (sdlLib.readExitInputs())//sdlLib.windowIsActive()
 	{
-		doGameBoyCycle(glfwOpenglLib, cyclesToDo);
+		doGameBoyCycle(sdlLib, cyclesToDo);
 	}
 }
 
 
-void GameBoy::doGameBoyCycle(GlfwOpenglLib& glfwOpenglLib, const int cyclesToDo)
+void GameBoy::doGameBoyCycle(SdlLib& sdlLib, const int cyclesToDo)
 {
-	double timeCycle = (1.0 / CLOCK_FREQUENCY) * 1000000000; //time of a cyle in nanoseconds
+	uint32_t startTime = sdlLib.getTicks();
+
+	//double timeCycle = (1.0 / CLOCK_FREQUENCY) * 1000000000; //time of a cyle in nanoseconds
 
 	int performedCycles = 0;
 
 	while (performedCycles < cyclesToDo)
 	{
-		std::chrono::steady_clock::time_point timeCpuStart = std::chrono::high_resolution_clock::now();
+		//std::chrono::steady_clock::time_point timeCpuStart = std::chrono::high_resolution_clock::now();
 
-		uint8 cycles = cpu.doCycle(glfwOpenglLib.readGameBoyButtonsInputs());
+		uint8 cycles = cpu.doCycle(sdlLib.readGameBoyInputs());
 		performedCycles += cycles;
 
-		int timeElapsed = (std::chrono::high_resolution_clock::now() - timeCpuStart).count();
-
-		while ((std::chrono::high_resolution_clock::now() - timeCpuStart).count() < (timeCycle * cycles))
-		{
-		}
+		//while ((std::chrono::high_resolution_clock::now() - timeCpuStart).count() < timeCycle * cycles)
+		//{
+		//	cout << (std::chrono::high_resolution_clock::now() - timeCpuStart).count() << endl;
+		//}
 	}
 
-	glfwOpenglLib.getEvenements();
-	updateScreen(glfwOpenglLib);
+	updateScreen(sdlLib);
+	sdlLib.renderPresent();
+
+	double elapsedTime = (sdlLib.getTicks() - startTime);
+
+	while (elapsedTime < 16.67)
+	{
+		elapsedTime = (sdlLib.getTicks() - startTime);
+	}
 }
 
 
@@ -118,10 +122,16 @@ void getInputs()
 
 }
 
+/*------------------------------------------INPUTS--------------------------------*/
+
+void handleInputs(const uint8& userInputs)
+{
+
+}
 
 /*------------------------------------------SCREEN FUNCTIONS--------------------------------*/
 
-void GameBoy::updateScreen(GlfwOpenglLib& glfwOpenglLib)
+void GameBoy::updateScreen(SdlLib& sdlLib)
 {
 	float pixelSize = 2.0f / (float)DOTS_DISPLAY_X;
 
@@ -129,10 +139,9 @@ void GameBoy::updateScreen(GlfwOpenglLib& glfwOpenglLib)
 	{
 		for (int x = 0; x < DOTS_DISPLAY_X; x++)
 		{
-			glfwOpenglLib.drawRectangle(pixelSize, x, y, ppu.getLcdScreenPixel(x, y));
+			sdlLib.drawSquare(pixelSize, x, y, ppu.getLcdScreenPixel(x, y));
 		}
 	}
-	glfwOpenglLib.swapBuffers();
 }
 
 

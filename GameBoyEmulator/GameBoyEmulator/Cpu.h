@@ -75,8 +75,6 @@ public:
 	void setCpuWithBios();								//Set cpu with bios
 	void setCpuWithoutBios();							//Set cpu without bios
 
-	//void writeInputs(const uint8& inputs);				//Write inputs to memory
-
 	int doCycle(const uint8& userInputs);					//Do cpu cycle
 
 private:

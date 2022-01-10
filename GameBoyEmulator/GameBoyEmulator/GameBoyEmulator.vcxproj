@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{b3f13bd3-79bc-4bc4-bace-b9cbeba89aa3}</ProjectGuid>
+    <ProjectGuid>{1a7dffc7-804e-4c80-898e-5ca436d4b8d5}</ProjectGuid>
     <RootNamespace>GameBoyEmulator</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -72,8 +72,6 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <PublicIncludeDirectories>./GLFW/include;$(PublicIncludeDirectories)</PublicIncludeDirectories>
-    <PublicModuleDirectories>./GLFW/lib-vc2019;$(PublicModuleDirectories)</PublicModuleDirectories>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -90,13 +88,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>./GLFW/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./SDL2/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>./GLFW/lib-vc2019;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;glfw3_mt.lib;glfw3dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>./SDL2/lib/x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2test.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -113,6 +111,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2test.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>./SDL2/lib/x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -121,13 +121,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>./GLFW/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>.\GLFW\lib-vc2019;.\glew\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;glfw3dll.lib;glfw3_mt.lib;opengl32.lib;glew32.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>./SDL2/lib/x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2test.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -144,34 +143,28 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>.\GLFW\lib-vc2019;.\glew\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;glfw3dll.lib;glfw3_mt.lib;opengl32.lib;glew32.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="binaryLib.cpp" />
-    <ClCompile Include="Cartridge.cpp" />
-    <ClCompile Include="Cpu.cpp" />
-    <ClCompile Include="debug.cpp" />
-    <ClCompile Include="GameBoy.cpp" />
-    <ClCompile Include="GlfwOpenglLib.cpp" />
-    <ClCompile Include="Ppu.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Memory.cpp" />
-    <ClCompile Include="readWriteFiles.cpp" />
-    <ClCompile Include="settings.cpp" />
-  </ItemGroup>
   <ItemGroup>
     <ClInclude Include="binaryLib.h" />
     <ClInclude Include="Cartridge.h" />
     <ClInclude Include="Cpu.h" />
     <ClInclude Include="debug.h" />
     <ClInclude Include="GameBoy.h" />
-    <ClInclude Include="GlfwOpenglLib.h" />
-    <ClInclude Include="Ppu.h" />
     <ClInclude Include="Memory.h" />
-    <ClInclude Include="readWriteFiles.h" />
-    <ClInclude Include="settings.h" />
+    <ClInclude Include="Ppu.h" />
+    <ClInclude Include="SdlLib.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="binaryLib.cpp" />
+    <ClCompile Include="Cartridge.cpp" />
+    <ClCompile Include="Cpu.cpp" />
+    <ClCompile Include="debug.cpp" />
+    <ClCompile Include="GameBoy.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Memory.cpp" />
+    <ClCompile Include="Ppu.cpp" />
+    <ClCompile Include="SdlLib.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

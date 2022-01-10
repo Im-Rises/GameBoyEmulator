@@ -1,14 +1,14 @@
 {
   "Version": 1,
   "ProjectMap": {
-    "b3f13bd3-79bc-4bc4-bace-b9cbeba89aa3": {
-      "ProjectGuid": "b3f13bd3-79bc-4bc4-bace-b9cbeba89aa3",
+    "1a7dffc7-804e-4c80-898e-5ca436d4b8d5": {
+      "ProjectGuid": "1a7dffc7-804e-4c80-898e-5ca436d4b8d5",
       "DisplayName": "GameBoyEmulator",
       "ColorIndex": 0
     },
     "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3": {
       "ProjectGuid": "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3",
-      "DisplayName": "Fichiers divers",
+      "DisplayName": "Miscellaneous Files",
       "ColorIndex": -1
     }
   },
