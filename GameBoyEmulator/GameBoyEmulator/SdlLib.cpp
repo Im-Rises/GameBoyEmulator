@@ -97,7 +97,8 @@ bool SdlLib::readExitInputs()
 {
 	SDL_PollEvent(&event);
 
-	return !(event.type == SDL_QUIT) && !(event.key.keysym.sym == SDLK_ESCAPE);
+	//return !(event.type == SDL_QUIT) && !(event.key.keysym.sym == SDLK_ESCAPE);
+	return !(event.type == SDL_QUIT);
 }
 
 

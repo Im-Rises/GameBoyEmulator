@@ -22,6 +22,9 @@ using namespace std;
 class Cpu {
 
 private:
+
+	uint8 previousInputs;
+
 	/// <summary>
 	/// Cycles
 	/// </summary>
@@ -78,6 +81,7 @@ private:
 	void executeOpcodeFollowingCB();			//Execute an opcode on two bytes (following the CB opcode) 
 
 	void handleInputs(const uint8& userInputs);
+	void checkInputsInterrupt(uint8 currentInputs, uint8 previousInputs);
 
 	void handleTimers();
 	void handleDividerTimer();

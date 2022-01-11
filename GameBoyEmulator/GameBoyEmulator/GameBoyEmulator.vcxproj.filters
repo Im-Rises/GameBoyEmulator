@@ -39,6 +39,12 @@
     <ClInclude Include="SdlLib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Spu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Joypad.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="binaryLib.cpp">
@@ -66,6 +72,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SdlLib.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Spu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Joypad.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

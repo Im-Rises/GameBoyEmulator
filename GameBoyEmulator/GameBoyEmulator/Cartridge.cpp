@@ -3,9 +3,10 @@
 Cartridge::Cartridge(const string& romPath)
 {
 	//Instead of loading all the rom to the ram of the computer, perhaps i should open the file and read it 
-	rom = new uint8[0x800000];
+	rom = new uint8[0x200000];
+	ram = new uint8[0x8000];
 
-	for (int i = 0; i < 0x800000; i++)
+	for (int i = 0; i < 0x200000; i++)
 	{
 		rom[i] = 0;
 	}
@@ -80,6 +81,7 @@ Cartridge::Cartridge(const string& romPath)
 	}
 	default:
 		cerr << "Error: Cartridge type not recognized" << endl;
+		exit(1);
 		break;
 	}
 

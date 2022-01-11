@@ -1,13 +1,2 @@
-﻿  binaryLib.cpp
-  Cartridge.cpp
-E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cartridge.cpp(17,15): warning C4244: 'initializing': conversion from 'std::streamoff' to 'int', possible loss of data
-  Cpu.cpp
-  debug.cpp
-  GameBoy.cpp
-E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\GameBoy.cpp(115,19): warning C4244: 'argument': conversion from 'double' to 'Uint32', possible loss of data
-  main.cpp
-  Memory.cpp
-  Ppu.cpp
-  SdlLib.cpp
-  Generating Code...
+﻿  Cpu.cpp
   GameBoyEmulator.vcxproj -> E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\Debug\GameBoyEmulator.exe

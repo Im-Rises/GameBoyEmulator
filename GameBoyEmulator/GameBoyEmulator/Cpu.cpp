@@ -29,6 +29,7 @@ void Cpu::reset()
 		setCpuWithoutBios();
 	}
 	setTimerCounter();
+	previousInputs = 0b11111111;
 }
 
 void Cpu::setCpuWithBios()
@@ -61,6 +62,7 @@ void Cpu::setCpuWithoutBios()
 
 	H = 0x01;
 	L = 0x4D;
+	previousInputs = 0b11111111;
 }
 
 int Cpu::doCycle(const uint8& userInputs)
@@ -74,7 +76,7 @@ int Cpu::doCycle(const uint8& userInputs)
 	//if (pc==0xC246)
 	//	cout << "Big error" << endl;
 
-	//if (pc == 0xC00A)
+	//if (pc == 0xC8B0)
 	//	cout << "Big error" << endl;
 
 	handleInputs(userInputs);
@@ -115,22 +117,47 @@ void Cpu::handleInputs(const uint8& userInputs)
 
 	uint8 memoryInputs = memory->read(0xFF00);
 
-	if (!testBit(memoryInputs, 4))
+	if (!testBit(memoryInputs, 4))//Directions buttons
 	{
 		memoryInputs &= 0xF0;
 		memoryInputs |= (userInputs & 0xF);
 		memory->write(0xFF00, memoryInputs);
+
+		checkInputsInterrupt(userInputs & 0xF,previousInputs & 0xF);
 	}
-	else if (!testBit(memoryInputs, 5))
+	else if (!testBit(memoryInputs, 5))//Action buttons
 	{
 		memory->write(0xFF00, 0xFF);
 		memoryInputs &= 0xF0;
 		memoryInputs |= (userInputs >> 4);
 		memory->write(0xFF00, memoryInputs);
+
+		checkInputsInterrupt(userInputs >> 4, previousInputs >> 4);
 	}
+
+	previousInputs = userInputs;
 
 	//Implement button interrupts
 	//To implements we need to know if the cycle before the buttons were pressed
+}
+
+void Cpu::checkInputsInterrupt(uint8 currentInputs, uint8 previousInputs)
+{
+	//Not working 
+
+	if (currentInputs != previousInputs)
+		cout << "error" << endl;
+
+	bool enableinterrupt = false;
+
+	for (int i = 0; i < 4; i++)
+	{
+		if ((testBit(previousInputs, i) == 1) && (testBit(currentInputs, i) == 0))//If previous input equals 1 and current button input equals 0 
+			enableinterrupt = true;
+	}
+
+	if (enableinterrupt)
+		requestInterrupt(4);
 }
 
 
@@ -201,6 +228,23 @@ void Cpu::setTimerCounter()
 
 void Cpu::handleInterupt()//Thanks codesLinger.com
 {
+	//if (IME == true)
+	//{
+	//	uint8 req = memory->read(0xFF0F);
+	//	uint8 enabled = memory->read(0xFFFF);
+	//	if (req > 0)
+	//	{
+	//		for (int i = 0; i < 5; i++)
+	//		{
+	//			if (testBit(req, i) == true)
+	//			{
+	//				if (testBit(enabled, i))
+	//					doInterupt(i+1);
+	//			}
+	//		}
+	//	}
+	//}
+
 	if (IME || halted)//If IME is enable or the cpu is halted thant we  check if IE and IF flags are enabled
 	{
 		uint8 ifRegister = memory->read(INTERRUPT_FLAG_IF_ADDRESS);
@@ -2285,8 +2329,9 @@ void Cpu::HALT()
 
 void Cpu::STOP()
 {
+	//Error here ?
 	stopped = 1;
-	memory->setResetBitMemory(LCDC_ADDRESS, 0, 7);//LCD Controller Operation Stop Flag (0: LCDC Off)
+	//memory->setResetBitMemory(LCDC_ADDRESS, 0, 7);//LCD Controller Operation Stop Flag (0: LCDC Off)
 	clockCycles++;
 	pc++;
 }

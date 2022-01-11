@@ -27,9 +27,11 @@ int main(int argc, char* argv[])
 		romPath = "../../Bios_Games/Games/Kirby's dream land.gb";
 		//romPath = "../../Bios_Games/Games/bgbtest.gb";
 		//romPath = "../../Bios_Games/Games/Gremlins 2.gb";
-		//romPath = "../../Bios_Games/Games/Tetris.gb";
+		//romPath = "../../Bios_Games/Games/Tennis.gb";
 		//romPath = "../../Bios_Games/Games/Zelda Link's Awakening.gb";
-		romPath = "../../Bios_Games/cpu_instrs/cpu_instrs.gb";
+		//romPath = "../../Bios_Games/Games/Pokemon - Version Bleue (F) [S].gb";
+		//romPath = "../../Bios_Games/cpu_instrs/cpu_instrs.gb";
+		//romPath = "../../Bios_Games/interrupt_time/interrupt_time.gb";
 		//romPath = "../../Bios_Games/halt_bug.gb";
 		romPath = "../../Bios_Games/instr_timing/instr_timing.gb";
 		argc = 2;

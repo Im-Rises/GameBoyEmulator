@@ -151,9 +151,11 @@
     <ClInclude Include="Cpu.h" />
     <ClInclude Include="debug.h" />
     <ClInclude Include="GameBoy.h" />
+    <ClInclude Include="Joypad.h" />
     <ClInclude Include="Memory.h" />
     <ClInclude Include="Ppu.h" />
     <ClInclude Include="SdlLib.h" />
+    <ClInclude Include="Spu.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="binaryLib.cpp" />
@@ -161,10 +163,12 @@
     <ClCompile Include="Cpu.cpp" />
     <ClCompile Include="debug.cpp" />
     <ClCompile Include="GameBoy.cpp" />
+    <ClCompile Include="Joypad.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Memory.cpp" />
     <ClCompile Include="Ppu.cpp" />
     <ClCompile Include="SdlLib.cpp" />
+    <ClCompile Include="Spu.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
