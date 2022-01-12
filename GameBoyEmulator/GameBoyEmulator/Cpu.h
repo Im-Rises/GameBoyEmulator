@@ -34,6 +34,7 @@ private:
 	/// Timer
 	/// </summary>
 	int timerCounter;
+	int timerFrequency;
 
 	/// <summary>
 	/// CPU mode
@@ -85,7 +86,7 @@ private:
 
 	void handleTimers();
 	void handleDividerTimer();
-	void setTimerCounter();
+	void setTimerFrequency();
 
 	void handleInterupt();
 	void doInterupt(const uint8& intertuptCode);

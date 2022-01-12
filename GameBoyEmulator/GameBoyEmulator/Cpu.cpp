@@ -4,13 +4,14 @@ Cpu::Cpu(Memory* memory, Ppu* ppu)
 {
 	this->memory = memory;
 	this->ppu = ppu;
-	setTimerCounter();
+	timerFrequency = 1024;
 	clockCycles = 0;
 	halted = 0;
 	stopped = false;
 	sp = CPU_WORK_RAM_OR_AND_STACK_END;
 	IME = 0;
 	setCpuWithoutBios();
+	timerCounter = 0;
 }
 
 void Cpu::reset()
@@ -28,8 +29,9 @@ void Cpu::reset()
 	{
 		setCpuWithoutBios();
 	}
-	setTimerCounter();
+	timerFrequency = 1024;
 	previousInputs = 0b11111111;
+	timerCounter = 0;
 }
 
 void Cpu::setCpuWithBios()
@@ -76,7 +78,7 @@ int Cpu::doCycle(const uint8& userInputs)
 	//if (pc==0xC246)
 	//	cout << "Big error" << endl;
 
-	//if (pc == 0xC8B0)
+	//if (pc == 0xC000)
 	//	cout << "Big error" << endl;
 
 	handleInputs(userInputs);
@@ -123,7 +125,7 @@ void Cpu::handleInputs(const uint8& userInputs)
 		memoryInputs |= (userInputs & 0xF);
 		memory->write(0xFF00, memoryInputs);
 
-		checkInputsInterrupt(userInputs & 0xF,previousInputs & 0xF);
+		checkInputsInterrupt(userInputs & 0xF, previousInputs & 0xF);
 	}
 	else if (!testBit(memoryInputs, 5))//Action buttons
 	{
@@ -165,23 +167,35 @@ void Cpu::handleTimers()
 {
 	handleDividerTimer();//Incremented every cycles
 
+	///instr_timing.gb error #255 if not implemented like this ???
+
 	if (testBit(memory->read(TAC), 2))//If timer enable
 	{
-		timerCounter -= clockCycles;
+		timerCounter += clockCycles;
 
-		if (timerCounter <= 0)
+		setTimerFrequency();//Set timer clock
+
+		while (timerCounter >= timerFrequency)
 		{
-			setTimerCounter();//Set timer clock
-
-			if (memory->read(TIMA) == 0xFF)
+			if (memory->read(TIMA) < 0xFF)
+			{
+				writeMemory(TIMA, memory->read(TIMA) + 1);
+			}
+			else
 			{
 				writeMemory(TIMA, memory->read(TMA));
 				requestInterrupt(2);
 			}
-			else
-			{
-				writeMemory(TIMA, memory->read(TIMA) + 1);
-			}
+			//if (memory->read(TIMA) == 0xFF)
+			//{
+			//	writeMemory(TIMA, memory->read(TMA));
+			//	requestInterrupt(2);
+			//}
+			//else
+			//{
+			//	writeMemory(TIMA, memory->read(TIMA) + 1);
+			//}
+			timerCounter -= timerFrequency;
 		}
 	}
 }
@@ -192,28 +206,28 @@ void Cpu::handleDividerTimer()
 	memory->directWrite(DIV, memory->directRead(DIV) + clockCycles);
 }
 
-void Cpu::setTimerCounter()
+void Cpu::setTimerFrequency()
 {
 	switch (memory->read(TAC) & 0b00000011)
 	{
 	case (0b00)://Freq 4096
 	{
-		timerCounter = CLOCK_FREQUENCY / 4096;
+		timerFrequency = CLOCK_FREQUENCY / 4096;
 		break;
 	}
 	case (0b01)://Freq 262144
 	{
-		timerCounter = CLOCK_FREQUENCY / 262144;
+		timerFrequency = CLOCK_FREQUENCY / 262144;
 		break;
 	}
 	case (0b10)://Freq 65536
 	{
-		timerCounter = CLOCK_FREQUENCY / 65536;
+		timerFrequency = CLOCK_FREQUENCY / 65536;
 		break;
 	}
 	case (0b11)://Freq 16382
 	{
-		timerCounter = CLOCK_FREQUENCY / 16382;
+		timerFrequency = CLOCK_FREQUENCY / 16382;
 		break;
 	}
 	default:
@@ -245,24 +259,34 @@ void Cpu::handleInterupt()//Thanks codesLinger.com
 	//	}
 	//}
 
-	if (IME || halted)//If IME is enable or the cpu is halted thant we  check if IE and IF flags are enabled
+	if (IME || halted)//If IME is enable or the cpu is halted thant we check if IE and IF flags are enabled
 	{
 		uint8 ifRegister = memory->read(INTERRUPT_FLAG_IF_ADDRESS);
 		uint8 ieRegister = memory->read(INTERRUPT_FLAG_IE_ADDRESS);
-		if ((ifRegister & ieRegister) > 0)//If an interupt is enable and requested
+		uint8 temp = (ifRegister & ieRegister);
+
+		if (temp > 0)//If an interupt is enable and requested
 		{
 			if (!halted)//If not halted the program jump to the address of the interrupt
 			{
-				if (testBit(ieRegister, 0))
-					doInterupt(1);
-				else if (testBit(ieRegister, 1))
-					doInterupt(2);
-				else if (testBit(ieRegister, 2))
-					doInterupt(3);
-				else if (testBit(ieRegister, 3))
-					doInterupt(4);
-				else if (testBit(ieRegister, 4))
-					doInterupt(5);
+				//for (int i = 0; i < 5; i++)
+				//{
+				//	if (testBit(ieRegister, i) == true)
+				//	{
+				//		if (testBit(ifRegister, i))
+				//			doInterupt(i + 1);
+				//	}
+				//}
+			if (testBit(temp, 0))
+				doInterupt(1);
+			else if (testBit(temp, 1))
+				doInterupt(2);
+			else if (testBit(temp, 2))
+				doInterupt(3);
+			else if (testBit(temp, 3))
+				doInterupt(4);
+			else if (testBit(temp, 4))
+				doInterupt(5);
 			}
 			else//If the cpu is halted and an interrupt is activated than leaving halt mode
 			{
@@ -328,7 +352,7 @@ void Cpu::writeMemory(const uint16& address, const uint8& data)
 		memory->directWrite(address, data);//write new frequency
 		uint8 newTimerFrequency = memory->read(TAC) & 0b00000011;//Get current frequency
 		if (currentTimerFrequency != newTimerFrequency)
-			setTimerCounter();
+			setTimerFrequency();
 	}
 	else if (address == DIV)
 	{
@@ -612,7 +636,7 @@ void Cpu::executeOpcode(uint8 opcode)
 
 void Cpu::executeOpcodeFollowingCB()
 {
-	clockCycles++;
+	//clockCycles++;
 	pc++;
 
 	switch (memory->read(pc)) {
@@ -1842,7 +1866,9 @@ void Cpu::BIT_b_aHL(const uint8& indexBit)
 {
 	//Error corrected
 	BIT_b_R(indexBit, memory->read(pairRegisters(H, L)));
-	clockCycles += 2;
+	clockCycles += 1;
+	//clockCycles += 3;
+	//What ???????
 }
 
 void Cpu::SET_b_R(const uint8& indexBit, uint8& reg)
@@ -2332,7 +2358,7 @@ void Cpu::STOP()
 	//Error here ?
 	stopped = 1;
 	//memory->setResetBitMemory(LCDC_ADDRESS, 0, 7);//LCD Controller Operation Stop Flag (0: LCDC Off)
-	clockCycles++;
+	//clockCycles++;
 	pc++;
 }
 
