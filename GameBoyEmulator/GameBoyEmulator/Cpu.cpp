@@ -78,8 +78,17 @@ int Cpu::doCycle(const uint8& userInputs)
 	//if (pc==0xC246)
 	//	cout << "Big error" << endl;
 
-	//if (pc == 0xC000)
+	//uint8 lcdc = memory->read(0xFF40);
+	//uint8 ly = memory->read(0xFF44);
+
+	////if (ly == 8)
+	////	cout << "Big error" << endl;
+	//if (pc == 0x229)
+	//{
 	//	cout << "Big error" << endl;
+	//}
+
+
 
 	handleInputs(userInputs);
 
@@ -1519,11 +1528,22 @@ void Cpu::INC_R(uint8& reg)
 
 void Cpu::INC_aHL()
 {
-	//INC_subFunctionFlag(memory->read(pairRegisters(regPair1, regPair2)));//C++ initial value of reference to non-const must be an lvalue
+	//HERE
+	////INC_subFunctionFlag(memory->read(pairRegisters(regPair1, regPair2)));//C++ initial value of reference to non-const must be an lvalue
+	//uint8 memTemp = memory->read(pairRegisters(H, L));
+	//INC_subFunctionFlag(memTemp);
+	//writeMemory(pairRegisters(H, L), memTemp);
+	//clockCycles += 3;
+	//pc++;
+
+
 	uint8 memTemp = memory->read(pairRegisters(H, L));
 	INC_subFunctionFlag(memTemp);
+	clockCycleDuringOpcode++;
+	ppu->draw(4);
+	doTimers(4);
 	writeMemory(pairRegisters(H, L), memTemp);
-	clockCycles += 3;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -1546,26 +1566,23 @@ void Cpu::DEC_R(uint8& reg)
 
 void Cpu::DEC_aHL()
 {
-	//HERE
-	//INC_subFunctionFlag(memory->read(pairRegisters(regPair1, regPair2)));//C++ initial value of reference to non-const must be an lvalue
-	uint8 memTemp = memory->read(pairRegisters(H, L));
-	DEC_subFunctionFlag(memTemp);
-	writeMemory(pairRegisters(H, L), memTemp);
-	clockCycles += 3;
-	pc++;
-
-
-	//ppu->draw(4);
-	//doInterupt(4);
-	//clockCycleDuringOpcode++;
+	////HERE
 	//uint8 memTemp = memory->read(pairRegisters(H, L));
 	//DEC_subFunctionFlag(memTemp);
-	//ppu->draw(4);
-	//doInterupt(4);
-	//clockCycleDuringOpcode++;
 	//writeMemory(pairRegisters(H, L), memTemp);
-	//clockCycles += 1;
+	//clockCycles += 3;
 	//pc++;
+
+
+
+	uint8 memTemp = memory->read(pairRegisters(H, L));
+	DEC_subFunctionFlag(memTemp);
+	clockCycleDuringOpcode++;
+	ppu->draw(4);
+	doTimers(4);
+	writeMemory(pairRegisters(H, L), memTemp);
+	clockCycles += 2;
+	pc++;
 }
 
 void Cpu::DEC_subFunctionFlag(uint8& reg)
@@ -1943,19 +1960,21 @@ void Cpu::SLA_R(uint8& reg)
 void Cpu::SLA_aHL()
 {
 	//HERE
-	uint8 temp = memory->read(pairRegisters(H, L));
-	SLA_R(temp);
-	writeMemory(pairRegisters(H, L), temp);
-	clockCycles += 2;
-
-
-	//ppu->draw(4);
-	//doInterupt(4);
-	//clockCycleDuringOpcode++;
 	//uint8 temp = memory->read(pairRegisters(H, L));
 	//SLA_R(temp);
 	//writeMemory(pairRegisters(H, L), temp);
-	//clockCycles += 1;
+	//clockCycles += 2;
+
+
+	clockCycleDuringOpcode++;
+	ppu->draw(4);
+	doTimers(4);
+	uint8 temp = memory->read(pairRegisters(H, L));
+	SLA_R(temp);
+	clockCycleDuringOpcode++;
+	ppu->draw(4);
+	doTimers(4);
+	writeMemory(pairRegisters(H, L), temp);
 }
 
 
@@ -1976,22 +1995,21 @@ void Cpu::SRA_R(uint8& reg)
 void Cpu::SRA_aHL()
 {
 	//HERE
-	uint8 temp = memory->read(pairRegisters(H, L));
-	SRA_R(temp);
-	writeMemory(pairRegisters(H, L), temp);
-	clockCycles += 2;
-
-
-	//ppu->draw(4);
-	//doInterupt(4);
-	//clockCycleDuringOpcode++;
 	//uint8 temp = memory->read(pairRegisters(H, L));
 	//SRA_R(temp);
-	////ppu->draw(4);
-	////doInterupt(4);
-	////clockCycleDuringOpcode++;
 	//writeMemory(pairRegisters(H, L), temp);
-	//clockCycles += 1;
+	//clockCycles += 2;
+
+
+	clockCycleDuringOpcode++;
+	ppu->draw(4);
+	doTimers(4);
+	uint8 temp = memory->read(pairRegisters(H, L));
+	SRA_R(temp);
+	clockCycleDuringOpcode++;
+	ppu->draw(4);
+	doTimers(4);
+	writeMemory(pairRegisters(H, L), temp);
 }
 
 
@@ -2010,10 +2028,15 @@ void Cpu::SRL_R(uint8& reg)
 
 void Cpu::SRL_aHL()
 {
+	clockCycleDuringOpcode++;
+	ppu->draw(4);
+	doTimers(4);
 	uint8 temp = memory->read(pairRegisters(H, L));
 	SRL_R(temp);
+	clockCycleDuringOpcode++;
+	ppu->draw(4);
+	doTimers(4);
 	writeMemory(pairRegisters(H, L), temp);
-	clockCycles += 2;
 }
 
 
@@ -2047,21 +2070,22 @@ void Cpu::SWAP_R(uint8& reg)
 void Cpu::SWAP_aHL()
 {
 	//HERE
-	uint8 temp = memory->read(pairRegisters(H, L));
-	SWAP_R(temp);
-	writeMemory(pairRegisters(H, L), temp);
-	clockCycles += 2;
-
-	//ppu->draw(4);
-	//doInterupt(4);
-	//clockCycleDuringOpcode++;
 	//uint8 temp = memory->read(pairRegisters(H, L));
 	//SWAP_R(temp);
-	//ppu->draw(4);
-	//doInterupt(4);
-	//clockCycleDuringOpcode++;
 	//writeMemory(pairRegisters(H, L), temp);
+	//clockCycles += 2;
 
+
+	clockCycleDuringOpcode++;
+	ppu->draw(4);
+	doTimers(4);
+	uint8 temp = memory->read(pairRegisters(H, L));
+	SWAP_R(temp);
+	clockCycleDuringOpcode++;
+	ppu->draw(4);
+	doTimers(4);
+	writeMemory(pairRegisters(H, L), temp);
+	clockCycles += 0;
 }
 
 
@@ -2129,19 +2153,21 @@ void Cpu::RES_b_R(const uint8& indexBit, uint8& reg)
 void Cpu::RES_b_aHL(const uint8& indexBit)
 {
 	//HERE
-	uint8 temp = memory->read(pairRegisters(H, L));
-	RES_b_R(indexBit, temp);
-	writeMemory(pairRegisters(H, L), temp);
-	clockCycles += 2;
-
-
 	//uint8 temp = memory->read(pairRegisters(H, L));
-	//ppu->draw(4);
-	//doInterupt(4);
-	//clockCycleDuringOpcode++;
 	//RES_b_R(indexBit, temp);
 	//writeMemory(pairRegisters(H, L), temp);
-	//clockCycles++;
+	//clockCycles += 2;
+
+
+	clockCycleDuringOpcode++;
+	ppu->draw(4);
+	doTimers(4);
+	uint8 temp = memory->read(pairRegisters(H, L));
+	RES_b_R(indexBit, temp);
+	clockCycleDuringOpcode++;
+	ppu->draw(4);
+	doTimers(4);
+	writeMemory(pairRegisters(H, L), temp);
 }
 
 /*-------------------------------------JUMP INSTRUCTIONS---------------------------------------*/

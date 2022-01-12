@@ -44,8 +44,8 @@ public:
 private:
 	void updateStatRegister();
 	void drawLine();
-	void drawBackgroundLine(uint8 lcdc);
-	void drawSpritesLine(uint8 lcdc);
+	void drawBackgroundLine(const uint8& lcdc);
+	void drawSpritesLine(const uint8& lcdc);
 
 	uint8 transformDotDataToColor(const uint8& dotData, const uint16& dataPaletteAddress);
 	uint8 colorToRGB(uint8 colorGameBoy);
