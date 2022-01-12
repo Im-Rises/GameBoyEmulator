@@ -175,6 +175,14 @@ void Memory::write(const uint16& address, const uint8 value)
 		//cerr << "Error: Writting in the second reserved area" << endl;
 		//exit(1);
 	}
+	else if (address == 0xFF46)
+	{
+		uint16 address = value << 8;
+		for (int i = 0; i < 0xA0; i++)
+		{
+			write(0xFE00 + i, read(address + i));
+		}
+	}
 	else//Write everywhere else (Character Data, BG Display Data 1, BG Display Data 2, OAM etc...
 	{
 		memoryArray[address] = value;
@@ -193,20 +201,6 @@ void Memory::directWrite(const uint16& address, const uint8& value)
 	memoryArray[address] = value;
 }
 
-
-//void Memory::increment(const uint16& address)
-//{
-//	cout << "Not implemented 'memory address increment'" << endl;
-//	exit(2);
-//	//memoryArray[address]++;
-//}
-//
-//void Memory::decrement(const uint16& address)
-//{
-//	cout << "Not implemented 'memory address decrement'" << endl;
-//	exit(2);
-//	//memoryArray[address]--;
-//}
 
 
 void Memory::setResetBitMemory(const uint16& address, const bool bit, const int bitIndex)

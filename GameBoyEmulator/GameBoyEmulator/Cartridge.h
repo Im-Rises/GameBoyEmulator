@@ -51,6 +51,7 @@ public:
 	//Read and write
 	uint8 readRomBank(const uint16& address)const;
 
+
 	uint8 readRamBank(const uint16& address)const;
 	void writeRamBank(const uint16& address, const uint8& data);
 

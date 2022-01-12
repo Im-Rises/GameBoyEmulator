@@ -28,7 +28,8 @@ private:
 	/// <summary>
 	/// Cycles
 	/// </summary>
-	int clockCycles;			//Machine cycles after opcode
+	int clockCycles;			//Clock cycles after opcode
+	int clockCycleDuringOpcode;
 
 	/// <summary>
 	/// Timer
@@ -84,8 +85,8 @@ private:
 	void handleInputs(const uint8& userInputs);
 	void checkInputsInterrupt(uint8 currentInputs, uint8 previousInputs);
 
-	void handleTimers();
-	void handleDividerTimer();
+	void doTimers(const int& cycles);
+	void doDividerTimer(const int& cycles);
 	void setTimerFrequency();
 
 	void handleInterupt();

@@ -20,7 +20,7 @@ void Ppu::reset()
 }
 
 
-void Ppu::draw(const int& cycles)//Not working
+void Ppu::draw(const int& cycles)
 {
 	updateStatRegister();
 	uint8 lcdc = memory->read(LCDC_ADDRESS);
@@ -127,108 +127,125 @@ void Ppu::drawLine()
 	drawSpritesLine(lcdc);
 }
 
-void Ppu::drawBackgroundLine(uint8 lcdc)
+void Ppu::drawBackgroundLine(const uint8& lcdc)
 {
-	if (testBit(lcdc, 0))
+
+	uint8 scx = memory->read(SCX_ADDRESS);
+	uint8 scy = memory->read(SCY_ADDRESS);
+	uint8 wx = memory->read(WX_ADDRESS) - 7;//Why 7 because : With WX = 7, the window is displayed from the left edge of the LCD screen. Values of 0-6 should not be specified for WX.
+	uint8 wy = memory->read(WY_ADDRESS);
+
+	uint8 ly = memory->read(LY_ADDRESS);
+
+	bool windowing = false;
+
+	uint16 tileDataArea;
+	bool unsignedValue = true;
+
+	uint16 backgroundMemoryCode;
+
+
+	if (testBit(lcdc, 5) && wy <= ly)
+		windowing = true;
+
+	if (testBit(lcdc, 4))//Get tile data address
 	{
-		uint8 scx = memory->read(SCX_ADDRESS);
-		uint8 scy = memory->read(SCY_ADDRESS);
-		uint8 wx = memory->read(WX_ADDRESS) - 7;//Why 7 because : With WX = 7, the window is displayed from the left edge of the LCD screen. Values of 0-6 should not be specified for WX.
-		uint8 wy = memory->read(WY_ADDRESS);
+		tileDataArea = 0x8000;
+		unsignedValue = true;
+	}
+	else
+	{
+		tileDataArea = 0x8800;
+		unsignedValue = false;
+	}
 
-		uint8 ly = memory->read(LY_ADDRESS);
-
-		bool windowing = false;
-
-		uint16 tileDataArea;
-		bool unsignedValue = true;
-
-		uint16 backgroundMemoryCode;
-
-
-		if (testBit(lcdc, 5) && wy <= ly)
-			windowing = true;
-
-		if (testBit(lcdc, 4))//Get tile data address
-		{
-			tileDataArea = 0x8000;
-			unsignedValue = true;
-		}
+	if (windowing)//Get tile code address
+	{
+		if (testBit(lcdc, 6))
+			backgroundMemoryCode = 0x9C00;
 		else
-		{
-			tileDataArea = 0x8800;
-			unsignedValue = false;
-		}
-
-		if (windowing)//Get tile code address
-		{
-			if (testBit(lcdc, 6))
-				backgroundMemoryCode = 0x9C00;
-			else
-				backgroundMemoryCode = 0x9800;
-		}
+			backgroundMemoryCode = 0x9800;
+	}
+	else
+	{
+		if (testBit(lcdc, 3))
+			backgroundMemoryCode = 0x9C00;
 		else
-		{
-			if (testBit(lcdc, 3))
-				backgroundMemoryCode = 0x9C00;
-			else
-				backgroundMemoryCode = 0x9800;
-		}
+			backgroundMemoryCode = 0x9800;
+	}
 
-		uint8 yPos;
-		if (windowing)
-			yPos = ly - wy;//WHY THAT ?
+	uint8 yPos;
+	if (windowing)
+		yPos = ly - wy;//WHY THAT ?
+	else
+		yPos = scy + ly;
+
+	uint16 tileRow = (yPos / 8) * 32;//Contains all precedents row 
+
+	for (int pixel = 0; pixel < DOTS_DISPLAY_X; pixel++)
+	{
+		uint8 xPos = pixel + scx;
+
+		if (windowing && pixel >= wx)
+			xPos = pixel - wx;//Why that
+
+		uint8 tileColumn = xPos / 8;
+
+		int16_t tileNum;//Can be signed or unsigend depending of the tileDataArea
+
+		if (unsignedValue)
+			tileNum = (uint8)memory->read(backgroundMemoryCode + tileRow + tileColumn);
 		else
-			yPos = scy + ly;
+			tileNum = (int8_t)memory->read(backgroundMemoryCode + tileRow + tileColumn);
 
-		uint16 tileRow = (yPos / 8) * 32;//Contains all precedents row 
+		uint16 tileLocation;
+		if (unsignedValue)
+			tileLocation = tileDataArea + tileNum * 16;
+		else
+			tileLocation = tileDataArea + (tileNum + 128) * 16;
 
-		for (int pixel = 0; pixel < DOTS_DISPLAY_X; pixel++)
+		uint8 line = (yPos % 8) * 2;
+		uint8 dataLine1 = memory->read(tileLocation + line);
+		uint8 dataLine2 = memory->read(tileLocation + line + 1);
+
+		uint8 bitIndex = (((xPos % 8) - 7) * -1);
+		uint8 colorCode = getBit(dataLine1, bitIndex) + (getBit(dataLine2, (bitIndex)) << 1);
+
+		uint8 color = transformDotDataToColor(colorCode, BG_PALETTE_DATA);
+
+		if (testBit(lcdc, 0) || windowing)
 		{
-			uint8 xPos = pixel + scx;
-
-			if (windowing && pixel >= wx)
-				xPos = pixel - wx;//Why that
-
-			uint8 tileColumn = xPos / 8;
-
-			int16_t tileNum;//Can be signed or unsigend depending of the tileDataArea
-
-			if (unsignedValue)
-				tileNum = (uint8)memory->read(backgroundMemoryCode + tileRow + tileColumn);
-			else
-				tileNum = (int8_t)memory->read(backgroundMemoryCode + tileRow + tileColumn);
-
-			uint16 tileLocation;
-			if (unsignedValue)
-				tileLocation = tileDataArea + tileNum * 16;
-			else
-				tileLocation = tileDataArea + (tileNum + 128) * 16;
-
-			uint8 line = (yPos % 8) * 2;
-			uint8 dataLine1 = memory->read(tileLocation + line);
-			uint8 dataLine2 = memory->read(tileLocation + line + 1);
-
-			uint8 bitIndex = (((xPos % 8) - 7) * -1);
-			uint8 colorCode = getBit(dataLine1, bitIndex) + (getBit(dataLine2, (bitIndex)) << 1);
-
-			uint8 color = transformDotDataToColor(colorCode, BG_PALETTE_DATA);
-
 			lcdScreen[pixel][ly].colorRGB = colorToRGB(color);
 			lcdScreen[pixel][ly].backgroundTransparent = (colorCode == 0);
 		}
+		else
+		{
+			uint8 color = transformDotDataToColor(0, BG_PALETTE_DATA);
+
+			for (int pixel = 0; pixel < DOTS_DISPLAY_X; pixel++)
+			{
+				lcdScreen[pixel][memory->read(LY_ADDRESS)].colorRGB = colorToRGB(color);
+				lcdScreen[pixel][ly].backgroundTransparent = true;
+			}
+		}
 	}
+
 }
 
-void Ppu::drawSpritesLine(uint8 lcdc)
+void Ppu::drawSpritesLine(const uint8& lcdc)
 {
 	if (testBit(lcdc, 1))//if OBJ FLAG is ON
 	{
-		bool sprite8x16Dots = getBit(lcdc, 2); //0: 8 x 8 dots		1 : 8 x 16 dots
+		bool sprite8x16Dots = testBit(lcdc, 2); //0: 8 x 8 dots		1 : 8 x 16 dots
+
+		int numberSpritesPerLine = 0;
 
 		for (int i = 0; i < SPRITES_NUMBER; i++)
 		{
 			int index = i * 4;//Sprites data are composed of 4 bytes of data
+
+			if (sprite8x16Dots)//if it is a 8x16 sprite than bit 0 is ignored to use the data of even obj not the odd part
+				index &= 0b11111110;
 
 			uint8 yCoordinate = memory->read(OAM_Y_COODINATE + index) - 16;//In the official documentation it is written 10 because it is in hexa 0x10 so 16 in decimal
 			uint8 xCoordinate = memory->read(OAM_X_COODINATE + index) - 8;
@@ -246,6 +263,8 @@ void Ppu::drawSpritesLine(uint8 lcdc)
 
 			if ((ly >= yCoordinate) && (ly < (yCoordinate + spriteSize)))//Before drawing sprite, we verify if it is not out of screen
 			{
+				numberSpritesPerLine++;
+
 				uint8 lineSprite = ly - yCoordinate;//Get line to draw depending if the sprite is flipped horizontally or vertically
 
 				if (verticalFlip)
@@ -266,25 +285,12 @@ void Ppu::drawSpritesLine(uint8 lcdc)
 
 					bool transparent = (colorCode == 0);
 
-
-
-
-					//if (colorCode == 0)//If color code is 0 than displaying background's pixel !displayPriorityBG && colorCode == 0
-					//{
-					//	//Do nothing (display pixel of background)
-					//}
-					//else
-					//{
-					//	int x = xCoordinate + pixel;
-					//	if (0 <= x && x < 160)// Verify if pixel is not out of screen
-					//		lcdScreen[x][ly] = colorToRGB(color);
-					//}
-
 					//Another way would be to stock in the lcdScreen the colorCode
 					int x = xCoordinate + pixel;
 					if (0 <= x && x < 160)
 					{
-						if ((!displayPriorityBG && !transparent) || (displayPriorityBG && !transparent && lcdScreen[x][ly].backgroundTransparent))//Display OBJ's pixel
+						//Following the priority p
+						if ((((!displayPriorityBG && !transparent) || (displayPriorityBG && !transparent && lcdScreen[x][ly].backgroundTransparent)) && (numberSpritesPerLine <= 10)))//Display OBJ's pixel
 						{
 							uint8 color;
 							if (!testBit(attributeFlag, 4))
@@ -296,7 +302,8 @@ void Ppu::drawSpritesLine(uint8 lcdc)
 						}
 						else//Display BG' pixel
 						{
-
+							//if (ly >= 8 && ly <= 15)
+							//	cout << "test" << endl;
 						}
 					}
 				}

@@ -78,12 +78,22 @@ int Cpu::doCycle(const uint8& userInputs)
 	//if (pc==0xC246)
 	//	cout << "Big error" << endl;
 
-	//if (pc == 0xC000)
+	//uint8 lcdc = memory->read(0xFF40);
+	//uint8 ly = memory->read(0xFF44);
+
+	////if (ly == 8)
+	////	cout << "Big error" << endl;
+	//if (pc == 0x229)
+	//{
 	//	cout << "Big error" << endl;
+	//}
+
+
 
 	handleInputs(userInputs);
 
 	clockCycles = 0;
+	clockCycleDuringOpcode = 0;
 	if (!halted)//If not halted
 	{
 		executeOpcode(memory->read(pc));//Execute opcode
@@ -93,12 +103,14 @@ int Cpu::doCycle(const uint8& userInputs)
 		clockCycles++;
 	}
 	clockCycles *= 4;
+	clockCycleDuringOpcode *= 4;
 
 	ppu->draw(clockCycles);
-	handleTimers();
+	doTimers(clockCycles);
+
 	handleInterupt();
 
-	return clockCycles;
+	return (clockCycles + clockCycleDuringOpcode);
 }
 
 /*------------------------------------------INPUTS--------------------------------*/
@@ -163,15 +175,15 @@ void Cpu::checkInputsInterrupt(uint8 currentInputs, uint8 previousInputs)
 }
 
 
-void Cpu::handleTimers()
+void Cpu::doTimers(const int& cycles)
 {
-	handleDividerTimer();//Incremented every cycles
+	doDividerTimer(cycles);//Incremented every cycles
 
 	///instr_timing.gb error #255 if not implemented like this ???
 
 	if (testBit(memory->read(TAC), 2))//If timer enable
 	{
-		timerCounter += clockCycles;
+		timerCounter += cycles;
 
 		setTimerFrequency();//Set timer clock
 
@@ -201,9 +213,9 @@ void Cpu::handleTimers()
 }
 
 
-void Cpu::handleDividerTimer()
+void Cpu::doDividerTimer(const int& cycles)
 {
-	memory->directWrite(DIV, memory->directRead(DIV) + clockCycles);
+	memory->directWrite(DIV, memory->directRead(DIV) + cycles);
 }
 
 void Cpu::setTimerFrequency()
@@ -277,16 +289,16 @@ void Cpu::handleInterupt()//Thanks codesLinger.com
 				//			doInterupt(i + 1);
 				//	}
 				//}
-			if (testBit(temp, 0))
-				doInterupt(1);
-			else if (testBit(temp, 1))
-				doInterupt(2);
-			else if (testBit(temp, 2))
-				doInterupt(3);
-			else if (testBit(temp, 3))
-				doInterupt(4);
-			else if (testBit(temp, 4))
-				doInterupt(5);
+				if (testBit(temp, 0))
+					doInterupt(1);
+				else if (testBit(temp, 1))
+					doInterupt(2);
+				else if (testBit(temp, 2))
+					doInterupt(3);
+				else if (testBit(temp, 3))
+					doInterupt(4);
+				else if (testBit(temp, 4))
+					doInterupt(5);
 			}
 			else//If the cpu is halted and an interrupt is activated than leaving halt mode
 			{
@@ -937,10 +949,20 @@ void Cpu::LD_aHL_R(const uint8& reg)
 
 void Cpu::LD_aHL_d8()
 {
+	//HERE
+
+	//pc++;
+	//writeMemory(pairRegisters(H, L), memory->read(pc));
+	//pc++;
+	//clockCycles += 3;	
+
 	pc++;
+	clockCycleDuringOpcode++;
+	ppu->draw(4);
+	doTimers(4);
 	writeMemory(pairRegisters(H, L), memory->read(pc));
 	pc++;
-	clockCycles += 3;
+	clockCycles += 2;
 }
 
 void Cpu::LD_A_aBC()
@@ -976,36 +998,91 @@ void Cpu::LD_aCo_A()
 
 
 
-void Cpu::LD_A_a8o()
+void Cpu::LD_A_a8o()//Correct this one after the other ocpodes are corrected
 {
-	pc++;
-	A = memory->read((INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + memory->read(pc)));
-	clockCycles += 3;
-	pc++;
+	//HERE
+	//A = memory->read(INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + memory->read(pc + 1));
+	//pc += 2;
+	//clockCycles += 3;
+
+	doTimers(4);
+	ppu->draw(4);
+	clockCycleDuringOpcode += 1;
+	A = memory->read(INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + memory->read(pc + 1));
+	pc += 2;
+	clockCycles += 2;
 }
 
 void Cpu::LD_a8o_A()
 {
+	//HERE
+
+	//pc++;
+	//uint16 addressToWrite = INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + memory->read(pc);
+	//writeMemory(addressToWrite, A);
+	//clockCycles += 3;
+	//pc++;
+
 	pc++;
+	clockCycleDuringOpcode++;
+	ppu->draw(4);
+	doTimers(4);
 	uint16 addressToWrite = INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + memory->read(pc);
 	writeMemory(addressToWrite, A);
-	clockCycles += 3;
+	clockCycles += 2;
 	pc++;
 }
 
 void Cpu::LD_A_a16()
 {
+	//HERE
+	//pc++;
+	//A = memory->read(((memory->read(pc + 1) << 8) + memory->read(pc)));//the n are the less significant bits, the n+1 are the most significant bits.
+	//clockCycles += 4;
+	//pc += 2;
+
+
+
 	pc++;
-	A = memory->read(((memory->read(pc + 1) << 8) + memory->read(pc)));//the n are the less significant bits, the n+1 are the most significant bits.
-	clockCycles += 4;
+	clockCycleDuringOpcode += 1;
+	doTimers(4);
+	ppu->draw(4);
+	uint8 low = memory->read(pc);
+
+	clockCycleDuringOpcode += 1;
+	doTimers(4);
+	ppu->draw(4);
+	uint8 high = memory->read(pc + 1);
+
+	A = memory->read(((high << 8) + low));
+	clockCycles += 2;
 	pc += 2;
+
 }
 
 void Cpu::LD_a16_A()
 {
+	//HERE
+
+	//pc++;
+	//writeMemory(((memory->read(pc + 1) << 8) + memory->read(pc)), A);//the n are the less significant bits, the n+1 are the most significant bits.
+	//clockCycles += 4;
+	//pc += 2;
+
 	pc++;
-	writeMemory(((memory->read(pc + 1) << 8) + memory->read(pc)), A);//the n are the less significant bits, the n+1 are the most significant bits.
-	clockCycles += 4;
+
+	clockCycleDuringOpcode++;
+	ppu->draw(4);
+	doTimers(4);
+	uint8 low = memory->read(pc);
+
+	clockCycleDuringOpcode++;
+	ppu->draw(4);
+	doTimers(4);
+	uint8 high = memory->read(pc + 1);
+
+	writeMemory(((high << 8) + low), A);//the n are the less significant bits, the n+1 are the most significant bits.
+	clockCycles += 2;
 	pc += 2;
 }
 
@@ -1451,11 +1528,22 @@ void Cpu::INC_R(uint8& reg)
 
 void Cpu::INC_aHL()
 {
-	//INC_subFunctionFlag(memory->read(pairRegisters(regPair1, regPair2)));//C++ initial value of reference to non-const must be an lvalue
+	//HERE
+	////INC_subFunctionFlag(memory->read(pairRegisters(regPair1, regPair2)));//C++ initial value of reference to non-const must be an lvalue
+	//uint8 memTemp = memory->read(pairRegisters(H, L));
+	//INC_subFunctionFlag(memTemp);
+	//writeMemory(pairRegisters(H, L), memTemp);
+	//clockCycles += 3;
+	//pc++;
+
+
 	uint8 memTemp = memory->read(pairRegisters(H, L));
 	INC_subFunctionFlag(memTemp);
+	clockCycleDuringOpcode++;
+	ppu->draw(4);
+	doTimers(4);
 	writeMemory(pairRegisters(H, L), memTemp);
-	clockCycles += 3;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -1478,11 +1566,22 @@ void Cpu::DEC_R(uint8& reg)
 
 void Cpu::DEC_aHL()
 {
-	//INC_subFunctionFlag(memory->read(pairRegisters(regPair1, regPair2)));//C++ initial value of reference to non-const must be an lvalue
+	////HERE
+	//uint8 memTemp = memory->read(pairRegisters(H, L));
+	//DEC_subFunctionFlag(memTemp);
+	//writeMemory(pairRegisters(H, L), memTemp);
+	//clockCycles += 3;
+	//pc++;
+
+
+
 	uint8 memTemp = memory->read(pairRegisters(H, L));
 	DEC_subFunctionFlag(memTemp);
+	clockCycleDuringOpcode++;
+	ppu->draw(4);
+	doTimers(4);
 	writeMemory(pairRegisters(H, L), memTemp);
-	clockCycles += 3;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -1652,7 +1751,7 @@ void Cpu::RLC_R(uint8& reg)
 
 void Cpu::RLC_aHL()
 {
-	uint8 temp = memory->read(pairRegisters(H, L));
+	/*uint8 temp = memory->read(pairRegisters(H, L));
 	F.H = 0;
 	F.N = 0;
 	F.CY = (temp >> 7) & 0x1;
@@ -1662,7 +1761,27 @@ void Cpu::RLC_aHL()
 	writeMemory(pairRegisters(H, L), temp);
 	F.Z = (temp == 0);
 	clockCycles += 4;
+	pc++;*/
+
+
+	ppu->draw(4);
+	doTimers(4);
+	clockCycleDuringOpcode++;
+	uint8 temp = memory->read(pairRegisters(H, L));
+	F.H = 0;
+	F.N = 0;
+	F.CY = (temp >> 7) & 0x1;
+	temp <<= 1;
+	temp &= 0b11111110;
+	temp += F.CY;
+	ppu->draw(4);
+	doTimers(4);
+	clockCycleDuringOpcode++;
+	writeMemory(pairRegisters(H, L), temp);
+	F.Z = (temp == 0);
+	clockCycles += 2;
 	pc++;
+
 }
 
 
@@ -1682,6 +1801,25 @@ void Cpu::RL_R(uint8& reg)
 
 void Cpu::RL_aHL()
 {
+	//HERE
+	//uint8 temp = memory->read(pairRegisters(H, L));
+	//F.H = 0;
+	//F.N = 0;
+	//bool oldCarry = F.CY;
+	//F.CY = temp >> 7;
+	//temp <<= 1;
+	//temp &= 0b11111110;
+	//temp += oldCarry;
+	//writeMemory(pairRegisters(H, L), temp);
+	//F.Z = (temp == 0);
+	//clockCycles += 4;
+	//pc++;
+
+
+
+	ppu->draw(4);
+	doTimers(4);
+	clockCycleDuringOpcode++;
 	uint8 temp = memory->read(pairRegisters(H, L));
 	F.H = 0;
 	F.N = 0;
@@ -1690,9 +1828,12 @@ void Cpu::RL_aHL()
 	temp <<= 1;
 	temp &= 0b11111110;
 	temp += oldCarry;
+	ppu->draw(4);
+	doTimers(4);
+	clockCycleDuringOpcode++;
 	writeMemory(pairRegisters(H, L), temp);
 	F.Z = (temp == 0);
-	clockCycles += 4;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -1713,6 +1854,24 @@ void Cpu::RRC_R(uint8& reg)
 
 void Cpu::RRC_aHL()
 {
+	//HERE
+	//uint8 temp = memory->read(pairRegisters(H, L));
+	//F.H = 0;
+	//F.N = 0;
+	//F.Z = 0;
+	//F.CY = temp & 0x1;
+	//temp >>= 1;
+	//temp &= 0b01111111;
+	//temp += (F.CY << 7);
+	//writeMemory(pairRegisters(H, L), temp);
+	//F.Z = (temp == 0);
+	//clockCycles += 4;
+	//pc++;
+
+
+	ppu->draw(4);
+	doTimers(4);
+	clockCycleDuringOpcode++;
 	uint8 temp = memory->read(pairRegisters(H, L));
 	F.H = 0;
 	F.N = 0;
@@ -1721,9 +1880,12 @@ void Cpu::RRC_aHL()
 	temp >>= 1;
 	temp &= 0b01111111;
 	temp += (F.CY << 7);
+	ppu->draw(4);
+	doTimers(4);
+	clockCycleDuringOpcode++;
 	writeMemory(pairRegisters(H, L), temp);
 	F.Z = (temp == 0);
-	clockCycles += 4;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -1744,6 +1906,24 @@ void Cpu::RR_R(uint8& reg)
 
 void Cpu::RR_aHL()
 {
+	//uint8 temp = memory->read(pairRegisters(H, L));
+	//F.H = 0;
+	//F.N = 0;
+	//F.Z = 0;
+	//bool oldCarry = F.CY;
+	//F.CY = temp & 0x1;
+	//temp >>= 1;
+	//temp &= 0b01111111;
+	//temp |= (oldCarry << 7);
+	//writeMemory(pairRegisters(H, L), temp);
+	//F.Z = (temp == 0);
+	//clockCycles += 4;
+	//pc++;
+
+
+	ppu->draw(4);
+	doTimers(4);
+	clockCycleDuringOpcode++;
 	uint8 temp = memory->read(pairRegisters(H, L));
 	F.H = 0;
 	F.N = 0;
@@ -1753,9 +1933,12 @@ void Cpu::RR_aHL()
 	temp >>= 1;
 	temp &= 0b01111111;
 	temp |= (oldCarry << 7);
+	ppu->draw(4);
+	doTimers(4);
+	clockCycleDuringOpcode++;
 	writeMemory(pairRegisters(H, L), temp);
 	F.Z = (temp == 0);
-	clockCycles += 4;
+	clockCycles += 2;
 	pc++;
 }
 
@@ -1776,10 +1959,22 @@ void Cpu::SLA_R(uint8& reg)
 
 void Cpu::SLA_aHL()
 {
+	//HERE
+	//uint8 temp = memory->read(pairRegisters(H, L));
+	//SLA_R(temp);
+	//writeMemory(pairRegisters(H, L), temp);
+	//clockCycles += 2;
+
+
+	clockCycleDuringOpcode++;
+	ppu->draw(4);
+	doTimers(4);
 	uint8 temp = memory->read(pairRegisters(H, L));
 	SLA_R(temp);
+	clockCycleDuringOpcode++;
+	ppu->draw(4);
+	doTimers(4);
 	writeMemory(pairRegisters(H, L), temp);
-	clockCycles += 2;
 }
 
 
@@ -1799,10 +1994,22 @@ void Cpu::SRA_R(uint8& reg)
 
 void Cpu::SRA_aHL()
 {
+	//HERE
+	//uint8 temp = memory->read(pairRegisters(H, L));
+	//SRA_R(temp);
+	//writeMemory(pairRegisters(H, L), temp);
+	//clockCycles += 2;
+
+
+	clockCycleDuringOpcode++;
+	ppu->draw(4);
+	doTimers(4);
 	uint8 temp = memory->read(pairRegisters(H, L));
 	SRA_R(temp);
+	clockCycleDuringOpcode++;
+	ppu->draw(4);
+	doTimers(4);
 	writeMemory(pairRegisters(H, L), temp);
-	clockCycles += 2;
 }
 
 
@@ -1821,15 +2028,21 @@ void Cpu::SRL_R(uint8& reg)
 
 void Cpu::SRL_aHL()
 {
+	clockCycleDuringOpcode++;
+	ppu->draw(4);
+	doTimers(4);
 	uint8 temp = memory->read(pairRegisters(H, L));
 	SRL_R(temp);
+	clockCycleDuringOpcode++;
+	ppu->draw(4);
+	doTimers(4);
 	writeMemory(pairRegisters(H, L), temp);
-	clockCycles += 2;
 }
 
 
 void Cpu::SWAP_R(uint8& reg)
 {
+	////HERE
 	F.CY = 0;
 	F.H = 0;
 	F.N = 0;
@@ -1840,13 +2053,39 @@ void Cpu::SWAP_R(uint8& reg)
 	F.Z = (reg == 0);
 	clockCycles += 2;
 	pc++;
+
+
+
+	//F.CY = 0;
+	//F.H = 0;
+	//F.N = 0;
+	//uint8 nibbleL = reg & 0x0F;
+	//reg >>= 4;
+	//reg &= 0x0F;
+	//reg |= (nibbleL << 4);
+	//F.Z = (reg == 0);
+	//clockCycles += 2;
+	//pc++;
 }
 void Cpu::SWAP_aHL()
 {
+	//HERE
+	//uint8 temp = memory->read(pairRegisters(H, L));
+	//SWAP_R(temp);
+	//writeMemory(pairRegisters(H, L), temp);
+	//clockCycles += 2;
+
+
+	clockCycleDuringOpcode++;
+	ppu->draw(4);
+	doTimers(4);
 	uint8 temp = memory->read(pairRegisters(H, L));
 	SWAP_R(temp);
+	clockCycleDuringOpcode++;
+	ppu->draw(4);
+	doTimers(4);
 	writeMemory(pairRegisters(H, L), temp);
-	clockCycles += 2;
+	clockCycles += 0;
 }
 
 
@@ -1864,11 +2103,11 @@ void Cpu::BIT_b_R(const uint8& indexBit, const uint8& reg)
 
 void Cpu::BIT_b_aHL(const uint8& indexBit)
 {
-	//Error corrected
+	//HERE
+	clockCycleDuringOpcode++;
+	ppu->draw(4);
+	doTimers(4);
 	BIT_b_R(indexBit, memory->read(pairRegisters(H, L)));
-	clockCycles += 1;
-	//clockCycles += 3;
-	//What ???????
 }
 
 void Cpu::SET_b_R(const uint8& indexBit, uint8& reg)
@@ -1883,10 +2122,21 @@ void Cpu::SET_b_R(const uint8& indexBit, uint8& reg)
 //Page 17
 void Cpu::SET_b_aHL(const uint8& indexBit)
 {
+	//HERE
+	//uint8 temp = memory->read(pairRegisters(H, L));
+	//SET_b_R(indexBit, temp);
+	//writeMemory(pairRegisters(H, L), temp);
+	//clockCycles += 2;
+
+	clockCycleDuringOpcode++;
+	ppu->draw(4);
+	doTimers(4);
 	uint8 temp = memory->read(pairRegisters(H, L));
+	clockCycleDuringOpcode++;
+	ppu->draw(4);
+	doTimers(4);
 	SET_b_R(indexBit, temp);
 	writeMemory(pairRegisters(H, L), temp);
-	clockCycles += 2;
 }
 
 
@@ -1902,10 +2152,22 @@ void Cpu::RES_b_R(const uint8& indexBit, uint8& reg)
 
 void Cpu::RES_b_aHL(const uint8& indexBit)
 {
+	//HERE
+	//uint8 temp = memory->read(pairRegisters(H, L));
+	//RES_b_R(indexBit, temp);
+	//writeMemory(pairRegisters(H, L), temp);
+	//clockCycles += 2;
+
+
+	clockCycleDuringOpcode++;
+	ppu->draw(4);
+	doTimers(4);
 	uint8 temp = memory->read(pairRegisters(H, L));
 	RES_b_R(indexBit, temp);
+	clockCycleDuringOpcode++;
+	ppu->draw(4);
+	doTimers(4);
 	writeMemory(pairRegisters(H, L), temp);
-	clockCycles += 2;
 }
 
 /*-------------------------------------JUMP INSTRUCTIONS---------------------------------------*/

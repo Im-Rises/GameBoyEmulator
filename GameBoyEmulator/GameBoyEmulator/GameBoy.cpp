@@ -113,11 +113,10 @@ void GameBoy::doGameBoyCycle(SdlLib& sdlLib, const int cyclesToDo)
 
 	double elapsedTime = (sdlLib.getTicks() - startTime);
 
-	if (elapsedTime < 16.67)
-	{
-		SDL_Delay(16.67 - elapsedTime);
-		//	elapsedTime = (sdlLib.getTicks() - startTime);
-	}
+	//if (elapsedTime < 16.67)
+	//{
+	//	SDL_Delay(16.67 - elapsedTime);
+	//}
 
 	if (sdlLib.getTicks() - fpsStartTime >= 1000)
 	{
