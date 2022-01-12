@@ -20,7 +20,7 @@ void Ppu::reset()
 }
 
 
-void Ppu::draw(const int& cycles)//Not working
+void Ppu::draw(const int& cycles)
 {
 	updateStatRegister();
 	uint8 lcdc = memory->read(LCDC_ADDRESS);
