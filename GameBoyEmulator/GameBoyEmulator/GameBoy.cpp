@@ -90,21 +90,14 @@ void GameBoy::doGameBoyCycle(SdlLib& sdlLib, const int cyclesToDo)
 {
 	uint32_t startTime = sdlLib.getTicks();
 
-	//double timeCycle = (1.0 / CLOCK_FREQUENCY) * 1000000000; //time of a cyle in nanoseconds
+	double timeCycle = (1.0 / CLOCK_FREQUENCY) * 1000000000; //time of a cyle in nanoseconds
 
 	int performedCycles = 0;
 
 	while (performedCycles < cyclesToDo)
 	{
-		//std::chrono::steady_clock::time_point timeCpuStart = std::chrono::high_resolution_clock::now();
-
 		uint8 cycles = cpu.doCycle(sdlLib.readGameBoyInputs());
 		performedCycles += cycles;
-
-		//while ((std::chrono::high_resolution_clock::now() - timeCpuStart).count() < timeCycle * cycles)
-		//{
-		//	cout << (std::chrono::high_resolution_clock::now() - timeCpuStart).count() << endl;
-		//}
 	}
 
 	updateScreen(sdlLib);
@@ -113,14 +106,15 @@ void GameBoy::doGameBoyCycle(SdlLib& sdlLib, const int cyclesToDo)
 
 	double elapsedTime = (sdlLib.getTicks() - startTime);
 
-	//if (elapsedTime < 16.67)
-	//{
-	//	SDL_Delay(16.67 - elapsedTime);
-	//}
+	if (elapsedTime < 16.67)
+	{
+		SDL_Delay(16.67 - elapsedTime);
+	}
 
 	if (sdlLib.getTicks() - fpsStartTime >= 1000)
 	{
-		cout << (int)fps << endl;
+		//cout << (int)fps << endl;
+		sdlLib.setFps(fps);
 		fpsStartTime = sdlLib.getTicks();
 		fps = 0;
 	}

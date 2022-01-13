@@ -28,10 +28,10 @@ Opcodes map
 
 PPU timing and Rom/Ram banking  
 <http://www.codeslinger.co.uk/pages/projects/gameboy/beginning.html>  ❤️  
-<http://imrannazar.com/GameBoy-Emulation-in-JavaScript:-Interrupts>  
+<!--<http://imrannazar.com/GameBoy-Emulation-in-JavaScript:-Interrupts>  -->
 <https://hacktixme.ga/GBEDG/>  
 <https://emudev.de/gameboy-emulator/throttling-the-emulation/>  
-<http://emulator101.com>  
+<!--<http://emulator101.com>  -->
 <https://emudev.org>  
 
 Test roms i use to debug my emulator  

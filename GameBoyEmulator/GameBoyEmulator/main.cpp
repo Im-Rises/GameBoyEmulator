@@ -30,6 +30,7 @@ int main(int argc, char* argv[])
 		//romPath = "../../Bios_Games/Games/Gremlins 2.gb";
 		//romPath = "../../Bios_Games/Games/tennis.gb";
 		//romPath = "../../Bios_Games/Games/Zelda Link's Awakening.gb";
+		//romPath = "../../Bios_Games/Games/Tennis.gb";
 		//romPath = "../../Bios_Games/Games/Pokemon - Version Bleue (F) [S].gb";	
 
 
@@ -40,15 +41,6 @@ int main(int argc, char* argv[])
 		//romPath = "../../Bios_Games/cpu_instrs/cpu_instrs.gb";
 		//romPath = "../../Bios_Games/instr_timing/instr_timing.gb";
 		//romPath = "../../Bios_Games/mem_timing-2/mem_timing.gb";
-		
-
-
-
-
-
-
-		romPath = "../../Bios_Games/oam_bug/oam_bug.gb";
-		romPath = "../../Bios_Games/oam_bug/rom_singles/1-lcd_sync.gb";
 		argc = 2;
 	}
 

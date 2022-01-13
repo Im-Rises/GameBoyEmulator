@@ -26,6 +26,10 @@ SdlLib::SdlLib(int width, int height, string title)
 
 	keystate = SDL_GetKeyboardState(NULL);//Get pointer to the state of all keys of the keayboard
 
+	SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
+
+	SDL_SetWindowResizable(window, SDL_TRUE);
+
 	gameBoyInputs = 0b11111111;
 }
 
@@ -109,6 +113,6 @@ bool SdlLib::isRunning()
 
 void SdlLib::setFps(const int fps)
 {
-	//string temp = windowTitle.;
-	//SDL_SetWindowTitle(window, fps);
+	string temp = windowTitle + " (fps : " + to_string(fps).c_str() + ")";
+	SDL_SetWindowTitle(window, temp.c_str());
 }

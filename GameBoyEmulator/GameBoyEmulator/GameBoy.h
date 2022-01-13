@@ -12,6 +12,7 @@
 #include "Memory.h"
 #include "Ppu.h"
 #include "Cartridge.h"
+#include "Spu.h"
 
 #define VER 0.5
 #define AUTHOR "Im-Rises"
@@ -38,6 +39,7 @@ private:
 	Memory memory;
 	Cpu cpu;
 	Ppu ppu;
+	//Spu spu;
 	//GlfwOpenglLib lcdScreenInputs;
 	Cartridge* cartridge = nullptr;
 

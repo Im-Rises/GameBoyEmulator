@@ -83,11 +83,14 @@ int Cpu::doCycle(const uint8& userInputs)
 
 	////if (ly == 8)
 	////	cout << "Big error" << endl;
-	//if (pc == 0x229)
+	//if (pc == 0x0048)
 	//{
-	//	cout << "Big error" << endl;
+	//	cout << "48" << endl;
 	//}
-
+	//if (pc == 0x0040)
+	//{
+	//	cout << "40" << endl;
+	//}
 
 
 	handleInputs(userInputs);
@@ -160,7 +163,7 @@ void Cpu::checkInputsInterrupt(uint8 currentInputs, uint8 previousInputs)
 	//Not working 
 
 	if (currentInputs != previousInputs)
-		cout << "error" << endl;
+		cout << "Previous input different from the current one" << endl;
 
 	bool enableinterrupt = false;
 
@@ -179,7 +182,7 @@ void Cpu::doTimers(const int& cycles)
 {
 	doDividerTimer(cycles);//Incremented every cycles
 
-	///instr_timing.gb error #255 if not implemented like this ???
+	///instr_timing.gb error #255 if not implemented like this
 
 	if (testBit(memory->read(TAC), 2))//If timer enable
 	{
@@ -198,15 +201,6 @@ void Cpu::doTimers(const int& cycles)
 				writeMemory(TIMA, memory->read(TMA));
 				requestInterrupt(2);
 			}
-			//if (memory->read(TIMA) == 0xFF)
-			//{
-			//	writeMemory(TIMA, memory->read(TMA));
-			//	requestInterrupt(2);
-			//}
-			//else
-			//{
-			//	writeMemory(TIMA, memory->read(TIMA) + 1);
-			//}
 			timerCounter -= timerFrequency;
 		}
 	}
@@ -254,23 +248,6 @@ void Cpu::setTimerFrequency()
 
 void Cpu::handleInterupt()//Thanks codesLinger.com
 {
-	//if (IME == true)
-	//{
-	//	uint8 req = memory->read(0xFF0F);
-	//	uint8 enabled = memory->read(0xFFFF);
-	//	if (req > 0)
-	//	{
-	//		for (int i = 0; i < 5; i++)
-	//		{
-	//			if (testBit(req, i) == true)
-	//			{
-	//				if (testBit(enabled, i))
-	//					doInterupt(i+1);
-	//			}
-	//		}
-	//	}
-	//}
-
 	if (IME || halted)//If IME is enable or the cpu is halted thant we check if IE and IF flags are enabled
 	{
 		uint8 ifRegister = memory->read(INTERRUPT_FLAG_IF_ADDRESS);
@@ -290,36 +267,45 @@ void Cpu::handleInterupt()//Thanks codesLinger.com
 				//	}
 				//}
 				if (testBit(temp, 0))
-					doInterupt(1);
+					doInterupt(0);
 				else if (testBit(temp, 1))
-					doInterupt(2);
+					doInterupt(1);
 				else if (testBit(temp, 2))
-					doInterupt(3);
+					doInterupt(2);
 				else if (testBit(temp, 3))
-					doInterupt(4);
+					doInterupt(3);
 				else if (testBit(temp, 4))
-					doInterupt(5);
+					doInterupt(4);
 			}
 			else//If the cpu is halted and an interrupt is activated than leaving halt mode
 			{
 				halted = false;
+				//for (int i = 0; i < 5; i++)
+				//{
+				//	if (testBit(temp, i) == true)
+				//	{
+				//		resetBit(ifRegister, i);
+				//		memory->write(INTERRUPT_FLAG_IF_ADDRESS,ifRegister);
+				//	}
+				//}
 			}
 		}
 	}
 }
 
 
-void Cpu::doInterupt(const uint8& interruptCode)
+void Cpu::doInterupt(const uint8& bitIndex)
 {
 	IME = 0;
 	uint8 ifRegister = memory->read(INTERRUPT_FLAG_IF_ADDRESS);
-	ifRegister = resetBit(ifRegister, interruptCode - 1);
-	memory->write(INTERRUPT_FLAG_IF_ADDRESS, interruptCode - 1);
+	ifRegister = resetBit(ifRegister, bitIndex);
+	//memory->write(INTERRUPT_FLAG_IF_ADDRESS, interruptCode - 1);
+	memory->write(INTERRUPT_FLAG_IF_ADDRESS, ifRegister);
 	writeMemory(sp - 1, (pc >> 8));
 	writeMemory(sp - 2, (pc & 0x00FF));
 	sp -= 2;
 	halted = false;
-	switch (interruptCode)
+	switch (bitIndex + 1)
 	{
 	case(1):
 	{
@@ -349,10 +335,10 @@ void Cpu::doInterupt(const uint8& interruptCode)
 	}
 }
 
-void Cpu::requestInterrupt(const uint8& interruptCode)
+void Cpu::requestInterrupt(const uint8& bitIndex)
 {
 	uint8 ifRegister = memory->read(INTERRUPT_FLAG_IF_ADDRESS);
-	ifRegister = setBit(ifRegister, interruptCode);
+	ifRegister = setBit(ifRegister, bitIndex);
 	memory->write(INTERRUPT_FLAG_IF_ADDRESS, ifRegister);
 }
 

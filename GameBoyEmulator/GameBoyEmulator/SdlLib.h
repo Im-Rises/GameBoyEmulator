@@ -1,9 +1,11 @@
 #ifndef DEF_SDLLIB
 #define DEF_SDLLIB
 
+#include <iostream>
+#include <string>
+
 #include "SDL2/include/SDL.h"
 #include "binaryLib.h"
-#include <iostream>
 
 using namespace std;
 

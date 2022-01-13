@@ -22,7 +22,9 @@ void Ppu::reset()
 
 void Ppu::draw(const int& cycles)
 {
-	updateStatRegister();
+	ERROR
+	//updateStatRegister();
+	ERRROR
 	uint8 lcdc = memory->read(LCDC_ADDRESS);
 
 	if (testBit(lcdc, 7))
@@ -37,7 +39,7 @@ void Ppu::draw(const int& cycles)
 
 			if (scanLine == 144)
 				requestInterrupt(0);
-			else if (scanLine >= 154)
+			else if (scanLine > 153)
 				memory->directWrite(LY_ADDRESS, 0);
 			else if (scanLine < 144)
 				drawLine();
@@ -45,7 +47,7 @@ void Ppu::draw(const int& cycles)
 	}
 }
 
-void Ppu::updateStatRegister()//Thanks to http://www.codeslinger.co.uk/pages/projects/gameboy/lcd.html
+void Ppu::updateStatRegister()
 {
 	uint8 lcdc = memory->read(LCDC_ADDRESS);
 	uint8 stat = memory->read(STAT_ADDRESS);
@@ -54,23 +56,23 @@ void Ppu::updateStatRegister()//Thanks to http://www.codeslinger.co.uk/pages/pro
 	{
 		scanLineCounter = 456;
 		memory->directWrite(LY_ADDRESS, 0);
-		stat &= 0b11111000;
-		stat = testBit(stat, 0);
-		memory->directWrite(STAT_ADDRESS, stat);
+		stat &= 0b11111100;
+		stat = setBit(stat, 0);
+		memory->write(STAT_ADDRESS, stat);
 	}
 	else
 	{
 		uint8 scanLine = memory->read(LY_ADDRESS);
-		uint8 currentMode = stat & 0b00000111;
+		uint8 currentMode = stat & 0b00000011;
 		uint8 mode = 0;
-		bool interruptSelection = 0;
+		bool requestInterruptBool = 0;
 
 		if (scanLine >= 144)
 		{
 			mode = 1;
 			stat = setBit(stat, 0);
 			stat = resetBit(stat, 1);
-			interruptSelection = testBit(stat, 4);
+			requestInterruptBool = testBit(stat, 4);
 		}
 		else
 		{
@@ -82,7 +84,7 @@ void Ppu::updateStatRegister()//Thanks to http://www.codeslinger.co.uk/pages/pro
 				mode = 2;
 				stat = setBit(stat, 1);
 				stat = resetBit(stat, 0);
-				interruptSelection = testBit(stat, 5);
+				requestInterruptBool = testBit(stat, 5);
 			}
 			else if (scanLine >= mode3bounds)
 			{
@@ -95,11 +97,11 @@ void Ppu::updateStatRegister()//Thanks to http://www.codeslinger.co.uk/pages/pro
 				mode = 0;
 				stat = resetBit(stat, 1);
 				stat = resetBit(stat, 0);
-				interruptSelection = testBit(stat, 3);
+				requestInterruptBool = testBit(stat, 3);
 			}
 		}
 
-		if (interruptSelection && (mode != currentMode))
+		if (requestInterruptBool && (mode != currentMode))
 		{
 			requestInterrupt(1);
 		}
@@ -129,7 +131,6 @@ void Ppu::drawLine()
 
 void Ppu::drawBackgroundLine(const uint8& lcdc)
 {
-
 	uint8 scx = memory->read(SCX_ADDRESS);
 	uint8 scy = memory->read(SCY_ADDRESS);
 	uint8 wx = memory->read(WX_ADDRESS) - 7;//Why 7 because : With WX = 7, the window is displayed from the left edge of the LCD screen. Values of 0-6 should not be specified for WX.
@@ -290,7 +291,7 @@ void Ppu::drawSpritesLine(const uint8& lcdc)
 					if (0 <= x && x < 160)
 					{
 						//Following the priority p
-						if ((((!displayPriorityBG && !transparent) || (displayPriorityBG && !transparent && lcdScreen[x][ly].backgroundTransparent)) && (numberSpritesPerLine <= 10)))//Display OBJ's pixel
+						if ((((!displayPriorityBG && !transparent) || (displayPriorityBG && !transparent && lcdScreen[x][ly].backgroundTransparent)) && (numberSpritesPerLine <= 10)))
 						{
 							uint8 color;
 							if (!testBit(attributeFlag, 4))
@@ -374,10 +375,10 @@ uint8 Ppu::colorToRGB(uint8 colorGameBoy)
 	}
 }
 
-void Ppu::requestInterrupt(const uint8& interruptCode)
+void Ppu::requestInterrupt(const uint8& bitIndex)
 {
 	uint8 ifRegister = memory->read(INTERRUPT_FLAG_IF_ADDRESS);
-	ifRegister = setBit(ifRegister, interruptCode);
+	ifRegister = setBit(ifRegister, bitIndex);
 	memory->write(INTERRUPT_FLAG_IF_ADDRESS, ifRegister);
 }
 
