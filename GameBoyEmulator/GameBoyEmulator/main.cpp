@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
 
 	GameBoy* gameBoy = GameBoy::getInstance();//Game Boy creation
 
-	if (true)//Debug
+	if (false)//Debug
 	{
 		biosPath = "../../Bios_Games/Bios/dmg_boot.bin";
 		//romPath = "../../Bios_Games/cpu_instrs/individual/03-op sp,hl.gb";
@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
 
 
 		//Failed:
-		//romPath = "../../Bios_Games/dmg-acid2.gb";
+		romPath = "../../Bios_Games/dmg-acid2.gb";
 
 		//Passed:
 		//romPath = "../../Bios_Games/cpu_instrs/cpu_instrs.gb";
@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
 
 	if (argc > 1)//If a game is loaded
 	{
-		//romPath = argv[1];
+		romPath = argv[1];
 		Cartridge cartridge(romPath);
 		cout << cartridge.toString() << endl;
 

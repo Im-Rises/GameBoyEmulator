@@ -1,2 +1,6 @@
-﻿  Ppu.cpp
+﻿  GameBoy.cpp
+E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\GameBoy.cpp(111,19): warning C4244: 'argument': conversion from 'double' to 'Uint32', possible loss of data
+  SdlLib.cpp
+  main.cpp
+  Generating Code...
   GameBoyEmulator.vcxproj -> E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\Debug\GameBoyEmulator.exe

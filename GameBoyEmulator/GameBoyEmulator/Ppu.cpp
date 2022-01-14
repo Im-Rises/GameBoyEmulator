@@ -22,9 +22,9 @@ void Ppu::reset()
 
 void Ppu::draw(const int& cycles)
 {
-	ERROR
+	//ERROR
 	//updateStatRegister();
-	ERRROR
+	//ERRROR
 	uint8 lcdc = memory->read(LCDC_ADDRESS);
 
 	if (testBit(lcdc, 7))
@@ -118,6 +118,7 @@ void Ppu::updateStatRegister()
 		{
 			stat = resetBit(stat, 2);
 		}
+		
 		memory->write(STAT_ADDRESS, stat);
 	}
 }

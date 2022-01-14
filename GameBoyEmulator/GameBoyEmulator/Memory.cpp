@@ -7,7 +7,7 @@ Memory::Memory()
 
 Memory::~Memory()
 {
-	delete[] memoryArray;
+	//delete[] memoryArray;
 }
 
 void Memory::reset()

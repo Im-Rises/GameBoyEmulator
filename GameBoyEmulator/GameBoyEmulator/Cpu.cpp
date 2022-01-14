@@ -75,8 +75,8 @@ int Cpu::doCycle(const uint8& userInputs)
 	//if (pc >= 0x27A3)
 	//	cout << "Big error" << endl;
 
-	//if (pc==0xC246)
-	//	cout << "Big error" << endl;
+	if (pc==0x48)
+		cout << "Big error" << endl;
 
 	//uint8 lcdc = memory->read(0xFF40);
 	//uint8 ly = memory->read(0xFF44);
@@ -368,6 +368,13 @@ void Cpu::writeMemory(const uint16& address, const uint8& data)
 			memory->write(0xFE00 + i, memory->read(address + i));
 		}
 	}
+	//else if (address == 0xFF41)
+	//{
+	//	uint8 stat = memory->read(0xFF41);
+	//	stat &= 0b10000111;
+	//	stat |= data;
+	//	memory->write(0xFF41, stat);
+	//}
 	else
 	{
 		memory->write(address, data);
@@ -943,9 +950,7 @@ void Cpu::LD_aHL_d8()
 	//clockCycles += 3;	
 
 	pc++;
-	clockCycleDuringOpcode++;
-	ppu->draw(4);
-	doTimers(4);
+	doOneParallelCycle();
 	writeMemory(pairRegisters(H, L), memory->read(pc));
 	pc++;
 	clockCycles += 2;
@@ -991,9 +996,7 @@ void Cpu::LD_A_a8o()//Correct this one after the other ocpodes are corrected
 	//pc += 2;
 	//clockCycles += 3;
 
-	doTimers(4);
-	ppu->draw(4);
-	clockCycleDuringOpcode += 1;
+	doOneParallelCycle();
 	A = memory->read(INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + memory->read(pc + 1));
 	pc += 2;
 	clockCycles += 2;
@@ -1010,9 +1013,7 @@ void Cpu::LD_a8o_A()
 	//pc++;
 
 	pc++;
-	clockCycleDuringOpcode++;
-	ppu->draw(4);
-	doTimers(4);
+	doOneParallelCycle();
 	uint16 addressToWrite = INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + memory->read(pc);
 	writeMemory(addressToWrite, A);
 	clockCycles += 2;
@@ -1030,14 +1031,10 @@ void Cpu::LD_A_a16()
 
 
 	pc++;
-	clockCycleDuringOpcode += 1;
-	doTimers(4);
-	ppu->draw(4);
+	doOneParallelCycle();
 	uint8 low = memory->read(pc);
 
-	clockCycleDuringOpcode += 1;
-	doTimers(4);
-	ppu->draw(4);
+	doOneParallelCycle();
 	uint8 high = memory->read(pc + 1);
 
 	A = memory->read(((high << 8) + low));
@@ -1057,14 +1054,10 @@ void Cpu::LD_a16_A()
 
 	pc++;
 
-	clockCycleDuringOpcode++;
-	ppu->draw(4);
-	doTimers(4);
+	doOneParallelCycle();
 	uint8 low = memory->read(pc);
 
-	clockCycleDuringOpcode++;
-	ppu->draw(4);
-	doTimers(4);
+	doOneParallelCycle();
 	uint8 high = memory->read(pc + 1);
 
 	writeMemory(((high << 8) + low), A);//the n are the less significant bits, the n+1 are the most significant bits.
@@ -1525,9 +1518,7 @@ void Cpu::INC_aHL()
 
 	uint8 memTemp = memory->read(pairRegisters(H, L));
 	INC_subFunctionFlag(memTemp);
-	clockCycleDuringOpcode++;
-	ppu->draw(4);
-	doTimers(4);
+	doOneParallelCycle();
 	writeMemory(pairRegisters(H, L), memTemp);
 	clockCycles += 2;
 	pc++;
@@ -1563,9 +1554,7 @@ void Cpu::DEC_aHL()
 
 	uint8 memTemp = memory->read(pairRegisters(H, L));
 	DEC_subFunctionFlag(memTemp);
-	clockCycleDuringOpcode++;
-	ppu->draw(4);
-	doTimers(4);
+	doOneParallelCycle();
 	writeMemory(pairRegisters(H, L), memTemp);
 	clockCycles += 2;
 	pc++;
@@ -1750,9 +1739,7 @@ void Cpu::RLC_aHL()
 	pc++;*/
 
 
-	ppu->draw(4);
-	doTimers(4);
-	clockCycleDuringOpcode++;
+	doOneParallelCycle();
 	uint8 temp = memory->read(pairRegisters(H, L));
 	F.H = 0;
 	F.N = 0;
@@ -1760,9 +1747,7 @@ void Cpu::RLC_aHL()
 	temp <<= 1;
 	temp &= 0b11111110;
 	temp += F.CY;
-	ppu->draw(4);
-	doTimers(4);
-	clockCycleDuringOpcode++;
+	doOneParallelCycle();
 	writeMemory(pairRegisters(H, L), temp);
 	F.Z = (temp == 0);
 	clockCycles += 2;
@@ -1803,9 +1788,7 @@ void Cpu::RL_aHL()
 
 
 
-	ppu->draw(4);
-	doTimers(4);
-	clockCycleDuringOpcode++;
+	doOneParallelCycle();
 	uint8 temp = memory->read(pairRegisters(H, L));
 	F.H = 0;
 	F.N = 0;
@@ -1814,9 +1797,7 @@ void Cpu::RL_aHL()
 	temp <<= 1;
 	temp &= 0b11111110;
 	temp += oldCarry;
-	ppu->draw(4);
-	doTimers(4);
-	clockCycleDuringOpcode++;
+	doOneParallelCycle();
 	writeMemory(pairRegisters(H, L), temp);
 	F.Z = (temp == 0);
 	clockCycles += 2;
@@ -1855,9 +1836,7 @@ void Cpu::RRC_aHL()
 	//pc++;
 
 
-	ppu->draw(4);
-	doTimers(4);
-	clockCycleDuringOpcode++;
+	doOneParallelCycle();
 	uint8 temp = memory->read(pairRegisters(H, L));
 	F.H = 0;
 	F.N = 0;
@@ -1866,9 +1845,7 @@ void Cpu::RRC_aHL()
 	temp >>= 1;
 	temp &= 0b01111111;
 	temp += (F.CY << 7);
-	ppu->draw(4);
-	doTimers(4);
-	clockCycleDuringOpcode++;
+	doOneParallelCycle();
 	writeMemory(pairRegisters(H, L), temp);
 	F.Z = (temp == 0);
 	clockCycles += 2;
@@ -1907,9 +1884,7 @@ void Cpu::RR_aHL()
 	//pc++;
 
 
-	ppu->draw(4);
-	doTimers(4);
-	clockCycleDuringOpcode++;
+	doOneParallelCycle();
 	uint8 temp = memory->read(pairRegisters(H, L));
 	F.H = 0;
 	F.N = 0;
@@ -1919,9 +1894,7 @@ void Cpu::RR_aHL()
 	temp >>= 1;
 	temp &= 0b01111111;
 	temp |= (oldCarry << 7);
-	ppu->draw(4);
-	doTimers(4);
-	clockCycleDuringOpcode++;
+	doOneParallelCycle();
 	writeMemory(pairRegisters(H, L), temp);
 	F.Z = (temp == 0);
 	clockCycles += 2;
@@ -1952,14 +1925,10 @@ void Cpu::SLA_aHL()
 	//clockCycles += 2;
 
 
-	clockCycleDuringOpcode++;
-	ppu->draw(4);
-	doTimers(4);
+	doOneParallelCycle();
 	uint8 temp = memory->read(pairRegisters(H, L));
 	SLA_R(temp);
-	clockCycleDuringOpcode++;
-	ppu->draw(4);
-	doTimers(4);
+	doOneParallelCycle();
 	writeMemory(pairRegisters(H, L), temp);
 }
 
@@ -1987,14 +1956,10 @@ void Cpu::SRA_aHL()
 	//clockCycles += 2;
 
 
-	clockCycleDuringOpcode++;
-	ppu->draw(4);
-	doTimers(4);
+	doOneParallelCycle();
 	uint8 temp = memory->read(pairRegisters(H, L));
 	SRA_R(temp);
-	clockCycleDuringOpcode++;
-	ppu->draw(4);
-	doTimers(4);
+	doOneParallelCycle();
 	writeMemory(pairRegisters(H, L), temp);
 }
 
@@ -2014,14 +1979,10 @@ void Cpu::SRL_R(uint8& reg)
 
 void Cpu::SRL_aHL()
 {
-	clockCycleDuringOpcode++;
-	ppu->draw(4);
-	doTimers(4);
+	doOneParallelCycle();
 	uint8 temp = memory->read(pairRegisters(H, L));
 	SRL_R(temp);
-	clockCycleDuringOpcode++;
-	ppu->draw(4);
-	doTimers(4);
+	doOneParallelCycle();
 	writeMemory(pairRegisters(H, L), temp);
 }
 
@@ -2062,14 +2023,12 @@ void Cpu::SWAP_aHL()
 	//clockCycles += 2;
 
 
-	clockCycleDuringOpcode++;
-	ppu->draw(4);
-	doTimers(4);
+	doOneParallelCycle();
+
 	uint8 temp = memory->read(pairRegisters(H, L));
 	SWAP_R(temp);
-	clockCycleDuringOpcode++;
-	ppu->draw(4);
-	doTimers(4);
+	doOneParallelCycle();
+
 	writeMemory(pairRegisters(H, L), temp);
 	clockCycles += 0;
 }
@@ -2090,9 +2049,8 @@ void Cpu::BIT_b_R(const uint8& indexBit, const uint8& reg)
 void Cpu::BIT_b_aHL(const uint8& indexBit)
 {
 	//HERE
-	clockCycleDuringOpcode++;
-	ppu->draw(4);
-	doTimers(4);
+	doOneParallelCycle();
+
 	BIT_b_R(indexBit, memory->read(pairRegisters(H, L)));
 }
 
@@ -2114,13 +2072,11 @@ void Cpu::SET_b_aHL(const uint8& indexBit)
 	//writeMemory(pairRegisters(H, L), temp);
 	//clockCycles += 2;
 
-	clockCycleDuringOpcode++;
-	ppu->draw(4);
-	doTimers(4);
+	doOneParallelCycle();
+
 	uint8 temp = memory->read(pairRegisters(H, L));
-	clockCycleDuringOpcode++;
-	ppu->draw(4);
-	doTimers(4);
+	doOneParallelCycle();
+
 	SET_b_R(indexBit, temp);
 	writeMemory(pairRegisters(H, L), temp);
 }
@@ -2145,14 +2101,12 @@ void Cpu::RES_b_aHL(const uint8& indexBit)
 	//clockCycles += 2;
 
 
-	clockCycleDuringOpcode++;
-	ppu->draw(4);
-	doTimers(4);
+	doOneParallelCycle();
+
 	uint8 temp = memory->read(pairRegisters(H, L));
 	RES_b_R(indexBit, temp);
-	clockCycleDuringOpcode++;
-	ppu->draw(4);
-	doTimers(4);
+	doOneParallelCycle();
+
 	writeMemory(pairRegisters(H, L), temp);
 }
 
@@ -2639,4 +2593,12 @@ Cpu::Flag Cpu::byteToFlag(const uint8& byte)const
 	temp.H = (byte >> 5) & 0x1;
 	temp.CY = (byte >> 4) & 0x1;
 	return temp;
+}
+
+
+void Cpu::doOneParallelCycle()
+{
+	clockCycleDuringOpcode++;
+	ppu->draw(4);
+	doTimers(4);
 }

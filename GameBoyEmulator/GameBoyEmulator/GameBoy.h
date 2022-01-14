@@ -14,7 +14,7 @@
 #include "Cartridge.h"
 #include "Spu.h"
 
-#define VER 0.5
+#define VER 0.6
 #define AUTHOR "Im-Rises"
 #define PROJECT_NAME "GameBoyEmulator"
 

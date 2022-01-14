@@ -289,6 +289,8 @@ private:
 
 	uint8 flagToByte(const Flag& flag)const;//Function to convert from flag to byte
 	Flag byteToFlag(const uint8& byte)const;//Function to convert from byte to flag
+
+	void doOneParallelCycle();
 };
 
 #endif
