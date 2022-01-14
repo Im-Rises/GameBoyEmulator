@@ -34,6 +34,8 @@ private:
 	lcdScreen[DOTS_DISPLAY_X][DOTS_DISPLAY_Y];
 
 	int scanLineCounter;
+	uint8 LY;
+	uint8 LYC;
 
 public:
 	Ppu(Memory* memory);
@@ -51,6 +53,8 @@ private:
 	uint8 colorToRGB(uint8 colorGameBoy);
 
 	void requestInterrupt(const uint8& intertuptCode);
+
+	bool checkLyEqualsLyc();
 
 public:
 	uint8 getLcdScreenPixel(int indexX, int indexY)const;

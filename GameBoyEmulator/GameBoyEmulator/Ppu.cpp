@@ -17,13 +17,14 @@ void Ppu::reset()
 		}
 	}
 	scanLineCounter = 456;//Number of clock cycles to draw one scanline
+	LY = LYC = 0;
 }
 
 
 void Ppu::draw(const int& cycles)
 {
 	//ERROR
-	//updateStatRegister();
+	updateStatRegister();
 	//ERRROR
 	uint8 lcdc = memory->read(LCDC_ADDRESS);
 
@@ -33,6 +34,7 @@ void Ppu::draw(const int& cycles)
 
 		if (scanLineCounter <= 0)
 		{
+			//updateStatRegister();
 			memory->write(LY_ADDRESS, memory->read(LY_ADDRESS) + 1);
 			uint8 scanLine = memory->read(LY_ADDRESS);
 			scanLineCounter = 456;
@@ -46,6 +48,29 @@ void Ppu::draw(const int& cycles)
 		}
 	}
 }
+
+//void Ppu::updateStatRegister()
+//{
+//	uint8 lcdc = memory->read(LCDC_ADDRESS);
+//	uint8 stat = memory->read(STAT_ADDRESS);
+//	uint8 scanLine = memory->read(LY_ADDRESS);
+//	uint8 currentMode = stat & 0b00000011;
+//
+//	if (scanLine == memory->read(LYC_ADDRESS))
+//	{
+//		stat = setBit(stat, 2);
+//		if (testBit(stat, 6))
+//		{
+//			requestInterrupt(1);
+//		}
+//	}
+//	else
+//	{
+//		stat = resetBit(stat, 2);
+//	}
+//
+//	memory->write(STAT_ADDRESS, stat);
+//}
 
 void Ppu::updateStatRegister()
 {
@@ -79,14 +104,14 @@ void Ppu::updateStatRegister()
 			int mode2bounds = 456 - 80;
 			int mode3bounds = mode2bounds - 172;
 
-			if (scanLine >= mode2bounds)
+			if (scanLineCounter >= mode2bounds)
 			{
 				mode = 2;
 				stat = setBit(stat, 1);
 				stat = resetBit(stat, 0);
 				requestInterruptBool = testBit(stat, 5);
 			}
-			else if (scanLine >= mode3bounds)
+			else if (scanLineCounter >= mode3bounds)
 			{
 				mode = 3;
 				stat = setBit(stat, 1);
@@ -106,19 +131,26 @@ void Ppu::updateStatRegister()
 			requestInterrupt(1);
 		}
 
-		if (scanLine == memory->read(LYC_ADDRESS))
+		if ((LY != memory->read(LY_ADDRESS) || LYC != memory->read(LYC_ADDRESS)))//Check LY==LYC if LY or LYC have change since last time
 		{
-			stat = setBit(stat, 2);
-			if (testBit(stat, 6))
+			if (scanLine == memory->read(LYC_ADDRESS))
 			{
-				requestInterrupt(1);
+				stat = setBit(stat, 2);
+				if (testBit(stat, 6))
+				{
+					requestInterrupt(1);
+				}
 			}
+			else
+			{
+				stat = resetBit(stat, 2);
+			}
+
+			LY = memory->read(LY_ADDRESS);
+			LYC = memory->read(LYC_ADDRESS);
 		}
-		else
-		{
-			stat = resetBit(stat, 2);
-		}
-		
+
+
 		memory->write(STAT_ADDRESS, stat);
 	}
 }
@@ -381,6 +413,11 @@ void Ppu::requestInterrupt(const uint8& bitIndex)
 	uint8 ifRegister = memory->read(INTERRUPT_FLAG_IF_ADDRESS);
 	ifRegister = setBit(ifRegister, bitIndex);
 	memory->write(INTERRUPT_FLAG_IF_ADDRESS, ifRegister);
+}
+
+bool Ppu::checkLyEqualsLyc()
+{
+	return (memory->read(LY_ADDRESS) == memory->read(LYC_ADDRESS));
 }
 
 uint8 Ppu::getLcdScreenPixel(int indexX, int indexY)const

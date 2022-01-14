@@ -75,8 +75,8 @@ int Cpu::doCycle(const uint8& userInputs)
 	//if (pc >= 0x27A3)
 	//	cout << "Big error" << endl;
 
-	if (pc==0x48)
-		cout << "Big error" << endl;
+	//if (pc <= 0x48)
+	//	cout << "Big error" << endl;
 
 	//uint8 lcdc = memory->read(0xFF40);
 	//uint8 ly = memory->read(0xFF44);
@@ -260,10 +260,10 @@ void Cpu::handleInterupt()//Thanks codesLinger.com
 			{
 				//for (int i = 0; i < 5; i++)
 				//{
-				//	if (testBit(ieRegister, i) == true)
+				//	if (testBit(temp, i) == true)
 				//	{
-				//		if (testBit(ifRegister, i))
-				//			doInterupt(i + 1);
+				//		if (testBit(temp, i))
+				//			doInterupt(i);
 				//	}
 				//}
 				if (testBit(temp, 0))
@@ -300,9 +300,10 @@ void Cpu::doInterupt(const uint8& bitIndex)
 	uint8 ifRegister = memory->read(INTERRUPT_FLAG_IF_ADDRESS);
 	ifRegister = resetBit(ifRegister, bitIndex);
 	//memory->write(INTERRUPT_FLAG_IF_ADDRESS, interruptCode - 1);
-	memory->write(INTERRUPT_FLAG_IF_ADDRESS, ifRegister);
+	memory->directWrite(INTERRUPT_FLAG_IF_ADDRESS, ifRegister);
 	writeMemory(sp - 1, (pc >> 8));
 	writeMemory(sp - 2, (pc & 0x00FF));
+	//clockCycles += 8;
 	sp -= 2;
 	halted = false;
 	switch (bitIndex + 1)
