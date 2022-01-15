@@ -1,11 +1,8 @@
 #ifndef DEF_LCD
 #define DEF_LCD 
 
-#include "Memory.h"
-
-#include <iostream>
 #include "binaryLib.h"
-
+#include "Memory.h"
 
 #define DOTS_DISPLAY_X 160
 #define DOTS_DISPLAY_Y 144
@@ -26,6 +23,8 @@ class Ppu
 {
 private:
 	Memory* memory = nullptr;
+	SDL_Window* window;
+	SDL_Renderer* renderer;
 
 	struct Screen {
 		uint8 colorRGB;

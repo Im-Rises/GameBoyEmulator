@@ -1,8 +1,10 @@
 #include "GameBoy.h"
 
+#include <iostream>
+
 GameBoy* GameBoy::gameboyInstance = 0;
 
-GameBoy::GameBoy() : memory(&joypad), cpu(&memory, &ppu, &spu), ppu(&memory)
+GameBoy::GameBoy() : memory(&joypad), cpu(&memory, &ppu, &spu), ppu(&memory), spu(&memory)
 {
 	fps = 0;
 	fpsStartTime = 0;

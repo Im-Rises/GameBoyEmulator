@@ -1,5 +1,7 @@
 #include "Cpu.h"
 
+#include <iostream>
+
 Cpu::Cpu(Memory* memory, Ppu* ppu, Spu* spu)
 {
 	this->memory = memory;
@@ -110,7 +112,7 @@ int Cpu::doCycle()
 	clockCycleDuringOpcode *= 4;
 
 	ppu->draw(clockCycles);
-	//spu->doSounds();
+	spu->doSounds(clockCycles);
 	doTimers(clockCycles);
 
 	handleInterupt();
@@ -623,7 +625,7 @@ void Cpu::executeOpcode(uint8 opcode)
 	case(0xFB): {EI(); break; }
 	case(0xFE): {CP_A_d8(); break; }
 	case(0xFF): {RST(); break; }
-	default: {cerr << "Error opcode 0x" << opcode << " unknown at pc = 0x" << hex << pc << endl; exit(1); break; }
+	default: {cerr << "Error opcode 0x" << opcode << " unknown at pc = 0x" << hex << (int)pc << endl; exit(1); break; }
 	}
 }
 
@@ -889,7 +891,7 @@ void Cpu::executeOpcodeFollowingCB()
 	case(0xFD): {SET_b_R(7, L); break; }
 	case(0xFE): {SET_b_aHL(7); break; }
 	case(0xFF): {SET_b_R(7, A);  break; }
-	default: {cerr << "Error opcode after CB unknown" << endl; break; }
+	default: {cerr << "Error opcode after CB unknown at pc = " << hex << (int)pc << endl; break; }
 	}
 }
 

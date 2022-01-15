@@ -1,5 +1,26 @@
 #include "Ppu.h"
 
+#include <iostream>
+
+#include "SDL2/include/SDL.h"
+
+//Ppu::Ppu(Memory* memory)
+//{
+//	this->memory = memory;
+//
+//	SDL_Init(SDL_INIT_VIDEO);
+//	SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
+//	SDL_CreateWindowAndRenderer(160, 144, 0, &window, &renderer);
+//	SDL_SetWindowSize(window, 640, 576);
+//	SDL_SetWindowResizable(window, SDL_TRUE);
+//
+//}
+//
+//Ppu::Ppu()
+//{
+//
+//}
+
 Ppu::Ppu(Memory* memory)
 {
 	this->memory = memory;

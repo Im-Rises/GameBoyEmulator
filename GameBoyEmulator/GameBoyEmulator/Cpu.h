@@ -1,19 +1,17 @@
 #ifndef DEF_CPU
 #define DEF_CPU
 
-#include "Memory.h"
-#include "Ppu.h"
-
 #include "binaryLib.h"
-#include "Spu.h"
-
-#include <iostream>
 
 #define DIV 0xFF04
 
 #define TIMA 0xFF05	//timer counter
 #define TMA 0xFF06 //timer modulo register
 #define TAC 0xFF07 //timer control register
+
+#include "Memory.h"
+#include "Ppu.h"
+#include "Spu.h"
 
 #define CLOCK_FREQUENCY 4194304 //In Hz (number of clock frequency by second)
 //#define CPU_FREQUENCY CLOCK_FREQUENCY/4 //In Hz (number of machine cycle by second)

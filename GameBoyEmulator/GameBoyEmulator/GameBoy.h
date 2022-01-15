@@ -1,9 +1,7 @@
 #ifndef DEF_GAMEBOY
 #define DEF_GAMEBOY
 
-#include <iostream>
-#include <chrono>
-#include <thread>
+
 
 #include "SdlLib.h"
 #include "binaryLib.h"
