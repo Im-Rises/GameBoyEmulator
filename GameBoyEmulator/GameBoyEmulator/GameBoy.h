@@ -13,6 +13,7 @@
 #include "Ppu.h"
 #include "Cartridge.h"
 #include "Spu.h"
+#include "Joypad.h"
 
 #define VER 0.6
 #define AUTHOR "Im-Rises"
@@ -39,8 +40,9 @@ private:
 	Memory memory;
 	Cpu cpu;
 	Ppu ppu;
-	//Spu spu;
-	//GlfwOpenglLib lcdScreenInputs;
+	Joypad joypad;
+	Spu spu;
+	//GlfwOpenglLib lcdScreen;
 	Cartridge* cartridge = nullptr;
 
 	uint8 fps;

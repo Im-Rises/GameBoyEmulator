@@ -24,7 +24,7 @@ SdlLib::SdlLib(int width, int height, string title)
 
 	pixelsSize = std::max(width, height) / 144;
 
-	keystate = SDL_GetKeyboardState(NULL);//Get pointer to the state of all keys of the keayboard
+	//keystate = SDL_GetKeyboardState(NULL);//Get pointer to the state of all keys of the keayboard
 
 	SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
 
@@ -73,21 +73,21 @@ void SdlLib::renderPresent()
 	SDL_RenderPresent(renderer);
 }
 
-uint8 SdlLib::readGameBoyInputs()
-{
-	SDL_PumpEvents();
-
-	(keystate[SDL_SCANCODE_RIGHT]) ? gameBoyInputs = resetBit(gameBoyInputs, 0) : gameBoyInputs = setBit(gameBoyInputs, 0);
-	(keystate[SDL_SCANCODE_LEFT]) ? gameBoyInputs = resetBit(gameBoyInputs, 1) : gameBoyInputs = setBit(gameBoyInputs, 1);
-	(keystate[SDL_SCANCODE_UP]) ? gameBoyInputs = resetBit(gameBoyInputs, 2) : gameBoyInputs = setBit(gameBoyInputs, 2);
-	(keystate[SDL_SCANCODE_DOWN]) ? gameBoyInputs = resetBit(gameBoyInputs, 3) : gameBoyInputs = setBit(gameBoyInputs, 3);
-	(keystate[SDL_SCANCODE_D]) ? gameBoyInputs = resetBit(gameBoyInputs, 4) : gameBoyInputs = setBit(gameBoyInputs, 4);
-	(keystate[SDL_SCANCODE_S]) ? gameBoyInputs = resetBit(gameBoyInputs, 5) : gameBoyInputs = setBit(gameBoyInputs, 5);
-	(keystate[SDL_SCANCODE_SPACE]) ? gameBoyInputs = resetBit(gameBoyInputs, 6) : gameBoyInputs = setBit(gameBoyInputs, 6);
-	(keystate[SDL_SCANCODE_RETURN]) ? gameBoyInputs = resetBit(gameBoyInputs, 7) : gameBoyInputs = setBit(gameBoyInputs, 7);
-
-	return gameBoyInputs;
-}
+//uint8 SdlLib::readGameBoyInputs()
+//{
+//	SDL_PumpEvents();
+//
+//	(keystate[SDL_SCANCODE_RIGHT]) ? gameBoyInputs = resetBit(gameBoyInputs, 0) : gameBoyInputs = setBit(gameBoyInputs, 0);
+//	(keystate[SDL_SCANCODE_LEFT]) ? gameBoyInputs = resetBit(gameBoyInputs, 1) : gameBoyInputs = setBit(gameBoyInputs, 1);
+//	(keystate[SDL_SCANCODE_UP]) ? gameBoyInputs = resetBit(gameBoyInputs, 2) : gameBoyInputs = setBit(gameBoyInputs, 2);
+//	(keystate[SDL_SCANCODE_DOWN]) ? gameBoyInputs = resetBit(gameBoyInputs, 3) : gameBoyInputs = setBit(gameBoyInputs, 3);
+//	(keystate[SDL_SCANCODE_D]) ? gameBoyInputs = resetBit(gameBoyInputs, 4) : gameBoyInputs = setBit(gameBoyInputs, 4);
+//	(keystate[SDL_SCANCODE_S]) ? gameBoyInputs = resetBit(gameBoyInputs, 5) : gameBoyInputs = setBit(gameBoyInputs, 5);
+//	(keystate[SDL_SCANCODE_SPACE]) ? gameBoyInputs = resetBit(gameBoyInputs, 6) : gameBoyInputs = setBit(gameBoyInputs, 6);
+//	(keystate[SDL_SCANCODE_RETURN]) ? gameBoyInputs = resetBit(gameBoyInputs, 7) : gameBoyInputs = setBit(gameBoyInputs, 7);
+//
+//	return gameBoyInputs;
+//}
 
 
 uint32 SdlLib::getTicks()

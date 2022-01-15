@@ -1,7 +1,8 @@
 #include "Memory.h"
 
-Memory::Memory()
+Memory::Memory(Joypad* joypad)
 {
+	this->joypad = joypad;
 	reset();
 }
 
@@ -127,7 +128,7 @@ void Memory::setMemoryWithoutBios()
 }
 
 
-uint8 Memory::read(const uint16 address)const//OK
+uint8 Memory::read(const uint16 address)//OK
 {
 	if ((address >= 0x4000) && (address <= 0x7FFF))//Read in rom bank area (Cartridge)
 	{
@@ -136,6 +137,13 @@ uint8 Memory::read(const uint16 address)const//OK
 	else if ((address >= 0xA000) && (address <= 0xBFFF))//Read in ram bank also known as External Expansion Working RAM (Cartridge)
 	{
 		return cartridge->readRamBank(address);
+	}
+	else if (address == 0xFF00)//Trap input's read
+	{
+		uint8 temp = joypad->readInputs(memoryArray[0xFF00]);
+		if (joypad->getEnableInterrupt())
+			requestInterrupt(4);
+		return temp;
 	}
 	else//Read everywhere else in the memory (memory)
 	{
@@ -201,6 +209,13 @@ void Memory::directWrite(const uint16& address, const uint8& value)
 	memoryArray[address] = value;
 }
 
+
+void Memory::requestInterrupt(uint8 bitIndex)
+{
+	uint8 ifRegister = memoryArray[INTERRUPT_FLAG_IF_ADDRESS];
+	ifRegister = setBit(ifRegister, bitIndex);
+	memoryArray[INTERRUPT_FLAG_IF_ADDRESS] = ifRegister;
+}
 
 
 void Memory::setResetBitMemory(const uint16& address, const bool bit, const int bitIndex)

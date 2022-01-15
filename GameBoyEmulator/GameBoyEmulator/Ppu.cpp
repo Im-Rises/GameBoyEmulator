@@ -27,50 +27,38 @@ void Ppu::draw(const int& cycles)
 	updateStatRegister();
 	//ERRROR
 	uint8 lcdc = memory->read(LCDC_ADDRESS);
+	uint8 ly = memory->read(0xFF44);
 
 	if (testBit(lcdc, 7))
 	{
 		scanLineCounter -= cycles;
-
-		if (scanLineCounter <= 0)
-		{
-			//updateStatRegister();
-			memory->write(LY_ADDRESS, memory->read(LY_ADDRESS) + 1);
-			uint8 scanLine = memory->read(LY_ADDRESS);
-			scanLineCounter = 456;
-
-			if (scanLine == 144)
-				requestInterrupt(0);
-			else if (scanLine > 153)
-				memory->directWrite(LY_ADDRESS, 0);
-			else if (scanLine < 144)
-				drawLine();
-		}
 	}
-}
 
-//void Ppu::updateStatRegister()
-//{
-//	uint8 lcdc = memory->read(LCDC_ADDRESS);
-//	uint8 stat = memory->read(STAT_ADDRESS);
-//	uint8 scanLine = memory->read(LY_ADDRESS);
-//	uint8 currentMode = stat & 0b00000011;
-//
-//	if (scanLine == memory->read(LYC_ADDRESS))
-//	{
-//		stat = setBit(stat, 2);
-//		if (testBit(stat, 6))
-//		{
-//			requestInterrupt(1);
-//		}
-//	}
-//	else
-//	{
-//		stat = resetBit(stat, 2);
-//	}
-//
-//	memory->write(STAT_ADDRESS, stat);
-//}
+	if (ly > 153)
+	{
+		memory->write(0xFF44, 0);
+	}
+
+	if (scanLineCounter <= 0)
+	{
+		if (!testBit(lcdc, 7))
+			return;
+
+		memory->write(LY_ADDRESS, memory->read(LY_ADDRESS) + 1);
+		uint8 scanLine = memory->read(LY_ADDRESS);
+		scanLineCounter = 456;
+
+
+
+		if (scanLine == 144)
+			requestInterrupt(0);
+		else if (scanLine > 153)
+			memory->directWrite(LY_ADDRESS, 0);
+		else if (scanLine < 144)
+			drawLine();
+	}
+
+}
 
 void Ppu::updateStatRegister()
 {
@@ -247,7 +235,7 @@ void Ppu::drawBackgroundLine(const uint8& lcdc)
 
 		uint8 color = transformDotDataToColor(colorCode, BG_PALETTE_DATA);
 
-		if (testBit(lcdc, 0) || windowing)
+		if (testBit(lcdc, 0))
 		{
 			lcdScreen[pixel][ly].colorRGB = colorToRGB(color);
 			lcdScreen[pixel][ly].backgroundTransparent = (colorCode == 0);

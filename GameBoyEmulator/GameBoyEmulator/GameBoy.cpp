@@ -2,7 +2,7 @@
 
 GameBoy* GameBoy::gameboyInstance = 0;
 
-GameBoy::GameBoy() : cpu(&memory, &ppu), ppu(&memory)
+GameBoy::GameBoy() : memory(&joypad), cpu(&memory, &ppu, &spu), ppu(&memory)
 {
 	fps = 0;
 	fpsStartTime = 0;
@@ -96,7 +96,7 @@ void GameBoy::doGameBoyCycle(SdlLib& sdlLib, const int cyclesToDo)
 
 	while (performedCycles < cyclesToDo)
 	{
-		uint8 cycles = cpu.doCycle(sdlLib.readGameBoyInputs());
+		uint8 cycles = cpu.doCycle();
 		performedCycles += cycles;
 	}
 

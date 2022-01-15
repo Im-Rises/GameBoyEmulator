@@ -5,6 +5,7 @@
 #include "Ppu.h"
 
 #include "binaryLib.h"
+#include "Spu.h"
 
 #include <iostream>
 
@@ -69,14 +70,15 @@ private:
 
 	Memory* memory = nullptr;	//Memory of the console
 	Ppu* ppu = nullptr;			//PPU of the console
+	Spu* spu = nullptr;
 
 public:
-	Cpu(Memory* memory, Ppu* ppu);						//Constructor without bios
+	Cpu(Memory* memory, Ppu* ppu, Spu* spu);			//Constructor without bios
 	void reset();										//Reset Cpu
 	void setCpuWithBios();								//Set cpu with bios
 	void setCpuWithoutBios();							//Set cpu without bios
 
-	int doCycle(const uint8& userInputs);					//Do cpu cycle
+	int doCycle();					//Do cpu cycle
 
 private:
 	void executeOpcode(uint8 opcode);			//Execute an opcode

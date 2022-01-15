@@ -1,9 +1,10 @@
 #include "Cpu.h"
 
-Cpu::Cpu(Memory* memory, Ppu* ppu)
+Cpu::Cpu(Memory* memory, Ppu* ppu, Spu* spu)
 {
 	this->memory = memory;
 	this->ppu = ppu;
+	this->spu = spu;
 	timerFrequency = 1024;
 	clockCycles = 0;
 	halted = 0;
@@ -67,7 +68,7 @@ void Cpu::setCpuWithoutBios()
 	previousInputs = 0b11111111;
 }
 
-int Cpu::doCycle(const uint8& userInputs)
+int Cpu::doCycle()
 {
 	//if (operationNumber > 61270)
 	//	cout << "Big error" << endl;
@@ -93,7 +94,7 @@ int Cpu::doCycle(const uint8& userInputs)
 	//}
 
 
-	handleInputs(userInputs);
+	//handleInputs(userInputs);
 
 	clockCycles = 0;
 	clockCycleDuringOpcode = 0;
@@ -109,6 +110,7 @@ int Cpu::doCycle(const uint8& userInputs)
 	clockCycleDuringOpcode *= 4;
 
 	ppu->draw(clockCycles);
+	//spu->doSounds();
 	doTimers(clockCycles);
 
 	handleInterupt();
@@ -118,64 +120,64 @@ int Cpu::doCycle(const uint8& userInputs)
 
 /*------------------------------------------INPUTS--------------------------------*/
 
-void Cpu::handleInputs(const uint8& userInputs)
-{
-	/*
-	* User inputs bits:
-	* Right  = 0b00000001
-	* Left   = 0b00000010
-	* Up     = 0b00000100
-	* Down   = 0b00001000
-	* A      = 0b00010000
-	* B      = 0b00100000
-	* Select = 0b01000000
-	* Start  = 0b10000000
-	*/
+//void Cpu::handleInputs(const uint8& userInputs)
+//{
+//	/*
+//	* User inputs bits:
+//	* Right  = 0b00000001
+//	* Left   = 0b00000010
+//	* Up     = 0b00000100
+//	* Down   = 0b00001000
+//	* A      = 0b00010000
+//	* B      = 0b00100000
+//	* Select = 0b01000000
+//	* Start  = 0b10000000
+//	*/
+//
+//	uint8 memoryInputs = memory->read(0xFF00);
+//
+//	if (!testBit(memoryInputs, 4))//Directions buttons
+//	{
+//		memoryInputs &= 0xF0;
+//		memoryInputs |= (userInputs & 0xF);
+//		memory->write(0xFF00, memoryInputs);
+//
+//		checkInputsInterrupt(userInputs & 0xF, previousInputs & 0xF);
+//	}
+//	else if (!testBit(memoryInputs, 5))//Action buttons
+//	{
+//		memory->write(0xFF00, 0xFF);
+//		memoryInputs &= 0xF0;
+//		memoryInputs |= (userInputs >> 4);
+//		memory->write(0xFF00, memoryInputs);
+//
+//		checkInputsInterrupt(userInputs >> 4, previousInputs >> 4);
+//	}
+//
+//	previousInputs = userInputs;
+//
+//	//Implement button interrupts
+//	//To implements we need to know if the cycle before the buttons were pressed
+//}
 
-	uint8 memoryInputs = memory->read(0xFF00);
-
-	if (!testBit(memoryInputs, 4))//Directions buttons
-	{
-		memoryInputs &= 0xF0;
-		memoryInputs |= (userInputs & 0xF);
-		memory->write(0xFF00, memoryInputs);
-
-		checkInputsInterrupt(userInputs & 0xF, previousInputs & 0xF);
-	}
-	else if (!testBit(memoryInputs, 5))//Action buttons
-	{
-		memory->write(0xFF00, 0xFF);
-		memoryInputs &= 0xF0;
-		memoryInputs |= (userInputs >> 4);
-		memory->write(0xFF00, memoryInputs);
-
-		checkInputsInterrupt(userInputs >> 4, previousInputs >> 4);
-	}
-
-	previousInputs = userInputs;
-
-	//Implement button interrupts
-	//To implements we need to know if the cycle before the buttons were pressed
-}
-
-void Cpu::checkInputsInterrupt(uint8 currentInputs, uint8 previousInputs)
-{
-	//Not working 
-
-	if (currentInputs != previousInputs)
-		cout << "Previous input different from the current one" << endl;
-
-	bool enableinterrupt = false;
-
-	for (int i = 0; i < 4; i++)
-	{
-		if ((testBit(previousInputs, i) == 1) && (testBit(currentInputs, i) == 0))//If previous input equals 1 and current button input equals 0 
-			enableinterrupt = true;
-	}
-
-	if (enableinterrupt)
-		requestInterrupt(4);
-}
+//void Cpu::checkInputsInterrupt(uint8 currentInputs, uint8 previousInputs)
+//{
+//	//Not working 
+//
+//	//if (currentInputs != previousInputs)
+//	//	cout << "Previous input different from the current one" << endl;
+//
+//	bool enableinterrupt = false;
+//
+//	for (int i = 0; i < 4; i++)
+//	{
+//		if ((testBit(previousInputs, i) == 1) && (testBit(currentInputs, i) == 0))//If previous input equals 1 and current button input equals 0 
+//			enableinterrupt = true;
+//	}
+//
+//	if (enableinterrupt)
+//		requestInterrupt(4);
+//}
 
 
 void Cpu::doTimers(const int& cycles)
@@ -361,21 +363,6 @@ void Cpu::writeMemory(const uint16& address, const uint8& data)
 	{
 		memory->directWrite(LY_ADDRESS, 0);
 	}
-	else if (address == DMA_ADDRESS)
-	{
-		uint16 address = data << 8;
-		for (int i = 0; i < 0xA0; i++)
-		{
-			memory->write(0xFE00 + i, memory->read(address + i));
-		}
-	}
-	//else if (address == 0xFF41)
-	//{
-	//	uint8 stat = memory->read(0xFF41);
-	//	stat &= 0b10000111;
-	//	stat |= data;
-	//	memory->write(0xFF41, stat);
-	//}
 	else
 	{
 		memory->write(address, data);

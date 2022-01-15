@@ -7,6 +7,7 @@
 #include "binaryLib.h"
 
 #include "Cartridge.h"
+#include "Joypad.h"
 
 #define MEMORY_SIZE (0xFFFF + 0x0001)	//65535 KB
 #define ROM_DATA_AREA 0x100
@@ -61,9 +62,10 @@ private:
 	bool biosInMemory;
 	bool gameInMemory;
 	Cartridge* cartridge = nullptr;
+	Joypad* joypad = nullptr;
 
 public:
-	Memory();
+	Memory(Joypad* joypad);
 	~Memory();
 	void reset();
 
@@ -76,11 +78,12 @@ public:
 	void setMemoryWithoutBios();
 
 	//Read and write to cartridge or memory
-	uint8 read(const uint16 address)const;
+	uint8 read(const uint16 address);
 	void write(const uint16& address, const uint8 value);
 	uint8 directRead(const uint16& address)const;
 	void directWrite(const uint16& address, const uint8& value);
 
+	void requestInterrupt(uint8 bitIndex);
 	//void increment(const uint16& address);
 	//void decrement(const uint16& address);
 
