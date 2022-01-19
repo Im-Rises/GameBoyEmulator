@@ -19,6 +19,7 @@ Video overview of the Game Boy, to understand the fundamental
 
 The main documentation about the console:  
 <https://archive.org/details/GameBoyProgManVer1.1/mode/2up>  
+<https://gbdev.io/pandocs/Specifications.html>
 
 The bootrom  
 <https://gbdev.gg8.se/wiki/articles/Gameboy_Bootstrap_ROM>  
@@ -26,14 +27,19 @@ The bootrom
 Opcodes map  
 <https://www.pastraiser.com/cpu/gameboy/gameboy_opcodes.html>  
 
-PPU timing and Rom/Ram banking  
-<http://www.codeslinger.co.uk/pages/projects/gameboy/beginning.html>  ❤️  
-<!--<http://imrannazar.com/GameBoy-Emulation-in-JavaScript:-Interrupts>  -->
-<https://hacktixme.ga/GBEDG/>  
-<https://emudev.de/gameboy-emulator/throttling-the-emulation/>  
-<!--<http://emulator101.com>  -->
-<https://emudev.org>  
+Rom/Ram banking  
+<http://www.codeslinger.co.uk/pages/projects/gameboy/beginning.html>  
+
+PPU FIFO  
+<https://hacktixme.ga/GBEDG/ppu/>  
+
+SPU  
+<https://nightshade256.github.io/2021/03/27/gb-sound-emulation.html>  
 
 Test roms i use to debug my emulator  
 <https://gbdev.gg8.se/files/roms/blargg-gb-tests/>  
 <https://github.com/mattcurrie/dmg-acid2>  
+
+Other docs (mostly about emulation in general)
+<https://emudev.org>  
+<https://emudev.de/gameboy-emulator>  
