@@ -120,67 +120,6 @@ int Cpu::doCycle()
 	return (clockCycles + clockCycleDuringOpcode);
 }
 
-/*------------------------------------------INPUTS--------------------------------*/
-
-//void Cpu::handleInputs(const uint8& userInputs)
-//{
-//	/*
-//	* User inputs bits:
-//	* Right  = 0b00000001
-//	* Left   = 0b00000010
-//	* Up     = 0b00000100
-//	* Down   = 0b00001000
-//	* A      = 0b00010000
-//	* B      = 0b00100000
-//	* Select = 0b01000000
-//	* Start  = 0b10000000
-//	*/
-//
-//	uint8 memoryInputs = memory->read(0xFF00);
-//
-//	if (!testBit(memoryInputs, 4))//Directions buttons
-//	{
-//		memoryInputs &= 0xF0;
-//		memoryInputs |= (userInputs & 0xF);
-//		memory->write(0xFF00, memoryInputs);
-//
-//		checkInputsInterrupt(userInputs & 0xF, previousInputs & 0xF);
-//	}
-//	else if (!testBit(memoryInputs, 5))//Action buttons
-//	{
-//		memory->write(0xFF00, 0xFF);
-//		memoryInputs &= 0xF0;
-//		memoryInputs |= (userInputs >> 4);
-//		memory->write(0xFF00, memoryInputs);
-//
-//		checkInputsInterrupt(userInputs >> 4, previousInputs >> 4);
-//	}
-//
-//	previousInputs = userInputs;
-//
-//	//Implement button interrupts
-//	//To implements we need to know if the cycle before the buttons were pressed
-//}
-
-//void Cpu::checkInputsInterrupt(uint8 currentInputs, uint8 previousInputs)
-//{
-//	//Not working 
-//
-//	//if (currentInputs != previousInputs)
-//	//	cout << "Previous input different from the current one" << endl;
-//
-//	bool enableinterrupt = false;
-//
-//	for (int i = 0; i < 4; i++)
-//	{
-//		if ((testBit(previousInputs, i) == 1) && (testBit(currentInputs, i) == 0))//If previous input equals 1 and current button input equals 0 
-//			enableinterrupt = true;
-//	}
-//
-//	if (enableinterrupt)
-//		requestInterrupt(4);
-//}
-
 
 void Cpu::doTimers(const int& cycles)
 {

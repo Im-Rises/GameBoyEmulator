@@ -63,6 +63,7 @@ private:
 	bool gameInMemory;
 	Cartridge* cartridge = nullptr;
 	Joypad* joypad = nullptr;
+	//Spu* spu;
 
 public:
 	Memory(Joypad* joypad);

@@ -6,7 +6,7 @@ SdlLib::SdlLib(int width, int height, string title)
 
 	if (SDL_Init(SDL_INIT_VIDEO) != 0)
 	{
-		std::cout << "Error SDL init.\n" << SDL_GetError() << std::endl;
+		std::cout << "Error SDL video init.\n" << SDL_GetError() << std::endl;
 		stopSdl();
 		exit(EXIT_FAILURE);
 	}

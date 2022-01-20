@@ -191,10 +191,29 @@ void Memory::write(const uint16& address, const uint8 value)
 			write(0xFE00 + i, read(address + i));
 		}
 	}
+	//else if (address == 0xFF14)
+	//{
+
+	//}
+	//else if (address == 0xFF19)
+	//{
+
+	//}
+	//else if (address == 0xFF1E)
+	//{
+
+	//}
+	//else if (address == 0xFF23)
+	//{
+
+	//}
 	else//Write everywhere else (Character Data, BG Display Data 1, BG Display Data 2, OAM etc...
 	{
 		memoryArray[address] = value;
 	}
+
+	//Trap the sound trigger here
+
 }
 
 uint8 Memory::directRead(const uint16& address)const
