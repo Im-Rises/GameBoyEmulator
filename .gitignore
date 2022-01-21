@@ -4,6 +4,9 @@
 *.bin
 *.jfm
 
+# Ignore .vs files
+*.icph
+
 # Ignore folder
 /Bios_Games
 /SDL_version

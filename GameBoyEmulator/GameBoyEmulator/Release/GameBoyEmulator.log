@@ -1,20 +1,6 @@
-﻿  binaryLib.cpp
-  Cartridge.cpp
-E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\Cartridge.cpp(18,15): warning C4244: 'initializing': conversion from 'std::streamoff' to 'int', possible loss of data
-  Cpu.cpp
-  debug.cpp
-  GameBoy.cpp
-E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\GameBoy.cpp(113,20): warning C4244: 'argument': conversion from 'double' to 'Uint32', possible loss of data
-  Joypad.cpp
-  main.cpp
-  Memory.cpp
-  Ppu.cpp
-  SdlLib.cpp
-E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\SdlLib.cpp(79,77): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\GameBoyEmulator\SdlLib.cpp(96,77): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-  Spu.cpp
-  Generating code
-  Previous IPDB not found, fall back to full compilation.
-  All 407 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+﻿  Generating code
+  0 of 407 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   GameBoyEmulator.vcxproj -> E:\Perso\Developpement\Programmes\Programmes\C++\GameBoyEmulator\GameBoyEmulator\Release\GameBoyEmulator.exe
