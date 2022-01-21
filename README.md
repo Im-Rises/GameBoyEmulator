@@ -1,7 +1,8 @@
 # GameBoyEmulator
 
 GameBoy Emulator developped in C++ with Visual Studio 2019 using SDL2.  
-As of now there is no audio implemented and games like Pokémon are noy playable.
+As of now there is no audio implemented.  
+Games like pokemon aren't working due to the lack of MBC3/MBC5 cartridges implementation.  
 
 ## Images
 
