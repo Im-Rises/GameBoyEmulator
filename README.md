@@ -2,7 +2,11 @@
 
 GameBoy Emulator developped in C++ with Visual Studio 2019 using SDL2.
 
+## Video  
+
 <https://user-images.githubusercontent.com/59691442/147654838-0d3e11d2-5b09-46fa-ac63-f884d138ea05.mp4>
+
+## Images
 
 ## Documentations  
 
