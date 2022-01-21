@@ -4,7 +4,7 @@
 
 GameBoy* GameBoy::gameboyInstance = 0;
 
-GameBoy::GameBoy() : memory(&joypad), cpu(&memory, &ppu, &spu), ppu(&memory), spu(&memory)
+GameBoy::GameBoy() : memory(&joypad, &spu), cpu(&memory, &ppu, &spu), ppu(&memory), spu(&memory)
 {
 	fps = 0;
 	fpsStartTime = 0;
@@ -51,7 +51,7 @@ void GameBoy::insertGame(Cartridge* cartridge)
 
 void GameBoy::start()
 {
-	SdlLib sdlLib(EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y, PROJECT_NAME);//Create window
+	SdlLib sdlLib(EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y, DOTS_DISPLAY_X, DOTS_DISPLAY_Y, PROJECT_NAME);//Create window
 
 	const int cyclesToDo = CLOCK_FREQUENCY / 60;//Calcul the number of cycles for the update of the screen
 
@@ -59,7 +59,7 @@ void GameBoy::start()
 
 	if (memory.getBiosInMemeory()) //if there is a bios
 	{
-		while (sdlLib.readExitInputs() && cpu.getPc() < 0x100)//cpu.getPc() < 0x100 && glfwOpenglLib.windowIsActive()
+		while (sdlLib.readEmulatorInputs() && cpu.getPc() < 0x100)//cpu.getPc() < 0x100 && glfwOpenglLib.windowIsActive()
 		{
 			doGameBoyCycle(sdlLib, cyclesToDo);
 		}
@@ -81,7 +81,7 @@ void GameBoy::start()
 	}
 
 
-	while (sdlLib.readExitInputs())//sdlLib.windowIsActive()
+	while (sdlLib.readEmulatorInputs())//sdlLib.windowIsActive()
 	{
 		doGameBoyCycle(sdlLib, cyclesToDo);
 	}
@@ -126,13 +126,11 @@ void GameBoy::doGameBoyCycle(SdlLib& sdlLib, const int cyclesToDo)
 
 void GameBoy::updateScreen(SdlLib& sdlLib)
 {
-	float pixelSize = 2.0f / (float)DOTS_DISPLAY_X;
-
 	for (int y = 0; y < DOTS_DISPLAY_Y; y++)
 	{
 		for (int x = 0; x < DOTS_DISPLAY_X; x++)
 		{
-			sdlLib.drawSquare(pixelSize, x, y, ppu.getLcdScreenPixel(x, y));
+			sdlLib.drawSquare(x, y, ppu.getLcdScreenPixel(x, y));
 		}
 	}
 }

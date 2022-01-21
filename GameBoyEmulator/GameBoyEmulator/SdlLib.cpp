@@ -1,6 +1,6 @@
 #include "SdlLib.h"
 
-SdlLib::SdlLib(int width, int height, string title)
+SdlLib::SdlLib(int windowWidth, int windowHeight, int numberPixelsX, int numberPixelsY, string title)
 {
 	windowTitle = title;
 
@@ -11,7 +11,7 @@ SdlLib::SdlLib(int width, int height, string title)
 		exit(EXIT_FAILURE);
 	}
 
-	if (SDL_CreateWindowAndRenderer(width, height, SDL_WINDOW_SHOWN, &window, &renderer) != 0)
+	if (SDL_CreateWindowAndRenderer(windowWidth, windowHeight, SDL_WINDOW_SHOWN, &window, &renderer) != 0)
 	{
 		std::cout << "Error window creation.\n" << SDL_GetError() << std::endl;
 		stopSdl();
@@ -22,15 +22,22 @@ SdlLib::SdlLib(int width, int height, string title)
 
 	running = true;
 
-	pixelsSize = std::max(width, height) / 144;
+	this->numberPixelsX = numberPixelsX;
+	this->numberPixelsY = numberPixelsY;
+
+	setPixelsSize(windowWidth, windowHeight);
+	windowingWidth = windowWidth;
+	windowingHeigth = windowHeight;
 
 	//keystate = SDL_GetKeyboardState(NULL);//Get pointer to the state of all keys of the keayboard
 
 	SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
 
-	SDL_SetWindowResizable(window, SDL_TRUE);
+	//SDL_SetWindowResizable(window, SDL_TRUE);
 
 	gameBoyInputs = 0b11111111;
+
+	windowing = true;
 }
 
 SdlLib::~SdlLib()
@@ -59,9 +66,57 @@ void SdlLib::stopSdl()
 	SDL_Quit();
 }
 
-void SdlLib::drawSquare(const float& pixelSize, const int& x, const int& y, const int& color)
+void SdlLib::setPixelsSize(const int& width, const int& height)
 {
-	SDL_Rect rect = { x * pixelsSize,y * pixelsSize, pixelsSize, pixelsSize };
+	if (width > height)
+	{
+		pixelsSize = height / numberPixelsY;
+
+		float pixelsSizeFloat = (float)height / numberPixelsY;
+
+		if (pixelsSizeFloat > pixelsSize)
+		{
+			yOffset = (pixelsSizeFloat * numberPixelsY - pixelsSize * numberPixelsY) / 2;
+		}
+		else
+		{
+			yOffset = 0;
+		}
+
+		xOffset = (width - pixelsSize * numberPixelsX) / 2;
+	}
+	else
+	{
+		pixelsSize = width / numberPixelsX;
+
+		float pixelsSizeFloat = (float)width / numberPixelsX;
+
+		if (pixelsSizeFloat > pixelsSize)
+		{
+			xOffset = (pixelsSizeFloat * numberPixelsX - pixelsSize * numberPixelsX) / 2;
+		}
+		else
+		{
+			xOffset = 0;
+		}
+
+		yOffset = (height - pixelsSize * numberPixelsY) / 2;
+	}
+
+	//int numberPixelMaxXY = std::max(numberPixelsX, numberPixelsY);
+	//pixelsSize = height / numberPixelMaxXY;
+	//float pixelsSizeFloat = (float)height / numberPixelMaxXY;
+	//yOffset = (height - pixelsSize * numberPixelsY) / 2;
+	//xOffset = (width - pixelsSize * numberPixelsX) / 2;
+
+	//cout << width << " " << height << " " << pixelsSize << endl;
+	//cout << xOffset << " " << yOffset << endl;
+}
+
+void SdlLib::drawSquare(const int& x, const int& y, const int& color)
+{
+	//SDL_Rect rect = { x * pixelsSize,y * pixelsSize, pixelsSize, pixelsSize };
+	SDL_Rect rect = { xOffset + x * pixelsSize,yOffset + y * pixelsSize, pixelsSize, pixelsSize };
 
 	SDL_SetRenderDrawColor(renderer, color, color, color, SDL_ALPHA_OPAQUE);
 
@@ -97,11 +152,18 @@ uint32 SdlLib::getTicks()
 
 
 
-bool SdlLib::readExitInputs()
+bool SdlLib::readEmulatorInputs()
 {
 	SDL_PollEvent(&event);
 
-	//return !(event.type == SDL_QUIT) && !(event.key.keysym.sym == SDLK_ESCAPE);
+	if (event.type == SDL_KEYDOWN)
+	{
+		if (event.key.keysym.sym == SDLK_F11)
+			toggleFullScreen();
+
+		if (event.key.keysym.sym == SDLK_ESCAPE)//Exit on Escape press
+			return false;
+	}
 	return !(event.type == SDL_QUIT);
 }
 
@@ -115,4 +177,21 @@ void SdlLib::setFps(const int fps)
 {
 	string temp = windowTitle + " (fps : " + to_string(fps).c_str() + ")";
 	SDL_SetWindowTitle(window, temp.c_str());
+}
+
+void SdlLib::toggleFullScreen()
+{
+	if (windowing)
+	{
+		SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+	}
+	else
+	{
+		SDL_SetWindowFullscreen(window, 0);
+		//SDL_SetWindowSize(window, windowingWidth, windowingHeigth);
+	}
+
+	setPixelsSize(SDL_GetWindowSurface(window)->w, SDL_GetWindowSurface(window)->h);
+
+	windowing = !windowing;
 }

@@ -51,6 +51,7 @@
 
 #define DMA_ADDRESS 0xFF46
 
+class Spu;
 
 using namespace std;
 
@@ -63,10 +64,10 @@ private:
 	bool gameInMemory;
 	Cartridge* cartridge = nullptr;
 	Joypad* joypad = nullptr;
-	//Spu* spu;
+	Spu* spu;
 
 public:
-	Memory(Joypad* joypad);
+	Memory(Joypad* joypad, Spu* spu);
 	~Memory();
 	void reset();
 

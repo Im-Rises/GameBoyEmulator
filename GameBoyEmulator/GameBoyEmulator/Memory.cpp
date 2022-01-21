@@ -1,7 +1,10 @@
 #include "Memory.h"
 
-Memory::Memory(Joypad* joypad)
+#include "Spu.h"
+
+Memory::Memory(Joypad* joypad, Spu* spu)
 {
+	this->spu = spu;
 	this->joypad = joypad;
 	reset();
 }
@@ -191,22 +194,26 @@ void Memory::write(const uint16& address, const uint8 value)
 			write(0xFE00 + i, read(address + i));
 		}
 	}
-	//else if (address == 0xFF14)
-	//{
-
-	//}
-	//else if (address == 0xFF19)
-	//{
-
-	//}
-	//else if (address == 0xFF1E)
-	//{
-
-	//}
-	//else if (address == 0xFF23)
-	//{
-
-	//}
+	else if (address == 0xFF14)
+	{
+		memoryArray[address] = value;
+		spu->resetSound1();
+	}
+	else if (address == 0xFF19)
+	{
+		memoryArray[address] = value;
+		spu->resetSound2();
+	}
+	else if (address == 0xFF1E)
+	{
+		memoryArray[address] = value;
+		spu->resetSound3();
+	}
+	else if (address == 0xFF23)
+	{
+		memoryArray[address] = value;
+		spu->resetSound4();
+	}
 	else//Write everywhere else (Character Data, BG Display Data 1, BG Display Data 2, OAM etc...
 	{
 		memoryArray[address] = value;

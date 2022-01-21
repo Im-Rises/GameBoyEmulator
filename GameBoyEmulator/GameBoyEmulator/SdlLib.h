@@ -18,33 +18,46 @@ private:
 
 	string windowTitle;
 
+	bool windowing;
+	int windowingWidth;
+	int windowingHeigth;
+	int xOffset;
+	int yOffset;
 	int pixelsSize;
+	int numberPixelsX;
+	int numberPixelsY;
+
+
+
 	bool running;
 
 	const uint8* keystate;
 	uint8 gameBoyInputs;
 
 public:
-	SdlLib(int width, int height, string title);
+	SdlLib(int windowWidth, int windowHeight, int numberPixelsX, int numberPixelsY, string title);
 	~SdlLib();
 
 private:
 	void stopSdl();
+	void setPixelsSize(const int& width, const int& height);
 
 public:
-	void drawSquare(const float& pixelSize, const int& x, const int& y, const int& color);
+	void drawSquare(const int& x, const int& y, const int& color);
 
 	void renderPresent();
 
-	uint8 readGameBoyInputs();
+	//uint8 readGameBoyInputs();
 
 	uint32 getTicks();
 
-	bool readExitInputs();
+	bool readEmulatorInputs();
 
 	bool isRunning();
 
 	void setFps(const int fps);
+
+	void toggleFullScreen();
 };
 
 #endif 

@@ -47,15 +47,15 @@ private:
 
 private:
 	void doSound1(const int& cycles);
-
-
 	void doSound2(const int& cycles);
-
-
 	void doSound3(const int& cycles);
-	void sc3Reset();
-
 	void doSound4(const int& cycles);
+
+public:
+	void resetSound1();
+	void resetSound2();
+	void resetSound3();
+	void resetSound4();
 };
 
 #endif

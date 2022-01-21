@@ -82,6 +82,7 @@ Spu::Spu(Memory* memory)
 	sc2Fs = 0;
 	sc2WaveDutyPosition = 0;
 	sc2Length = 0;
+	sc2Amplitude = 0;
 
 
 
@@ -148,7 +149,7 @@ void Spu::doSound2(const int& cycles)
 	if (sc2Counter <= 0)
 	{
 		uint16 frequency = ((nr24 & 0b00000111) << 8) | memory->read(0xFF18);
-		sc2Counter = 2 * (frequency - 2048);
+		sc2Counter = 4 * (frequency - 2048);
 		sc2WaveDutyPosition++;
 		sc2WaveDutyPosition %= 8;
 	}
@@ -215,7 +216,7 @@ void Spu::doSound3(const int& cycles)
 		{
 			soundLength--;
 			memory->write(0xFF1B, soundLength);
-			sc3Reset();
+			//sc3Reset();
 		}
 		else//if counter disbale
 		{
@@ -276,20 +277,37 @@ void Spu::doSound3(const int& cycles)
 		{
 			if (testBit(nr34, 7))
 			{
-				sc3Reset();
+				//sc3Reset();
 			}
 		}
 	}
 }
 
-void Spu::sc3Reset()
+
+
+void Spu::doSound4(const int& cycles)
 {
-	sc3Step = 0;
+
 }
 
 
 
-void Spu::doSound4(const int& cycles)
+void Spu::resetSound1()
+{
+
+}
+
+void Spu::resetSound2()
+{
+
+}
+
+void Spu::resetSound3()
+{
+
+}
+
+void Spu::resetSound4()
 {
 
 }
