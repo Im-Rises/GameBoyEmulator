@@ -18,6 +18,7 @@ SdlLib::SdlLib(int windowWidth, int windowHeight, int numberPixelsX, int numberP
 		exit(EXIT_FAILURE);
 	}
 
+
 	SDL_SetWindowTitle(window, title.c_str());
 
 	running = true;
@@ -161,8 +162,9 @@ bool SdlLib::readEmulatorInputs()
 		if (event.key.keysym.sym == SDLK_F11)
 			toggleFullScreen();
 
-		if (event.key.keysym.sym == SDLK_ESCAPE)//Exit on Escape press
-			return false;
+		//Cause issue in linux by closing window instantly
+		//if (event.key.keysym.sym == SDLK_ESCAPE)//Exit on Escape press
+		//	return false;
 	}
 	return !(event.type == SDL_QUIT);
 }
@@ -188,7 +190,7 @@ void SdlLib::toggleFullScreen()
 	else
 	{
 		SDL_SetWindowFullscreen(window, 0);
-		//SDL_SetWindowSize(window, windowingWidth, windowingHeigth);
+		SDL_SetWindowSize(window, windowingWidth, windowingHeigth);//This line is needed for linux to reset correctly the dimensions of the screen
 	}
 
 	setPixelsSize(SDL_GetWindowSurface(window)->w, SDL_GetWindowSurface(window)->h);
