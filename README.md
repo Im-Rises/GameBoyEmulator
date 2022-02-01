@@ -5,6 +5,9 @@ You can compile the program using CMake.
 As of now there is no audio implemented.  
 Games like pokemon aren't working due to the lack of MBC3/MBC5 cartridges implementation.  
 
+SDL2 website:
+<https://www.libsdl.org>
+
 ## Images
 
 | Tetris | Super Mario Land 2 |
@@ -18,6 +21,15 @@ Games like pokemon aren't working due to the lack of MBC3/MBC5 cartridges implem
 ## Video  
 
 <https://user-images.githubusercontent.com/59691442/150530024-ac2dceee-1162-4894-bc44-334bbad2544f.mp4>
+
+## Compilation  
+
+To compile the emulator, you need to use CMake on both Windows and Linux:
+
+- For windows users, you just need the SDL2.dll to run the program once it is compiled. You can find it in the release files or you can donwload it on the official SDL2 website.
+
+- For linux users, you need to install the SDL2 pckage to run the emulator. You can install it by writting the following command.  
+`sudo apt-get install libsdl2-dev`
 
 ## Documentations  
 

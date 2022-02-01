@@ -73,5 +73,7 @@ int main(int argc, char* argv[])
 		writeUsage(argv[0]);
 	}
 
+	SDL_Quit();//Quit if issues
+
 	return 0;
 }
