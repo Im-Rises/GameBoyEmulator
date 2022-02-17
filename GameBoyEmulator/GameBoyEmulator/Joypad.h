@@ -8,7 +8,7 @@ class Joypad
 {
 private:
 	uint8 previousInputs;
-	const uint8* keystate;
+	const uint8* keystate = nullptr;
 	bool enableInterrupt;
 
 public:

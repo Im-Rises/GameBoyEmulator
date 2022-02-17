@@ -7,7 +7,7 @@
 class Spu
 {
 private:
-	Memory* memory;
+	Memory* memory = nullptr;
 
 public:
 	Spu(Memory* memory);

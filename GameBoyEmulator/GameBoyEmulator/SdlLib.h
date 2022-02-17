@@ -12,8 +12,8 @@ using namespace std;
 class SdlLib
 {
 private:
-	SDL_Window* window;
-	SDL_Renderer* renderer;
+	SDL_Window* window = nullptr;
+	SDL_Renderer* renderer = nullptr;
 	SDL_Event event;
 
 	string windowTitle;
@@ -31,7 +31,7 @@ private:
 
 	bool running;
 
-	const uint8* keystate;
+	const uint8* keystate = nullptr;
 	uint8 gameBoyInputs;
 
 public:
