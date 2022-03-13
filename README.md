@@ -24,12 +24,49 @@ SDL2 website:
 
 ## Compilation  
 
-To compile the emulator, you need to use CMake on both Windows and Linux:
+Emulator is supported under Linux and Windows.  
+The source code provide a CMakeList.txt file to compile the emulator.  
 
 - For windows users, you just need the SDL2.dll to run the program once it is compiled. You can find it in the release files or you can donwload it on the official SDL2 website.
 
-- For linux users, you need to install the SDL2 pckage to run the emulator. You can install it by writting the following command.  
+- For linux users, you need to install the SDL2 package to run the emulator. You can install it by writting the following command.  
 `sudo apt-get install libsdl2-dev`
+
+## Start the emulator
+
+To launch a game on Linux or Windows, you need to use a console and write the following command:
+
+- GameBoyEmulator \<gameFile\>
+
+You can also proceed by doing a drag and drop of the game file to the emulator executable.
+
+On Linux you need SDL2 to start the emulator. You can install it by writing one of the two commands below:
+
+Be carefull, **depending of your Linux distribution, the name of library can vary!**  
+
+- `sudo apt-get install libsdl2-dev`  
+- `sudo apt-get install libsdl2-2.0-0`  
+  
+## Emulator controls
+
+### Emulator interface
+
+- F11 = Switch between Fullscreen and windowed mode
+
+- Escape button/click cross to exit emulation
+
+### Emulator game contols
+
+|  Console buttons  | Emulator buttons   |
+|--- |--- |
+| A  | D  |
+| B  | S  |
+| Start   | Enter |
+| Select  | Space |
+| ←  | ←  |
+| →  | →  |
+| ↓  | ↓  |
+| ↑  | ↑  |
 
 ## Documentations  
 
