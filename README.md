@@ -30,7 +30,10 @@ The source code provide a CMakeList.txt file to compile the emulator.
 - For windows users, you just need the SDL2.dll to run the program once it is compiled. You can find it in the release files or you can donwload it on the official SDL2 website.
 
 - For linux users, you need to install the SDL2 package to run the emulator. You can install it by writting the following command.  
-`sudo apt-get install libsdl2-dev`
+
+```shell
+sudo apt-get install libsdl2-dev
+```
 
 ## Start the emulator
 
@@ -44,9 +47,14 @@ On Linux you need SDL2 to start the emulator. You can install it by writing one 
 
 Be carefull, **depending of your Linux distribution, the name of library can vary!**  
 
-- `sudo apt-get install libsdl2-dev`  
-- `sudo apt-get install libsdl2-2.0-0`  
-  
+```shell
+sudo apt-get install libsdl2-dev
+```
+
+```shell
+sudo apt-get install libsdl2-2.0-0  
+```
+
 ## Emulator controls
 
 ### Emulator interface
