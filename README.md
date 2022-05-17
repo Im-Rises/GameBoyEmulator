@@ -1,5 +1,13 @@
 # GameBoyEmulator
 
+<p align="center">
+      <img src="README_files/Logos/cmake_logo.png" alt="cmakeLogo" style="height:60px;"/>
+      <img src="https://img.shields.io/badge/C%2B%2B-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white" alt="cppLogo" style="height:60px;"/>
+      <img src="README_files/Logos/SDL2_logo.png" alt="cmakeLogo" style="height:60px;"/>
+</p>
+
+## Description
+
 GameBoy Emulator developped in C++ using SDL2.  
 You can compile the program using CMake.
 As of now there is no audio implemented.  
@@ -22,6 +30,20 @@ SDL2 website:
 
 <https://user-images.githubusercontent.com/59691442/150530024-ac2dceee-1162-4894-bc44-334bbad2544f.mp4>
 
+## Releases/Downloads
+
+[Source code and releases](https://github.com/Im-Rises/GameBoyEmulator/releases)
+
+Links :
+
+### Windows
+
+<a href="https://github.com/Im-Rises/GameBoyEmulator/files/7921719/GameBoyEmulator-0.6-windows.zip"><img src="https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="cmakeLogo" style="height:40px;"/></a>
+
+### Linux
+
+<a href="https://github.com/Im-Rises/GameBoyEmulator/files/7921720/GameBoyEmulator-0.6-linux.zip"><img src="https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black" alt="cmakeLogo" style="height:40px;"/></a>
+
 ## Compilation  
 
 Emulator is supported under Linux and Windows.  
@@ -39,7 +61,7 @@ sudo apt-get install libsdl2-dev
 
 To launch a game on Linux or Windows, you need to use a console and write the following command:
 
-- GameBoyEmulator \<gameFile\>
+- GameBoyEmulator \<gameFilePath\>
 
 You can also proceed by doing a drag and drop of the game file to the emulator executable.
 
