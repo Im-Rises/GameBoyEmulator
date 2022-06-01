@@ -9,7 +9,7 @@ void writeUsage(const char* appName)
 
 	cout << PROJECT_NAME << " " << VER << " " << AUTHOR << endl;
 
-	cout << "Game Boy emulator" << endl;
+	cout << "GameBoy emulator" << endl;
 }
 
 int main(int argc, char* argv[])

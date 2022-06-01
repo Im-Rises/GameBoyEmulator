@@ -35,8 +35,6 @@ Spu::Spu(Memory* memory)
 	}
 
 
-
-
 	///* Allocate a desired SDL_AudioSpec */
 	//SDL_AudioSpec* desired = (SDL_AudioSpec*)malloc(sizeof(SDL_AudioSpec));
 
@@ -73,7 +71,6 @@ Spu::Spu(Memory* memory)
 	//SDL_PauseAudio(0);
 
 
-
 	sc2Enabled = false;
 	sc2EnvelopeEnabled = false;
 	sc2Envelope = 0;
@@ -83,9 +80,6 @@ Spu::Spu(Memory* memory)
 	sc2WaveDutyPosition = 0;
 	sc2Length = 0;
 	sc2Amplitude = 0;
-
-
-
 
 
 	sc1Counter = 0;
@@ -109,9 +103,9 @@ void Spu::doSounds(const int& cycles)
 	uint8 nr51 = memory->read(0xFF25);
 	uint8 nr52 = memory->read(0xFF26);
 
-	if (testBit(nr52, 7))//If sound is enable
+	if (testBit(nr52, 7)) //If sound is enable
 	{
-		if (testBit(nr52, 0))//if sound 1 is enable...
+		if (testBit(nr52, 0)) //if sound 1 is enable...
 			doSound1(cycles);
 		if (testBit(nr52, 1))
 			doSound2(cycles);
@@ -121,7 +115,6 @@ void Spu::doSounds(const int& cycles)
 			doSound4(cycles);
 
 		//Handle sound with nr50 and nr51
-
 	}
 }
 
@@ -181,44 +174,42 @@ void Spu::doSound2(const int& cycles)
 		}
 
 		//Handle enveloppe
-		if (sc2Fs == 7 && sc2EnvelopeEnabled && ((nr22 & 0b00000111) > 0)) {
+		if (sc2Fs == 7 && sc2EnvelopeEnabled && ((nr22 & 0b00000111) > 0))
+		{
 			sc2Envelope--;
-			if (sc2Envelope <= 0) {
+			if (sc2Envelope <= 0)
+			{
 				sc2Envelope = nr22 & 0b00000111;
 				sc2Amplitude += (testBit(nr22, 3) ? 1 : -1);
 
 				if (sc2Amplitude >= 0 && sc2Amplitude <= 15)
 				{
-					
 				}
 				else
 				{
 					sc2EnvelopeEnabled = false;
 				}
-
 			}
 		}
-
 	}
-
 }
 
 void Spu::doSound3(const int& cycles)
 {
-	if (testBit(memory->read(0xFF1A), 7))//If sound is enable
+	if (testBit(memory->read(0xFF1A), 7)) //If sound is enable
 	{
 		uint8 soundLength = 256 - memory->read(0xFF1B);
 
 		uint8 nr34 = memory->read(0xFF1E);
 		bool doSound = false;
 
-		if (testBit(nr34, 6))//If counter enable
+		if (testBit(nr34, 6)) //If counter enable
 		{
 			soundLength--;
 			memory->write(0xFF1B, soundLength);
 			//sc3Reset();
 		}
-		else//if counter disbale
+		else //if counter disbale
 		{
 			doSound = true;
 		}
@@ -242,30 +233,29 @@ void Spu::doSound3(const int& cycles)
 
 			uint16_t frequency = memory->read(0xFF1D) + ((nr34 & 0b00000111) << 8);
 
-			switch (memory->read(0xFF1C))//Output Waveform's form
+			switch (memory->read(0xFF1C)) //Output Waveform's form
 			{
 			case(0b00000000):
-			{
-				outputSc3 = 0;
-				break;
-			}
+				{
+					outputSc3 = 0;
+					break;
+				}
 			case(0b00100000):
-			{
-				outputSc3 = stepAmplitude;
-				break;
-			}
+				{
+					outputSc3 = stepAmplitude;
+					break;
+				}
 			case(0b01000000):
-			{
-				outputSc3 = stepAmplitude >> 1;
-				break;
-			}
+				{
+					outputSc3 = stepAmplitude >> 1;
+					break;
+				}
 			case(0b01100000):
-			{
-				outputSc3 = stepAmplitude >> 2;
-				break;
+				{
+					outputSc3 = stepAmplitude >> 2;
+					break;
+				}
 			}
-			}
-
 
 
 			//Do sound
@@ -284,30 +274,23 @@ void Spu::doSound3(const int& cycles)
 }
 
 
-
 void Spu::doSound4(const int& cycles)
 {
-
 }
-
 
 
 void Spu::resetSound1()
 {
-
 }
 
 void Spu::resetSound2()
 {
-
 }
 
 void Spu::resetSound3()
 {
-
 }
 
 void Spu::resetSound4()
 {
-
 }
