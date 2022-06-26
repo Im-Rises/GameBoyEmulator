@@ -129,3 +129,12 @@ Test roms i use to debug my emulator
 Other docs (mostly about emulation in general)  
 <https://emudev.org>  
 <https://emudev.de>  
+
+## Contributors
+
+Quentin MOREL :
+
+- @Im-Rises
+- <https://github.com/Im-Rises>
+
+[![GitHub contributors](https://contrib.rocks/image?repo=Im-Rises/GameBoyEmulator)](https://github.com/Im-Rises/GameBoyEmulator/graphs/contributors)
