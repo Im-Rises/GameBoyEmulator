@@ -46,6 +46,7 @@ private:
 	string windowTitle = "test";
 	SDL_Window* window = nullptr;
 	SDL_Renderer* renderer = nullptr;
+	SDL_Event event;
 
 	bool windowing;
 	int windowingWidth;
@@ -56,28 +57,28 @@ public:
 	Ppu(Memory* memory);
 	// Ppu(Memory* memory, int windowWidth = 640, int windowHeight = 576);
 	~Ppu();
-	void reset();
-	void draw(const int& cycles);
+
+	// SDL functions
+public:
 	void toggleFullScreen();
 	void updateScreen();
 	void SDL_drawSquare(const int& x, const int& y, const int& color);
 	void displayFramerate(int value);
+	bool windowIsActive();
 
+	// Game Boy screen functions
+public:
+	void reset();
+	void draw(const int& cycles);
 private:
 	void updateStatRegister();
 	void drawLine();
 	void drawBackgroundLine(const uint8& lcdc);
 	void drawSpritesLine(const uint8& lcdc);
-
 	uint8 transformDotDataToColor(const uint8& dotData, const uint16& dataPaletteAddress);
 	uint8 colorToRGB(uint8 colorGameBoy);
-
 	void requestInterrupt(const uint8& intertuptCode);
-
 	bool checkLyEqualsLyc();
-
-public:
-	// uint8 getLcdScreenPixel(int indexX, int indexY) const;
 };
 
 #endif

@@ -54,14 +54,13 @@ void GameBoy::start()
 {
 	// SdlLib sdlLib(EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y, DOTS_DISPLAY_X, DOTS_DISPLAY_Y, PROJECT_NAME);//Create window
 
-	const int cyclesToDo = CLOCK_FREQUENCY / 60;//Calcul the number of cycles for the update of the screen
+	const int cyclesToDo = CLOCK_FREQUENCY / SCREEN_FREQUENCY;//Calcul the number of cycles for the update of the screen
 
 	fpsStartTime = SDL_GetTicks();
 
 	if (memory.getBiosInMemeory()) //if there is a bios
 	{
-		// while (sdlLib.readEmulatorInputs() && cpu.getPc() < 0x100)//cpu.getPc() < 0x100 && glfwOpenglLib.windowIsActive()
-		while (true)//cpu.getPc() < 0x100 && glfwOpenglLib.windowIsActive()
+		while (ppu.windowIsActive() && cpu.getPc() < 0x100)//cpu.getPc() < 0x100 && glfwOpenglLib.windowIsActive()
 		{
 			doGameBoyCycle(cyclesToDo);
 		}
@@ -75,16 +74,7 @@ void GameBoy::start()
 		this->setGameBoyWithoutBios();
 	}
 
-
-	// bool useSaveFile = false;
-	// if (useSaveFile && cpu.getPc() == 0x100) //Once game is launching put save into ram
-	// {
-	// 	//loadSaveGame();
-	// }
-
-
-	// while (sdlLib.readEmulatorInputs())//sdlLib.windowIsActive()
-	while (true)//sdlLib.windowIsActive()
+	while (ppu.windowIsActive())// Window is active
 	{
 		doGameBoyCycle(cyclesToDo);
 	}

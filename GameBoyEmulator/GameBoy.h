@@ -1,7 +1,6 @@
 #ifndef DEF_GAMEBOY
 #define DEF_GAMEBOY
 
-#include "SdlLib.h"
 #include "binaryLib.h"
 
 #include "Cpu.h"

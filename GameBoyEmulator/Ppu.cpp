@@ -9,7 +9,8 @@
 // Ppu::Ppu(Memory* memory, int windowWidth, int windowHeight)
 Ppu::Ppu(Memory* memory)
 {
-	int windowWidth = 640;  int windowHeight = 576;
+	int windowWidth = 640;
+	int windowHeight = 576;
 
 	// Connection to memory
 	this->memory = memory;
@@ -55,38 +56,8 @@ Ppu::~Ppu()
 	SDL_Quit();
 }
 
-void Ppu::reset()
-{
-	for (int j = 0; j < DOTS_DISPLAY_Y; j++)
-	{
-		for (int i = 0; i < DOTS_DISPLAY_X; i++)
-		{
-			lcdScreen[i][j].colorRGB = 0xFF;
-			lcdScreen[i][j].backgroundTransparent = false;
-		}
-	}
-	scanLineCounter = 456;//Number of clock cycles to draw one scanline
-	LY = LYC = 0;
-}
-
-
 
 /*-------------------------------------------------------------SDL window handling------------------------------------------------------------------------------*/
-
-void Ppu::toggleFullScreen()
-{
-	if (windowing)
-	{
-		SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
-	}
-	else
-	{
-		SDL_SetWindowFullscreen(window, 0);
-		SDL_SetWindowSize(window, windowingWidth, windowingHeigth);//This line is needed for linux to reset correctly the dimensions of the screen
-	}
-
-	windowing = !windowing;
-}
 
 void Ppu::updateScreen()
 {
@@ -103,7 +74,7 @@ void Ppu::updateScreen()
 
 void Ppu::SDL_drawSquare(const int& x, const int& y, const int& color)
 {
-	SDL_Rect rect = { 0 + x * 1,0+ y * 1, 1, 1};
+	SDL_Rect rect = {0 + x * 1, 0 + y * 1, 1, 1};
 
 	SDL_SetRenderDrawColor(renderer, color, color, color, SDL_ALPHA_OPAQUE);
 
@@ -116,8 +87,53 @@ void Ppu::displayFramerate(int value)
 	SDL_SetWindowTitle(window, temp.c_str());
 }
 
+bool Ppu::windowIsActive()
+{
+	SDL_PollEvent(&event);
+	if (event.type == SDL_KEYDOWN)
+	{
+		if (event.key.keysym.sym == SDLK_F11)
+			toggleFullScreen();
+	}
+	else if (event.type == SDL_KEYUP)
+	{
+		return !(event.key.keysym.sym == SDLK_ESCAPE);
+	}
+	return !(event.type == SDL_QUIT);
+}
+
+void Ppu::toggleFullScreen()
+{
+	if (windowing)
+	{
+		SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+	}
+	else
+	{
+		SDL_SetWindowFullscreen(window, 0);
+		SDL_SetWindowSize(window, windowingWidth, windowingHeigth);
+		//This line is needed for linux to reset correctly the dimensions of the screen
+	}
+
+	windowing = !windowing;
+}
+
 
 /*-------------------------------------------------------------GAMEBOY screen emulation------------------------------------------------------------------------------*/
+
+void Ppu::reset()
+{
+	for (int j = 0; j < DOTS_DISPLAY_Y; j++)
+	{
+		for (int i = 0; i < DOTS_DISPLAY_X; i++)
+		{
+			lcdScreen[i][j].colorRGB = 0xFF;
+			lcdScreen[i][j].backgroundTransparent = false;
+		}
+	}
+	scanLineCounter = 456; //Number of clock cycles to draw one scanline
+	LY = LYC = 0;
+}
 
 void Ppu::draw(const int& cycles)
 {
@@ -147,7 +163,6 @@ void Ppu::draw(const int& cycles)
 		scanLineCounter = 456;
 
 
-
 		if (scanLine == 144)
 			requestInterrupt(0);
 		else if (scanLine > 153)
@@ -155,7 +170,6 @@ void Ppu::draw(const int& cycles)
 		else if (scanLine < 144)
 			drawLine();
 	}
-
 }
 
 void Ppu::updateStatRegister()
@@ -163,7 +177,7 @@ void Ppu::updateStatRegister()
 	uint8 lcdc = memory->read(LCDC_ADDRESS);
 	uint8 stat = memory->read(STAT_ADDRESS);
 
-	if (!testBit(lcdc, 7))//If LCD is disable reset it
+	if (!testBit(lcdc, 7)) //If LCD is disable reset it
 	{
 		scanLineCounter = 456;
 		memory->directWrite(LY_ADDRESS, 0);
@@ -217,7 +231,8 @@ void Ppu::updateStatRegister()
 			requestInterrupt(1);
 		}
 
-		if ((LY != memory->read(LY_ADDRESS) || LYC != memory->read(LYC_ADDRESS)))//Check LY==LYC if LY or LYC have change since last time
+		if ((LY != memory->read(LY_ADDRESS) || LYC != memory->read(LYC_ADDRESS)))
+		//Check LY==LYC if LY or LYC have change since last time
 		{
 			if (scanLine == memory->read(LYC_ADDRESS))
 			{
@@ -252,7 +267,8 @@ void Ppu::drawBackgroundLine(const uint8& lcdc)
 {
 	uint8 scx = memory->read(SCX_ADDRESS);
 	uint8 scy = memory->read(SCY_ADDRESS);
-	uint8 wx = memory->read(WX_ADDRESS) - 7;//Why 7 because : With WX = 7, the window is displayed from the left edge of the LCD screen. Values of 0-6 should not be specified for WX.
+	uint8 wx = memory->read(WX_ADDRESS) - 7;
+	//Why 7 because : With WX = 7, the window is displayed from the left edge of the LCD screen. Values of 0-6 should not be specified for WX.
 	uint8 wy = memory->read(WY_ADDRESS);
 
 	uint8 ly = memory->read(LY_ADDRESS);
@@ -268,7 +284,7 @@ void Ppu::drawBackgroundLine(const uint8& lcdc)
 	if (testBit(lcdc, 5) && wy <= ly)
 		windowing = true;
 
-	if (testBit(lcdc, 4))//Get tile data address
+	if (testBit(lcdc, 4)) //Get tile data address
 	{
 		tileDataArea = 0x8000;
 		unsignedValue = true;
@@ -279,7 +295,7 @@ void Ppu::drawBackgroundLine(const uint8& lcdc)
 		unsignedValue = false;
 	}
 
-	if (windowing)//Get tile code address
+	if (windowing) //Get tile code address
 	{
 		if (testBit(lcdc, 6))
 			backgroundMemoryCode = 0x9C00;
@@ -296,22 +312,22 @@ void Ppu::drawBackgroundLine(const uint8& lcdc)
 
 	uint8 yPos;
 	if (windowing)
-		yPos = ly - wy;//WHY THAT ?
+		yPos = ly - wy; //WHY THAT ?
 	else
 		yPos = scy + ly;
 
-	uint16 tileRow = (yPos / 8) * 32;//Contains all precedents row 
+	uint16 tileRow = (yPos / 8) * 32; //Contains all precedents row 
 
 	for (int pixel = 0; pixel < DOTS_DISPLAY_X; pixel++)
 	{
 		uint8 xPos = pixel + scx;
 
 		if (windowing && pixel >= wx)
-			xPos = pixel - wx;//Why that
+			xPos = pixel - wx; //Why that
 
 		uint8 tileColumn = xPos / 8;
 
-		int16_t tileNum;//Can be signed or unsigend depending of the tileDataArea
+		int16_t tileNum; //Can be signed or unsigend depending of the tileDataArea
 
 		if (unsignedValue)
 			tileNum = (uint8)memory->read(backgroundMemoryCode + tileRow + tileColumn);
@@ -349,12 +365,11 @@ void Ppu::drawBackgroundLine(const uint8& lcdc)
 			}
 		}
 	}
-
 }
 
 void Ppu::drawSpritesLine(const uint8& lcdc)
 {
-	if (testBit(lcdc, 1))//if OBJ FLAG is ON
+	if (testBit(lcdc, 1)) //if OBJ FLAG is ON
 	{
 		bool sprite8x16Dots = testBit(lcdc, 2); //0: 8 x 8 dots		1 : 8 x 16 dots
 
@@ -362,37 +377,41 @@ void Ppu::drawSpritesLine(const uint8& lcdc)
 
 		for (int i = 0; i < SPRITES_NUMBER; i++)
 		{
-			int index = i * 4;//Sprites data are composed of 4 bytes of data
+			int index = i * 4; //Sprites data are composed of 4 bytes of data
 
-			if (sprite8x16Dots)//if it is a 8x16 sprite than bit 0 is ignored to use the data of even obj not the odd part
+			if (sprite8x16Dots)
+				//if it is a 8x16 sprite than bit 0 is ignored to use the data of even obj not the odd part
 				index &= 0b11111110;
 
-			uint8 yCoordinate = memory->read(OAM_Y_COODINATE + index) - 16;//In the official documentation it is written 10 because it is in hexa 0x10 so 16 in decimal
+			uint8 yCoordinate = memory->read(OAM_Y_COODINATE + index) - 16;
+			//In the official documentation it is written 10 because it is in hexa 0x10 so 16 in decimal
 			uint8 xCoordinate = memory->read(OAM_X_COODINATE + index) - 8;
 			uint8 chrCode = memory->read(OAM_CHR_CODE + index);
 			uint8 attributeFlag = memory->read(OAM_ATTRIBUTE_FLAG + index);
 
-			bool horizontalFlip = testBit(attributeFlag, 5);//xFlip
-			bool verticalFlip = testBit(attributeFlag, 6);//yFlip
-			bool displayPriorityBG = testBit(attributeFlag, 7);//Display priority
+			bool horizontalFlip = testBit(attributeFlag, 5); //xFlip
+			bool verticalFlip = testBit(attributeFlag, 6); //yFlip
+			bool displayPriorityBG = testBit(attributeFlag, 7); //Display priority
 
 
 			uint8 ly = memory->read(LY_ADDRESS);
 
 			uint8 spriteSize = sprite8x16Dots ? 16 : 8;
 
-			if ((ly >= yCoordinate) && (ly < (yCoordinate + spriteSize)))//Before drawing sprite, we verify if it is not out of screen
+			if ((ly >= yCoordinate) && (ly < (yCoordinate + spriteSize)))
+			//Before drawing sprite, we verify if it is not out of screen
 			{
 				numberSpritesPerLine++;
 
-				uint8 lineSprite = ly - yCoordinate;//Get line to draw depending if the sprite is flipped horizontally or vertically
+				uint8 lineSprite = ly - yCoordinate;
+				//Get line to draw depending if the sprite is flipped horizontally or vertically
 
 				if (verticalFlip)
 					lineSprite = (lineSprite - spriteSize) * -1;
 
 				lineSprite *= 2;
-				uint8 dataLine1 = memory->read(0x8000 + chrCode * 16 + lineSprite);//Data line 1
-				uint8 dataLine2 = memory->read(0x8000 + chrCode * 16 + lineSprite + 1);//Data line 2
+				uint8 dataLine1 = memory->read(0x8000 + chrCode * 16 + lineSprite); //Data line 1
+				uint8 dataLine2 = memory->read(0x8000 + chrCode * 16 + lineSprite + 1); //Data line 2
 
 				for (int pixel = 0; pixel < 8; pixel++)
 				{
@@ -410,7 +429,8 @@ void Ppu::drawSpritesLine(const uint8& lcdc)
 					if (0 <= x && x < 160)
 					{
 						//Following the priority p
-						if ((((!displayPriorityBG && !transparent) || (displayPriorityBG && !transparent && lcdScreen[x][ly].backgroundTransparent)) && (numberSpritesPerLine <= 10)))
+						if ((((!displayPriorityBG && !transparent) || (displayPriorityBG && !transparent && lcdScreen[x]
+							[ly].backgroundTransparent)) && (numberSpritesPerLine <= 10)))
 						{
 							uint8 color;
 							if (!testBit(attributeFlag, 4))
@@ -420,7 +440,7 @@ void Ppu::drawSpritesLine(const uint8& lcdc)
 
 							lcdScreen[x][ly].colorRGB = colorToRGB(color);
 						}
-						else//Display BG' pixel
+						else //Display BG' pixel
 						{
 							//if (ly >= 8 && ly <= 15)
 							//	cout << "test" << endl;
@@ -437,25 +457,25 @@ uint8 Ppu::transformDotDataToColor(const uint8& dotData, const uint16& dataPalet
 	switch (dotData)
 	{
 	case(0b00):
-	{
-		return ((memory->read(dataPaletteAddress) & 0b00000011));
-		break;
-	}
+		{
+			return ((memory->read(dataPaletteAddress) & 0b00000011));
+			break;
+		}
 	case(0b01):
-	{
-		return ((memory->read(dataPaletteAddress) & 0b00001100) >> 2);
-		break;
-	}
+		{
+			return ((memory->read(dataPaletteAddress) & 0b00001100) >> 2);
+			break;
+		}
 	case(0b10):
-	{
-		return ((memory->read(dataPaletteAddress) & 0b00110000) >> 4);
-		break;
-	}
+		{
+			return ((memory->read(dataPaletteAddress) & 0b00110000) >> 4);
+			break;
+		}
 	case(0b11):
-	{
-		return ((memory->read(dataPaletteAddress) & 0b11000000) >> 6);
-		break;
-	}
+		{
+			return ((memory->read(dataPaletteAddress) & 0b11000000) >> 6);
+			break;
+		}
 	default:
 		cerr << "Error wrong data color code";
 		exit(1);
@@ -468,25 +488,25 @@ uint8 Ppu::colorToRGB(uint8 colorGameBoy)
 	switch (colorGameBoy)
 	{
 	case (0b00):
-	{
-		return 0xFF;
-		break;
-	}
+		{
+			return 0xFF;
+			break;
+		}
 	case (0b01):
-	{
-		return 0xCC;
-		break;
-	}
+		{
+			return 0xCC;
+			break;
+		}
 	case (0b10):
-	{
-		return 0x77;
-		break;
-	}
+		{
+			return 0x77;
+			break;
+		}
 	case (0b11):
-	{
-		return 0x00;
-		break;
-	}
+		{
+			return 0x00;
+			break;
+		}
 	default:
 		cerr << "Error wrong data color";
 		exit(1);
