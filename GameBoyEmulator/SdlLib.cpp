@@ -34,7 +34,7 @@ SdlLib::SdlLib(int windowWidth, int windowHeight, int numberPixelsX, int numberP
 
 	SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
 
-	//SDL_SetWindowResizable(window, SDL_TRUE);
+	SDL_SetWindowResizable(window, SDL_FALSE);
 
 	gameBoyInputs = 0b11111111;
 
