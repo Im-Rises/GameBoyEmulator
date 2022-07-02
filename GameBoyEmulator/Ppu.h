@@ -42,6 +42,8 @@ private:
 		bool backgroundTransparent;
 	} lcdScreen[DOTS_DISPLAY_X][DOTS_DISPLAY_Y];
 
+	uint8 lcd[160 * 144 * 3];
+
 	int scanLineCounter;
 	uint8 LY;
 	uint8 LYC;
@@ -50,8 +52,10 @@ private:
 	//SDL
 	// string windowTitle = PROJECT_NAME;
 	string windowTitle = "GameBoyEmulator";
+
 	SDL_Window* window = nullptr;
 	SDL_Renderer* renderer = nullptr;
+	SDL_Texture* texture;
 	SDL_Event event;
 
 	bool windowing;

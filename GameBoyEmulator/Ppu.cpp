@@ -27,6 +27,8 @@ Ppu::Ppu(Memory* memory, ColorMode colorMode)
 		exit(EXIT_FAILURE);
 	}
 
+	SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
+
 	if (SDL_CreateWindowAndRenderer(windowWidth, windowHeight, SDL_WINDOW_SHOWN, &window, &renderer) != 0)
 	{
 		std::cout << "Error window creation.\n" << SDL_GetError() << std::endl;
@@ -35,7 +37,6 @@ Ppu::Ppu(Memory* memory, ColorMode colorMode)
 	}
 
 	SDL_SetWindowTitle(window, windowTitle.c_str());
-	SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
 	SDL_SetWindowResizable(window, SDL_FALSE);
 
 	windowing = true;
