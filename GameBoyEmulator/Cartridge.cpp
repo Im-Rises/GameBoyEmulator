@@ -1,7 +1,12 @@
 #include "Cartridge.h"
 
+#include <string>
+
 Cartridge::Cartridge(const string& romPath)
 {
+	destinationMap.insert(std::make_pair(0x00, "Japan"));
+	destinationMap.insert(std::make_pair(0x01, "Other"));
+
 	//Instead of loading all the rom to the ram of the computer, perhaps i should open the file and read it 
 	rom = new uint8[0x200000];
 	ram = new uint8[0x8000];
@@ -50,62 +55,62 @@ Cartridge::Cartridge(const string& romPath)
 	switch (rom[0x147])
 	{
 	case(0):
-	{
-		cartridgeType = ROM;
-		break;
-	}
+		{
+			cartridgeType = ROM;
+			break;
+		}
 	case(1):
-	{
-		cartridgeType = MBC1;
-		break;
-	}
+		{
+			cartridgeType = MBC1;
+			break;
+		}
 	case(2):
-	{
-		cartridgeType = MBC1;
-		break;
-	}
+		{
+			cartridgeType = MBC1;
+			break;
+		}
 	case(3):
-	{
-		cartridgeType = MBC1;
-		break;
-	}
+		{
+			cartridgeType = MBC1;
+			break;
+		}
 	case(5):
-	{
-		cartridgeType = MBC2;
-		break;
-	}
+		{
+			cartridgeType = MBC2;
+			break;
+		}
 	case(6):
-	{
-		cartridgeType = MBC2;
-		break;
-	}
+		{
+			cartridgeType = MBC2;
+			break;
+		}
 	default:
 		cerr << "Error: Cartridge type not recognized" << endl;
 		exit(1);
-		break;
 	}
 
 	romSize = rom[0x148];
 
 	externalRamSize = rom[0x149];
 
-	destination = rom[0x014A];
+	destinationCode = rom[0x014A];
+	destinationText = destinationMap[destinationCode];
 }
 
 Cartridge::~Cartridge()
 {
-	delete[] rom;//Not call if program crash
+	delete[] rom; //Not call if program crash
 	delete[] ram;
 }
 
 
 //Read and write
-uint8 Cartridge::readRomBank(const uint16& address)const
+uint8 Cartridge::readRomBank(const uint16& address) const
 {
 	return rom[address - 0x4000 + currentRomBank * 0x4000];
 }
 
-uint8 Cartridge::readRamBank(const uint16& address)const
+uint8 Cartridge::readRamBank(const uint16& address) const
 {
 	return ram[address - 0xA000 + currentRamBank * 0x2000];
 }
@@ -148,48 +153,45 @@ void Cartridge::mbcRegister0(const uint16& address, const uint8& data)
 	switch (cartridgeType)
 	{
 	case(ROM):
-	{
-		cerr << "Error: Error enabling/disactivating ram bank, ROM cartridge type ." << endl;
-		exit(1);
-		break;
-	}
+		{
+			cerr << "Error: Error enabling/disactivating ram bank, ROM cartridge type ." << endl;
+			exit(1);
+		}
 	case(MBC1):
-	{
-		if ((data & 0x0F) == 0x0A)
-			ramBankingEnable = true;
-		else
-			ramBankingEnable = false;
-		break;
-	}
-	case(MBC2):
-	{
-		if (address <= 0x0FFF)
 		{
 			if ((data & 0x0F) == 0x0A)
 				ramBankingEnable = true;
 			else
 				ramBankingEnable = false;
+			break;
 		}
-		break;
-	}
+	case(MBC2):
+		{
+			if (address <= 0x0FFF)
+			{
+				if ((data & 0x0F) == 0x0A)
+					ramBankingEnable = true;
+				else
+					ramBankingEnable = false;
+			}
+			break;
+		}
 	case(MBC3):
-	{
-		if ((data & 0x0F) == 0x0A)
-			ramBankingEnable = true;
-		else
-			ramBankingEnable = false;
-		break;
-	}
+		{
+			if ((data & 0x0F) == 0x0A)
+				ramBankingEnable = true;
+			else
+				ramBankingEnable = false;
+			break;
+		}
 	case(MBC5):
-	{
-		cerr << "Error: Error enabling/disactivating ram bank, MBC5 cartridge type not implemented." << endl;
-		exit(1);
-		break;
-	}
+		{
+			cerr << "Error: Error enabling/deactivating ram bank, MBC5 cartridge type not implemented." << endl;
+			exit(1);
+		}
 	default:
-		cerr << "Error: Error enabling/disactivating ram bank, cartridge type not recognized." << endl;
+		cerr << "Error: Error enabling/deactivating ram bank, cartridge type not recognized." << endl;
 		exit(1);
-		break;
 	}
 }
 
@@ -200,44 +202,42 @@ void Cartridge::mbcRegister1(const uint16& address, const uint8& data)
 	switch (cartridgeType)
 	{
 	case(ROM):
-	{
-		cerr << "Error: Error chaning rom bank low address, ROM cartridge type." << endl;
-		exit(1);
-		break;
-	}
-	case(MBC1):
-	{
-		currentRomBank &= 0b11100000;//Reset lower bits
-		currentRomBank |= (data & 0b00011111);//Change the bits from 0 to 4
-		break;
-	}
-	case(MBC2):
-	{
-		if (address >= 0x2100 && address <= 0x21FF)
 		{
-			currentRomBank = data & 0x0F;
+			cerr << "Error: Error chaning rom bank low address, ROM cartridge type." << endl;
+			exit(1);
 		}
-		break;
-	}
+	case(MBC1):
+		{
+			currentRomBank &= 0b11100000; //Reset lower bits
+			currentRomBank |= (data & 0b00011111); //Change the bits from 0 to 4
+			break;
+		}
+	case(MBC2):
+		{
+			if (address >= 0x2100 && address <= 0x21FF)
+			{
+				currentRomBank = data & 0x0F;
+			}
+			break;
+		}
 	case(MBC3):
-	{
-		currentRomBank &= 0b10000000;//Reset lower bits
-		currentRomBank |= (data & 0b01111111);//Change the bits from 0 to 6
-		break;
-	}
+		{
+			currentRomBank &= 0b10000000; //Reset lower bits
+			currentRomBank |= (data & 0b01111111); //Change the bits from 0 to 6
+			break;
+		}
 	case(MBC5):
-	{
-		cerr << "Error: Error chaning rom bank low address, MBC5 cartridge not implemented." << endl;
-		exit(1);
-		break;
-	}
+		{
+			cerr << "Error: Error changing rom bank low address, MBC5 cartridge not implemented." << endl;
+			exit(1);
+		}
 	default:
-		cerr << "Error: Error chaning rom bank low address, cartridge type not recognized." << endl;
+		cerr << "Error: Error changing rom bank low address, cartridge type not recognized." << endl;
 		exit(1);
-		break;
 	}
 
-	(currentRomBank == 0) ? currentRomBank++ : currentRomBank;//If romBank equals 0 thant add 1 (don't know if it is a necessity)
+	(currentRomBank == 0) ? currentRomBank++ : currentRomBank;
+	//If romBank equals 0 thant add 1 (don't know if it is a necessity)
 }
 
 
@@ -248,49 +248,47 @@ void Cartridge::mbcRegister2(const uint16& address, const uint8& data)
 	switch (cartridgeType)
 	{
 	case(ROM):
-	{
-		cerr << "Error: Error chaning rom bank high address, ROM cartridge type." << endl;
-		exit(1);
-		break;
-	}
+		{
+			cerr << "Error: Error chaning rom bank high address, ROM cartridge type." << endl;
+			exit(1);
+			break;
+		}
 	case(MBC1):
-	{
-		if (romBankingEnable)
 		{
-			currentRomBank &= 0b00011111;//Reset high bits (5 to 7)
-			//currentRomBank |= ((data << 5) & 0b01100000);//Add the bits 5 and 6 (no data shifting needed)
-			currentRomBank |= (data & 0b01100000);//Add the bits 5 and 6
+			if (romBankingEnable)
+			{
+				currentRomBank &= 0b00011111; //Reset high bits (5 to 7)
+				//currentRomBank |= ((data << 5) & 0b01100000);//Add the bits 5 and 6 (no data shifting needed)
+				currentRomBank |= (data & 0b01100000); //Add the bits 5 and 6
+			}
+			else
+			{
+				currentRamBank = data & 0x3;
+			}
+			break;
 		}
-		else
-		{
-			currentRamBank = data & 0x3;
-		}
-		break;
-	}
 	case(MBC2):
-	{
-		//Do nothing
-		break;
-	}
+		{
+			//Do nothing
+			break;
+		}
 	case(MBC3):
-	{
-		cerr << "Error: Error changing rom bank high address, MBC3 cartridge not implemented." << endl;
-		exit(1);
-		break;
-	}
+		{
+			cerr << "Error: Error changing rom bank high address, MBC3 cartridge not implemented." << endl;
+			exit(1);
+		}
 	case(MBC5):
-	{
-		cerr << "Error: Error changing rom bank high address, MBC5 cartridge not implemented." << endl;
-		exit(1);
-		break;
-	}
+		{
+			cerr << "Error: Error changing rom bank high address, MBC5 cartridge not implemented." << endl;
+			exit(1);
+		}
 	default:
 		cerr << "Error: Error changing rom bank high address, cartridge type not recognized." << endl;
 		exit(1);
-		break;
 	}
 
-	(currentRomBank == 0) ? currentRomBank++ : currentRomBank;//If romBank equals 0 thant add 1 (don't know if it is a necessity)
+	(currentRomBank == 0) ? currentRomBank++ : currentRomBank;
+	//If romBank equals 0 thant add 1 (don't know if it is a necessity)
 }
 
 
@@ -299,35 +297,35 @@ void Cartridge::mbcRegister3(const uint16& address, const uint8& data)
 	switch (cartridgeType)
 	{
 	case(ROM):
-	{
-		cerr << "Error: Error changing changeRomRam mode, ROM cartridge type." << endl;
-		exit(1);
-		break;
-	}
+		{
+			cerr << "Error: Error changing changeRomRam mode, ROM cartridge type." << endl;
+			exit(1);
+			break;
+		}
 	case(MBC1):
-	{
-		romBankingEnable = (data == 1);
-		if (romBankingEnable)
-			currentRamBank = 0;
-		break;
-	}
+		{
+			romBankingEnable = (data == 1);
+			if (romBankingEnable)
+				currentRamBank = 0;
+			break;
+		}
 	case(MBC2):
-	{
-		//Do nothing
-		break;
-	}
+		{
+			//Do nothing
+			break;
+		}
 	case(MBC3):
-	{
-		cerr << "Error: Error changing changeRomRam mode, MBC3 cartridge type." << endl;
-		exit(1);
-		break;
-	}
+		{
+			cerr << "Error: Error changing changeRomRam mode, MBC3 cartridge type." << endl;
+			exit(1);
+			break;
+		}
 	case(MBC5):
-	{
-		cerr << "Error: Error changing changeRomRam mode, MBC5 cartridge type." << endl;
-		exit(1);
-		break;
-	}
+		{
+			cerr << "Error: Error changing changeRomRam mode, MBC5 cartridge type." << endl;
+			exit(1);
+			break;
+		}
 	default:
 		cerr << "Error: Error changing changeRomRam mode, cartridge type not recognized." << endl;
 		exit(1);
@@ -344,8 +342,7 @@ CartridgeType Cartridge::getCartridgeType()
 }
 
 
-
-uint8 Cartridge::getCurrentRamBank()const
+uint8 Cartridge::getCurrentRamBank() const
 {
 	return currentRamBank;
 }
@@ -356,7 +353,7 @@ void Cartridge::setCurrentRamBank(uint8 value)
 }
 
 
-uint8 Cartridge::getCurrentRomBank()const
+uint8 Cartridge::getCurrentRomBank() const
 {
 	return currentRomBank;
 }
@@ -367,7 +364,7 @@ void Cartridge::setCurrentRomBank(uint8 value)
 }
 
 
-bool Cartridge::getRamBankingEnable()const
+bool Cartridge::getRamBankingEnable() const
 {
 	return ramBankingEnable;
 }
@@ -378,16 +375,46 @@ void Cartridge::setRamBankingEnable(bool state)
 }
 
 
-uint8 Cartridge::getRomFromIndex(int index)const
+uint8 Cartridge::getRomFromIndex(int index) const
 {
 	return rom[index];
+}
+
+string Cartridge::getCartridgeTypeToString() const
+{
+	switch (this->cartridgeType)
+	{
+	case(ROM):
+	{
+		return "ROM";
+	}
+	case(MBC1):
+	{
+		return "MBC1";
+	}
+	case(MBC2):
+	{
+		return "MBC2";
+	}
+	case(MBC3):
+	{
+		return "MBC3";
+	}
+	case(MBC5):
+	{
+		return "MBC5";
+	}
+	default:
+		cerr << "Error: Unknown cartridge name." << endl;
+		exit(1);
+	}
 }
 
 
 //toString
 
-string Cartridge::toString()const
+string Cartridge::toString() const
 {
-	return "Game name: " + gameName + "\nCartridge type: "+"\nDestination:";
+	return "Game name: " + gameName + "\nCartridge type: " + getCartridgeTypeToString() + "\nDestination: " + destinationText + " " +
+		std::to_string(destinationCode);
 }
-

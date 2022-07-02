@@ -224,9 +224,6 @@ void Memory::write(const uint16& address, const uint8 value)
 	else //Write everywhere else (Character Data, BG Display Data 1, BG Display Data 2, OAM etc...
 	{
 		memoryArray[address] = value;
-
-		if (0xFF10 <= address && address <= 0xFF3F)
-			cout << "here" << endl;
 	}
 
 	//Trap the sound trigger here
