@@ -26,7 +26,7 @@ void GameBoy::reset()
 	cpu.reset();
 	memory.reset();
 	ppu.reset();
-	// spu.reset();
+	spu.reset();
 }
 
 void GameBoy::setGameBoyWithoutBios()
@@ -52,17 +52,18 @@ void GameBoy::insertGame(Cartridge* cartridge)
 
 void GameBoy::start()
 {
-	SdlLib sdlLib(EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y, DOTS_DISPLAY_X, DOTS_DISPLAY_Y, PROJECT_NAME);//Create window
+	// SdlLib sdlLib(EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y, DOTS_DISPLAY_X, DOTS_DISPLAY_Y, PROJECT_NAME);//Create window
 
 	const int cyclesToDo = CLOCK_FREQUENCY / 60;//Calcul the number of cycles for the update of the screen
 
-	fpsStartTime = sdlLib.getTicks();
+	fpsStartTime = SDL_GetTicks();
 
 	if (memory.getBiosInMemeory()) //if there is a bios
 	{
-		while (sdlLib.readEmulatorInputs() && cpu.getPc() < 0x100)//cpu.getPc() < 0x100 && glfwOpenglLib.windowIsActive()
+		// while (sdlLib.readEmulatorInputs() && cpu.getPc() < 0x100)//cpu.getPc() < 0x100 && glfwOpenglLib.windowIsActive()
+		while (true)//cpu.getPc() < 0x100 && glfwOpenglLib.windowIsActive()
 		{
-			doGameBoyCycle(sdlLib, cyclesToDo);
+			doGameBoyCycle(cyclesToDo);
 		}
 
 		//Load temporary array in memory
@@ -75,23 +76,24 @@ void GameBoy::start()
 	}
 
 
-	bool useSaveFile = false;
-	if (useSaveFile && cpu.getPc() == 0x100) //Once game is launching put save into ram
-	{
-		//loadSaveGame();
-	}
+	// bool useSaveFile = false;
+	// if (useSaveFile && cpu.getPc() == 0x100) //Once game is launching put save into ram
+	// {
+	// 	//loadSaveGame();
+	// }
 
 
-	while (sdlLib.readEmulatorInputs())//sdlLib.windowIsActive()
+	// while (sdlLib.readEmulatorInputs())//sdlLib.windowIsActive()
+	while (true)//sdlLib.windowIsActive()
 	{
-		doGameBoyCycle(sdlLib, cyclesToDo);
+		doGameBoyCycle(cyclesToDo);
 	}
 }
 
 
-void GameBoy::doGameBoyCycle(SdlLib& sdlLib, const int cyclesToDo)
+void GameBoy::doGameBoyCycle(const int cyclesToDo)
 {
-	uint32_t startTime = sdlLib.getTicks();
+	uint32_t startTime = SDL_GetTicks();
 
 	double timeCycle = (1.0 / CLOCK_FREQUENCY) * 1000000000; //time of a cyle in nanoseconds
 
@@ -103,36 +105,21 @@ void GameBoy::doGameBoyCycle(SdlLib& sdlLib, const int cyclesToDo)
 		performedCycles += cycles;
 	}
 
-	updateScreen(sdlLib);
-	sdlLib.renderPresent();
+	ppu.updateScreen();
 	fps++;
 
-	double elapsedTime = (sdlLib.getTicks() - startTime);
+	double elapsedTime = (SDL_GetTicks() - startTime);
 
 	if (elapsedTime < 16.67)
 	{
 		SDL_Delay((16.67 - elapsedTime));
 	}
 
-	if (sdlLib.getTicks() - fpsStartTime >= 1000)
+	if (SDL_GetTicks() - fpsStartTime >= 1000)
 	{
-		//cout << (int)fps << endl;
-		sdlLib.setFps(fps);
-		fpsStartTime = sdlLib.getTicks();
+		ppu.displayFramerate(fps);
+		fpsStartTime = SDL_GetTicks();
 		fps = 0;
-	}
-}
-
-/*------------------------------------------SCREEN FUNCTIONS--------------------------------*/
-
-void GameBoy::updateScreen(SdlLib& sdlLib)
-{
-	for (int y = 0; y < DOTS_DISPLAY_Y; y++)
-	{
-		for (int x = 0; x < DOTS_DISPLAY_X; x++)
-		{
-			sdlLib.drawSquare(x, y, ppu.getLcdScreenPixel(x, y));
-		}
 	}
 }
 

@@ -121,7 +121,8 @@ PPU
 
 SPU  
 <https://nightshade256.github.io/2021/03/27/gb-sound-emulation.html>  
-<https://emudev.de>
+<https://emudev.de>  
+<https://www.youtube.com/watch?v=a52p6ji1WZs>  
 
 Test roms i use to debug my emulator  
 <https://gbdev.gg8.se/files/roms/blargg-gb-tests/>  

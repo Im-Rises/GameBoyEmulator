@@ -44,6 +44,16 @@ Spu::Spu(Memory* memory)
 	SDL_OpenAudio(&AudioSettings, 0);
 	SDL_PauseAudio(0);
 
+	this->reset();
+}
+
+Spu::~Spu()
+{
+	SDL_Quit();
+}
+
+void Spu::reset()
+{
 	volume = 1;
 
 	//SC1
@@ -75,16 +85,16 @@ Spu::Spu(Memory* memory)
 	sc2pc = 95;
 
 	//SC3
-	sc3timer=0;
-	sc3WaveDutyIndex=0;
+	sc3timer = 0;
+	sc3WaveDutyIndex = 0;
 	sc3pc = 95;
-	sc3Enabled=false;
-	sc3FScounter=0;
-	sc3FS=0;
-	sc3len=0;
+	sc3Enabled = false;
+	sc3FScounter = 0;
+	sc3FS = 0;
+	sc3len = 0;
 
 	//SC4
-	sc4FScounter=0;
+	sc4FScounter = 0;
 	sc4FS = 0;
 	sc4len = 0;
 	sc4Enabled = false;
@@ -93,12 +103,7 @@ Spu::Spu(Memory* memory)
 	sc4timer = 0;
 	sc4lfsr = 0;
 	sc4pc = 95;
-	sc4EnvelopeEnabled=false;
-}
-
-Spu::~Spu()
-{
-	SDL_Quit();
+	sc4EnvelopeEnabled = false;
 }
 
 void Spu::doSounds(const int& cycles)

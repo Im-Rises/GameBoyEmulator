@@ -1,30 +1,58 @@
 #include "Ppu.h"
 
 #include <iostream>
+#include <string>
 
 #include "SDL2/include/SDL.h"
 
-//Ppu::Ppu(Memory* memory)
-//{
-//	this->memory = memory;
-//
-//	SDL_Init(SDL_INIT_VIDEO);
-//	SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
-//	SDL_CreateWindowAndRenderer(160, 144, 0, &window, &renderer);
-//	SDL_SetWindowSize(window, 640, 576);
-//	SDL_SetWindowResizable(window, SDL_TRUE);
-//
-//}
-//
-//Ppu::Ppu()
-//{
-//
-//}
 
+// Ppu::Ppu(Memory* memory, int windowWidth, int windowHeight)
 Ppu::Ppu(Memory* memory)
 {
+	int windowWidth = 640;  int windowHeight = 576;
+
+	// Connection to memory
 	this->memory = memory;
+
+	//GameBoy screen
 	reset();
+
+	//SDL
+
+	if (SDL_Init(SDL_INIT_VIDEO) != 0)
+	{
+		std::cout << "Error SDL video init.\n" << SDL_GetError() << std::endl;
+		// stopSdl();
+		exit(EXIT_FAILURE);
+	}
+
+	if (SDL_CreateWindowAndRenderer(windowWidth, windowHeight, SDL_WINDOW_SHOWN, &window, &renderer) != 0)
+	{
+		std::cout << "Error window creation.\n" << SDL_GetError() << std::endl;
+		// stopSdl();
+		exit(EXIT_FAILURE);
+	}
+
+	SDL_SetWindowTitle(window, windowTitle.c_str());
+	SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
+	SDL_SetWindowResizable(window, SDL_FALSE);
+
+	windowing = true;
+}
+
+Ppu::~Ppu()
+{
+	if (NULL != renderer)
+	{
+		SDL_DestroyRenderer(renderer);
+	}
+
+	if (NULL != window)
+	{
+		SDL_DestroyWindow(window);
+	}
+
+	SDL_Quit();
 }
 
 void Ppu::reset()
@@ -41,6 +69,55 @@ void Ppu::reset()
 	LY = LYC = 0;
 }
 
+
+
+/*-------------------------------------------------------------SDL window handling------------------------------------------------------------------------------*/
+
+void Ppu::toggleFullScreen()
+{
+	if (windowing)
+	{
+		SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+	}
+	else
+	{
+		SDL_SetWindowFullscreen(window, 0);
+		SDL_SetWindowSize(window, windowingWidth, windowingHeigth);//This line is needed for linux to reset correctly the dimensions of the screen
+	}
+
+	windowing = !windowing;
+}
+
+void Ppu::updateScreen()
+{
+	for (int y = 0; y < DOTS_DISPLAY_Y; y++)
+	{
+		for (int x = 0; x < DOTS_DISPLAY_X; x++)
+		{
+			SDL_drawSquare(x, y, lcdScreen[x][y].colorRGB);
+		}
+	}
+
+	SDL_RenderPresent(renderer);
+}
+
+void Ppu::SDL_drawSquare(const int& x, const int& y, const int& color)
+{
+	SDL_Rect rect = { 0 + x * 1,0+ y * 1, 1, 1};
+
+	SDL_SetRenderDrawColor(renderer, color, color, color, SDL_ALPHA_OPAQUE);
+
+	SDL_RenderFillRect(renderer, &rect);
+}
+
+void Ppu::displayFramerate(int value)
+{
+	string temp = windowTitle + " (fps : " + std::to_string(value).c_str() + ")";
+	SDL_SetWindowTitle(window, temp.c_str());
+}
+
+
+/*-------------------------------------------------------------GAMEBOY screen emulation------------------------------------------------------------------------------*/
 
 void Ppu::draw(const int& cycles)
 {
@@ -427,9 +504,4 @@ void Ppu::requestInterrupt(const uint8& bitIndex)
 bool Ppu::checkLyEqualsLyc()
 {
 	return (memory->read(LY_ADDRESS) == memory->read(LYC_ADDRESS));
-}
-
-uint8 Ppu::getLcdScreenPixel(int indexX, int indexY)const
-{
-	return lcdScreen[indexX][indexY].colorRGB;
 }

@@ -14,6 +14,7 @@ private:
 public:
 	Spu(Memory* memory);
 	~Spu();
+	void reset();
 	void doSounds(const int& cycles);
 
 private:
