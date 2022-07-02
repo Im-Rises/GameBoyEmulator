@@ -104,14 +104,10 @@ private:
 	uint8 sc4envelope;
 	int16 sc4Amplitude;
 	uint32 sc4timer;
-	uint8 sc4divisor[8] = { 8, 16, 32, 48, 64, 80, 96, 112 };
+	const uint8 sc4divisor[8] = { 8, 16, 32, 48, 64, 80, 96, 112 };
 	uint16 sc4lfsr = 0;
 	uint8 sc4pc;
 	bool sc4EnvelopeEnabled;
-	// int16 sc4Frequency;
-	// bool sc4Enabled;
-	// uint16 sc4FS;
-	// uint8 sc4len;
 
 private:
 

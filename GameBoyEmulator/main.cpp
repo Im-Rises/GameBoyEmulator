@@ -53,6 +53,7 @@ int main(int argc, char* argv[])
 		argc = 2;
 	}
 
+	// Read .ini file
 
 	if (false)//settings.isBiosPresent()
 	{

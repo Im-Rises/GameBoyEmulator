@@ -73,6 +73,27 @@ Spu::Spu(Memory* memory)
 	sc2Envelope = 0;
 	sc2Amplitude = 0;
 	sc2pc = 95;
+
+	//SC3
+	sc3timer=0;
+	sc3WaveDutyIndex=0;
+	sc3pc = 95;
+	sc3Enabled=false;
+	sc3FScounter=0;
+	sc3FS=0;
+	sc3len=0;
+
+	//SC4
+	sc4FScounter=0;
+	sc4FS = 0;
+	sc4len = 0;
+	sc4Enabled = false;
+	sc4envelope = 0;
+	sc4Amplitude = 0;
+	sc4timer = 0;
+	sc4lfsr = 0;
+	sc4pc = 95;
+	sc4EnvelopeEnabled=false;
 }
 
 Spu::~Spu()
