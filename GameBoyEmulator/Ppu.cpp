@@ -7,7 +7,7 @@
 
 
 // Ppu::Ppu(Memory* memory, int windowWidth, int windowHeight)
-Ppu::Ppu(Memory* memory)
+Ppu::Ppu(Memory* memory, ColorMode colorMode)
 {
 	int windowWidth = 640;
 	int windowHeight = 576;
@@ -459,27 +459,22 @@ uint8 Ppu::transformDotDataToColor(const uint8& dotData, const uint16& dataPalet
 	case(0b00):
 		{
 			return ((memory->read(dataPaletteAddress) & 0b00000011));
-			break;
 		}
 	case(0b01):
 		{
 			return ((memory->read(dataPaletteAddress) & 0b00001100) >> 2);
-			break;
 		}
 	case(0b10):
 		{
 			return ((memory->read(dataPaletteAddress) & 0b00110000) >> 4);
-			break;
 		}
 	case(0b11):
 		{
 			return ((memory->read(dataPaletteAddress) & 0b11000000) >> 6);
-			break;
 		}
 	default:
 		cerr << "Error wrong data color code";
 		exit(1);
-		break;
 	}
 }
 
@@ -490,27 +485,22 @@ uint8 Ppu::colorToRGB(uint8 colorGameBoy)
 	case (0b00):
 		{
 			return 0xFF;
-			break;
 		}
 	case (0b01):
 		{
 			return 0xCC;
-			break;
 		}
 	case (0b10):
 		{
 			return 0x77;
-			break;
 		}
 	case (0b11):
 		{
 			return 0x00;
-			break;
 		}
 	default:
 		cerr << "Error wrong data color";
 		exit(1);
-		break;
 	}
 }
 

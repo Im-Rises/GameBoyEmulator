@@ -24,6 +24,12 @@
 #define EMULATOR_SCREEN_SIZE_Y 576
 
 
+enum ColorMode
+{
+	bw,
+	greenscale
+};
+
 class Ppu
 {
 private:
@@ -43,7 +49,7 @@ private:
 
 	//SDL
 	// string windowTitle = PROJECT_NAME;
-	string windowTitle = "test";
+	string windowTitle = "GameBoyEmulator";
 	SDL_Window* window = nullptr;
 	SDL_Renderer* renderer = nullptr;
 	SDL_Event event;
@@ -54,7 +60,7 @@ private:
 
 
 public:
-	Ppu(Memory* memory);
+	Ppu(Memory* memory, ColorMode colorMode = bw);
 	// Ppu(Memory* memory, int windowWidth = 640, int windowHeight = 576);
 	~Ppu();
 

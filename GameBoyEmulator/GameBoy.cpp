@@ -12,7 +12,7 @@ GameBoy::GameBoy() : memory(&joypad, &spu), cpu(&memory, &ppu, &spu), ppu(&memor
 
 GameBoy* GameBoy::getInstance()
 {
-	if (gameboyInstance == 0)
+	if (gameboyInstance == nullptr)
 	{
 		gameboyInstance = new GameBoy();
 	}
