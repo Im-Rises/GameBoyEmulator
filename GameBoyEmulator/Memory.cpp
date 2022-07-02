@@ -65,13 +65,12 @@ bool Memory::loadBiosInMemory(const string& biosPath)
 		cout << "Can't open bios file" << endl;
 		return false;
 	}
-	biosInMemory = true;
 }
 
 void Memory::loadRomInMemory()
 {
 	//Load rom from cartridge
-	int	startIndex = 0;
+	int startIndex = 0;
 
 	if (biosInMemory)
 		startIndex = 0x100;
@@ -131,24 +130,25 @@ void Memory::setMemoryWithoutBios()
 }
 
 
-uint8 Memory::read(const uint16 address)//OK
+uint8 Memory::read(const uint16 address) //OK
 {
-	if ((address >= 0x4000) && (address <= 0x7FFF))//Read in rom bank area (Cartridge)
+	if ((address >= 0x4000) && (address <= 0x7FFF)) //Read in rom bank area (Cartridge)
 	{
 		return cartridge->readRomBank(address);
 	}
-	else if ((address >= 0xA000) && (address <= 0xBFFF))//Read in ram bank also known as External Expansion Working RAM (Cartridge)
+	else if ((address >= 0xA000) && (address <= 0xBFFF))
+	//Read in ram bank also known as External Expansion Working RAM (Cartridge)
 	{
 		return cartridge->readRamBank(address);
 	}
-	else if (address == 0xFF00)//Trap input's read
+	else if (address == 0xFF00) //Trap input's read
 	{
 		uint8 temp = joypad->readInputs(memoryArray[0xFF00]);
 		if (joypad->getEnableInterrupt())
 			requestInterrupt(4);
 		return temp;
 	}
-	else//Read everywhere else in the memory (memory)
+	else //Read everywhere else in the memory (memory)
 	{
 		return memoryArray[address];
 	}
@@ -156,11 +156,11 @@ uint8 Memory::read(const uint16 address)//OK
 
 void Memory::write(const uint16& address, const uint8 value)
 {
-	if (address < 0x8000)//Writting in this area change the used banks in the cartridge
+	if (address < 0x8000) //Writting in this area change the used banks in the cartridge
 	{
 		cartridge->handleBanking(address, value);
 	}
-	else if (address >= 0xA000 && address < 0xC000)//External expension ram wrtting
+	else if (address >= 0xA000 && address < 0xC000) //External expension ram wrtting
 	{
 		if (cartridge->getRamBankingEnable())
 		{
@@ -194,36 +194,45 @@ void Memory::write(const uint16& address, const uint8 value)
 			write(0xFE00 + i, read(address + i));
 		}
 	}
-	else if (address == 0xFF14)
+	else if (address == 0xFF14 && (value >> 7))
 	{
 		memoryArray[address] = value;
-		spu->resetSound1();
+		spu->resetSound1(memoryArray[0xff11] & 0x3f);
 	}
-	else if (address == 0xFF19)
+	else if (address == 0xFF19 && (value >> 7))
 	{
 		memoryArray[address] = value;
-		spu->resetSound2();
+		spu->resetSound2(memoryArray[0xff16] & 0x3f);
 	}
-	else if (address == 0xFF1E)
+	else if (address == 0xFF1E && (value >> 7))
 	{
 		memoryArray[address] = value;
-		spu->resetSound3();
+		spu->resetSound3(value);
 	}
-	else if (address == 0xFF23)
+	else if (address == 0xFF23 && (value >> 7))
 	{
 		memoryArray[address] = value;
-		spu->resetSound4();
+		spu->resetSound4(value);
 	}
-	else//Write everywhere else (Character Data, BG Display Data 1, BG Display Data 2, OAM etc...
+	else if (address == 0xFF26)
+	{
+		if (value)
+			memoryArray[0xff26] = 0xff;
+		else
+			memoryArray[0xff26] = 0x00;
+	}
+	else //Write everywhere else (Character Data, BG Display Data 1, BG Display Data 2, OAM etc...
 	{
 		memoryArray[address] = value;
+
+		if (0xFF10 <= address && address <= 0xFF3F)
+			cout << "here" << endl;
 	}
 
 	//Trap the sound trigger here
-
 }
 
-uint8 Memory::directRead(const uint16& address)const
+uint8 Memory::directRead(const uint16& address) const
 {
 	return memoryArray[address];
 }
@@ -253,7 +262,7 @@ void Memory::setResetBitMemory(const uint16& address, const bool bit, const int 
 }
 
 
-bool Memory::getBiosInMemeory()const
+bool Memory::getBiosInMemeory() const
 {
 	return biosInMemory;
 }

@@ -121,14 +121,15 @@ PPU
 
 SPU  
 <https://nightshade256.github.io/2021/03/27/gb-sound-emulation.html>  
+<https://emudev.de>
 
 Test roms i use to debug my emulator  
 <https://gbdev.gg8.se/files/roms/blargg-gb-tests/>  
 <https://github.com/mattcurrie/dmg-acid2>  
 
 Other docs (mostly about emulation in general)  
-<https://emudev.org>  
-<https://emudev.de>  
+<https://emudev.org>    
+<http://emulator101.com/>
 
 ## Contributors
 

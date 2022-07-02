@@ -30,7 +30,7 @@ class GameBoy
 private:
 	static GameBoy* gameboyInstance;
 	GameBoy();
-	//~GameBoy();//Put GlfwOpenglLib destructor in here to destroy video if it is memeber of the class
+	//~GameBoy();//Put GlfwOpenglLib destructor in here to destroy video if it is member of the class
 
 
 	Memory memory;

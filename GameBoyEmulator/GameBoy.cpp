@@ -26,6 +26,7 @@ void GameBoy::reset()
 	cpu.reset();
 	memory.reset();
 	ppu.reset();
+	// spu.reset();
 }
 
 void GameBoy::setGameBoyWithoutBios()
