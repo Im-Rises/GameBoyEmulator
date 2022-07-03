@@ -11,6 +11,29 @@ set(HEADERS binaryLib.h Cartridge.h Cpu.h GameBoy.h Joypad.h Memory.h Ppu.h  Spu
 
 add_executable(${PROJECT_NAME} ${SRCS} ${HEADERS})
 
+#[[
+# add SFML
+set(SFML_DIR "${CMAKE_SOURCE_DIR}/NesEmulator/lib/cmake/SFML")
+find_package(SFML REQUIRED COMPONENTS audio network graphics window system)
+target_link_libraries(${PROJECT_NAME} sfml-audio sfml-network sfml-graphics sfml-window sfml-system)
+#]]
+
+#set(SDL2_DIR "${CMAKE_SOURCE_DIR}/GameBoyEmulator/SDL2/include")
+
+#[[
+find_package(SDL2 REQUIRED)
+
+if(WIN32)
+	#set(SDL2_PATH $ENV{SDL2_PATH})
+	set(SDL2_PATH "${CMAKE_CURRENT_SOURCE_DIR}/GameBoyEmulator/SDL2/lib")
+	target_link_libraries(${PROJECT_NAME} SDL2 SDL2main SDL2test)
+elseif(UNIX)
+	target_link_libraries(${PROJECT_NAME} SDL2)
+else()
+	message(FATAL_ERROR "OS not configured in CMakeLists.txt")
+endif()
+#]]
+
 if(WIN32)
 	set(SDL2PATH ${CMAKE_CURRENT_SOURCE_DIR}/SDL2/lib/)
 	if(CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -28,3 +51,4 @@ elseif(UNIX)
 else()
 	message(FATAL_ERROR "OS not configured in CMakeLists.txt")
 endif()
+

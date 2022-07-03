@@ -22,7 +22,7 @@ Ppu::Ppu(Memory* memory, ColorMode colorMode)
 
 	if (SDL_Init(SDL_INIT_VIDEO) != 0)
 	{
-		std::cout << "Error SDL video init.\n" << SDL_GetError() << std::endl;
+		std::cerr << "Error SDL video init.\n" << SDL_GetError() << std::endl;
 		// stopSdl();
 		exit(EXIT_FAILURE);
 	}
@@ -31,7 +31,7 @@ Ppu::Ppu(Memory* memory, ColorMode colorMode)
 
 	if (SDL_CreateWindowAndRenderer(windowWidth, windowHeight, SDL_WINDOW_SHOWN, &window, &renderer) != 0)
 	{
-		std::cout << "Error window creation.\n" << SDL_GetError() << std::endl;
+		std::cerr << "Error window creation.\n" << SDL_GetError() << std::endl;
 		// stopSdl();
 		exit(EXIT_FAILURE);
 	}

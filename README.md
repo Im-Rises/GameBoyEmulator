@@ -98,6 +98,12 @@ sudo apt-get install libsdl2-2.0-0
 | ↓  | ↓  |
 | ↑  | ↑  |
 
+## GitHub Actions
+
+[![CMake](https://github.com/Im-Rises/GameBoyEmulator/actions/workflows/cmake.yml/badge.svg?branch=main)](https://github.com/Im-Rises/GameBoyEmulator/actions/workflows/cmake.yml)
+
+The repository has a GitHub Actions file to verify the good behaviour of the project before merging/pusing to the main branch with a wrong code.
+
 ## Documentations  
 
 Video overview of the Game Boy, to understand the fundamental  

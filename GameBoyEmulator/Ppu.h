@@ -36,13 +36,14 @@ private:
 	//GameBoy
 	Memory* memory = nullptr;
 
-	struct Screen
-	{
-		uint8 colorRGB;
-		bool backgroundTransparent;
-	} lcdScreen[DOTS_DISPLAY_X][DOTS_DISPLAY_Y];
+	// struct Screen
+	// {
+	// 	uint8 colorRGB;
+	// 	bool backgroundTransparent;
+	// } lcdScreen[DOTS_DISPLAY_X][DOTS_DISPLAY_Y];
 
 	uint8 lcd[160 * 144 * 3];
+	bool lcdTransparent[160 * 144 * 3];
 
 	int scanLineCounter;
 	uint8 LY;
