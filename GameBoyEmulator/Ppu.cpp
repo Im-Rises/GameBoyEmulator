@@ -35,9 +35,15 @@ Ppu::Ppu(Memory* memory, ColorMode colorMode)
 		std::cerr << "Error window creation.\n" << SDL_GetError() << std::endl;
 		exit(EXIT_FAILURE);
 	}
+	// SDL_CreateRenderer(window, 1, SDL_RENDERER_ACCELERATED);
 
 	// texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, windowWidth, windowHeight);
 	texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, 160, 144);
+	if (texture == NULL)
+	{
+		std::cerr << "Error texture creation.\n" << SDL_GetError() << std::endl;
+		exit(EXIT_FAILURE);
+	}
 
 	SDL_SetWindowTitle(window, windowTitle.c_str());
 	SDL_SetWindowResizable(window, SDL_FALSE);
@@ -76,7 +82,7 @@ void Ppu::updateScreen()
 	// SDL_RenderPresent(renderer);
 
 	// Method 2:
-	SDL_UpdateTexture(texture, NULL, lcd, 160 * sizeof(uint8) * 3);
+	SDL_UpdateTexture(texture, NULL, lcd, 160 * 3);
 	SDL_RenderCopy(renderer, texture, NULL, NULL);
 	SDL_RenderPresent(renderer);
 
@@ -144,7 +150,10 @@ void Ppu::reset()
 			// lcdScreen[i][j].colorRGB = 0xFF;
 			// lcdScreen[i][j].backgroundTransparent = false;
 
-			lcd[(j * 160 * 3) + i] = 0xFF;
+			lcd[(j * 160 * 3) + i * 3] = 0xFF;
+			lcd[(j * 160 * 3) + i * 3 + 1] = 0xFF;
+			lcd[(j * 160 * 3) + i * 3 + 2] = 0xFF;
+
 			lcdTransparent[(j * 160 * 3) + i] = false;
 		}
 	}
@@ -370,9 +379,12 @@ void Ppu::drawBackgroundLine(const uint8& lcdc)
 		{
 			// lcdScreen[pixel][ly].colorRGB = colorToRGB(color);
 			// lcdScreen[pixel][ly].backgroundTransparent = (colorCode == 0);
-			lcd[(ly * 160 * 3) + pixel] = colorToRGB(color);
-			lcdTransparent[(ly * 160 * 3) + pixel] = (colorCode == 0);
+			uint8 colorRgb = colorToRGB(color);
+			lcd[(ly * 160 * 3) + pixel * 3] = colorRgb;
+			lcd[(ly * 160 * 3) + pixel * 3 + 1] = colorRgb;
+			lcd[(ly * 160 * 3) + pixel * 3 + 2] = colorRgb;
 
+			lcdTransparent[(ly * 160 * 3) + pixel] = (colorCode == 0);
 		}
 		else
 		{
@@ -383,7 +395,12 @@ void Ppu::drawBackgroundLine(const uint8& lcdc)
 				// lcdScreen[pixel][memory->read(LY_ADDRESS)].colorRGB = colorToRGB(color);
 				// lcdScreen[pixel][ly].backgroundTransparent = true;
 
-				lcd[(ly * 160 * 3) + pixel] = colorToRGB(color);
+				// lcd[(ly * 160 * 3) + pixel] = colorToRGB(color);
+
+				uint8 colorRgb = colorToRGB(color);
+				lcd[(ly * 160 * 3) + pixel * 3] = colorRgb;
+				lcd[(ly * 160 * 3) + pixel * 3 + 1] = colorRgb;
+				lcd[(ly * 160 * 3) + pixel * 3 + 2] = colorRgb;
 				lcdTransparent[(ly * 160 * 3) + pixel] = true;
 			}
 		}
@@ -453,7 +470,8 @@ void Ppu::drawSpritesLine(const uint8& lcdc)
 					{
 						//Following the priority p
 						// if ((((!displayPriorityBG && !transparent) || (displayPriorityBG && !transparent && lcdScreen[x][ly].backgroundTransparent)) && (numberSpritesPerLine <= 10)))
-						if ((((!displayPriorityBG && !transparent) || (displayPriorityBG && !transparent && lcdTransparent[(ly * 160 * 3) + pixel])) && (numberSpritesPerLine <= 10)))
+						if ((((!displayPriorityBG && !transparent) || (displayPriorityBG && !transparent &&
+							lcdTransparent[(ly * 160 * 3) + pixel])) && (numberSpritesPerLine <= 10)))
 						{
 							uint8 color;
 							if (!testBit(attributeFlag, 4))
@@ -462,9 +480,12 @@ void Ppu::drawSpritesLine(const uint8& lcdc)
 								color = transformDotDataToColor(colorCode, OPB1_PALETTE_DATA);
 
 							// lcdScreen[x][ly].colorRGB = colorToRGB(color);
+							// lcd[(ly * 160 * 3) + x] = colorToRGB(color);
 
-							lcd[(ly * 160 * 3) + x] = colorToRGB(color);
-
+							uint8 colorRgb = colorToRGB(color);
+							lcd[(ly * 160 * 3) + x * 3] = colorRgb;
+							lcd[(ly * 160 * 3) + x * 3 + 1] = colorRgb;
+							lcd[(ly * 160 * 3) + x * 3 + 2] = colorRgb;
 						}
 						else //Display BG' pixel
 						{
