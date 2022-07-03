@@ -11,6 +11,8 @@ Ppu::Ppu(Memory* memory, ColorMode colorMode)
 {
 	int windowWidth = 640;
 	int windowHeight = 576;
+	// int windowWidth = 160;
+	// int windowHeight = 144;
 
 	// Connection to memory
 	this->memory = memory;
@@ -23,7 +25,6 @@ Ppu::Ppu(Memory* memory, ColorMode colorMode)
 	if (SDL_Init(SDL_INIT_VIDEO) != 0)
 	{
 		std::cerr << "Error SDL video init.\n" << SDL_GetError() << std::endl;
-		// stopSdl();
 		exit(EXIT_FAILURE);
 	}
 
@@ -32,9 +33,11 @@ Ppu::Ppu(Memory* memory, ColorMode colorMode)
 	if (SDL_CreateWindowAndRenderer(windowWidth, windowHeight, SDL_WINDOW_SHOWN, &window, &renderer) != 0)
 	{
 		std::cerr << "Error window creation.\n" << SDL_GetError() << std::endl;
-		// stopSdl();
 		exit(EXIT_FAILURE);
 	}
+
+	// texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, windowWidth, windowHeight);
+	texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, 160, 144);
 
 	SDL_SetWindowTitle(window, windowTitle.c_str());
 	SDL_SetWindowResizable(window, SDL_FALSE);
@@ -61,19 +64,26 @@ Ppu::~Ppu()
 
 void Ppu::updateScreen()
 {
-	for (int y = 0; y < DOTS_DISPLAY_Y; y++)
-	{
-		for (int x = 0; x < DOTS_DISPLAY_X; x++)
-		{
-			// SDL_drawSquare(x, y, lcdScreen[x][y].colorRGB);
-			SDL_drawSquare(x, y, lcd[(y * 160 * 3) + x]);
-		}
-	}
+	// // Method 1:
+	// for (int y = 0; y < DOTS_DISPLAY_Y; y++)
+	// {
+	// 	for (int x = 0; x < DOTS_DISPLAY_X; x++)
+	// 	{
+	// 		// SDL_drawSquare(x, y, lcdScreen[x][y].colorRGB);
+	// 		SDL_drawSquare(x, y, lcd[(y * 160 * 3) + x]);
+	// 	}
+	// }
+	// SDL_RenderPresent(renderer);
+
+	// Method 2:
+	SDL_UpdateTexture(texture, NULL, lcd, 160 * sizeof(uint8) * 3);
+	SDL_RenderCopy(renderer, texture, NULL, NULL);
 	SDL_RenderPresent(renderer);
 
-	// SDL_UpdateTexture(texture, NULL, lcd, 160 * sizeof(uint8) * 3);
-	// SDL_RenderCopy(renderer, texture, NULL, NULL);
-	// SDL_RenderPresent(renderer);
+	// // // Method 3: (https://wiki.libsdl.org/SDL_LockTexture)
+	// int pitch= 160 * sizeof(uint8) * 3;
+	// SDL_LockTexture(texture, NULL, (void**)&lcd, &pitch);
+	// SDL_UnlockTexture(texture);
 }
 
 void Ppu::SDL_drawSquare(const int& x, const int& y, const int& color)

@@ -11,6 +11,25 @@ set(HEADERS binaryLib.h Cartridge.h Cpu.h GameBoy.h Joypad.h Memory.h Ppu.h  Spu
 
 add_executable(${PROJECT_NAME} ${SRCS} ${HEADERS})
 
+if(WIN32)
+	set(SDL2PATH ${CMAKE_CURRENT_SOURCE_DIR}/SDL2/lib/)
+	if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+		target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2PATH}x64/SDL2.lib)
+		target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2PATH}x64/SDL2main.lib)
+		target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2PATH}x64/SDL2test.lib)
+	elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
+		target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2PATH}x86/SDL2.lib)
+		target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2PATH}x86/SDL2main.lib)
+		target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2PATH}x86/SDL2test.lib)
+	endif()
+elseif(UNIX)
+	find_package(SDL2 REQUIRED)
+	target_link_libraries(${PROJECT_NAME} PRIVATE SDL2)
+else()
+	message(FATAL_ERROR "OS not configured in CMakeLists.txt")
+endif()
+
+
 #[[
 # add SFML
 set(SFML_DIR "${CMAKE_SOURCE_DIR}/NesEmulator/lib/cmake/SFML")
@@ -33,22 +52,3 @@ else()
 	message(FATAL_ERROR "OS not configured in CMakeLists.txt")
 endif()
 #]]
-
-if(WIN32)
-	set(SDL2PATH ${CMAKE_CURRENT_SOURCE_DIR}/SDL2/lib/)
-	if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-		target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2PATH}x64/SDL2.lib)
-		target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2PATH}x64/SDL2main.lib)
-		target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2PATH}x64/SDL2test.lib)
-	elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
-		target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2PATH}x86/SDL2.lib)
-		target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2PATH}x86/SDL2main.lib)
-		target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2PATH}x86/SDL2test.lib)
-	endif()
-elseif(UNIX)
-	find_package(SDL2 REQUIRED)
-	target_link_libraries(${PROJECT_NAME} PRIVATE SDL2)
-else()
-	message(FATAL_ERROR "OS not configured in CMakeLists.txt")
-endif()
-
