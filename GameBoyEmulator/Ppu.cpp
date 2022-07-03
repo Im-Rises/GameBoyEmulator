@@ -45,14 +45,13 @@ Ppu::Ppu(Memory* memory, ColorMode colorMode)
 Ppu::~Ppu()
 {
 	if (NULL != renderer)
-	{
 		SDL_DestroyRenderer(renderer);
-	}
 
 	if (NULL != window)
-	{
 		SDL_DestroyWindow(window);
-	}
+
+	if (NULL != texture)
+		SDL_DestroyTexture(texture);
 
 	SDL_Quit();
 }
@@ -66,11 +65,15 @@ void Ppu::updateScreen()
 	{
 		for (int x = 0; x < DOTS_DISPLAY_X; x++)
 		{
-			SDL_drawSquare(x, y, lcdScreen[x][y].colorRGB);
+			// SDL_drawSquare(x, y, lcdScreen[x][y].colorRGB);
+			SDL_drawSquare(x, y, lcd[(y * 160 * 3) + x]);
 		}
 	}
-
 	SDL_RenderPresent(renderer);
+
+	// SDL_UpdateTexture(texture, NULL, lcd, 160 * sizeof(uint8) * 3);
+	// SDL_RenderCopy(renderer, texture, NULL, NULL);
+	// SDL_RenderPresent(renderer);
 }
 
 void Ppu::SDL_drawSquare(const int& x, const int& y, const int& color)
@@ -128,8 +131,11 @@ void Ppu::reset()
 	{
 		for (int i = 0; i < DOTS_DISPLAY_X; i++)
 		{
-			lcdScreen[i][j].colorRGB = 0xFF;
-			lcdScreen[i][j].backgroundTransparent = false;
+			// lcdScreen[i][j].colorRGB = 0xFF;
+			// lcdScreen[i][j].backgroundTransparent = false;
+
+			lcd[(j * 160 * 3) + i] = 0xFF;
+			lcdTransparent[(j * 160 * 3) + i] = false;
 		}
 	}
 	scanLineCounter = 456; //Number of clock cycles to draw one scanline
@@ -352,8 +358,11 @@ void Ppu::drawBackgroundLine(const uint8& lcdc)
 
 		if (testBit(lcdc, 0))
 		{
-			lcdScreen[pixel][ly].colorRGB = colorToRGB(color);
-			lcdScreen[pixel][ly].backgroundTransparent = (colorCode == 0);
+			// lcdScreen[pixel][ly].colorRGB = colorToRGB(color);
+			// lcdScreen[pixel][ly].backgroundTransparent = (colorCode == 0);
+			lcd[(ly * 160 * 3) + pixel] = colorToRGB(color);
+			lcdTransparent[(ly * 160 * 3) + pixel] = (colorCode == 0);
+
 		}
 		else
 		{
@@ -361,8 +370,11 @@ void Ppu::drawBackgroundLine(const uint8& lcdc)
 
 			for (int pixel = 0; pixel < DOTS_DISPLAY_X; pixel++)
 			{
-				lcdScreen[pixel][memory->read(LY_ADDRESS)].colorRGB = colorToRGB(color);
-				lcdScreen[pixel][ly].backgroundTransparent = true;
+				// lcdScreen[pixel][memory->read(LY_ADDRESS)].colorRGB = colorToRGB(color);
+				// lcdScreen[pixel][ly].backgroundTransparent = true;
+
+				lcd[(ly * 160 * 3) + pixel] = colorToRGB(color);
+				lcdTransparent[(ly * 160 * 3) + pixel] = true;
 			}
 		}
 	}
@@ -430,8 +442,8 @@ void Ppu::drawSpritesLine(const uint8& lcdc)
 					if (0 <= x && x < 160)
 					{
 						//Following the priority p
-						if ((((!displayPriorityBG && !transparent) || (displayPriorityBG && !transparent && lcdScreen[x]
-							[ly].backgroundTransparent)) && (numberSpritesPerLine <= 10)))
+						// if ((((!displayPriorityBG && !transparent) || (displayPriorityBG && !transparent && lcdScreen[x][ly].backgroundTransparent)) && (numberSpritesPerLine <= 10)))
+						if ((((!displayPriorityBG && !transparent) || (displayPriorityBG && !transparent && lcdTransparent[(ly * 160 * 3) + pixel])) && (numberSpritesPerLine <= 10)))
 						{
 							uint8 color;
 							if (!testBit(attributeFlag, 4))
@@ -439,7 +451,10 @@ void Ppu::drawSpritesLine(const uint8& lcdc)
 							else
 								color = transformDotDataToColor(colorCode, OPB1_PALETTE_DATA);
 
-							lcdScreen[x][ly].colorRGB = colorToRGB(color);
+							// lcdScreen[x][ly].colorRGB = colorToRGB(color);
+
+							lcd[(ly * 160 * 3) + x] = colorToRGB(color);
+
 						}
 						else //Display BG' pixel
 						{
