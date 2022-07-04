@@ -7,6 +7,8 @@
 
 Ppu::Ppu(Memory* memory, ColorMode colorMode)
 {
+	currentColorMode = 0;
+
 	int windowWidth = 640;
 	int windowHeight = 576;
 
@@ -119,22 +121,17 @@ bool Ppu::windowIsActive()
 	}
 	else if (event.type == SDL_KEYUP)
 	{
-		if (event.key.keysym.sym == SDLK_F11)
+		if (event.key.keysym.sym == SDLK_F11 && switchWindowMode)
 		{
 			switchWindowMode = false;
 			toggleFullScreen();
 		}
 
-		if (event.key.keysym.sym == SDLK_F10)
+		if (event.key.keysym.sym == SDLK_F10 && switchColorMode)
 		{
-			if (switchColorMode)
-			{
-				switchColorMode = false;
-				if (currentColorMode == greenscale)
-					setGameBoyColorMode(grayscale);
-				else
-					setGameBoyColorMode(greenscale);
-			}
+			switchColorMode = false;
+			currentColorMode++;
+			setGameBoyColorMode(currentColorMode);
 		}
 
 		return !(event.key.keysym.sym == SDLK_ESCAPE);
@@ -176,79 +173,44 @@ void Ppu::reset()
 	LY = LYC = 0;
 }
 
-void Ppu::setGameBoyColorMode(const ColorMode& colorMode)
+void Ppu::setGameBoyColorMode(const int& colorMode)
 {
-	// Grayscale
-	// Black
-	// Hex : #000000
-	// RGB : 0, 0, 0
-	// Gray 1
-	// Hex : #777777
-	// RGB: 119, 119, 119
-	// Gray 2
-	// Hex : #CCCCCC
-	// RGB : 204, 204, 204
-	// Black
-	// Hex : #FFFFFF
-	// RGB : 255, 255, 255
-
-	// Greenscale
-	// Darkest Green
-	// Hex : #0f380f
-	// RGB : 15, 56, 15
-	// Dark Green
-	// Hex : #306230
-	// RGB: 48, 98, 48
-	// Light Green
-	// Hex : #8bac0f
-	// RGB : 139, 172, 15
-	// Lightest Green
-	// Hex : #9bbc0f
-	// RGB : 155, 188, 15
-
-	currentColorMode = colorMode;
-
 	//GameBoy color mode
 	switch (colorMode)
 	{
-	case(grayscale):
-		GameBoyColorMode.black.r = 0x00;
-		GameBoyColorMode.black.g = 0x00;
-		GameBoyColorMode.black.b = 0x00;
-
-		GameBoyColorMode.gray1.r = 0x77;
-		GameBoyColorMode.gray1.g = 0x77;
-		GameBoyColorMode.gray1.b = 0x77;
-
-		GameBoyColorMode.gray2.r = 0xCC;
-		GameBoyColorMode.gray2.g = 0xCC;
-		GameBoyColorMode.gray2.b = 0xCC;
-
-		GameBoyColorMode.white.r = 0xFF;
-		GameBoyColorMode.white.g = 0xFF;
-		GameBoyColorMode.white.b = 0xFF;
-
+	case(grayscaleReal):
+		GameBoyColorMode.darkest = {0x00, 0x00, 0x00};
+		GameBoyColorMode.dark = {0x77, 0x77, 0x77};
+		GameBoyColorMode.light = {0xCC, 0xCC, 0xCC};
+		GameBoyColorMode.lightest = {0xff, 0xff, 0xff};
 		break;
-	case(greenscale):
-		GameBoyColorMode.black.r = 0x0f;
-		GameBoyColorMode.black.g = 0x38;
-		GameBoyColorMode.black.b = 0x0f;
-
-		GameBoyColorMode.gray1.r = 0x30;
-		GameBoyColorMode.gray1.g = 0x62;
-		GameBoyColorMode.gray1.b = 0x30;
-
-		GameBoyColorMode.gray2.r = 0x8b;
-		GameBoyColorMode.gray2.g = 0xac;
-		GameBoyColorMode.gray2.b = 0x0f;
-
-		GameBoyColorMode.white.r = 0x9b;
-		GameBoyColorMode.white.g = 0xbc;
-		GameBoyColorMode.white.b = 0x0f;
-
+	case(grayscaleNative):
+		GameBoyColorMode.darkest = {0x00, 0x00, 0x00};
+		GameBoyColorMode.dark = { 0x55,0x55,0x55};
+		GameBoyColorMode.light = { 0xaa,0xaa,0xaa };
+		GameBoyColorMode.lightest = { 0xff,0xff,0xff };
 		break;
+	case(greenscaleReal):
+		GameBoyColorMode.darkest = {0x0f, 0x38, 0x0f};
+		GameBoyColorMode.dark = {0x30, 0x62, 0x30};
+		GameBoyColorMode.light = {0x8b, 0xac, 0x0f};
+		GameBoyColorMode.lightest = {0x9b, 0xbc, 0x0f};
+		break;
+	case(greenscaleNative):
+		GameBoyColorMode.darkest = {0x40, 0x50, 0x10};
+		GameBoyColorMode.dark = {0x70, 0x80, 0x28};
+		GameBoyColorMode.light = {0xa0, 0xa8, 0x40};
+		GameBoyColorMode.lightest = {0xd0, 0xd0, 0x58};
+		break;
+	// case(4): // Negative
+	// 	GameBoyColorMode.darkest = { 0xe3,0xe6,0xc9 };
+	// 	GameBoyColorMode.dark = { 0xc3,0xc4,0xa5 };
+	// 	GameBoyColorMode.light = { 0x8e,0x8b,0x61 };
+	// 	GameBoyColorMode.lightest = { 0x6c,0x6c,0x4e };
+	// 	break;
 	default:
-		std::cerr << "Error unknown color mode.\n" << std::endl;
+		currentColorMode = 0;
+		setGameBoyColorMode(0);
 		break;
 	}
 }
@@ -565,7 +527,7 @@ void Ppu::drawSpritesLine(const uint8& lcdc)
 								color = transformDotDataToColor(colorCode, OPB0_PALETTE_DATA);
 							else
 								color = transformDotDataToColor(colorCode, OPB1_PALETTE_DATA);
-							
+
 							auto colorRgb = colorToRGB(color);
 							setPixel(x, ly, colorRgb.r, colorRgb.g, colorRgb.b);
 						}
@@ -613,19 +575,19 @@ ColorRGB Ppu::colorToRGB(uint8 colorGameBoy)
 	{
 	case (0b00):
 		{
-			return GameBoyColorMode.white;
+			return GameBoyColorMode.lightest;
 		}
 	case (0b01):
 		{
-			return GameBoyColorMode.gray2;
+			return GameBoyColorMode.light;
 		}
 	case (0b10):
 		{
-			return GameBoyColorMode.gray1;
+			return GameBoyColorMode.dark;
 		}
 	case (0b11):
 		{
-			return GameBoyColorMode.black;
+			return GameBoyColorMode.darkest;
 		}
 	default:
 		cerr << "Error wrong data color";

@@ -205,7 +205,7 @@ extern DECLSPEC SDL_bool SDLCALL SDL_GetRelativeMouseMode(void);
  *
  *  The cursor width must be a multiple of 8 bits.
  *
- *  The cursor is created in black and white according to the following:
+ *  The cursor is created in darkest and lightest according to the following:
  *  <table>
  *  <tr><td> data </td><td> mask </td><td> resulting pixel on screen </td></tr>
  *  <tr><td>  0   </td><td>  1   </td><td> White </td></tr>

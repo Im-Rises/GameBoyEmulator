@@ -4,7 +4,6 @@
 #include "binaryLib.h"
 #include "Memory.h"
 #include "SDL2/include/SDL.h"
-// #include "GameBoy.h"
 
 #define DOTS_DISPLAY_X 160
 #define DOTS_DISPLAY_Y 144
@@ -25,8 +24,10 @@
 
 enum ColorMode
 {
-	grayscale,
-	greenscale
+	grayscaleReal=0,
+	grayscaleNative=1,
+	greenscaleReal=2,
+	greenscaleNative=3
 };
 
 struct ColorRGB
@@ -42,20 +43,14 @@ private:
 	//GameBoy
 	Memory* memory = nullptr;
 
-	// struct Screen
-	// {
-	// 	uint8 colorRGB;
-	// 	bool backgroundTransparent;
-	// } lcdScreen[DOTS_DISPLAY_X][DOTS_DISPLAY_Y];
+	int currentColorMode;
 
-
-	ColorMode currentColorMode;
 	struct ColorModePalette
 	{
-		ColorRGB black;
-		ColorRGB gray1;
-		ColorRGB gray2;
-		ColorRGB white;
+		ColorRGB darkest;
+		ColorRGB dark;
+		ColorRGB light;
+		ColorRGB lightest;
 	} GameBoyColorMode;
 
 	uint8 lcd[160 * 144 * 3];
@@ -80,8 +75,7 @@ private:
 
 
 public:
-	Ppu(Memory* memory, ColorMode colorMode = greenscale);
-	// Ppu(Memory* memory, int windowWidth = 640, int windowHeight = 576);
+	Ppu(Memory* memory, ColorMode colorMode = grayscaleReal);
 	~Ppu();
 
 
@@ -89,14 +83,13 @@ public:
 	// SDL functions
 	void toggleFullScreen();
 	void updateScreen();
-	// void SDL_drawSquare(const int& x, const int& y, const int& color);
 	void displayFramerate(const int& value) const;
 	bool windowIsActive();
 
 	// Game Boy screen functions
 public:
 	void reset();
-	void setGameBoyColorMode(const ColorMode& colorMode);
+	void setGameBoyColorMode(const int& colorMode);
 	void setPixel(const int& x, const int& y, const uint8& r, const uint8& g, const uint8& b);
 	void draw(const int& cycles);
 private:
