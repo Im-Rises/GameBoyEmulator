@@ -9,10 +9,10 @@ Cpu::Cpu(Memory* memory, Ppu* ppu, Spu* spu)
 	this->spu = spu;
 	timerFrequency = 1024;
 	clockCycles = 0;
-	halted = 0;
+	halted = false;
 	stopped = false;
 	sp = CPU_WORK_RAM_OR_AND_STACK_END;
-	IME = 0;
+	IME = false;
 	setCpuWithoutBios();
 	timerCounter = 0;
 }
@@ -20,9 +20,9 @@ Cpu::Cpu(Memory* memory, Ppu* ppu, Spu* spu)
 void Cpu::reset()
 {
 	clockCycles = 0;
-	halted = 0;
+	halted = false;
 	sp = CPU_WORK_RAM_OR_AND_STACK_END;
-	IME = 0;
+	IME = false;
 
 	if (memory->getBiosInMemeory())
 	{
@@ -100,11 +100,11 @@ int Cpu::doCycle()
 
 	clockCycles = 0;
 	clockCycleDuringOpcode = 0;
-	if (!halted)//If not halted
+	if (!halted) //If not halted
 	{
-		executeOpcode(memory->read(pc));//Execute opcode
+		executeOpcode(memory->read(pc)); //Execute opcode
 	}
-	else//If halted
+	else //If halted
 	{
 		clockCycles++;
 	}
@@ -123,15 +123,15 @@ int Cpu::doCycle()
 
 void Cpu::doTimers(const int& cycles)
 {
-	doDividerTimer(cycles);//Incremented every cycles
+	doDividerTimer(cycles); //Incremented every cycles
 
 	///instr_timing.gb error #255 if not implemented like this
 
-	if (testBit(memory->read(TAC), 2))//If timer enable
+	if (testBit(memory->read(TAC), 2)) //If timer enable
 	{
 		timerCounter += cycles;
 
-		setTimerFrequency();//Set timer clock
+		setTimerFrequency(); //Set timer clock
 
 		while (timerCounter >= timerFrequency)
 		{
@@ -159,47 +159,47 @@ void Cpu::setTimerFrequency()
 {
 	switch (memory->read(TAC) & 0b00000011)
 	{
-	case (0b00)://Freq 4096
-	{
-		timerFrequency = CLOCK_FREQUENCY / 4096;
-		break;
-	}
-	case (0b01)://Freq 262144
-	{
-		timerFrequency = CLOCK_FREQUENCY / 262144;
-		break;
-	}
-	case (0b10)://Freq 65536
-	{
-		timerFrequency = CLOCK_FREQUENCY / 65536;
-		break;
-	}
-	case (0b11)://Freq 16382
-	{
-		timerFrequency = CLOCK_FREQUENCY / 16382;
-		break;
-	}
+	case (0b00): //Freq 4096
+		{
+			timerFrequency = CLOCK_FREQUENCY / 4096;
+			break;
+		}
+	case (0b01): //Freq 262144
+		{
+			timerFrequency = CLOCK_FREQUENCY / 262144;
+			break;
+		}
+	case (0b10): //Freq 65536
+		{
+			timerFrequency = CLOCK_FREQUENCY / 65536;
+			break;
+		}
+	case (0b11): //Freq 16382
+		{
+			timerFrequency = CLOCK_FREQUENCY / 16382;
+			break;
+		}
 	default:
-	{
-		cerr << "Error frequency selection impossible" << endl;
-		exit(1);
-		break;
-	}
+		{
+			cerr << "Error frequency selection impossible" << endl;
+			exit(1);
+			break;
+		}
 	}
 }
 
 
-void Cpu::handleInterupt()//Thanks codesLinger.com
+void Cpu::handleInterupt() //Thanks codesLinger.com
 {
-	if (IME || halted)//If IME is enable or the cpu is halted thant we check if IE and IF flags are enabled
+	if (IME || halted) //If IME is enable or the cpu is halted thant we check if IE and IF flags are enabled
 	{
 		uint8 ifRegister = memory->read(INTERRUPT_FLAG_IF_ADDRESS);
 		uint8 ieRegister = memory->read(INTERRUPT_FLAG_IE_ADDRESS);
 		uint8 temp = (ifRegister & ieRegister);
 
-		if (temp > 0)//If an interupt is enable and requested
+		if (temp > 0) //If an interupt is enable and requested
 		{
-			if (!halted)//If not halted the program jump to the address of the interrupt
+			if (!halted) //If not halted the program jump to the address of the interrupt
 			{
 				//for (int i = 0; i < 5; i++)
 				//{
@@ -220,7 +220,7 @@ void Cpu::handleInterupt()//Thanks codesLinger.com
 				else if (testBit(temp, 4))
 					doInterupt(4);
 			}
-			else//If the cpu is halted and an interrupt is activated than leaving halt mode
+			else //If the cpu is halted and an interrupt is activated than leaving halt mode
 			{
 				halted = false;
 				//for (int i = 0; i < 5; i++)
@@ -252,30 +252,30 @@ void Cpu::doInterupt(const uint8& bitIndex)
 	switch (bitIndex + 1)
 	{
 	case(1):
-	{
-		pc = 0x40;
-		break;
-	}
+		{
+			pc = 0x40;
+			break;
+		}
 	case(2):
-	{
-		pc = 0x48;
-		break;
-	}
+		{
+			pc = 0x48;
+			break;
+		}
 	case(3):
-	{
-		pc = 0x50;
-		break;
-	}
+		{
+			pc = 0x50;
+			break;
+		}
 	case(4):
-	{
-		pc = 0x58;
-		break;
-	}
+		{
+			pc = 0x58;
+			break;
+		}
 	case(5):
-	{
-		pc = 0x60;
-		break;
-	}
+		{
+			pc = 0x60;
+			break;
+		}
 	}
 }
 
@@ -290,9 +290,9 @@ void Cpu::writeMemory(const uint16& address, const uint8& data)
 {
 	if (address == TAC)
 	{
-		uint8 currentTimerFrequency = memory->read(TAC) & 0b00000011;//Get current frequency
-		memory->directWrite(address, data);//write new frequency
-		uint8 newTimerFrequency = memory->read(TAC) & 0b00000011;//Get current frequency
+		uint8 currentTimerFrequency = memory->read(TAC) & 0b00000011; //Get current frequency
+		memory->directWrite(address, data); //write new frequency
+		uint8 newTimerFrequency = memory->read(TAC) & 0b00000011; //Get current frequency
 		if (currentTimerFrequency != newTimerFrequency)
 			setTimerFrequency();
 	}
@@ -310,7 +310,7 @@ void Cpu::writeMemory(const uint16& address, const uint8& data)
 	}
 }
 
-uint16 Cpu::getPc()const
+uint16 Cpu::getPc() const
 {
 	return pc;
 }
@@ -318,253 +318,1238 @@ uint16 Cpu::getPc()const
 
 void Cpu::executeOpcode(uint8 opcode)
 {
-	switch (opcode) {
-	case(0x00): {NOP(); break; }
-	case(0x01): {LD_RP_d16(B, C); break; }
-	case(0x02): {LD_aBC_A(); break; }
-	case(0x03): {INC_RP(B, C); break; }
-	case(0x04): {INC_R(B); break; }
-	case(0x05): {DEC_R(B); break; }
-	case(0x06): {LD_R_d8(B); break; }
-	case(0x07): {RLCA(); break; }
-	case(0x08): {LD_a16_SP(); break; }
-	case(0x09): {ADD_HL_RP(B, C); break; }
-	case(0x0A): {LD_A_aBC(); break; }
-	case(0x0B): {DEC_RP(B, C); break; }
-	case(0x0C): {INC_R(C); break; }
-	case(0x0D): {DEC_R(C); break; }
-	case(0x0E): {LD_R_d8(C); break; }
-	case(0x0F): {RRCA(); break; }
-	case(0x10): {STOP(); break; }
-	case(0x11): {LD_RP_d16(D, E); break; }
-	case(0x12): {LD_aDE_A(); break; }
-	case(0x13): {INC_RP(D, E); break; }
-	case(0x14): {INC_R(D); break; }
-	case(0x15): {DEC_R(D); break; }
-	case(0x16): {LD_R_d8(D); break; }
-	case(0x17): {RLA(); break; }
-	case(0x18): {JR_e(); break; }
-	case(0x19): {ADD_HL_RP(D, E); break; }
-	case(0x1A): {LD_A_aDE(); break; }
-	case(0x1B): {DEC_RP(D, E); break; }
-	case(0x1C): {INC_R(E); break; }
-	case(0x1D): {DEC_R(E); break; }
-	case(0x1E): {LD_R_d8(E); break; }
-	case(0x1F): {RRA(); break; }
-	case(0x20): {JR_cc_e(); break; }
-	case(0x21): {LD_RP_d16(H, L); break; }
-	case(0x22): {LD_aHL_A_HLI(); break; }
-	case(0x23): {INC_RP(H, L); break; }
-	case(0x24): {INC_R(H); break; }
-	case(0x25): {DEC_R(H); break; }
-	case(0x26): {LD_R_d8(H); break; }
-	case(0x27): {DAA(); break; }
-	case(0x28): {JR_cc_e(); break; }
-	case(0x29): {ADD_HL_RP(H, L); break; }
-	case(0x2A): {LD_A_aHL_HLI(); break; }
-	case(0x2B): {DEC_RP(H, L); break; }
-	case(0x2C): {INC_R(L); break; }
-	case(0x2D): {DEC_R(L); break; }
-	case(0x2E): {LD_R_d8(L); break; }
-	case(0x2F): {CPL(); break; }
-	case(0x30): {JR_cc_e(); break; }
-	case(0x31): {LD_RP_d16(sp); break; }
-	case(0x32): {LD_aHL_A_HLD(); break; }
-	case(0x33): {INC_RP(sp); break; }
-	case(0x34): {INC_aHL(); break; }
-	case(0x35): {DEC_aHL(); break; }
-	case(0x36): {LD_aHL_d8(); break; }
-	case(0x37): {SCF(); break; }
-	case(0x38): {JR_cc_e(); break; }
-	case(0x39): {ADD_HL_RP(sp); break; }
-	case(0x3A): {LD_A_aHL_HLD(); break; }
-	case(0x3B): {DEC_RP(sp); break; }
-	case(0x3C): {INC_R(A); break; }
-	case(0x3D): {DEC_R(A); break; }
-	case(0x3E): {LD_R_d8(A); break; }
-	case(0x3F): {CCF(); break; }
-	case(0x40): {LD_R_R(B, B); break; }
-	case(0x41): {LD_R_R(B, C); break; }
-	case(0x42): {LD_R_R(B, D); break; }
-	case(0x43): {LD_R_R(B, E); break; }
-	case(0x44): {LD_R_R(B, H); break; }
-	case(0x45): {LD_R_R(B, L); break; }
-	case(0x46): {LD_R_aHL(B); break; }
-	case(0x47): {LD_R_R(B, A); break; }
-	case(0x48): {LD_R_R(C, B); break; }
-	case(0x49): {LD_R_R(C, C); break; }
-	case(0x4A): {LD_R_R(C, D); break; }
-	case(0x4B): {LD_R_R(C, E); break; }
-	case(0x4C): {LD_R_R(C, H); break; }
-	case(0x4D): {LD_R_R(C, L); break; }
-	case(0x4E): {LD_R_aHL(C); break; }
-	case(0x4F): {LD_R_R(C, A); break; }
-	case(0x50): {LD_R_R(D, B); break; }
-	case(0x51): {LD_R_R(D, C); break; }
-	case(0x52): {LD_R_R(D, D); break; }
-	case(0x53): {LD_R_R(D, E); break; }
-	case(0x54): {LD_R_R(D, H); break; }
-	case(0x55): {LD_R_R(D, L); break; }
-	case(0x56): {LD_R_aHL(D); break; }
-	case(0x57): {LD_R_R(D, A); break; }
-	case(0x58): {LD_R_R(E, B); break; }
-	case(0x59): {LD_R_R(E, C); break; }
-	case(0x5A): {LD_R_R(E, D); break; }
-	case(0x5B): {LD_R_R(E, E); break; }
-	case(0x5C): {LD_R_R(E, H); break; }
-	case(0x5D): {LD_R_R(E, L); break; }
-	case(0x5E): {LD_R_aHL(E);  break; }
-	case(0x5F): {LD_R_R(E, A); break; }
-	case(0x60): {LD_R_R(H, B); break; }
-	case(0x61): {LD_R_R(H, C); break; }
-	case(0x62): {LD_R_R(H, D); break; }
-	case(0x63): {LD_R_R(H, E); break; }
-	case(0x64): {LD_R_R(H, H); break; }
-	case(0x65): {LD_R_R(H, L); break; }
-	case(0x66): {LD_R_aHL(H); break; }
-	case(0x67): {LD_R_R(H, A); break; }
-	case(0x68): {LD_R_R(L, B); break; }
-	case(0x69): {LD_R_R(L, C); break; }
-	case(0x6A): {LD_R_R(L, D); break; }
-	case(0x6B): {LD_R_R(L, E); break; }
-	case(0x6C): {LD_R_R(L, H); break; }
-	case(0x6D): {LD_R_R(L, L); break; }
-	case(0x6E): {LD_R_aHL(L); break; }
-	case(0x6F): {LD_R_R(L, A); break; }
-	case(0x70): {LD_aHL_R(B); break; }
-	case(0x71): {LD_aHL_R(C); break; }
-	case(0x72): {LD_aHL_R(D); break; }
-	case(0x73): {LD_aHL_R(E); break; }
-	case(0x74): {LD_aHL_R(H); break; }
-	case(0x75): {LD_aHL_R(L); break; }
-	case(0x76): {HALT(); break; }
-	case(0x77): {LD_aHL_R(A);  break; }
-	case(0x78): {LD_R_R(A, B); break; }
-	case(0x79): {LD_R_R(A, C); break; }
-	case(0x7A): {LD_R_R(A, D); break; }
-	case(0x7B): {LD_R_R(A, E); break; }
-	case(0x7C): {LD_R_R(A, H); break; }
-	case(0x7D): {LD_R_R(A, L); break; }
-	case(0x7E): {LD_R_aHL(A); break; }
-	case(0x7F): {LD_R_R(A, A); break; }
-	case(0x80): {ADD_A_R(B); break; }
-	case(0x81): {ADD_A_R(C); break; }
-	case(0x82): {ADD_A_R(D); break; }
-	case(0x83): {ADD_A_R(E); break; }
-	case(0x84): {ADD_A_R(H); break; }
-	case(0x85): {ADD_A_R(L); break; }
-	case(0x86): {ADD_A_aHL(); break; }
-	case(0x87): {ADD_A_R(A); break; }
-	case(0x88): {ADC_A_R_CY(B); break; }
-	case(0x89): {ADC_A_R_CY(C); break; }
-	case(0x8A): {ADC_A_R_CY(D); break; }
-	case(0x8B): {ADC_A_R_CY(E); break; }
-	case(0x8C): {ADC_A_R_CY(H); break; }
-	case(0x8D): {ADC_A_R_CY(L); break; }
-	case(0x8E): {ADC_A_aHL_CY(H, L); break; }
-	case(0x8F): {ADC_A_R_CY(A); break; }
-	case(0x90): {SUB_A_R(B); break; }
-	case(0x91): {SUB_A_R(C); break; }
-	case(0x92): {SUB_A_R(D); break; }
-	case(0x93): {SUB_A_R(E); break; }
-	case(0x94): {SUB_A_R(H); break; }
-	case(0x95): {SUB_A_R(L); break; }
-	case(0x96): {SUB_A_aHL(H, L); break; }
-	case(0x97): {SUB_A_R(A); break; }
-	case(0x98): {SBC_A_R_CY(B); break; }
-	case(0x99): {SBC_A_R_CY(C); break; }
-	case(0x9A): {SBC_A_R_CY(D); break; }
-	case(0x9B): {SBC_A_R_CY(E); break; }
-	case(0x9C): {SBC_A_R_CY(H); break; }
-	case(0x9D): {SBC_A_R_CY(L); break; }
-	case(0x9E): {SBC_A_aHL_CY(H, L); break; }
-	case(0x9F): {SBC_A_R_CY(A); break; }
-	case(0xA0): {AND_A_R(B); break; }
-	case(0xA1): {AND_A_R(C); break; }
-	case(0xA2): {AND_A_R(D); break; }
-	case(0xA3): {AND_A_R(E); break; }
-	case(0xA4): {AND_A_R(H); break; }
-	case(0xA5): {AND_A_R(L); break; }
-	case(0xA6): {AND_A_aHL(); break; }
-	case(0xA7): {AND_A_R(A); break; }
-	case(0xA8): {XOR_A_R(B); break; }
-	case(0xA9): {XOR_A_R(C); break; }
-	case(0xAA): {XOR_A_R(D); break; }
-	case(0xAB): {XOR_A_R(E); break; }
-	case(0xAC): {XOR_A_R(H); break; }
-	case(0xAD): {XOR_A_R(L); break; }
-	case(0xAE): {XOR_A_aHL(); break; }
-	case(0xAF): {XOR_A_R(A); break; }
-	case(0xB0): {OR_A_R(B); break; }
-	case(0xB1): {OR_A_R(C); break; }
-	case(0xB2): {OR_A_R(D); break; }
-	case(0xB3): {OR_A_R(E); break; }
-	case(0xB4): {OR_A_R(H); break; }
-	case(0xB5): {OR_A_R(L); break; }
-	case(0xB6): {OR_A_aHL(); break; }
-	case(0xB7): {OR_A_R(A);  break; }
-	case(0xB8): {CP_A_R(B); break; }
-	case(0xB9): {CP_A_R(C); break; }
-	case(0xBA): {CP_A_R(D); break; }
-	case(0xBB): {CP_A_R(E); break; }
-	case(0xBC): {CP_A_R(H); break; }
-	case(0xBD): {CP_A_R(L); break; }
-	case(0xBE): {CP_A_aHL(); break; }
-	case(0xBF): {CP_A_R(A); break; }
-	case(0xC0): {RET_cc(); break; }
-	case(0xC1): {POP_RP(B, C); break; }
-	case(0xC2): {JP_cc_d16(); break; }
-	case(0xC3): {JP_d16(); break; }
-	case(0xC4): {CALL_cc(); break; }
-	case(0xC5): {PUSH_RP(B, C); break; }
-	case(0xC6): {ADD_A_d8(); break; }
-	case(0xC7): {RST(); break; }
-	case(0xC8): {RET_cc(); break; }
-	case(0xC9): {RET(); break; }
-	case(0xCA): {JP_cc_d16(); break; }
-	case(0xCB): {executeOpcodeFollowingCB(); break; }
-	case(0xCC): {CALL_cc(); break; }
-	case(0xCD): {CALL(); break; }
-	case(0xCE): {ADC_A_d8_CY(); break; }
-	case(0xCF): {RST(); break; }
-	case(0xD0): {RET_cc(); break; }
-	case(0xD1): {POP_RP(D, E); break; }
-	case(0xD2): {JP_cc_d16(); break; }
-	case(0xD4): {CALL_cc(); break; }
-	case(0xD5): {PUSH_RP(D, E); break; }
-	case(0xD6): {SUB_A_d8(); break; }
-	case(0xD7): {RST(); break; }
-	case(0xD8): {RET_cc(); break; }
-	case(0xD9): {RETI(); break; }
-	case(0xDA): {JP_cc_d16(); break; }
-	case(0xDC): {CALL_cc(); break; }
-	case(0xDE): {SBC_A_d8_CY(); break; }
-	case(0xDF): {RST(); break; }
-	case(0xE0): {LD_a8o_A(); break; }
-	case(0xE1): {POP_RP(H, L); break; }
-	case(0xE2): {LD_aCo_A(); break; }
-	case(0xE5): {PUSH_RP(H, L); break; }
-	case(0xE6): {AND_A_d8(); break; }
-	case(0xE7): {RST(); break; }
-	case(0xE8): {ADD_SP_e(); break; }
-	case(0xE9): {JP_HL(); break; }
-	case(0xEA): {LD_a16_A(); break; }
-	case(0xEE): {XOR_A_d8(); break; }
-	case(0xEF): {RST(); break; }
-	case(0xF0): {LD_A_a8o(); break; }
-	case(0xF1): {POP_RP(A, F); break; }
-	case(0xF2): {LD_A_aCo(); break; }
-	case(0xF3): {DI(); break; }
-	case(0xF5): {PUSH_RP(A, F); break; }
-	case(0xF6): {OR_A_d8(); break; }
-	case(0xF7): {RST(); break; }
-	case(0xF8): {LDHL_SP_e(); break; }
-	case(0xF9): {LD_SP_HL(); break; }
-	case(0xFA): {LD_A_a16(); break; }
-	case(0xFB): {EI(); break; }
-	case(0xFE): {CP_A_d8(); break; }
-	case(0xFF): {RST(); break; }
-	default: {cerr << "Error opcode 0x" << opcode << " unknown at pc = 0x" << hex << (int)pc << endl; exit(1); break; }
+	switch (opcode)
+	{
+	case(0x00):
+		{
+			NOP();
+			break;
+		}
+	case(0x01):
+		{
+			LD_RP_d16(B, C);
+			break;
+		}
+	case(0x02):
+		{
+			LD_aBC_A();
+			break;
+		}
+	case(0x03):
+		{
+			INC_RP(B, C);
+			break;
+		}
+	case(0x04):
+		{
+			INC_R(B);
+			break;
+		}
+	case(0x05):
+		{
+			DEC_R(B);
+			break;
+		}
+	case(0x06):
+		{
+			LD_R_d8(B);
+			break;
+		}
+	case(0x07):
+		{
+			RLCA();
+			break;
+		}
+	case(0x08):
+		{
+			LD_a16_SP();
+			break;
+		}
+	case(0x09):
+		{
+			ADD_HL_RP(B, C);
+			break;
+		}
+	case(0x0A):
+		{
+			LD_A_aBC();
+			break;
+		}
+	case(0x0B):
+		{
+			DEC_RP(B, C);
+			break;
+		}
+	case(0x0C):
+		{
+			INC_R(C);
+			break;
+		}
+	case(0x0D):
+		{
+			DEC_R(C);
+			break;
+		}
+	case(0x0E):
+		{
+			LD_R_d8(C);
+			break;
+		}
+	case(0x0F):
+		{
+			RRCA();
+			break;
+		}
+	case(0x10):
+		{
+			STOP();
+			break;
+		}
+	case(0x11):
+		{
+			LD_RP_d16(D, E);
+			break;
+		}
+	case(0x12):
+		{
+			LD_aDE_A();
+			break;
+		}
+	case(0x13):
+		{
+			INC_RP(D, E);
+			break;
+		}
+	case(0x14):
+		{
+			INC_R(D);
+			break;
+		}
+	case(0x15):
+		{
+			DEC_R(D);
+			break;
+		}
+	case(0x16):
+		{
+			LD_R_d8(D);
+			break;
+		}
+	case(0x17):
+		{
+			RLA();
+			break;
+		}
+	case(0x18):
+		{
+			JR_e();
+			break;
+		}
+	case(0x19):
+		{
+			ADD_HL_RP(D, E);
+			break;
+		}
+	case(0x1A):
+		{
+			LD_A_aDE();
+			break;
+		}
+	case(0x1B):
+		{
+			DEC_RP(D, E);
+			break;
+		}
+	case(0x1C):
+		{
+			INC_R(E);
+			break;
+		}
+	case(0x1D):
+		{
+			DEC_R(E);
+			break;
+		}
+	case(0x1E):
+		{
+			LD_R_d8(E);
+			break;
+		}
+	case(0x1F):
+		{
+			RRA();
+			break;
+		}
+	case(0x20):
+		{
+			JR_cc_e();
+			break;
+		}
+	case(0x21):
+		{
+			LD_RP_d16(H, L);
+			break;
+		}
+	case(0x22):
+		{
+			LD_aHL_A_HLI();
+			break;
+		}
+	case(0x23):
+		{
+			INC_RP(H, L);
+			break;
+		}
+	case(0x24):
+		{
+			INC_R(H);
+			break;
+		}
+	case(0x25):
+		{
+			DEC_R(H);
+			break;
+		}
+	case(0x26):
+		{
+			LD_R_d8(H);
+			break;
+		}
+	case(0x27):
+		{
+			DAA();
+			break;
+		}
+	case(0x28):
+		{
+			JR_cc_e();
+			break;
+		}
+	case(0x29):
+		{
+			ADD_HL_RP(H, L);
+			break;
+		}
+	case(0x2A):
+		{
+			LD_A_aHL_HLI();
+			break;
+		}
+	case(0x2B):
+		{
+			DEC_RP(H, L);
+			break;
+		}
+	case(0x2C):
+		{
+			INC_R(L);
+			break;
+		}
+	case(0x2D):
+		{
+			DEC_R(L);
+			break;
+		}
+	case(0x2E):
+		{
+			LD_R_d8(L);
+			break;
+		}
+	case(0x2F):
+		{
+			CPL();
+			break;
+		}
+	case(0x30):
+		{
+			JR_cc_e();
+			break;
+		}
+	case(0x31):
+		{
+			LD_RP_d16(sp);
+			break;
+		}
+	case(0x32):
+		{
+			LD_aHL_A_HLD();
+			break;
+		}
+	case(0x33):
+		{
+			INC_RP(sp);
+			break;
+		}
+	case(0x34):
+		{
+			INC_aHL();
+			break;
+		}
+	case(0x35):
+		{
+			DEC_aHL();
+			break;
+		}
+	case(0x36):
+		{
+			LD_aHL_d8();
+			break;
+		}
+	case(0x37):
+		{
+			SCF();
+			break;
+		}
+	case(0x38):
+		{
+			JR_cc_e();
+			break;
+		}
+	case(0x39):
+		{
+			ADD_HL_RP(sp);
+			break;
+		}
+	case(0x3A):
+		{
+			LD_A_aHL_HLD();
+			break;
+		}
+	case(0x3B):
+		{
+			DEC_RP(sp);
+			break;
+		}
+	case(0x3C):
+		{
+			INC_R(A);
+			break;
+		}
+	case(0x3D):
+		{
+			DEC_R(A);
+			break;
+		}
+	case(0x3E):
+		{
+			LD_R_d8(A);
+			break;
+		}
+	case(0x3F):
+		{
+			CCF();
+			break;
+		}
+	case(0x40):
+		{
+			LD_R_R(B, B);
+			break;
+		}
+	case(0x41):
+		{
+			LD_R_R(B, C);
+			break;
+		}
+	case(0x42):
+		{
+			LD_R_R(B, D);
+			break;
+		}
+	case(0x43):
+		{
+			LD_R_R(B, E);
+			break;
+		}
+	case(0x44):
+		{
+			LD_R_R(B, H);
+			break;
+		}
+	case(0x45):
+		{
+			LD_R_R(B, L);
+			break;
+		}
+	case(0x46):
+		{
+			LD_R_aHL(B);
+			break;
+		}
+	case(0x47):
+		{
+			LD_R_R(B, A);
+			break;
+		}
+	case(0x48):
+		{
+			LD_R_R(C, B);
+			break;
+		}
+	case(0x49):
+		{
+			LD_R_R(C, C);
+			break;
+		}
+	case(0x4A):
+		{
+			LD_R_R(C, D);
+			break;
+		}
+	case(0x4B):
+		{
+			LD_R_R(C, E);
+			break;
+		}
+	case(0x4C):
+		{
+			LD_R_R(C, H);
+			break;
+		}
+	case(0x4D):
+		{
+			LD_R_R(C, L);
+			break;
+		}
+	case(0x4E):
+		{
+			LD_R_aHL(C);
+			break;
+		}
+	case(0x4F):
+		{
+			LD_R_R(C, A);
+			break;
+		}
+	case(0x50):
+		{
+			LD_R_R(D, B);
+			break;
+		}
+	case(0x51):
+		{
+			LD_R_R(D, C);
+			break;
+		}
+	case(0x52):
+		{
+			LD_R_R(D, D);
+			break;
+		}
+	case(0x53):
+		{
+			LD_R_R(D, E);
+			break;
+		}
+	case(0x54):
+		{
+			LD_R_R(D, H);
+			break;
+		}
+	case(0x55):
+		{
+			LD_R_R(D, L);
+			break;
+		}
+	case(0x56):
+		{
+			LD_R_aHL(D);
+			break;
+		}
+	case(0x57):
+		{
+			LD_R_R(D, A);
+			break;
+		}
+	case(0x58):
+		{
+			LD_R_R(E, B);
+			break;
+		}
+	case(0x59):
+		{
+			LD_R_R(E, C);
+			break;
+		}
+	case(0x5A):
+		{
+			LD_R_R(E, D);
+			break;
+		}
+	case(0x5B):
+		{
+			LD_R_R(E, E);
+			break;
+		}
+	case(0x5C):
+		{
+			LD_R_R(E, H);
+			break;
+		}
+	case(0x5D):
+		{
+			LD_R_R(E, L);
+			break;
+		}
+	case(0x5E):
+		{
+			LD_R_aHL(E);
+			break;
+		}
+	case(0x5F):
+		{
+			LD_R_R(E, A);
+			break;
+		}
+	case(0x60):
+		{
+			LD_R_R(H, B);
+			break;
+		}
+	case(0x61):
+		{
+			LD_R_R(H, C);
+			break;
+		}
+	case(0x62):
+		{
+			LD_R_R(H, D);
+			break;
+		}
+	case(0x63):
+		{
+			LD_R_R(H, E);
+			break;
+		}
+	case(0x64):
+		{
+			LD_R_R(H, H);
+			break;
+		}
+	case(0x65):
+		{
+			LD_R_R(H, L);
+			break;
+		}
+	case(0x66):
+		{
+			LD_R_aHL(H);
+			break;
+		}
+	case(0x67):
+		{
+			LD_R_R(H, A);
+			break;
+		}
+	case(0x68):
+		{
+			LD_R_R(L, B);
+			break;
+		}
+	case(0x69):
+		{
+			LD_R_R(L, C);
+			break;
+		}
+	case(0x6A):
+		{
+			LD_R_R(L, D);
+			break;
+		}
+	case(0x6B):
+		{
+			LD_R_R(L, E);
+			break;
+		}
+	case(0x6C):
+		{
+			LD_R_R(L, H);
+			break;
+		}
+	case(0x6D):
+		{
+			LD_R_R(L, L);
+			break;
+		}
+	case(0x6E):
+		{
+			LD_R_aHL(L);
+			break;
+		}
+	case(0x6F):
+		{
+			LD_R_R(L, A);
+			break;
+		}
+	case(0x70):
+		{
+			LD_aHL_R(B);
+			break;
+		}
+	case(0x71):
+		{
+			LD_aHL_R(C);
+			break;
+		}
+	case(0x72):
+		{
+			LD_aHL_R(D);
+			break;
+		}
+	case(0x73):
+		{
+			LD_aHL_R(E);
+			break;
+		}
+	case(0x74):
+		{
+			LD_aHL_R(H);
+			break;
+		}
+	case(0x75):
+		{
+			LD_aHL_R(L);
+			break;
+		}
+	case(0x76):
+		{
+			HALT();
+			break;
+		}
+	case(0x77):
+		{
+			LD_aHL_R(A);
+			break;
+		}
+	case(0x78):
+		{
+			LD_R_R(A, B);
+			break;
+		}
+	case(0x79):
+		{
+			LD_R_R(A, C);
+			break;
+		}
+	case(0x7A):
+		{
+			LD_R_R(A, D);
+			break;
+		}
+	case(0x7B):
+		{
+			LD_R_R(A, E);
+			break;
+		}
+	case(0x7C):
+		{
+			LD_R_R(A, H);
+			break;
+		}
+	case(0x7D):
+		{
+			LD_R_R(A, L);
+			break;
+		}
+	case(0x7E):
+		{
+			LD_R_aHL(A);
+			break;
+		}
+	case(0x7F):
+		{
+			LD_R_R(A, A);
+			break;
+		}
+	case(0x80):
+		{
+			ADD_A_R(B);
+			break;
+		}
+	case(0x81):
+		{
+			ADD_A_R(C);
+			break;
+		}
+	case(0x82):
+		{
+			ADD_A_R(D);
+			break;
+		}
+	case(0x83):
+		{
+			ADD_A_R(E);
+			break;
+		}
+	case(0x84):
+		{
+			ADD_A_R(H);
+			break;
+		}
+	case(0x85):
+		{
+			ADD_A_R(L);
+			break;
+		}
+	case(0x86):
+		{
+			ADD_A_aHL();
+			break;
+		}
+	case(0x87):
+		{
+			ADD_A_R(A);
+			break;
+		}
+	case(0x88):
+		{
+			ADC_A_R_CY(B);
+			break;
+		}
+	case(0x89):
+		{
+			ADC_A_R_CY(C);
+			break;
+		}
+	case(0x8A):
+		{
+			ADC_A_R_CY(D);
+			break;
+		}
+	case(0x8B):
+		{
+			ADC_A_R_CY(E);
+			break;
+		}
+	case(0x8C):
+		{
+			ADC_A_R_CY(H);
+			break;
+		}
+	case(0x8D):
+		{
+			ADC_A_R_CY(L);
+			break;
+		}
+	case(0x8E):
+		{
+			ADC_A_aHL_CY(H, L);
+			break;
+		}
+	case(0x8F):
+		{
+			ADC_A_R_CY(A);
+			break;
+		}
+	case(0x90):
+		{
+			SUB_A_R(B);
+			break;
+		}
+	case(0x91):
+		{
+			SUB_A_R(C);
+			break;
+		}
+	case(0x92):
+		{
+			SUB_A_R(D);
+			break;
+		}
+	case(0x93):
+		{
+			SUB_A_R(E);
+			break;
+		}
+	case(0x94):
+		{
+			SUB_A_R(H);
+			break;
+		}
+	case(0x95):
+		{
+			SUB_A_R(L);
+			break;
+		}
+	case(0x96):
+		{
+			SUB_A_aHL(H, L);
+			break;
+		}
+	case(0x97):
+		{
+			SUB_A_R(A);
+			break;
+		}
+	case(0x98):
+		{
+			SBC_A_R_CY(B);
+			break;
+		}
+	case(0x99):
+		{
+			SBC_A_R_CY(C);
+			break;
+		}
+	case(0x9A):
+		{
+			SBC_A_R_CY(D);
+			break;
+		}
+	case(0x9B):
+		{
+			SBC_A_R_CY(E);
+			break;
+		}
+	case(0x9C):
+		{
+			SBC_A_R_CY(H);
+			break;
+		}
+	case(0x9D):
+		{
+			SBC_A_R_CY(L);
+			break;
+		}
+	case(0x9E):
+		{
+			SBC_A_aHL_CY(H, L);
+			break;
+		}
+	case(0x9F):
+		{
+			SBC_A_R_CY(A);
+			break;
+		}
+	case(0xA0):
+		{
+			AND_A_R(B);
+			break;
+		}
+	case(0xA1):
+		{
+			AND_A_R(C);
+			break;
+		}
+	case(0xA2):
+		{
+			AND_A_R(D);
+			break;
+		}
+	case(0xA3):
+		{
+			AND_A_R(E);
+			break;
+		}
+	case(0xA4):
+		{
+			AND_A_R(H);
+			break;
+		}
+	case(0xA5):
+		{
+			AND_A_R(L);
+			break;
+		}
+	case(0xA6):
+		{
+			AND_A_aHL();
+			break;
+		}
+	case(0xA7):
+		{
+			AND_A_R(A);
+			break;
+		}
+	case(0xA8):
+		{
+			XOR_A_R(B);
+			break;
+		}
+	case(0xA9):
+		{
+			XOR_A_R(C);
+			break;
+		}
+	case(0xAA):
+		{
+			XOR_A_R(D);
+			break;
+		}
+	case(0xAB):
+		{
+			XOR_A_R(E);
+			break;
+		}
+	case(0xAC):
+		{
+			XOR_A_R(H);
+			break;
+		}
+	case(0xAD):
+		{
+			XOR_A_R(L);
+			break;
+		}
+	case(0xAE):
+		{
+			XOR_A_aHL();
+			break;
+		}
+	case(0xAF):
+		{
+			XOR_A_R(A);
+			break;
+		}
+	case(0xB0):
+		{
+			OR_A_R(B);
+			break;
+		}
+	case(0xB1):
+		{
+			OR_A_R(C);
+			break;
+		}
+	case(0xB2):
+		{
+			OR_A_R(D);
+			break;
+		}
+	case(0xB3):
+		{
+			OR_A_R(E);
+			break;
+		}
+	case(0xB4):
+		{
+			OR_A_R(H);
+			break;
+		}
+	case(0xB5):
+		{
+			OR_A_R(L);
+			break;
+		}
+	case(0xB6):
+		{
+			OR_A_aHL();
+			break;
+		}
+	case(0xB7):
+		{
+			OR_A_R(A);
+			break;
+		}
+	case(0xB8):
+		{
+			CP_A_R(B);
+			break;
+		}
+	case(0xB9):
+		{
+			CP_A_R(C);
+			break;
+		}
+	case(0xBA):
+		{
+			CP_A_R(D);
+			break;
+		}
+	case(0xBB):
+		{
+			CP_A_R(E);
+			break;
+		}
+	case(0xBC):
+		{
+			CP_A_R(H);
+			break;
+		}
+	case(0xBD):
+		{
+			CP_A_R(L);
+			break;
+		}
+	case(0xBE):
+		{
+			CP_A_aHL();
+			break;
+		}
+	case(0xBF):
+		{
+			CP_A_R(A);
+			break;
+		}
+	case(0xC0):
+		{
+			RET_cc();
+			break;
+		}
+	case(0xC1):
+		{
+			POP_RP(B, C);
+			break;
+		}
+	case(0xC2):
+		{
+			JP_cc_d16();
+			break;
+		}
+	case(0xC3):
+		{
+			JP_d16();
+			break;
+		}
+	case(0xC4):
+		{
+			CALL_cc();
+			break;
+		}
+	case(0xC5):
+		{
+			PUSH_RP(B, C);
+			break;
+		}
+	case(0xC6):
+		{
+			ADD_A_d8();
+			break;
+		}
+	case(0xC7):
+		{
+			RST();
+			break;
+		}
+	case(0xC8):
+		{
+			RET_cc();
+			break;
+		}
+	case(0xC9):
+		{
+			RET();
+			break;
+		}
+	case(0xCA):
+		{
+			JP_cc_d16();
+			break;
+		}
+	case(0xCB):
+		{
+			executeOpcodeFollowingCB();
+			break;
+		}
+	case(0xCC):
+		{
+			CALL_cc();
+			break;
+		}
+	case(0xCD):
+		{
+			CALL();
+			break;
+		}
+	case(0xCE):
+		{
+			ADC_A_d8_CY();
+			break;
+		}
+	case(0xCF):
+		{
+			RST();
+			break;
+		}
+	case(0xD0):
+		{
+			RET_cc();
+			break;
+		}
+	case(0xD1):
+		{
+			POP_RP(D, E);
+			break;
+		}
+	case(0xD2):
+		{
+			JP_cc_d16();
+			break;
+		}
+	case(0xD4):
+		{
+			CALL_cc();
+			break;
+		}
+	case(0xD5):
+		{
+			PUSH_RP(D, E);
+			break;
+		}
+	case(0xD6):
+		{
+			SUB_A_d8();
+			break;
+		}
+	case(0xD7):
+		{
+			RST();
+			break;
+		}
+	case(0xD8):
+		{
+			RET_cc();
+			break;
+		}
+	case(0xD9):
+		{
+			RETI();
+			break;
+		}
+	case(0xDA):
+		{
+			JP_cc_d16();
+			break;
+		}
+	case(0xDC):
+		{
+			CALL_cc();
+			break;
+		}
+	case(0xDE):
+		{
+			SBC_A_d8_CY();
+			break;
+		}
+	case(0xDF):
+		{
+			RST();
+			break;
+		}
+	case(0xE0):
+		{
+			LD_a8o_A();
+			break;
+		}
+	case(0xE1):
+		{
+			POP_RP(H, L);
+			break;
+		}
+	case(0xE2):
+		{
+			LD_aCo_A();
+			break;
+		}
+	case(0xE5):
+		{
+			PUSH_RP(H, L);
+			break;
+		}
+	case(0xE6):
+		{
+			AND_A_d8();
+			break;
+		}
+	case(0xE7):
+		{
+			RST();
+			break;
+		}
+	case(0xE8):
+		{
+			ADD_SP_e();
+			break;
+		}
+	case(0xE9):
+		{
+			JP_HL();
+			break;
+		}
+	case(0xEA):
+		{
+			LD_a16_A();
+			break;
+		}
+	case(0xEE):
+		{
+			XOR_A_d8();
+			break;
+		}
+	case(0xEF):
+		{
+			RST();
+			break;
+		}
+	case(0xF0):
+		{
+			LD_A_a8o();
+			break;
+		}
+	case(0xF1):
+		{
+			POP_RP(A, F);
+			break;
+		}
+	case(0xF2):
+		{
+			LD_A_aCo();
+			break;
+		}
+	case(0xF3):
+		{
+			DI();
+			break;
+		}
+	case(0xF5):
+		{
+			PUSH_RP(A, F);
+			break;
+		}
+	case(0xF6):
+		{
+			OR_A_d8();
+			break;
+		}
+	case(0xF7):
+		{
+			RST();
+			break;
+		}
+	case(0xF8):
+		{
+			LDHL_SP_e();
+			break;
+		}
+	case(0xF9):
+		{
+			LD_SP_HL();
+			break;
+		}
+	case(0xFA):
+		{
+			LD_A_a16();
+			break;
+		}
+	case(0xFB):
+		{
+			EI();
+			break;
+		}
+	case(0xFE):
+		{
+			CP_A_d8();
+			break;
+		}
+	case(0xFF):
+		{
+			RST();
+			break;
+		}
+	default:
+		{
+			cerr << "Error op-code 0x" << hex << static_cast<int>(opcode) << " unknown at pc = 0x" << hex << static_cast<int>(pc) << endl;
+			exit(1);
+		}
 	}
 }
 
@@ -573,264 +1558,1293 @@ void Cpu::executeOpcodeFollowingCB()
 	//clockCycles++;
 	pc++;
 
-	switch (memory->read(pc)) {
-	case(0x00): {RLC_R(B); break; }
-	case(0x01): {RLC_R(C); break; }
-	case(0x02): {RLC_R(D); break; }
-	case(0x03): {RLC_R(E); break; }
-	case(0x04): {RLC_R(H); break; }
-	case(0x05): {RLC_R(L); break; }
-	case(0x06): {RLC_aHL(); break; }
-	case(0x07): {RLC_R(A); break; }
-	case(0x08): {RRC_R(B); break; }
-	case(0x09): {RRC_R(C); break; }
-	case(0x0A): {RRC_R(D); break; }
-	case(0x0B): {RRC_R(E); break; }
-	case(0x0C): {RRC_R(H); break; }
-	case(0x0D): {RRC_R(L); break; }
-	case(0x0E): {RRC_aHL(); break; }
-	case(0x0F): {RRC_R(A); break; }
-	case(0x10): {RL_R(B); break; }
-	case(0x11): {RL_R(C); break; }
-	case(0x12): {RL_R(D); break; }
-	case(0x13): {RL_R(E); break; }
-	case(0x14): {RL_R(H); break; }
-	case(0x15): {RL_R(L); break; }
-	case(0x16): {RL_aHL(); break; }
-	case(0x17): {RL_R(A); break; }
-	case(0x18): {RR_R(B); break; }
-	case(0x19): {RR_R(C); break; }
-	case(0x1A): {RR_R(D); break; }
-	case(0x1B): {RR_R(E); break; }
-	case(0x1C): {RR_R(H); break; }
-	case(0x1D): {RR_R(L); break; }
-	case(0x1E): {RR_aHL(); break; }
-	case(0x1F): {RR_R(A); break; }
-	case(0x20): {SLA_R(B); break; }
-	case(0x21): {SLA_R(C); break; }
-	case(0x22): {SLA_R(D); break; }
-	case(0x23): {SLA_R(E); break; }
-	case(0x24): {SLA_R(H); break; }
-	case(0x25): {SLA_R(L); break; }
-	case(0x26): {SLA_aHL(); break; }
-	case(0x27): {SLA_R(A); break; }
-	case(0x28): {SRA_R(B); break; }
-	case(0x29): {SRA_R(C); break; }
-	case(0x2A): {SRA_R(D); break; }
-	case(0x2B): {SRA_R(E); break; }
-	case(0x2C): {SRA_R(H); break; }
-	case(0x2D): {SRA_R(L); break; }
-	case(0x2E): {SRA_aHL(); break; }
-	case(0x2F): {SRA_R(A); break; }
-	case(0x30): {SWAP_R(B); break; }
-	case(0x31): {SWAP_R(C); break; }
-	case(0x32): {SWAP_R(D); break; }
-	case(0x33): {SWAP_R(E); break; }
-	case(0x34): {SWAP_R(H); break; }
-	case(0x35): {SWAP_R(L); break; }
-	case(0x36): {SWAP_aHL(); break; }
-	case(0x37): {SWAP_R(A); break; }
-	case(0x38): {SRL_R(B); break; }
-	case(0x39): {SRL_R(C); break; }
-	case(0x3A): {SRL_R(D); break; }
-	case(0x3B): {SRL_R(E); break; }
-	case(0x3C): {SRL_R(H); break; }
-	case(0x3D): {SRL_R(L); break; }
-	case(0x3E): {SRL_aHL(); break; }
-	case(0x3F): {SRL_R(A); break; }
-	case(0x40): {BIT_b_R(0, B); break; }
-	case(0x41): {BIT_b_R(0, C); break; }
-	case(0x42): {BIT_b_R(0, D); break; }
-	case(0x43): {BIT_b_R(0, E); break; }
-	case(0x44): {BIT_b_R(0, H); break; }
-	case(0x45): {BIT_b_R(0, L); break; }
-	case(0x46): {BIT_b_aHL(0); break; }
-	case(0x47): {BIT_b_R(0, A); break; }
-	case(0x48): {BIT_b_R(1, B); break; }
-	case(0x49): {BIT_b_R(1, C); break; }
-	case(0x4A): {BIT_b_R(1, D); break; }
-	case(0x4B): {BIT_b_R(1, E); break; }
-	case(0x4C): {BIT_b_R(1, H); break; }
-	case(0x4D): {BIT_b_R(1, L); break; }
-	case(0x4E): {BIT_b_aHL(1); break; }
-	case(0x4F): {BIT_b_R(1, A); break; }
-	case(0x50): {BIT_b_R(2, B); break; }
-	case(0x51): {BIT_b_R(2, C); break; }
-	case(0x52): {BIT_b_R(2, D); break; }
-	case(0x53): {BIT_b_R(2, E); break; }
-	case(0x54): {BIT_b_R(2, H); break; }
-	case(0x55): {BIT_b_R(2, L); break; }
-	case(0x56): {BIT_b_aHL(2); break; }
-	case(0x57): {BIT_b_R(2, A); break; }
-	case(0x58): {BIT_b_R(3, B); break; }
-	case(0x59): {BIT_b_R(3, C); break; }
-	case(0x5A): {BIT_b_R(3, D); break; }
-	case(0x5B): {BIT_b_R(3, E); break; }
-	case(0x5C): {BIT_b_R(3, H); break; }
-	case(0x5D): {BIT_b_R(3, L); break; }
-	case(0x5E): {BIT_b_aHL(3); break; }
-	case(0x5F): {BIT_b_R(3, A); break; }
-	case(0x60): {BIT_b_R(4, B); break; }
-	case(0x61): {BIT_b_R(4, C); break; }
-	case(0x62): {BIT_b_R(4, D); break; }
-	case(0x63): {BIT_b_R(4, E); break; }
-	case(0x64): {BIT_b_R(4, H); break; }
-	case(0x65): {BIT_b_R(4, L); break; }
-	case(0x66): {BIT_b_aHL(4); break; }
-	case(0x67): {BIT_b_R(4, A); break; }
-	case(0x68): {BIT_b_R(5, B); break; }
-	case(0x69): {BIT_b_R(5, C); break; }
-	case(0x6A): {BIT_b_R(5, D); break; }
-	case(0x6B): {BIT_b_R(5, E); break; }
-	case(0x6C): {BIT_b_R(5, H); break; }
-	case(0x6D): {BIT_b_R(5, L); break; }
-	case(0x6E): {BIT_b_aHL(5); break; }
-	case(0x6F): {BIT_b_R(5, A); break; }
-	case(0x70): {BIT_b_R(6, B); break; }
-	case(0x71): {BIT_b_R(6, C); break; }
-	case(0x72): {BIT_b_R(6, D); break; }
-	case(0x73): {BIT_b_R(6, E); break; }
-	case(0x74): {BIT_b_R(6, H); break; }
-	case(0x75): {BIT_b_R(6, L); break; }
-	case(0x76): {BIT_b_aHL(6); break; }
-	case(0x77): {BIT_b_R(6, A); break; }
-	case(0x78): {BIT_b_R(7, B); break; }
-	case(0x79): {BIT_b_R(7, C); break; }
-	case(0x7A): {BIT_b_R(7, D); break; }
-	case(0x7B): {BIT_b_R(7, E); break; }
-	case(0x7C): {BIT_b_R(7, H); break; }
-	case(0x7D): {BIT_b_R(7, L); break; }
-	case(0x7E): {BIT_b_aHL(7); break; }
-	case(0x7F): {BIT_b_R(7, A); break; }
-	case(0x80): {RES_b_R(0, B); break; }
-	case(0x81): {RES_b_R(0, C); break; }
-	case(0x82): {RES_b_R(0, D); break; }
-	case(0x83): {RES_b_R(0, E); break; }
-	case(0x84): {RES_b_R(0, H); break; }
-	case(0x85): {RES_b_R(0, L); break; }
-	case(0x86): {RES_b_aHL(0); break; }
-	case(0x87): {RES_b_R(0, A); break; }
-	case(0x88): {RES_b_R(1, B); break; }
-	case(0x89): {RES_b_R(1, C); break; }
-	case(0x8A): {RES_b_R(1, D); break; }
-	case(0x8B): {RES_b_R(1, E); break; }
-	case(0x8C): {RES_b_R(1, H); break; }
-	case(0x8D): {RES_b_R(1, L); break; }
-	case(0x8E): {RES_b_aHL(1); break; }
-	case(0x8F): {RES_b_R(1, A); break; }
-	case(0x90): {RES_b_R(2, B); break; }
-	case(0x91): {RES_b_R(2, C); break; }
-	case(0x92): {RES_b_R(2, D); break; }
-	case(0x93): {RES_b_R(2, E); break; }
-	case(0x94): {RES_b_R(2, H); break; }
-	case(0x95): {RES_b_R(2, L); break; }
-	case(0x96): {RES_b_aHL(2); break; }
-	case(0x97): {RES_b_R(2, A); break; }
-	case(0x98): {RES_b_R(3, B); break; }
-	case(0x99): {RES_b_R(3, C); break; }
-	case(0x9A): {RES_b_R(3, D); break; }
-	case(0x9B): {RES_b_R(3, E); break; }
-	case(0x9C): {RES_b_R(3, H); break; }
-	case(0x9D): {RES_b_R(3, L); break; }
-	case(0x9E): {RES_b_aHL(3); break; }
-	case(0x9F): {RES_b_R(3, A); break; }
-	case(0xA0): {RES_b_R(4, B); break; }
-	case(0xA1): {RES_b_R(4, C); break; }
-	case(0xA2): {RES_b_R(4, D); break; }
-	case(0xA3): {RES_b_R(4, E); break; }
-	case(0xA4): {RES_b_R(4, H); break; }
-	case(0xA5): {RES_b_R(4, L); break; }
-	case(0xA6): {RES_b_aHL(4); break; }
-	case(0xA7): {RES_b_R(4, A); break; }
-	case(0xA8): {RES_b_R(5, B); break; }
-	case(0xA9): {RES_b_R(5, C); break; }
-	case(0xAA): {RES_b_R(5, D); break; }
-	case(0xAB): {RES_b_R(5, E); break; }
-	case(0xAC): {RES_b_R(5, H); break; }
-	case(0xAD): {RES_b_R(5, L); break; }
-	case(0xAE): {RES_b_aHL(5); break; }
-	case(0xAF): {RES_b_R(5, A); break; }
-	case(0xB0): {RES_b_R(6, B); break; }
-	case(0xB1): {RES_b_R(6, C); break; }
-	case(0xB2): {RES_b_R(6, D); break; }
-	case(0xB3): {RES_b_R(6, E); break; }
-	case(0xB4): {RES_b_R(6, H); break; }
-	case(0xB5): {RES_b_R(6, L); break; }
-	case(0xB6): {RES_b_aHL(6); break; }
-	case(0xB7): {RES_b_R(6, A); break; }
-	case(0xB8): {RES_b_R(7, B); break; }
-	case(0xB9): {RES_b_R(7, C); break; }
-	case(0xBA): {RES_b_R(7, D); break; }
-	case(0xBB): {RES_b_R(7, E); break; }
-	case(0xBC): {RES_b_R(7, H); break; }
-	case(0xBD): {RES_b_R(7, L); break; }
-	case(0xBE): {RES_b_aHL(7); break; }
-	case(0xBF): {RES_b_R(7, A); break; }
-	case(0xC0): {SET_b_R(0, B); break; }
-	case(0xC1): {SET_b_R(0, C); break; }
-	case(0xC2): {SET_b_R(0, D); break; }
-	case(0xC3): {SET_b_R(0, E); break; }
-	case(0xC4): {SET_b_R(0, H); break; }
-	case(0xC5): {SET_b_R(0, L); break; }
-	case(0xC6): {SET_b_aHL(0); break; }
-	case(0xC7): {SET_b_R(0, A); break; }
-	case(0xC8): {SET_b_R(1, B); break; }
-	case(0xC9): {SET_b_R(1, C); break; }
-	case(0xCA): {SET_b_R(1, D); break; }
-	case(0xCB): {SET_b_R(1, E); break; }
-	case(0xCC): {SET_b_R(1, H); break; }
-	case(0xCD): {SET_b_R(1, L); break; }
-	case(0xCE): {SET_b_aHL(1); break; }
-	case(0xCF): {SET_b_R(1, A); break; }
-	case(0xD0): {SET_b_R(2, B); break; }
-	case(0xD1): {SET_b_R(2, C); break; }
-	case(0xD2): {SET_b_R(2, D); break; }
-	case(0xD3): {SET_b_R(2, E); break; }
-	case(0xD4): {SET_b_R(2, H); break; }
-	case(0xD5): {SET_b_R(2, L); break; }
-	case(0xD6): {SET_b_aHL(2); break; }
-	case(0xD7): {SET_b_R(2, A); break; }
-	case(0xD8): {SET_b_R(3, B); break; }
-	case(0xD9): {SET_b_R(3, C); break; }
-	case(0xDA): {SET_b_R(3, D); break; }
-	case(0xDB): {SET_b_R(3, E); break; }
-	case(0xDC): {SET_b_R(3, H); break; }
-	case(0xDD): {SET_b_R(3, L); break; }
-	case(0xDE): {SET_b_aHL(3); break; }
-	case(0xDF): {SET_b_R(3, A); break; }
-	case(0xE0): {SET_b_R(4, B); break; }
-	case(0xE1): {SET_b_R(4, C); break; }
-	case(0xE2): {SET_b_R(4, D); break; }
-	case(0xE3): {SET_b_R(4, E); break; }
-	case(0xE4): {SET_b_R(4, H); break; }
-	case(0xE5): {SET_b_R(4, L); break; }
-	case(0xE6): {SET_b_aHL(4); break; }
-	case(0xE7): {SET_b_R(4, A); break; }
-	case(0xE8): {SET_b_R(5, B); break; }
-	case(0xE9): {SET_b_R(5, C); break; }
-	case(0xEA): {SET_b_R(5, D); break; }
-	case(0xEB): {SET_b_R(5, E); break; }
-	case(0xEC): {SET_b_R(5, H); break; }
-	case(0xED): {SET_b_R(5, L); break; }
-	case(0xEE): {SET_b_aHL(5); break; }
-	case(0xEF): {SET_b_R(5, A); break; }
-	case(0xF0): {SET_b_R(6, B); break; }
-	case(0xF1): {SET_b_R(6, C); break; }
-	case(0xF2): {SET_b_R(6, D); break; }
-	case(0xF3): {SET_b_R(6, E); break; }
-	case(0xF4): {SET_b_R(6, H); break; }
-	case(0xF5): {SET_b_R(6, L); break; }
-	case(0xF6): {SET_b_aHL(6); break; }
-	case(0xF7): {SET_b_R(6, A); break; }
-	case(0xF8): {SET_b_R(7, B); break; }
-	case(0xF9): {SET_b_R(7, C); break; }
-	case(0xFA): {SET_b_R(7, D); break; }
-	case(0xFB): {SET_b_R(7, E); break; }
-	case(0xFC): {SET_b_R(7, H); break; }
-	case(0xFD): {SET_b_R(7, L); break; }
-	case(0xFE): {SET_b_aHL(7); break; }
-	case(0xFF): {SET_b_R(7, A);  break; }
-	default: {cerr << "Error opcode after CB unknown at pc = " << hex << (int)pc << endl; break; }
+	switch (memory->read(pc))
+	{
+	case(0x00):
+		{
+			RLC_R(B);
+			break;
+		}
+	case(0x01):
+		{
+			RLC_R(C);
+			break;
+		}
+	case(0x02):
+		{
+			RLC_R(D);
+			break;
+		}
+	case(0x03):
+		{
+			RLC_R(E);
+			break;
+		}
+	case(0x04):
+		{
+			RLC_R(H);
+			break;
+		}
+	case(0x05):
+		{
+			RLC_R(L);
+			break;
+		}
+	case(0x06):
+		{
+			RLC_aHL();
+			break;
+		}
+	case(0x07):
+		{
+			RLC_R(A);
+			break;
+		}
+	case(0x08):
+		{
+			RRC_R(B);
+			break;
+		}
+	case(0x09):
+		{
+			RRC_R(C);
+			break;
+		}
+	case(0x0A):
+		{
+			RRC_R(D);
+			break;
+		}
+	case(0x0B):
+		{
+			RRC_R(E);
+			break;
+		}
+	case(0x0C):
+		{
+			RRC_R(H);
+			break;
+		}
+	case(0x0D):
+		{
+			RRC_R(L);
+			break;
+		}
+	case(0x0E):
+		{
+			RRC_aHL();
+			break;
+		}
+	case(0x0F):
+		{
+			RRC_R(A);
+			break;
+		}
+	case(0x10):
+		{
+			RL_R(B);
+			break;
+		}
+	case(0x11):
+		{
+			RL_R(C);
+			break;
+		}
+	case(0x12):
+		{
+			RL_R(D);
+			break;
+		}
+	case(0x13):
+		{
+			RL_R(E);
+			break;
+		}
+	case(0x14):
+		{
+			RL_R(H);
+			break;
+		}
+	case(0x15):
+		{
+			RL_R(L);
+			break;
+		}
+	case(0x16):
+		{
+			RL_aHL();
+			break;
+		}
+	case(0x17):
+		{
+			RL_R(A);
+			break;
+		}
+	case(0x18):
+		{
+			RR_R(B);
+			break;
+		}
+	case(0x19):
+		{
+			RR_R(C);
+			break;
+		}
+	case(0x1A):
+		{
+			RR_R(D);
+			break;
+		}
+	case(0x1B):
+		{
+			RR_R(E);
+			break;
+		}
+	case(0x1C):
+		{
+			RR_R(H);
+			break;
+		}
+	case(0x1D):
+		{
+			RR_R(L);
+			break;
+		}
+	case(0x1E):
+		{
+			RR_aHL();
+			break;
+		}
+	case(0x1F):
+		{
+			RR_R(A);
+			break;
+		}
+	case(0x20):
+		{
+			SLA_R(B);
+			break;
+		}
+	case(0x21):
+		{
+			SLA_R(C);
+			break;
+		}
+	case(0x22):
+		{
+			SLA_R(D);
+			break;
+		}
+	case(0x23):
+		{
+			SLA_R(E);
+			break;
+		}
+	case(0x24):
+		{
+			SLA_R(H);
+			break;
+		}
+	case(0x25):
+		{
+			SLA_R(L);
+			break;
+		}
+	case(0x26):
+		{
+			SLA_aHL();
+			break;
+		}
+	case(0x27):
+		{
+			SLA_R(A);
+			break;
+		}
+	case(0x28):
+		{
+			SRA_R(B);
+			break;
+		}
+	case(0x29):
+		{
+			SRA_R(C);
+			break;
+		}
+	case(0x2A):
+		{
+			SRA_R(D);
+			break;
+		}
+	case(0x2B):
+		{
+			SRA_R(E);
+			break;
+		}
+	case(0x2C):
+		{
+			SRA_R(H);
+			break;
+		}
+	case(0x2D):
+		{
+			SRA_R(L);
+			break;
+		}
+	case(0x2E):
+		{
+			SRA_aHL();
+			break;
+		}
+	case(0x2F):
+		{
+			SRA_R(A);
+			break;
+		}
+	case(0x30):
+		{
+			SWAP_R(B);
+			break;
+		}
+	case(0x31):
+		{
+			SWAP_R(C);
+			break;
+		}
+	case(0x32):
+		{
+			SWAP_R(D);
+			break;
+		}
+	case(0x33):
+		{
+			SWAP_R(E);
+			break;
+		}
+	case(0x34):
+		{
+			SWAP_R(H);
+			break;
+		}
+	case(0x35):
+		{
+			SWAP_R(L);
+			break;
+		}
+	case(0x36):
+		{
+			SWAP_aHL();
+			break;
+		}
+	case(0x37):
+		{
+			SWAP_R(A);
+			break;
+		}
+	case(0x38):
+		{
+			SRL_R(B);
+			break;
+		}
+	case(0x39):
+		{
+			SRL_R(C);
+			break;
+		}
+	case(0x3A):
+		{
+			SRL_R(D);
+			break;
+		}
+	case(0x3B):
+		{
+			SRL_R(E);
+			break;
+		}
+	case(0x3C):
+		{
+			SRL_R(H);
+			break;
+		}
+	case(0x3D):
+		{
+			SRL_R(L);
+			break;
+		}
+	case(0x3E):
+		{
+			SRL_aHL();
+			break;
+		}
+	case(0x3F):
+		{
+			SRL_R(A);
+			break;
+		}
+	case(0x40):
+		{
+			BIT_b_R(0, B);
+			break;
+		}
+	case(0x41):
+		{
+			BIT_b_R(0, C);
+			break;
+		}
+	case(0x42):
+		{
+			BIT_b_R(0, D);
+			break;
+		}
+	case(0x43):
+		{
+			BIT_b_R(0, E);
+			break;
+		}
+	case(0x44):
+		{
+			BIT_b_R(0, H);
+			break;
+		}
+	case(0x45):
+		{
+			BIT_b_R(0, L);
+			break;
+		}
+	case(0x46):
+		{
+			BIT_b_aHL(0);
+			break;
+		}
+	case(0x47):
+		{
+			BIT_b_R(0, A);
+			break;
+		}
+	case(0x48):
+		{
+			BIT_b_R(1, B);
+			break;
+		}
+	case(0x49):
+		{
+			BIT_b_R(1, C);
+			break;
+		}
+	case(0x4A):
+		{
+			BIT_b_R(1, D);
+			break;
+		}
+	case(0x4B):
+		{
+			BIT_b_R(1, E);
+			break;
+		}
+	case(0x4C):
+		{
+			BIT_b_R(1, H);
+			break;
+		}
+	case(0x4D):
+		{
+			BIT_b_R(1, L);
+			break;
+		}
+	case(0x4E):
+		{
+			BIT_b_aHL(1);
+			break;
+		}
+	case(0x4F):
+		{
+			BIT_b_R(1, A);
+			break;
+		}
+	case(0x50):
+		{
+			BIT_b_R(2, B);
+			break;
+		}
+	case(0x51):
+		{
+			BIT_b_R(2, C);
+			break;
+		}
+	case(0x52):
+		{
+			BIT_b_R(2, D);
+			break;
+		}
+	case(0x53):
+		{
+			BIT_b_R(2, E);
+			break;
+		}
+	case(0x54):
+		{
+			BIT_b_R(2, H);
+			break;
+		}
+	case(0x55):
+		{
+			BIT_b_R(2, L);
+			break;
+		}
+	case(0x56):
+		{
+			BIT_b_aHL(2);
+			break;
+		}
+	case(0x57):
+		{
+			BIT_b_R(2, A);
+			break;
+		}
+	case(0x58):
+		{
+			BIT_b_R(3, B);
+			break;
+		}
+	case(0x59):
+		{
+			BIT_b_R(3, C);
+			break;
+		}
+	case(0x5A):
+		{
+			BIT_b_R(3, D);
+			break;
+		}
+	case(0x5B):
+		{
+			BIT_b_R(3, E);
+			break;
+		}
+	case(0x5C):
+		{
+			BIT_b_R(3, H);
+			break;
+		}
+	case(0x5D):
+		{
+			BIT_b_R(3, L);
+			break;
+		}
+	case(0x5E):
+		{
+			BIT_b_aHL(3);
+			break;
+		}
+	case(0x5F):
+		{
+			BIT_b_R(3, A);
+			break;
+		}
+	case(0x60):
+		{
+			BIT_b_R(4, B);
+			break;
+		}
+	case(0x61):
+		{
+			BIT_b_R(4, C);
+			break;
+		}
+	case(0x62):
+		{
+			BIT_b_R(4, D);
+			break;
+		}
+	case(0x63):
+		{
+			BIT_b_R(4, E);
+			break;
+		}
+	case(0x64):
+		{
+			BIT_b_R(4, H);
+			break;
+		}
+	case(0x65):
+		{
+			BIT_b_R(4, L);
+			break;
+		}
+	case(0x66):
+		{
+			BIT_b_aHL(4);
+			break;
+		}
+	case(0x67):
+		{
+			BIT_b_R(4, A);
+			break;
+		}
+	case(0x68):
+		{
+			BIT_b_R(5, B);
+			break;
+		}
+	case(0x69):
+		{
+			BIT_b_R(5, C);
+			break;
+		}
+	case(0x6A):
+		{
+			BIT_b_R(5, D);
+			break;
+		}
+	case(0x6B):
+		{
+			BIT_b_R(5, E);
+			break;
+		}
+	case(0x6C):
+		{
+			BIT_b_R(5, H);
+			break;
+		}
+	case(0x6D):
+		{
+			BIT_b_R(5, L);
+			break;
+		}
+	case(0x6E):
+		{
+			BIT_b_aHL(5);
+			break;
+		}
+	case(0x6F):
+		{
+			BIT_b_R(5, A);
+			break;
+		}
+	case(0x70):
+		{
+			BIT_b_R(6, B);
+			break;
+		}
+	case(0x71):
+		{
+			BIT_b_R(6, C);
+			break;
+		}
+	case(0x72):
+		{
+			BIT_b_R(6, D);
+			break;
+		}
+	case(0x73):
+		{
+			BIT_b_R(6, E);
+			break;
+		}
+	case(0x74):
+		{
+			BIT_b_R(6, H);
+			break;
+		}
+	case(0x75):
+		{
+			BIT_b_R(6, L);
+			break;
+		}
+	case(0x76):
+		{
+			BIT_b_aHL(6);
+			break;
+		}
+	case(0x77):
+		{
+			BIT_b_R(6, A);
+			break;
+		}
+	case(0x78):
+		{
+			BIT_b_R(7, B);
+			break;
+		}
+	case(0x79):
+		{
+			BIT_b_R(7, C);
+			break;
+		}
+	case(0x7A):
+		{
+			BIT_b_R(7, D);
+			break;
+		}
+	case(0x7B):
+		{
+			BIT_b_R(7, E);
+			break;
+		}
+	case(0x7C):
+		{
+			BIT_b_R(7, H);
+			break;
+		}
+	case(0x7D):
+		{
+			BIT_b_R(7, L);
+			break;
+		}
+	case(0x7E):
+		{
+			BIT_b_aHL(7);
+			break;
+		}
+	case(0x7F):
+		{
+			BIT_b_R(7, A);
+			break;
+		}
+	case(0x80):
+		{
+			RES_b_R(0, B);
+			break;
+		}
+	case(0x81):
+		{
+			RES_b_R(0, C);
+			break;
+		}
+	case(0x82):
+		{
+			RES_b_R(0, D);
+			break;
+		}
+	case(0x83):
+		{
+			RES_b_R(0, E);
+			break;
+		}
+	case(0x84):
+		{
+			RES_b_R(0, H);
+			break;
+		}
+	case(0x85):
+		{
+			RES_b_R(0, L);
+			break;
+		}
+	case(0x86):
+		{
+			RES_b_aHL(0);
+			break;
+		}
+	case(0x87):
+		{
+			RES_b_R(0, A);
+			break;
+		}
+	case(0x88):
+		{
+			RES_b_R(1, B);
+			break;
+		}
+	case(0x89):
+		{
+			RES_b_R(1, C);
+			break;
+		}
+	case(0x8A):
+		{
+			RES_b_R(1, D);
+			break;
+		}
+	case(0x8B):
+		{
+			RES_b_R(1, E);
+			break;
+		}
+	case(0x8C):
+		{
+			RES_b_R(1, H);
+			break;
+		}
+	case(0x8D):
+		{
+			RES_b_R(1, L);
+			break;
+		}
+	case(0x8E):
+		{
+			RES_b_aHL(1);
+			break;
+		}
+	case(0x8F):
+		{
+			RES_b_R(1, A);
+			break;
+		}
+	case(0x90):
+		{
+			RES_b_R(2, B);
+			break;
+		}
+	case(0x91):
+		{
+			RES_b_R(2, C);
+			break;
+		}
+	case(0x92):
+		{
+			RES_b_R(2, D);
+			break;
+		}
+	case(0x93):
+		{
+			RES_b_R(2, E);
+			break;
+		}
+	case(0x94):
+		{
+			RES_b_R(2, H);
+			break;
+		}
+	case(0x95):
+		{
+			RES_b_R(2, L);
+			break;
+		}
+	case(0x96):
+		{
+			RES_b_aHL(2);
+			break;
+		}
+	case(0x97):
+		{
+			RES_b_R(2, A);
+			break;
+		}
+	case(0x98):
+		{
+			RES_b_R(3, B);
+			break;
+		}
+	case(0x99):
+		{
+			RES_b_R(3, C);
+			break;
+		}
+	case(0x9A):
+		{
+			RES_b_R(3, D);
+			break;
+		}
+	case(0x9B):
+		{
+			RES_b_R(3, E);
+			break;
+		}
+	case(0x9C):
+		{
+			RES_b_R(3, H);
+			break;
+		}
+	case(0x9D):
+		{
+			RES_b_R(3, L);
+			break;
+		}
+	case(0x9E):
+		{
+			RES_b_aHL(3);
+			break;
+		}
+	case(0x9F):
+		{
+			RES_b_R(3, A);
+			break;
+		}
+	case(0xA0):
+		{
+			RES_b_R(4, B);
+			break;
+		}
+	case(0xA1):
+		{
+			RES_b_R(4, C);
+			break;
+		}
+	case(0xA2):
+		{
+			RES_b_R(4, D);
+			break;
+		}
+	case(0xA3):
+		{
+			RES_b_R(4, E);
+			break;
+		}
+	case(0xA4):
+		{
+			RES_b_R(4, H);
+			break;
+		}
+	case(0xA5):
+		{
+			RES_b_R(4, L);
+			break;
+		}
+	case(0xA6):
+		{
+			RES_b_aHL(4);
+			break;
+		}
+	case(0xA7):
+		{
+			RES_b_R(4, A);
+			break;
+		}
+	case(0xA8):
+		{
+			RES_b_R(5, B);
+			break;
+		}
+	case(0xA9):
+		{
+			RES_b_R(5, C);
+			break;
+		}
+	case(0xAA):
+		{
+			RES_b_R(5, D);
+			break;
+		}
+	case(0xAB):
+		{
+			RES_b_R(5, E);
+			break;
+		}
+	case(0xAC):
+		{
+			RES_b_R(5, H);
+			break;
+		}
+	case(0xAD):
+		{
+			RES_b_R(5, L);
+			break;
+		}
+	case(0xAE):
+		{
+			RES_b_aHL(5);
+			break;
+		}
+	case(0xAF):
+		{
+			RES_b_R(5, A);
+			break;
+		}
+	case(0xB0):
+		{
+			RES_b_R(6, B);
+			break;
+		}
+	case(0xB1):
+		{
+			RES_b_R(6, C);
+			break;
+		}
+	case(0xB2):
+		{
+			RES_b_R(6, D);
+			break;
+		}
+	case(0xB3):
+		{
+			RES_b_R(6, E);
+			break;
+		}
+	case(0xB4):
+		{
+			RES_b_R(6, H);
+			break;
+		}
+	case(0xB5):
+		{
+			RES_b_R(6, L);
+			break;
+		}
+	case(0xB6):
+		{
+			RES_b_aHL(6);
+			break;
+		}
+	case(0xB7):
+		{
+			RES_b_R(6, A);
+			break;
+		}
+	case(0xB8):
+		{
+			RES_b_R(7, B);
+			break;
+		}
+	case(0xB9):
+		{
+			RES_b_R(7, C);
+			break;
+		}
+	case(0xBA):
+		{
+			RES_b_R(7, D);
+			break;
+		}
+	case(0xBB):
+		{
+			RES_b_R(7, E);
+			break;
+		}
+	case(0xBC):
+		{
+			RES_b_R(7, H);
+			break;
+		}
+	case(0xBD):
+		{
+			RES_b_R(7, L);
+			break;
+		}
+	case(0xBE):
+		{
+			RES_b_aHL(7);
+			break;
+		}
+	case(0xBF):
+		{
+			RES_b_R(7, A);
+			break;
+		}
+	case(0xC0):
+		{
+			SET_b_R(0, B);
+			break;
+		}
+	case(0xC1):
+		{
+			SET_b_R(0, C);
+			break;
+		}
+	case(0xC2):
+		{
+			SET_b_R(0, D);
+			break;
+		}
+	case(0xC3):
+		{
+			SET_b_R(0, E);
+			break;
+		}
+	case(0xC4):
+		{
+			SET_b_R(0, H);
+			break;
+		}
+	case(0xC5):
+		{
+			SET_b_R(0, L);
+			break;
+		}
+	case(0xC6):
+		{
+			SET_b_aHL(0);
+			break;
+		}
+	case(0xC7):
+		{
+			SET_b_R(0, A);
+			break;
+		}
+	case(0xC8):
+		{
+			SET_b_R(1, B);
+			break;
+		}
+	case(0xC9):
+		{
+			SET_b_R(1, C);
+			break;
+		}
+	case(0xCA):
+		{
+			SET_b_R(1, D);
+			break;
+		}
+	case(0xCB):
+		{
+			SET_b_R(1, E);
+			break;
+		}
+	case(0xCC):
+		{
+			SET_b_R(1, H);
+			break;
+		}
+	case(0xCD):
+		{
+			SET_b_R(1, L);
+			break;
+		}
+	case(0xCE):
+		{
+			SET_b_aHL(1);
+			break;
+		}
+	case(0xCF):
+		{
+			SET_b_R(1, A);
+			break;
+		}
+	case(0xD0):
+		{
+			SET_b_R(2, B);
+			break;
+		}
+	case(0xD1):
+		{
+			SET_b_R(2, C);
+			break;
+		}
+	case(0xD2):
+		{
+			SET_b_R(2, D);
+			break;
+		}
+	case(0xD3):
+		{
+			SET_b_R(2, E);
+			break;
+		}
+	case(0xD4):
+		{
+			SET_b_R(2, H);
+			break;
+		}
+	case(0xD5):
+		{
+			SET_b_R(2, L);
+			break;
+		}
+	case(0xD6):
+		{
+			SET_b_aHL(2);
+			break;
+		}
+	case(0xD7):
+		{
+			SET_b_R(2, A);
+			break;
+		}
+	case(0xD8):
+		{
+			SET_b_R(3, B);
+			break;
+		}
+	case(0xD9):
+		{
+			SET_b_R(3, C);
+			break;
+		}
+	case(0xDA):
+		{
+			SET_b_R(3, D);
+			break;
+		}
+	case(0xDB):
+		{
+			SET_b_R(3, E);
+			break;
+		}
+	case(0xDC):
+		{
+			SET_b_R(3, H);
+			break;
+		}
+	case(0xDD):
+		{
+			SET_b_R(3, L);
+			break;
+		}
+	case(0xDE):
+		{
+			SET_b_aHL(3);
+			break;
+		}
+	case(0xDF):
+		{
+			SET_b_R(3, A);
+			break;
+		}
+	case(0xE0):
+		{
+			SET_b_R(4, B);
+			break;
+		}
+	case(0xE1):
+		{
+			SET_b_R(4, C);
+			break;
+		}
+	case(0xE2):
+		{
+			SET_b_R(4, D);
+			break;
+		}
+	case(0xE3):
+		{
+			SET_b_R(4, E);
+			break;
+		}
+	case(0xE4):
+		{
+			SET_b_R(4, H);
+			break;
+		}
+	case(0xE5):
+		{
+			SET_b_R(4, L);
+			break;
+		}
+	case(0xE6):
+		{
+			SET_b_aHL(4);
+			break;
+		}
+	case(0xE7):
+		{
+			SET_b_R(4, A);
+			break;
+		}
+	case(0xE8):
+		{
+			SET_b_R(5, B);
+			break;
+		}
+	case(0xE9):
+		{
+			SET_b_R(5, C);
+			break;
+		}
+	case(0xEA):
+		{
+			SET_b_R(5, D);
+			break;
+		}
+	case(0xEB):
+		{
+			SET_b_R(5, E);
+			break;
+		}
+	case(0xEC):
+		{
+			SET_b_R(5, H);
+			break;
+		}
+	case(0xED):
+		{
+			SET_b_R(5, L);
+			break;
+		}
+	case(0xEE):
+		{
+			SET_b_aHL(5);
+			break;
+		}
+	case(0xEF):
+		{
+			SET_b_R(5, A);
+			break;
+		}
+	case(0xF0):
+		{
+			SET_b_R(6, B);
+			break;
+		}
+	case(0xF1):
+		{
+			SET_b_R(6, C);
+			break;
+		}
+	case(0xF2):
+		{
+			SET_b_R(6, D);
+			break;
+		}
+	case(0xF3):
+		{
+			SET_b_R(6, E);
+			break;
+		}
+	case(0xF4):
+		{
+			SET_b_R(6, H);
+			break;
+		}
+	case(0xF5):
+		{
+			SET_b_R(6, L);
+			break;
+		}
+	case(0xF6):
+		{
+			SET_b_aHL(6);
+			break;
+		}
+	case(0xF7):
+		{
+			SET_b_R(6, A);
+			break;
+		}
+	case(0xF8):
+		{
+			SET_b_R(7, B);
+			break;
+		}
+	case(0xF9):
+		{
+			SET_b_R(7, C);
+			break;
+		}
+	case(0xFA):
+		{
+			SET_b_R(7, D);
+			break;
+		}
+	case(0xFB):
+		{
+			SET_b_R(7, E);
+			break;
+		}
+	case(0xFC):
+		{
+			SET_b_R(7, H);
+			break;
+		}
+	case(0xFD):
+		{
+			SET_b_R(7, L);
+			break;
+		}
+	case(0xFE):
+		{
+			SET_b_aHL(7);
+			break;
+		}
+	case(0xFF):
+		{
+			SET_b_R(7, A);
+			break;
+		}
+	default:
+		{
+			cerr << "Error opcode after CB unknown at pc = " << hex << (int)pc << endl;
+			break;
+		}
 	}
 }
 
@@ -839,7 +2853,8 @@ void Cpu::executeOpcodeFollowingCB()
 
 /*-------------------------------------8bits TRANSFER AND INPUT/OUTPUT INSTRUCTIONS---------------------------------------*/
 
-void Cpu::LD_R_R(uint8& reg1, const uint8& reg2) {
+void Cpu::LD_R_R(uint8& reg1, const uint8& reg2)
+{
 	reg1 = reg2;
 	pc++;
 	clockCycles++;
@@ -859,7 +2874,6 @@ void Cpu::LD_R_aHL(uint8& reg)
 	pc++;
 	clockCycles += 2;
 }
-
 
 
 void Cpu::LD_aHL_R(const uint8& reg)
@@ -900,7 +2914,6 @@ void Cpu::LD_A_aDE()
 }
 
 
-
 void Cpu::LD_A_aCo()
 {
 	A = memory->read(INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + C);
@@ -917,8 +2930,7 @@ void Cpu::LD_aCo_A()
 }
 
 
-
-void Cpu::LD_A_a8o()//Correct this one after the other ocpodes are corrected
+void Cpu::LD_A_a8o() //Correct this one after the other ocpodes are corrected
 {
 	//HERE
 	//A = memory->read(INSTRUCTION_REGISTERS_AND_SYSTEM_CONTROLLER_START + memory->read(pc + 1));
@@ -958,7 +2970,6 @@ void Cpu::LD_A_a16()
 	//pc += 2;
 
 
-
 	pc++;
 	doOneParallelCycle();
 	uint8 low = memory->read(pc);
@@ -969,7 +2980,6 @@ void Cpu::LD_A_a16()
 	A = memory->read(((high << 8) + low));
 	clockCycles += 2;
 	pc += 2;
-
 }
 
 void Cpu::LD_a16_A()
@@ -989,7 +2999,7 @@ void Cpu::LD_a16_A()
 	doOneParallelCycle();
 	uint8 high = memory->read(pc + 1);
 
-	writeMemory(((high << 8) + low), A);//the n are the less significant bits, the n+1 are the most significant bits.
+	writeMemory(((high << 8) + low), A); //the n are the less significant bits, the n+1 are the most significant bits.
 	clockCycles += 2;
 	pc += 2;
 }
@@ -1357,8 +3367,6 @@ void Cpu::OR_A_aHL()
 }
 
 
-
-
 void Cpu::XOR_A_R(const uint8& reg)
 {
 	A ^= reg;
@@ -1392,7 +3400,6 @@ void Cpu::XOR_A_aHL()
 	clockCycles += 2;
 	pc++;
 }
-
 
 
 void Cpu::CP_A_R(const uint8& reg)
@@ -1462,7 +3469,6 @@ void Cpu::INC_subFunctionFlag(uint8& reg)
 }
 
 
-
 void Cpu::DEC_R(uint8& reg)
 {
 	DEC_subFunctionFlag(reg);
@@ -1478,7 +3484,6 @@ void Cpu::DEC_aHL()
 	//writeMemory(pairRegisters(H, L), memTemp);
 	//clockCycles += 3;
 	//pc++;
-
 
 
 	uint8 memTemp = memory->read(pairRegisters(H, L));
@@ -1576,7 +3581,6 @@ void Cpu::DEC_RP(uint16& regsPair)
 	DEC_RP(regPair1, regPair2);
 	regsPair = pairRegisters(regPair1, regPair2);
 }
-
 
 
 /*-------------------------------------ROTATE SHIFT INSTRUCTION---------------------------------------*/
@@ -1681,7 +3685,6 @@ void Cpu::RLC_aHL()
 	F.Z = (temp == 0);
 	clockCycles += 2;
 	pc++;
-
 }
 
 
@@ -1714,7 +3717,6 @@ void Cpu::RL_aHL()
 	//F.Z = (temp == 0);
 	//clockCycles += 4;
 	//pc++;
-
 
 
 	doOneParallelCycle();
@@ -1931,7 +3933,6 @@ void Cpu::SWAP_R(uint8& reg)
 	pc++;
 
 
-
 	//F.CY = 0;
 	//F.H = 0;
 	//F.N = 0;
@@ -1943,6 +3944,7 @@ void Cpu::SWAP_R(uint8& reg)
 	//clockCycles += 2;
 	//pc++;
 }
+
 void Cpu::SWAP_aHL()
 {
 	//HERE
@@ -1963,14 +3965,14 @@ void Cpu::SWAP_aHL()
 }
 
 
-
 //Page 18
 void Cpu::BIT_b_R(const uint8& indexBit, const uint8& reg)
 {
 	F.H = 1;
 	F.N = 0;
-	uint8 date8Bits = memory->read(pc);//Get the data byte
-	F.Z = !((reg & (0b00000001 << indexBit)) >> (indexBit));//Attribute to F.Z the bit's complement of the reg pointed by the index calculated previously
+	uint8 date8Bits = memory->read(pc); //Get the data byte
+	F.Z = !((reg & (0b00000001 << indexBit)) >> (indexBit));
+	//Attribute to F.Z the bit's complement of the reg pointed by the index calculated previously
 	clockCycles += 2;
 	pc++;
 }
@@ -1985,8 +3987,8 @@ void Cpu::BIT_b_aHL(const uint8& indexBit)
 
 void Cpu::SET_b_R(const uint8& indexBit, uint8& reg)
 {
-	uint8 date8Bits = memory->read(pc);//Get the data byte
-	reg |= (0b00000001 << indexBit);//Se the bit pointed by the index calculated previously
+	uint8 date8Bits = memory->read(pc); //Get the data byte
+	reg |= (0b00000001 << indexBit); //Se the bit pointed by the index calculated previously
 	clockCycles += 2;
 	pc++;
 }
@@ -2013,9 +4015,9 @@ void Cpu::SET_b_aHL(const uint8& indexBit)
 
 void Cpu::RES_b_R(const uint8& indexBit, uint8& reg)
 {
-	uint8 date8Bits = memory->read(pc);//Get the data byte
-	uint8 mask = (0b00000001 << indexBit);//Shift the bit to set to 0 to the right position
-	mask = ~mask;//Invert the ma
+	uint8 date8Bits = memory->read(pc); //Get the data byte
+	uint8 mask = (0b00000001 << indexBit); //Shift the bit to set to 0 to the right position
+	mask = ~mask; //Invert the ma
 	reg &= mask;
 	clockCycles += 2;
 	pc++;
@@ -2059,62 +4061,62 @@ void Cpu::JP_cc_d16()
 
 	switch (condition)
 	{
-	case(0b00)://NZ
-	{
-		if (!F.Z)
+	case(0b00): //NZ
 		{
-			pc = (highByte << 8) + lowByte;
-			clockCycles += 4;
+			if (!F.Z)
+			{
+				pc = (highByte << 8) + lowByte;
+				clockCycles += 4;
+			}
+			else
+			{
+				clockCycles += 3;
+				pc++;
+			}
+			break;
 		}
-		else
+	case(0b01): //Z
 		{
-			clockCycles += 3;
-			pc++;
+			if (F.Z)
+			{
+				pc = (highByte << 8) + lowByte;
+				clockCycles += 4;
+			}
+			else
+			{
+				clockCycles += 3;
+				pc++;
+			}
+			break;
 		}
-		break;
-	}
-	case(0b01)://Z
-	{
-		if (F.Z)
+	case(0b10): //NC
 		{
-			pc = (highByte << 8) + lowByte;
-			clockCycles += 4;
+			if (!F.CY)
+			{
+				pc = (highByte << 8) + lowByte;
+				clockCycles += 4;
+			}
+			else
+			{
+				clockCycles += 3;
+				pc++;
+			}
+			break;
 		}
-		else
+	case(0b11): //C
 		{
-			clockCycles += 3;
-			pc++;
+			if (F.CY)
+			{
+				pc = (highByte << 8) + lowByte;
+				clockCycles += 4;
+			}
+			else
+			{
+				pc++;
+				clockCycles += 3;
+			}
+			break;
 		}
-		break;
-	}
-	case(0b10)://NC
-	{
-		if (!F.CY)
-		{
-			pc = (highByte << 8) + lowByte;
-			clockCycles += 4;
-		}
-		else
-		{
-			clockCycles += 3;
-			pc++;
-		}
-		break;
-	}
-	case(0b11)://C
-	{
-		if (F.CY)
-		{
-			pc = (highByte << 8) + lowByte;
-			clockCycles += 4;
-		}
-		else
-		{
-			pc++;
-			clockCycles += 3;
-		}
-		break;
-	}
 	}
 }
 
@@ -2122,7 +4124,7 @@ void Cpu::JP_cc_d16()
 void Cpu::JR_e()
 {
 	pc++;
-	int8_t e = memory->read(pc);//LOOK AT THE Z80 CPU MANUAL
+	int8_t e = memory->read(pc); //LOOK AT THE Z80 CPU MANUAL
 	pc++;
 	clockCycles += 3;
 	pc += e;
@@ -2139,42 +4141,42 @@ void Cpu::JR_cc_e()
 
 	switch (condition)
 	{
-	case(0b00)://NZ
-	{
-		if (!F.Z)
+	case(0b00): //NZ
 		{
-			pc += e;
-			clockCycles++;
+			if (!F.Z)
+			{
+				pc += e;
+				clockCycles++;
+			}
+			break;
 		}
-		break;
-	}
-	case(0b01)://Z
-	{
-		if (F.Z)
+	case(0b01): //Z
 		{
-			pc += e;
-			clockCycles++;
+			if (F.Z)
+			{
+				pc += e;
+				clockCycles++;
+			}
+			break;
 		}
-		break;
-	}
-	case(0b10)://NC
-	{
-		if (!F.CY)
+	case(0b10): //NC
 		{
-			pc += e;
-			clockCycles++;
+			if (!F.CY)
+			{
+				pc += e;
+				clockCycles++;
+			}
+			break;
 		}
-		break;
-	}
-	case(0b11)://C
-	{
-		if (F.CY)
+	case(0b11): //C
 		{
-			pc += e;
-			clockCycles++;
+			if (F.CY)
+			{
+				pc += e;
+				clockCycles++;
+			}
+			break;
 		}
-		break;
-	}
 	}
 }
 
@@ -2200,58 +4202,58 @@ void Cpu::CALL_cc()
 	uint8 condition = ((memory->read(pc) & 0b00011000) >> 3);
 	switch (condition)
 	{
-	case(0b00)://NZ
-	{
-		if (!F.Z)
+	case(0b00): //NZ
 		{
-			CALL();
+			if (!F.Z)
+			{
+				CALL();
+			}
+			else
+			{
+				pc += 3;
+				clockCycles += 3;
+			}
+			break;
 		}
-		else
+	case(0b01): //Z
 		{
-			pc += 3;
-			clockCycles += 3;
+			if (F.Z)
+			{
+				CALL();
+			}
+			else
+			{
+				pc += 3;
+				clockCycles += 3;
+			}
+			break;
 		}
-		break;
-	}
-	case(0b01)://Z
-	{
-		if (F.Z)
+	case(0b10): //NC
 		{
-			CALL();
+			if (!F.CY)
+			{
+				CALL();
+			}
+			else
+			{
+				pc += 3;
+				clockCycles += 3;
+			}
+			break;
 		}
-		else
+	case(0b11): //C
 		{
-			pc += 3;
-			clockCycles += 3;
+			if (F.CY)
+			{
+				CALL();
+			}
+			else
+			{
+				pc += 3;
+				clockCycles += 3;
+			}
+			break;
 		}
-		break;
-	}
-	case(0b10)://NC
-	{
-		if (!F.CY)
-		{
-			CALL();
-		}
-		else
-		{
-			pc += 3;
-			clockCycles += 3;
-		}
-		break;
-	}
-	case(0b11)://C
-	{
-		if (F.CY)
-		{
-			CALL();
-		}
-		else
-		{
-			pc += 3;
-			clockCycles += 3;
-		}
-		break;
-	}
 	}
 }
 
@@ -2278,58 +4280,58 @@ void Cpu::RET_cc()
 	clockCycles++;
 	switch (condition)
 	{
-	case(0b00)://NZ
-	{
-		if (!F.Z)
+	case(0b00): //NZ
 		{
-			RET();
+			if (!F.Z)
+			{
+				RET();
+			}
+			else
+			{
+				clockCycles++;
+				pc++;
+			}
+			break;
 		}
-		else
+	case(0b01): //Z
 		{
-			clockCycles++;
-			pc++;
+			if (F.Z)
+			{
+				RET();
+			}
+			else
+			{
+				clockCycles++;
+				pc++;
+			}
+			break;
 		}
-		break;
-	}
-	case(0b01)://Z
-	{
-		if (F.Z)
+	case(0b10): //NC
 		{
-			RET();
+			if (!F.CY)
+			{
+				RET();
+			}
+			else
+			{
+				clockCycles++;
+				pc++;
+			}
+			break;
 		}
-		else
+	case(0b11): //C
 		{
-			clockCycles++;
-			pc++;
+			if (F.CY)
+			{
+				RET();
+			}
+			else
+			{
+				clockCycles++;
+				pc++;
+			}
+			break;
 		}
-		break;
-	}
-	case(0b10)://NC
-	{
-		if (!F.CY)
-		{
-			RET();
-		}
-		else
-		{
-			clockCycles++;
-			pc++;
-		}
-		break;
-	}
-	case(0b11)://C
-	{
-		if (F.CY)
-		{
-			RET();
-		}
-		else
-		{
-			clockCycles++;
-			pc++;
-		}
-		break;
-	}
 	}
 }
 
@@ -2348,44 +4350,44 @@ void Cpu::RST()
 	switch (condition)
 	{
 	case(0b000):
-	{
-		pc = 0x0000;
-		break;
-	}
+		{
+			pc = 0x0000;
+			break;
+		}
 	case(0b001):
-	{
-		pc = 0x0008;
-		break;
-	}
+		{
+			pc = 0x0008;
+			break;
+		}
 	case(0b010):
-	{
-		pc = 0x0010;
-		break;
-	}
+		{
+			pc = 0x0010;
+			break;
+		}
 	case(0b011):
-	{
-		pc = 0x0018;
-	}
+		{
+			pc = 0x0018;
+		}
 	case(0b100):
-	{
-		pc = 0x0020;
-		break;
-	}
+		{
+			pc = 0x0020;
+			break;
+		}
 	case(0b101):
-	{
-		pc = 0x0028;
-		break;
-	}
+		{
+			pc = 0x0028;
+			break;
+		}
 	case(0b110):
-	{
-		pc = 0x0030;
-		break;
-	}
+		{
+			pc = 0x0030;
+			break;
+		}
 	case(0b111):
-	{
-		pc = 0x0038;
-		break;
-	}
+		{
+			pc = 0x0038;
+			break;
+		}
 	}
 }
 
@@ -2394,7 +4396,7 @@ void Cpu::RST()
 
 void Cpu::DAA()
 {
-	if (!F.N)//If previsous opcode is one of the ADD opcodes
+	if (!F.N) //If previsous opcode is one of the ADD opcodes
 	{
 		if (F.CY || A > 0X99)
 		{
@@ -2407,7 +4409,7 @@ void Cpu::DAA()
 			A += 0x6;
 		}
 	}
-	else//If previsous opcode is one of the SUB opcodes
+	else //If previsous opcode is one of the SUB opcodes
 	{
 		if (F.CY)
 		{
@@ -2496,25 +4498,25 @@ void Cpu::STOP()
 
 /*-----------------------------------------SUB FUNCTIONS------------------------------------------*/
 
-uint16 Cpu::pairRegisters(const uint8 reg1, const uint8 reg2)const
+uint16 Cpu::pairRegisters(const uint8 reg1, const uint8 reg2) const
 {
 	return ((reg1 << 8) + reg2);
 }
 
 void Cpu::unpairRegisters(uint8& reg1, uint8& reg2, const uint16& registersPair)
 {
-	reg1 = (registersPair >> 8) & 0x00FF;//The & 0x00FF is not an obligation
+	reg1 = (registersPair >> 8) & 0x00FF; //The & 0x00FF is not an obligation
 	reg2 = registersPair & 0x00FF;
 }
 
-uint8 Cpu::flagToByte(const Flag& flag)const
+uint8 Cpu::flagToByte(const Flag& flag) const
 {
 	uint8 temp = ((flag.Z << 7) + (flag.N << 6) + (flag.H << 5) + (flag.CY << 4)) & 0xF0;
 	return temp;
 }
 
 
-Cpu::Flag Cpu::byteToFlag(const uint8& byte)const
+Cpu::Flag Cpu::byteToFlag(const uint8& byte) const
 {
 	Flag temp;
 	temp.Z = (byte >> 7) & 0x1;
