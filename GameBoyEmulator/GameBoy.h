@@ -1,7 +1,6 @@
 #ifndef DEF_GAMEBOY
 #define DEF_GAMEBOY
 
-#include "SdlLib.h"
 #include "binaryLib.h"
 
 #include "Cpu.h"
@@ -15,9 +14,6 @@
 #define AUTHOR "Im-Rises"
 #define PROJECT_NAME "GameBoyEmulator"
 
-#define EMULATOR_SCREEN_SIZE_X 640
-#define EMULATOR_SCREEN_SIZE_Y 576
-
 #define SCREEN_FREQUENCY 60	//In fps
 
 /*
@@ -30,15 +26,12 @@ class GameBoy
 private:
 	static GameBoy* gameboyInstance;
 	GameBoy();
-	//~GameBoy();//Put GlfwOpenglLib destructor in here to destroy video if it is member of the class
-
 
 	Memory memory;
 	Cpu cpu;
 	Ppu ppu;
 	Joypad joypad;
 	Spu spu;
-	//GlfwOpenglLib lcdScreen;
 	Cartridge* cartridge = nullptr;
 
 	uint8 fps;
@@ -56,10 +49,10 @@ public:
 
 private:
 	/*------------------------------------------Game Boy Cycle--------------------------------*/
-	void doGameBoyCycle(SdlLib& glfwOpenglLib, const int cyclesNumberToDo);
+	void doGameBoyCycle(const int cyclesNumberToDo);
 
-	/*------------------------------------------SCREEN FUNCTIONS--------------------------------*/
-	void updateScreen(SdlLib& glfwOpenglLib);
+	/*------------------------------------------Screen functions--------------------------------*/
+	void updateScreen();
 
 public:
 	/*------------------------------------------GETTERS--------------------------------*/
