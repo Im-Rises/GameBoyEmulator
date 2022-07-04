@@ -39,7 +39,7 @@ Spu::Spu(Memory* memory)
 	if (SDL_Init(SDL_INIT_AUDIO)!=0)
 	{
 		std::cerr << "Error SDL audio init.\n" << SDL_GetError() << std::endl;
-		exit(EXIT_FAILURE);
+		// exit(EXIT_FAILURE);
 	}
 
 	SDL_AudioSpec AudioSettings = {0};
@@ -51,7 +51,7 @@ Spu::Spu(Memory* memory)
 	if (SDL_OpenAudio(&AudioSettings, 0) != 0)
 	{
 		std::cerr << "Error SDL audio opening.\n" << SDL_GetError() << std::endl;
-		exit(EXIT_FAILURE);
+		// exit(EXIT_FAILURE);
 	}
 
 	SDL_PauseAudio(0);

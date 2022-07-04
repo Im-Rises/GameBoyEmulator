@@ -11,14 +11,29 @@ Ppu::Ppu(Memory* memory, ColorMode colorMode)
 {
 	int windowWidth = 640;
 	int windowHeight = 576;
-	// int windowWidth = 160;
-	// int windowHeight = 144;
 
 	// Connection to memory
 	this->memory = memory;
 
 	//GameBoy screen
 	reset();
+
+	// //GameBoy color mode
+	// switch (colorMode)
+	// {
+	// case(bw):
+	// 	displayColor.white = 0x00;
+	// 	displayColor.black = 0xFF;
+	// 	break;
+	// case(greenscale):
+	// 	displayColor.white = 0x00;
+	// 	displayColor.black = 0xFF;
+	// 	break;
+	// default:
+	// 	std::cerr << "Error unknown color mode.\n" << std::endl;
+	// 	break;
+	// }
+
 
 	//SDL
 
@@ -30,23 +45,45 @@ Ppu::Ppu(Memory* memory, ColorMode colorMode)
 
 	SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
 
-	if (SDL_CreateWindowAndRenderer(windowWidth, windowHeight, SDL_WINDOW_SHOWN, &window, &renderer) != 0)
+	// if (SDL_CreateWindowAndRenderer(windowWidth, windowHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN, &window, &renderer) != 0)
+	// {
+	// 	std::cerr << "Error window creation.\n" << SDL_GetError() << std::endl;
+	// 	exit(EXIT_FAILURE);
+	// }
+	// SDL_SetWindowTitle(window, windowTitle.c_str());
+
+	window = SDL_CreateWindow(windowTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN);
+	if (window ==NULL)
 	{
 		std::cerr << "Error window creation.\n" << SDL_GetError() << std::endl;
 		exit(EXIT_FAILURE);
 	}
-	// SDL_CreateRenderer(window, 1, SDL_RENDERER_ACCELERATED);
 
-	// texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, windowWidth, windowHeight);
+	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+	if (renderer == NULL)
+	{
+		std::cerr << "Error renderer creation using hardware.\n" << SDL_GetError() << std::endl;
+		std::cerr << "Use of software instead.\n" << SDL_GetError() << std::endl;
+
+		renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+		if (renderer == NULL)
+		{
+			std::cerr << "Error renderer creation using software.\n" << SDL_GetError() << std::endl;
+			exit(EXIT_FAILURE);
+		}
+		std::cout << "Screen Software mode" << std::endl;
+	}
+	else
+	{
+		std::cout << "Screen Hardware mode" << std::endl;
+	}
+
 	texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, 160, 144);
 	if (texture == NULL)
 	{
 		std::cerr << "Error texture creation.\n" << SDL_GetError() << std::endl;
 		exit(EXIT_FAILURE);
 	}
-
-	SDL_SetWindowTitle(window, windowTitle.c_str());
-	SDL_SetWindowResizable(window, SDL_FALSE);
 
 	windowing = true;
 }
@@ -87,21 +124,21 @@ void Ppu::updateScreen()
 	SDL_RenderPresent(renderer);
 
 	// // // Method 3: (https://wiki.libsdl.org/SDL_LockTexture)
-	// int pitch= 160 * sizeof(uint8) * 3;
+	// int pitch = 160 * sizeof(uint8) * 3;
 	// SDL_LockTexture(texture, NULL, (void**)&lcd, &pitch);
 	// SDL_UnlockTexture(texture);
 }
 
-void Ppu::SDL_drawSquare(const int& x, const int& y, const int& color)
-{
-	SDL_Rect rect = {0 + x * 1, 0 + y * 1, 1, 1};
+// void Ppu::SDL_drawSquare(const int& x, const int& y, const int& color)
+// {
+// 	SDL_Rect rect = {0 + x * 1, 0 + y * 1, 1, 1};
+//
+// 	SDL_SetRenderDrawColor(renderer, color, color, color, SDL_ALPHA_OPAQUE);
+//
+// 	SDL_RenderFillRect(renderer, &rect);
+// }
 
-	SDL_SetRenderDrawColor(renderer, color, color, color, SDL_ALPHA_OPAQUE);
-
-	SDL_RenderFillRect(renderer, &rect);
-}
-
-void Ppu::displayFramerate(int value)
+void Ppu::displayFramerate(const int& value) const
 {
 	string temp = windowTitle + " (fps : " + std::to_string(value).c_str() + ")";
 	SDL_SetWindowTitle(window, temp.c_str());
@@ -160,6 +197,13 @@ void Ppu::reset()
 	scanLineCounter = 456; //Number of clock cycles to draw one scanline
 	LY = LYC = 0;
 }
+
+// void drawPixel(const int& x, const int& y , const uint8& r, const uint8& g, const uint8& b)
+// {
+// 	// lcd[(y * 160 * 3) + x * 3] = r;
+// 	// lcd[(y * 160 * 3) + x * 3 + 1] = g;
+// 	// lcd[(y * 160 * 3) + x * 3 + 2] = b;
+// }
 
 void Ppu::draw(const int& cycles)
 {
@@ -487,11 +531,11 @@ void Ppu::drawSpritesLine(const uint8& lcdc)
 							lcd[(ly * 160 * 3) + x * 3 + 1] = colorRgb;
 							lcd[(ly * 160 * 3) + x * 3 + 2] = colorRgb;
 						}
-						else //Display BG' pixel
-						{
-							//if (ly >= 8 && ly <= 15)
-							//	cout << "test" << endl;
-						}
+						// else //Display BG' pixel
+						// {
+						// 	//if (ly >= 8 && ly <= 15)
+						// 	//	cout << "test" << endl;
+						// }
 					}
 				}
 			}
