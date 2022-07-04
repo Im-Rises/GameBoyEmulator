@@ -103,6 +103,7 @@ public:
 	// Game Boy screen functions
 public:
 	void reset();
+	void setPixel(const int& x, const int& y, const uint8& r, const uint8& g, const uint8& b);
 	void draw(const int& cycles);
 private:
 	void updateStatRegister();

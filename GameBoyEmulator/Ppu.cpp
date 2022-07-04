@@ -187,9 +187,10 @@ void Ppu::reset()
 			// lcdScreen[i][j].colorRGB = 0xFF;
 			// lcdScreen[i][j].backgroundTransparent = false;
 
-			lcd[(j * 160 * 3) + i * 3] = 0xFF;
-			lcd[(j * 160 * 3) + i * 3 + 1] = 0xFF;
-			lcd[(j * 160 * 3) + i * 3 + 2] = 0xFF;
+			// lcd[(j * 160 * 3) + i * 3] = 0xFF;
+			// lcd[(j * 160 * 3) + i * 3 + 1] = 0xFF;
+			// lcd[(j * 160 * 3) + i * 3 + 2] = 0xFF;
+			setPixel(i, j, 0xFF, 0xFF, 0xFF);
 
 			lcdTransparent[(j * 160 * 3) + i] = false;
 		}
@@ -198,12 +199,12 @@ void Ppu::reset()
 	LY = LYC = 0;
 }
 
-// void drawPixel(const int& x, const int& y , const uint8& r, const uint8& g, const uint8& b)
-// {
-// 	// lcd[(y * 160 * 3) + x * 3] = r;
-// 	// lcd[(y * 160 * 3) + x * 3 + 1] = g;
-// 	// lcd[(y * 160 * 3) + x * 3 + 2] = b;
-// }
+void Ppu::setPixel(const int& x, const int& y , const uint8& r, const uint8& g, const uint8& b)
+{
+	lcd[(y * 160 * 3) + x * 3] = r;
+	lcd[(y * 160 * 3) + x * 3 + 1] = g;
+	lcd[(y * 160 * 3) + x * 3 + 2] = b;
+}
 
 void Ppu::draw(const int& cycles)
 {
@@ -424,9 +425,10 @@ void Ppu::drawBackgroundLine(const uint8& lcdc)
 			// lcdScreen[pixel][ly].colorRGB = colorToRGB(color);
 			// lcdScreen[pixel][ly].backgroundTransparent = (colorCode == 0);
 			uint8 colorRgb = colorToRGB(color);
-			lcd[(ly * 160 * 3) + pixel * 3] = colorRgb;
-			lcd[(ly * 160 * 3) + pixel * 3 + 1] = colorRgb;
-			lcd[(ly * 160 * 3) + pixel * 3 + 2] = colorRgb;
+			// lcd[(ly * 160 * 3) + pixel * 3] = colorRgb;
+			// lcd[(ly * 160 * 3) + pixel * 3 + 1] = colorRgb;
+			// lcd[(ly * 160 * 3) + pixel * 3 + 2] = colorRgb;
+			setPixel(pixel, ly, colorRgb, colorRgb, colorRgb);
 
 			lcdTransparent[(ly * 160 * 3) + pixel] = (colorCode == 0);
 		}
@@ -442,9 +444,10 @@ void Ppu::drawBackgroundLine(const uint8& lcdc)
 				// lcd[(ly * 160 * 3) + pixel] = colorToRGB(color);
 
 				uint8 colorRgb = colorToRGB(color);
-				lcd[(ly * 160 * 3) + pixel * 3] = colorRgb;
-				lcd[(ly * 160 * 3) + pixel * 3 + 1] = colorRgb;
-				lcd[(ly * 160 * 3) + pixel * 3 + 2] = colorRgb;
+				// lcd[(ly * 160 * 3) + pixel * 3] = colorRgb;
+				// lcd[(ly * 160 * 3) + pixel * 3 + 1] = colorRgb;
+				// lcd[(ly * 160 * 3) + pixel * 3 + 2] = colorRgb;
+				setPixel(pixel, ly, colorRgb, colorRgb, colorRgb);
 				lcdTransparent[(ly * 160 * 3) + pixel] = true;
 			}
 		}
@@ -527,9 +530,10 @@ void Ppu::drawSpritesLine(const uint8& lcdc)
 							// lcd[(ly * 160 * 3) + x] = colorToRGB(color);
 
 							uint8 colorRgb = colorToRGB(color);
-							lcd[(ly * 160 * 3) + x * 3] = colorRgb;
-							lcd[(ly * 160 * 3) + x * 3 + 1] = colorRgb;
-							lcd[(ly * 160 * 3) + x * 3 + 2] = colorRgb;
+							// lcd[(ly * 160 * 3) + x * 3] = colorRgb;
+							// lcd[(ly * 160 * 3) + x * 3 + 1] = colorRgb;
+							// lcd[(ly * 160 * 3) + x * 3 + 2] = colorRgb;
+							setPixel(x, ly, colorRgb, colorRgb, colorRgb);
 						}
 						// else //Display BG' pixel
 						// {
