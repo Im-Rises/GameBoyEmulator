@@ -1,15 +1,14 @@
 #include "Joypad.h"
-
-#include <iostream>
+#include "SDL2/include/SDL.h"
 
 Joypad::Joypad()
 {
-	keystate = SDL_GetKeyboardState(NULL);//Get pointer to the state of all keys of the keayboard
+	keystate = SDL_GetKeyboardState(NULL); //Get pointer to the state of all keys of the keayboard
 	previousInputs = 0b11111111;
 	enableInterrupt = false;
 }
 
-uint8 Joypad::readInputs(uint8 memoryInputs)//Memory inputs indicate which type of input is readed
+uint8 Joypad::readInputs(uint8 memoryInputs) //Memory inputs indicate which type of input is readed
 {
 	/*
 * User inputs bits:
@@ -26,16 +25,26 @@ uint8 Joypad::readInputs(uint8 memoryInputs)//Memory inputs indicate which type 
 
 	SDL_PumpEvents();
 
-	(keystate[SDL_SCANCODE_RIGHT]) ? gameBoyInputs = resetBit(gameBoyInputs, 0) : gameBoyInputs = setBit(gameBoyInputs, 0);
-	(keystate[SDL_SCANCODE_LEFT]) ? gameBoyInputs = resetBit(gameBoyInputs, 1) : gameBoyInputs = setBit(gameBoyInputs, 1);
+	(keystate[SDL_SCANCODE_RIGHT])
+		? gameBoyInputs = resetBit(gameBoyInputs, 0)
+		: gameBoyInputs = setBit(gameBoyInputs, 0);
+	(keystate[SDL_SCANCODE_LEFT])
+		? gameBoyInputs = resetBit(gameBoyInputs, 1)
+		: gameBoyInputs = setBit(gameBoyInputs, 1);
 	(keystate[SDL_SCANCODE_UP]) ? gameBoyInputs = resetBit(gameBoyInputs, 2) : gameBoyInputs = setBit(gameBoyInputs, 2);
-	(keystate[SDL_SCANCODE_DOWN]) ? gameBoyInputs = resetBit(gameBoyInputs, 3) : gameBoyInputs = setBit(gameBoyInputs, 3);
+	(keystate[SDL_SCANCODE_DOWN])
+		? gameBoyInputs = resetBit(gameBoyInputs, 3)
+		: gameBoyInputs = setBit(gameBoyInputs, 3);
 	(keystate[SDL_SCANCODE_D]) ? gameBoyInputs = resetBit(gameBoyInputs, 4) : gameBoyInputs = setBit(gameBoyInputs, 4);
 	(keystate[SDL_SCANCODE_S]) ? gameBoyInputs = resetBit(gameBoyInputs, 5) : gameBoyInputs = setBit(gameBoyInputs, 5);
-	(keystate[SDL_SCANCODE_SPACE]) ? gameBoyInputs = resetBit(gameBoyInputs, 6) : gameBoyInputs = setBit(gameBoyInputs, 6);
-	(keystate[SDL_SCANCODE_RETURN]) ? gameBoyInputs = resetBit(gameBoyInputs, 7) : gameBoyInputs = setBit(gameBoyInputs, 7);
+	(keystate[SDL_SCANCODE_SPACE])
+		? gameBoyInputs = resetBit(gameBoyInputs, 6)
+		: gameBoyInputs = setBit(gameBoyInputs, 6);
+	(keystate[SDL_SCANCODE_RETURN])
+		? gameBoyInputs = resetBit(gameBoyInputs, 7)
+		: gameBoyInputs = setBit(gameBoyInputs, 7);
 
-	if (!testBit(memoryInputs, 4))//Directions buttons
+	if (!testBit(memoryInputs, 4)) //Directions buttons
 	{
 		memoryInputs &= 0xF0;
 		memoryInputs |= (gameBoyInputs & 0xF);
@@ -47,7 +56,7 @@ uint8 Joypad::readInputs(uint8 memoryInputs)//Memory inputs indicate which type 
 		previousInputs &= 0xF0;
 		previousInputs |= gameBoyInputs & 0x0F;
 	}
-	else if (!testBit(memoryInputs, 5))//Action buttons
+	else if (!testBit(memoryInputs, 5)) //Action buttons
 	{
 		memoryInputs &= 0xF0;
 		memoryInputs |= (gameBoyInputs >> 4);
@@ -69,7 +78,8 @@ void Joypad::checkInputsInterrupt(uint8 currentInputs, uint8 previousInputs)
 
 	for (int i = 0; i < 4; i++)
 	{
-		if ((testBit(previousInputs, i) == 1) && (testBit(currentInputs, i) == 0))//If previous input equals 1 and current button input equals 0 
+		if ((testBit(previousInputs, i) == 1) && (testBit(currentInputs, i) == 0))
+			//If previous input equals 1 and current button input equals 0 
 			enableInterrupt = true;
 	}
 }
