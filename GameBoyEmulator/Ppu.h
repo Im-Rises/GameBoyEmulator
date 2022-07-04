@@ -29,6 +29,35 @@ enum ColorMode
 	greenscale
 };
 
+// Greenscale
+// Darkest Green
+// Hex : #0f380f
+// RGB : 15, 56, 15
+// Dark Green
+// Hex : #306230
+// RGB: 48, 98, 48
+// Light Green
+// Hex : #8bac0f
+// RGB : 139, 172, 15
+// Lightest Green
+// Hex : #9bbc0f
+// RGB : 155, 188, 15
+
+// Grayscale
+// Black
+// Hex : #000000
+// RGB : 0, 0, 0
+// Gray 1
+// Hex : #777777
+// RGB: 119, 119, 119
+// Gray 2
+// Hex : #CCCCCC
+// RGB : 204, 204, 204
+// Black
+// Hex : #FFFFFF
+// RGB : 255, 255, 255
+
+
 class Ppu
 {
 private:
@@ -48,13 +77,13 @@ private:
 		uint8 b;
 	};
 
-	struct GameBoyColorMode
+	struct ColorModePalette
 	{
 		ColorRGB black;
 		ColorRGB gray1;
 		ColorRGB gray2;
 		ColorRGB white;
-	};
+	} GameBoyColorMode;
 
 	uint8 lcd[160 * 144 * 3];
 	bool lcdTransparent[160 * 144 * 3];
@@ -77,23 +106,15 @@ private:
 	int windowingWidth;
 	int windowingHeigth;
 
-	// struct
-	// {
-	// 	uint8 white;
-	// 	uint8 gray1;
-	// 	uint8 gray2;
-	// 	uint8 black;
-	// }
-	// displayColor;
-
 
 public:
 	Ppu(Memory* memory, ColorMode colorMode = bw);
 	// Ppu(Memory* memory, int windowWidth = 640, int windowHeight = 576);
 	~Ppu();
 
-	// SDL functions
+
 public:
+	// SDL functions
 	void toggleFullScreen();
 	void updateScreen();
 	// void SDL_drawSquare(const int& x, const int& y, const int& color);
