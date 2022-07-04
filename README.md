@@ -16,6 +16,12 @@ Games like pokemon aren't working due to the lack of MBC3/MBC5 cartridges implem
 SDL2 website:
 <https://www.libsdl.org>
 
+> **Note**
+> Note here
+
+> **Warning**
+> Note here
+
 ## Images
 
 | Tetris | Super Mario Land 2 |
