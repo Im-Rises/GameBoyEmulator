@@ -16,6 +16,12 @@ Games like pokemon aren't working due to the lack of MBC3/MBC5 cartridges implem
 SDL2 website:
 <https://www.libsdl.org>
 
+> **Note**
+> Note here
+
+> **Warning**
+> Note here
+
 ## Images
 
 | Tetris | Super Mario Land 2 |
@@ -106,35 +112,38 @@ The repository has a GitHub Actions file to verify the good behaviour of the pro
 
 ## Documentations  
 
-Video overview of the Game Boy, to understand the fundamental  
+Video overview of the Game Boy, to understand the fundamental:  
 <https://www.youtube.com/watch?v=HyzD8pNlpwI>  
 
 The main documentation about the console:  
 <https://archive.org/details/GameBoyProgManVer1.1/mode/2up>  
 <https://gbdev.io/pandocs/Specifications.html>
 
-The bootrom  
+The bootrom:  
 <https://gbdev.gg8.se/wiki/articles/Gameboy_Bootstrap_ROM>  
 
-Opcodes map  
+Opcodes map:  
 <https://www.pastraiser.com/cpu/gameboy/gameboy_opcodes.html>  
 
-Rom/Ram banking  
+Rom/Ram banking:  
 <http://www.codeslinger.co.uk/pages/projects/gameboy/beginning.html>  
 
-PPU  
+PPU:  
 <https://hacktixme.ga/GBEDG/ppu/>  
 
-SPU  
+SPU:  
 <https://nightshade256.github.io/2021/03/27/gb-sound-emulation.html>  
 <https://emudev.de>  
 <https://www.youtube.com/watch?v=a52p6ji1WZs>  
 
-Test roms i use to debug my emulator  
+Audio and sound:  
+<https://xiph.org/video/vid1.shtml>
+
+Test roms i use to debug my emulator:  
 <https://gbdev.gg8.se/files/roms/blargg-gb-tests/>  
 <https://github.com/mattcurrie/dmg-acid2>  
 
-Other docs (mostly about emulation in general)  
+Other docs (mostly about emulation in general):  
 <https://emudev.org>    
 <http://emulator101.com/>
 

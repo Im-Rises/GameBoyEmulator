@@ -131,22 +131,41 @@ void Ppu::displayFramerate(const int& value) const
 
 bool Ppu::windowIsActive()
 {
+	static bool switchColorMode = false;
+	static bool switchWindowMode = false;
 	SDL_PollEvent(&event);
 	if (event.type == SDL_KEYDOWN)
 	{
 		if (event.key.keysym.sym == SDLK_F11)
-			toggleFullScreen();
+		{
+			switchWindowMode = true;
+		}
 
-		// if (event.key.keysym.sym == SDLK_F10)
-		// {
-		// 	if (currentColorMode == greenscale)
-		// 		setGameBoyColorMode(grayscale);
-		// 	else
-		// 		setGameBoyColorMode(greenscale);
-		// }
+		if (event.key.keysym.sym == SDLK_F10)
+		{
+			switchColorMode = true;
+		}
 	}
 	else if (event.type == SDL_KEYUP)
 	{
+		if (event.key.keysym.sym == SDLK_F11)
+		{
+			switchWindowMode = false;
+			toggleFullScreen();
+		}
+
+		if (event.key.keysym.sym == SDLK_F10)
+		{
+			if (switchColorMode)
+			{
+				switchColorMode = false;
+				if (currentColorMode == greenscale)
+					setGameBoyColorMode(grayscale);
+				else
+					setGameBoyColorMode(greenscale);
+			}
+		}
+
 		return !(event.key.keysym.sym == SDLK_ESCAPE);
 	}
 	return !(event.type == SDL_QUIT);
@@ -249,7 +268,7 @@ void Ppu::setGameBoyColorMode(const ColorMode& colorMode)
 		GameBoyColorMode.black.r = 0x0f;
 		GameBoyColorMode.black.g = 0x38;
 		GameBoyColorMode.black.b = 0x0f;
-		
+
 		GameBoyColorMode.gray1.r = 0x30;
 		GameBoyColorMode.gray1.g = 0x62;
 		GameBoyColorMode.gray1.b = 0x30;
