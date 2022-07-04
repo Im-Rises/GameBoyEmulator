@@ -5,8 +5,6 @@
 
 #include "SDL2/include/SDL.h"
 
-
-// Ppu::Ppu(Memory* memory, int windowWidth, int windowHeight)
 Ppu::Ppu(Memory* memory, ColorMode colorMode)
 {
 	int windowWidth = 640;
@@ -28,13 +26,6 @@ Ppu::Ppu(Memory* memory, ColorMode colorMode)
 	}
 
 	SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
-
-	// if (SDL_CreateWindowAndRenderer(windowWidth, windowHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN, &window, &renderer) != 0)
-	// {
-	// 	std::cerr << "Error window creation.\n" << SDL_GetError() << std::endl;
-	// 	exit(EXIT_FAILURE);
-	// }
-	// SDL_SetWindowTitle(window, windowTitle.c_str());
 
 	window = SDL_CreateWindow(windowTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth,
 	                          windowHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN);
@@ -92,36 +83,16 @@ Ppu::~Ppu()
 
 void Ppu::updateScreen()
 {
-	// // Method 1:
-	// for (int y = 0; y < DOTS_DISPLAY_Y; y++)
-	// {
-	// 	for (int x = 0; x < DOTS_DISPLAY_X; x++)
-	// 	{
-	// 		// SDL_drawSquare(x, y, lcdScreen[x][y].colorRGB);
-	// 		SDL_drawSquare(x, y, lcd[(y * 160 * 3) + x]);
-	// 	}
-	// }
-	// SDL_RenderPresent(renderer);
-
-	// Method 2:
+	// Method 1:
 	SDL_UpdateTexture(texture, NULL, lcd, 160 * 3);
 	SDL_RenderCopy(renderer, texture, NULL, NULL);
 	SDL_RenderPresent(renderer);
 
-	// // // Method 3: (https://wiki.libsdl.org/SDL_LockTexture)
+	// // // Method 2: (https://wiki.libsdl.org/SDL_LockTexture)
 	// int pitch = 160 * sizeof(uint8) * 3;
 	// SDL_LockTexture(texture, NULL, (void**)&lcd, &pitch);
 	// SDL_UnlockTexture(texture);
 }
-
-// void Ppu::SDL_drawSquare(const int& x, const int& y, const int& color)
-// {
-// 	SDL_Rect rect = {0 + x * 1, 0 + y * 1, 1, 1};
-//
-// 	SDL_SetRenderDrawColor(renderer, color, color, color, SDL_ALPHA_OPAQUE);
-//
-// 	SDL_RenderFillRect(renderer, &rect);
-// }
 
 void Ppu::displayFramerate(const int& value) const
 {
@@ -196,12 +167,6 @@ void Ppu::reset()
 	{
 		for (int i = 0; i < DOTS_DISPLAY_X; i++)
 		{
-			// lcdScreen[i][j].colorRGB = 0xFF;
-			// lcdScreen[i][j].backgroundTransparent = false;
-
-			// lcd[(j * 160 * 3) + i * 3] = 0xFF;
-			// lcd[(j * 160 * 3) + i * 3 + 1] = 0xFF;
-			// lcd[(j * 160 * 3) + i * 3 + 2] = 0xFF;
 			setPixel(i, j, 0xFF, 0xFF, 0xFF);
 
 			lcdTransparent[(j * 160 * 3) + i] = false;
@@ -428,7 +393,6 @@ void Ppu::drawBackgroundLine(const uint8& lcdc)
 	uint8 scx = memory->read(SCX_ADDRESS);
 	uint8 scy = memory->read(SCY_ADDRESS);
 	uint8 wx = memory->read(WX_ADDRESS) - 7;
-	//Why 7 because : With WX = 7, the window is displayed from the left edge of the LCD screen. Values of 0-6 should not be specified for WX.
 	uint8 wy = memory->read(WY_ADDRESS);
 
 	uint8 ly = memory->read(LY_ADDRESS);
@@ -511,12 +475,7 @@ void Ppu::drawBackgroundLine(const uint8& lcdc)
 
 		if (testBit(lcdc, 0))
 		{
-			// lcdScreen[pixel][ly].colorRGB = colorToRGB(color);
-			// lcdScreen[pixel][ly].backgroundTransparent = (colorCode == 0);
 			auto colorRgb = colorToRGB(color);
-			// lcd[(ly * 160 * 3) + pixel * 3] = colorRgb;
-			// lcd[(ly * 160 * 3) + pixel * 3 + 1] = colorRgb;
-			// lcd[(ly * 160 * 3) + pixel * 3 + 2] = colorRgb;
 			setPixel(pixel, ly, colorRgb.r, colorRgb.g, colorRgb.b);
 
 			lcdTransparent[(ly * 160 * 3) + pixel] = (colorCode == 0);
@@ -527,15 +486,7 @@ void Ppu::drawBackgroundLine(const uint8& lcdc)
 
 			for (int pixel = 0; pixel < DOTS_DISPLAY_X; pixel++)
 			{
-				// lcdScreen[pixel][memory->read(LY_ADDRESS)].colorRGB = colorToRGB(color);
-				// lcdScreen[pixel][ly].backgroundTransparent = true;
-
-				// lcd[(ly * 160 * 3) + pixel] = colorToRGB(color);
-
 				auto colorRgb = colorToRGB(color);
-				// lcd[(ly * 160 * 3) + pixel * 3] = colorRgb;
-				// lcd[(ly * 160 * 3) + pixel * 3 + 1] = colorRgb;
-				// lcd[(ly * 160 * 3) + pixel * 3 + 2] = colorRgb;
 				setPixel(pixel, ly, colorRgb.r, colorRgb.g, colorRgb.b);
 				lcdTransparent[(ly * 160 * 3) + pixel] = true;
 			}
@@ -614,14 +565,8 @@ void Ppu::drawSpritesLine(const uint8& lcdc)
 								color = transformDotDataToColor(colorCode, OPB0_PALETTE_DATA);
 							else
 								color = transformDotDataToColor(colorCode, OPB1_PALETTE_DATA);
-
-							// lcdScreen[x][ly].colorRGB = colorToRGB(color);
-							// lcd[(ly * 160 * 3) + x] = colorToRGB(color);
-
+							
 							auto colorRgb = colorToRGB(color);
-							// lcd[(ly * 160 * 3) + x * 3] = colorRgb;
-							// lcd[(ly * 160 * 3) + x * 3 + 1] = colorRgb;
-							// lcd[(ly * 160 * 3) + x * 3 + 2] = colorRgb;
 							setPixel(x, ly, colorRgb.r, colorRgb.g, colorRgb.b);
 						}
 						// else //Display BG' pixel
@@ -669,22 +614,18 @@ ColorRGB Ppu::colorToRGB(uint8 colorGameBoy)
 	case (0b00):
 		{
 			return GameBoyColorMode.white;
-			// return 0xFF;
 		}
 	case (0b01):
 		{
 			return GameBoyColorMode.gray2;
-			// return 0xCC;
 		}
 	case (0b10):
 		{
 			return GameBoyColorMode.gray1;
-			// return 0x77;
 		}
 	case (0b11):
 		{
 			return GameBoyColorMode.black;
-			// return 0x00;
 		}
 	default:
 		cerr << "Error wrong data color";
