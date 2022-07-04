@@ -25,38 +25,16 @@
 
 enum ColorMode
 {
-	bw,
+	grayscale,
 	greenscale
 };
 
-// Greenscale
-// Darkest Green
-// Hex : #0f380f
-// RGB : 15, 56, 15
-// Dark Green
-// Hex : #306230
-// RGB: 48, 98, 48
-// Light Green
-// Hex : #8bac0f
-// RGB : 139, 172, 15
-// Lightest Green
-// Hex : #9bbc0f
-// RGB : 155, 188, 15
-
-// Grayscale
-// Black
-// Hex : #000000
-// RGB : 0, 0, 0
-// Gray 1
-// Hex : #777777
-// RGB: 119, 119, 119
-// Gray 2
-// Hex : #CCCCCC
-// RGB : 204, 204, 204
-// Black
-// Hex : #FFFFFF
-// RGB : 255, 255, 255
-
+struct ColorRGB
+{
+	uint8 r;
+	uint8 g;
+	uint8 b;
+};
 
 class Ppu
 {
@@ -70,13 +48,8 @@ private:
 	// 	bool backgroundTransparent;
 	// } lcdScreen[DOTS_DISPLAY_X][DOTS_DISPLAY_Y];
 
-	struct ColorRGB
-	{
-		uint8 r;
-		uint8 g;
-		uint8 b;
-	};
 
+	ColorMode currentColorMode;
 	struct ColorModePalette
 	{
 		ColorRGB black;
@@ -94,7 +67,6 @@ private:
 
 
 	//SDL
-	// string windowTitle = PROJECT_NAME;
 	string windowTitle = "GameBoyEmulator";
 
 	SDL_Window* window = nullptr;
@@ -108,7 +80,7 @@ private:
 
 
 public:
-	Ppu(Memory* memory, ColorMode colorMode = bw);
+	Ppu(Memory* memory, ColorMode colorMode = greenscale);
 	// Ppu(Memory* memory, int windowWidth = 640, int windowHeight = 576);
 	~Ppu();
 
@@ -124,6 +96,7 @@ public:
 	// Game Boy screen functions
 public:
 	void reset();
+	void setGameBoyColorMode(const ColorMode& colorMode);
 	void setPixel(const int& x, const int& y, const uint8& r, const uint8& g, const uint8& b);
 	void draw(const int& cycles);
 private:
@@ -132,7 +105,7 @@ private:
 	void drawBackgroundLine(const uint8& lcdc);
 	void drawSpritesLine(const uint8& lcdc);
 	uint8 transformDotDataToColor(const uint8& dotData, const uint16& dataPaletteAddress);
-	uint8 colorToRGB(uint8 colorGameBoy);
+	ColorRGB colorToRGB(uint8 colorGameBoy);
 	void requestInterrupt(const uint8& bitIndex);
 	bool checkLyEqualsLyc();
 };

@@ -17,23 +17,7 @@ Ppu::Ppu(Memory* memory, ColorMode colorMode)
 
 	//GameBoy screen
 	reset();
-
-	// //GameBoy color mode
-	// switch (colorMode)
-	// {
-	// case(bw):
-	// 	displayColor.white = 0x00;
-	// 	displayColor.black = 0xFF;
-	// 	break;
-	// case(greenscale):
-	// 	displayColor.white = 0x00;
-	// 	displayColor.black = 0xFF;
-	// 	break;
-	// default:
-	// 	std::cerr << "Error unknown color mode.\n" << std::endl;
-	// 	break;
-	// }
-
+	setGameBoyColorMode(colorMode);
 
 	//SDL
 
@@ -52,8 +36,9 @@ Ppu::Ppu(Memory* memory, ColorMode colorMode)
 	// }
 	// SDL_SetWindowTitle(window, windowTitle.c_str());
 
-	window = SDL_CreateWindow(windowTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN);
-	if (window ==NULL)
+	window = SDL_CreateWindow(windowTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth,
+	                          windowHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN);
+	if (window == NULL)
 	{
 		std::cerr << "Error window creation.\n" << SDL_GetError() << std::endl;
 		exit(EXIT_FAILURE);
@@ -151,6 +136,14 @@ bool Ppu::windowIsActive()
 	{
 		if (event.key.keysym.sym == SDLK_F11)
 			toggleFullScreen();
+
+		// if (event.key.keysym.sym == SDLK_F10)
+		// {
+		// 	if (currentColorMode == greenscale)
+		// 		setGameBoyColorMode(grayscale);
+		// 	else
+		// 		setGameBoyColorMode(greenscale);
+		// }
 	}
 	else if (event.type == SDL_KEYUP)
 	{
@@ -199,7 +192,84 @@ void Ppu::reset()
 	LY = LYC = 0;
 }
 
-void Ppu::setPixel(const int& x, const int& y , const uint8& r, const uint8& g, const uint8& b)
+void Ppu::setGameBoyColorMode(const ColorMode& colorMode)
+{
+	// Grayscale
+	// Black
+	// Hex : #000000
+	// RGB : 0, 0, 0
+	// Gray 1
+	// Hex : #777777
+	// RGB: 119, 119, 119
+	// Gray 2
+	// Hex : #CCCCCC
+	// RGB : 204, 204, 204
+	// Black
+	// Hex : #FFFFFF
+	// RGB : 255, 255, 255
+
+	// Greenscale
+	// Darkest Green
+	// Hex : #0f380f
+	// RGB : 15, 56, 15
+	// Dark Green
+	// Hex : #306230
+	// RGB: 48, 98, 48
+	// Light Green
+	// Hex : #8bac0f
+	// RGB : 139, 172, 15
+	// Lightest Green
+	// Hex : #9bbc0f
+	// RGB : 155, 188, 15
+
+	currentColorMode = colorMode;
+
+	//GameBoy color mode
+	switch (colorMode)
+	{
+	case(grayscale):
+		GameBoyColorMode.black.r = 0x00;
+		GameBoyColorMode.black.g = 0x00;
+		GameBoyColorMode.black.b = 0x00;
+
+		GameBoyColorMode.gray1.r = 0x77;
+		GameBoyColorMode.gray1.g = 0x77;
+		GameBoyColorMode.gray1.b = 0x77;
+
+		GameBoyColorMode.gray2.r = 0xCC;
+		GameBoyColorMode.gray2.g = 0xCC;
+		GameBoyColorMode.gray2.b = 0xCC;
+
+		GameBoyColorMode.white.r = 0xFF;
+		GameBoyColorMode.white.g = 0xFF;
+		GameBoyColorMode.white.b = 0xFF;
+
+		break;
+	case(greenscale):
+		GameBoyColorMode.black.r = 0x0f;
+		GameBoyColorMode.black.g = 0x38;
+		GameBoyColorMode.black.b = 0x0f;
+		
+		GameBoyColorMode.gray1.r = 0x30;
+		GameBoyColorMode.gray1.g = 0x62;
+		GameBoyColorMode.gray1.b = 0x30;
+
+		GameBoyColorMode.gray2.r = 0x8b;
+		GameBoyColorMode.gray2.g = 0xac;
+		GameBoyColorMode.gray2.b = 0x0f;
+
+		GameBoyColorMode.white.r = 0x9b;
+		GameBoyColorMode.white.g = 0xbc;
+		GameBoyColorMode.white.b = 0x0f;
+
+		break;
+	default:
+		std::cerr << "Error unknown color mode.\n" << std::endl;
+		break;
+	}
+}
+
+void Ppu::setPixel(const int& x, const int& y, const uint8& r, const uint8& g, const uint8& b)
 {
 	lcd[(y * 160 * 3) + x * 3] = r;
 	lcd[(y * 160 * 3) + x * 3 + 1] = g;
@@ -424,11 +494,11 @@ void Ppu::drawBackgroundLine(const uint8& lcdc)
 		{
 			// lcdScreen[pixel][ly].colorRGB = colorToRGB(color);
 			// lcdScreen[pixel][ly].backgroundTransparent = (colorCode == 0);
-			uint8 colorRgb = colorToRGB(color);
+			auto colorRgb = colorToRGB(color);
 			// lcd[(ly * 160 * 3) + pixel * 3] = colorRgb;
 			// lcd[(ly * 160 * 3) + pixel * 3 + 1] = colorRgb;
 			// lcd[(ly * 160 * 3) + pixel * 3 + 2] = colorRgb;
-			setPixel(pixel, ly, colorRgb, colorRgb, colorRgb);
+			setPixel(pixel, ly, colorRgb.r, colorRgb.g, colorRgb.b);
 
 			lcdTransparent[(ly * 160 * 3) + pixel] = (colorCode == 0);
 		}
@@ -443,11 +513,11 @@ void Ppu::drawBackgroundLine(const uint8& lcdc)
 
 				// lcd[(ly * 160 * 3) + pixel] = colorToRGB(color);
 
-				uint8 colorRgb = colorToRGB(color);
+				auto colorRgb = colorToRGB(color);
 				// lcd[(ly * 160 * 3) + pixel * 3] = colorRgb;
 				// lcd[(ly * 160 * 3) + pixel * 3 + 1] = colorRgb;
 				// lcd[(ly * 160 * 3) + pixel * 3 + 2] = colorRgb;
-				setPixel(pixel, ly, colorRgb, colorRgb, colorRgb);
+				setPixel(pixel, ly, colorRgb.r, colorRgb.g, colorRgb.b);
 				lcdTransparent[(ly * 160 * 3) + pixel] = true;
 			}
 		}
@@ -529,11 +599,11 @@ void Ppu::drawSpritesLine(const uint8& lcdc)
 							// lcdScreen[x][ly].colorRGB = colorToRGB(color);
 							// lcd[(ly * 160 * 3) + x] = colorToRGB(color);
 
-							uint8 colorRgb = colorToRGB(color);
+							auto colorRgb = colorToRGB(color);
 							// lcd[(ly * 160 * 3) + x * 3] = colorRgb;
 							// lcd[(ly * 160 * 3) + x * 3 + 1] = colorRgb;
 							// lcd[(ly * 160 * 3) + x * 3 + 2] = colorRgb;
-							setPixel(x, ly, colorRgb, colorRgb, colorRgb);
+							setPixel(x, ly, colorRgb.r, colorRgb.g, colorRgb.b);
 						}
 						// else //Display BG' pixel
 						// {
@@ -573,25 +643,29 @@ uint8 Ppu::transformDotDataToColor(const uint8& dotData, const uint16& dataPalet
 	}
 }
 
-uint8 Ppu::colorToRGB(uint8 colorGameBoy)
+ColorRGB Ppu::colorToRGB(uint8 colorGameBoy)
 {
 	switch (colorGameBoy)
 	{
 	case (0b00):
 		{
-			return 0xFF;
+			return GameBoyColorMode.white;
+			// return 0xFF;
 		}
 	case (0b01):
 		{
-			return 0xCC;
+			return GameBoyColorMode.gray2;
+			// return 0xCC;
 		}
 	case (0b10):
 		{
-			return 0x77;
+			return GameBoyColorMode.gray1;
+			// return 0x77;
 		}
 	case (0b11):
 		{
-			return 0x00;
+			return GameBoyColorMode.black;
+			// return 0x00;
 		}
 	default:
 		cerr << "Error wrong data color";
