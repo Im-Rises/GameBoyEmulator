@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
 		// romPath = "../../../../Bios_Games/Games/bgbtest.gb";
 		//romPath = "../../Bios_Games/Games/Gremlins 2.gb";
 		// romPath = "../../../../Bios_Games/Games/tetris.gb";
-		romPath = "../../../../Bios_Games/Games/tennis.gb";
+		// romPath = "../../../../Bios_Games/Games/tennis.gb";
 		// romPath = "../../../../Bios_Games/Games/Zelda Link's Awakening.gb";
 		//romPath = "../../Bios_Games/Games/Tennis.gb";
 		// romPath = "../../Bios_Games/Games/Pokemon - Version Bleue (F) [S].gb";
@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
 
 		//Passed:
 		// romPath = "../../../../Bios_Games/TestRoms/cpu_instrs/cpu_instrs.gb";
-		romPath = "../../../../Bios_Games/TestRoms/cpu_instrs/individual/02-interrupts.gb";
+		// romPath = "../../../../Bios_Games/TestRoms/cpu_instrs/individual/02-interrupts.gb";
 		// romPath = "../../../../Bios_Games/TestRoms/instr_timing/instr_timing.gb";
 		// romPath = "../../../../Bios_Games/TestRoms/mem_timing-2/mem_timing.gb";
 		// romPath = "../../../../Bios_Games/TestRoms/mem_timing/mem_timing.gb";

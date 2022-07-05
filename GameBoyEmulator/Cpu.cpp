@@ -276,6 +276,11 @@ void Cpu::doInterupt(const uint8& bitIndex)
 			pc = 0x60;
 			break;
 		}
+	default:
+	{
+		cerr << "Error: Unknown interrupt" << endl;
+		exit(1);
+	}
 	}
 }
 

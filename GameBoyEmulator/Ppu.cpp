@@ -124,8 +124,7 @@ bool Ppu::windowHandling()
 	static bool switchWindowMode = false;
 	// static bool switchPause = false;
 
-	if (SDL_PollEvent(&event))
-		cout << "issue" << endl;
+	SDL_PollEvent(&event);
 
 	if (event.type == SDL_KEYDOWN)
 	{
