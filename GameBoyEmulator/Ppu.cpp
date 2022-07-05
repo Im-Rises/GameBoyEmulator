@@ -63,6 +63,21 @@ Ppu::Ppu(Memory* memory, ColorMode colorMode)
 		exit(EXIT_FAILURE);
 	}
 
+	// Deactivate the controller reading while pooling events to prevent program from queuing to many inputs from controller's axis resulting in blocking the app from exiting
+	// https://wiki.libsdl.org/SDL_EventState
+	// Or not working so writing one line for one deactivation
+	SDL_EventState(SDL_JOYAXISMOTION, SDL_IGNORE);
+	SDL_EventState(SDL_JOYBALLMOTION, SDL_IGNORE);
+	SDL_EventState(SDL_JOYHATMOTION, SDL_IGNORE);
+	SDL_EventState(SDL_JOYBUTTONDOWN, SDL_IGNORE);
+	SDL_EventState(SDL_JOYBUTTONUP, SDL_IGNORE);
+
+	SDL_EventState(SDL_CONTROLLERAXISMOTION, SDL_IGNORE);
+	SDL_EventState(SDL_CONTROLLERBUTTONDOWN, SDL_IGNORE);
+	SDL_EventState(SDL_CONTROLLERBUTTONUP, SDL_IGNORE);
+
+	SDL_EventState(SDL_MOUSEMOTION, SDL_IGNORE);
+
 	windowing = true;
 }
 
@@ -108,7 +123,10 @@ bool Ppu::windowHandling()
 	static bool switchColorMode = false;
 	static bool switchWindowMode = false;
 	// static bool switchPause = false;
-	SDL_PollEvent(&event);
+
+	if (SDL_PollEvent(&event))
+		cout << "issue" << endl;
+
 	if (event.type == SDL_KEYDOWN)
 	{
 		if (event.key.keysym.sym == SDLK_F11)
@@ -160,6 +178,11 @@ bool Ppu::windowHandling()
 		// cout << myexit << endl;
 		// return myexit;
 		return !(event.key.keysym.sym == SDLK_ESCAPE);
+	}
+
+	if (event.type==SDL_CONTROLLERAXISMOTION)
+	{
+		cout << "here de merde" << endl;
 	}
 	// myexit = !(event.type == SDL_QUIT);
 	// cout << myexit << endl;

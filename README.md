@@ -114,6 +114,9 @@ The repository has a GitHub Actions file to verify the good behaviour of the pro
 
 ## Documentations  
 
+SDL wiki:  
+<https://wiki.libsdl.org>  
+
 Video overview of the Game Boy, to understand the fundamental:  
 <https://www.youtube.com/watch?v=HyzD8pNlpwI>  
 
