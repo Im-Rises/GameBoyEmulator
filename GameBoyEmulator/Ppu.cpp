@@ -123,6 +123,7 @@ bool Ppu::windowHandling()
 	static bool switchColorMode = false;
 	static bool switchWindowMode = false;
 	static bool switchPause = false;
+	static bool switchScreenshot = false;
 
 	SDL_PollEvent(&event);
 
@@ -136,6 +137,9 @@ bool Ppu::windowHandling()
 
 		if (event.key.keysym.sym == SDLK_p)
 			switchPause = true;
+
+		if (event.key.keysym.sym == SDLK_PRINTSCREEN)
+			switchScreenshot = true;
 	}
 	else if (event.type == SDL_KEYUP)
 	{
@@ -173,6 +177,12 @@ bool Ppu::windowHandling()
 			while (switchPause);
 		}
 
+		if (event.key.keysym.sym == SDLK_PRINTSCREEN && switchScreenshot)
+		{
+			switchScreenshot = false;
+			doScreenshot("test.bmp");
+		}
+
 		return !(event.key.keysym.sym == SDLK_ESCAPE);
 	}
 
@@ -182,6 +192,14 @@ bool Ppu::windowHandling()
 	}
 
 	return !(event.type == SDL_QUIT);
+}
+
+void Ppu::doScreenshot(string path)
+{
+	SDL_Surface* screenshot = SDL_CreateRGBSurfaceWithFormat(0, 640, 576, 32, SDL_PIXELFORMAT_ABGR32);
+	SDL_RenderReadPixels(renderer, NULL, SDL_PIXELFORMAT_ABGR32, screenshot->pixels, screenshot->pitch);
+	SDL_SaveBMP(screenshot, path.c_str());
+	SDL_FreeSurface(screenshot);
 }
 
 void Ppu::toggleFullScreen()

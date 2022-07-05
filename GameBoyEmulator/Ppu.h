@@ -81,10 +81,10 @@ public:
 
 public:
 	// SDL functions
-	void toggleFullScreen();
 	void updateScreen();
 	void displayFramerate(const int& value) const;
 	bool windowHandling();
+	void toggleFullScreen();
 
 	// Game Boy screen functions
 public:
@@ -101,6 +101,7 @@ private:
 	ColorRGB colorToRGB(uint8 colorGameBoy);
 	void requestInterrupt(const uint8& bitIndex);
 	bool checkLyEqualsLyc();
+	void doScreenshot(string path);
 };
 
 #endif
