@@ -16,15 +16,12 @@ Joypad::Joypad()
 	}
 
 	std::cout << "Number of connected controllers and joysticks " << SDL_NumJoysticks() << ":" << std::endl;
-	// for (int i = 0; i < SDL_NumJoysticks(); ++i)
-	// {
-	// 	std::cout << SDL_JoystickName << std::endl;
-	// }
 
 	gameController = SDL_NumJoysticks() ? SDL_GameControllerOpen(0) : NULL;
 	if (gameController != NULL)
 	{
-		std::cout << "Using controller 0: " << SDL_GameControllerName(gameController) << " 0 (" << SDL_GameControllerGetJoystick(gameController) << ")" << std::endl;
+		std::cout << "Using controller 0: " << SDL_GameControllerName(gameController) << " 0 (" <<
+			SDL_GameControllerGetJoystick(gameController) << ")" << std::endl;
 		// SDL_GameControllerSetLED(gameController, 0xFF,0,0);//Red
 		SDL_GameControllerSetLED(gameController, 0x00, 0xFF, 0x00); //Green
 		// SDL_GameControllerSetLED(gameController, 0,0,0xFF);//Blue
@@ -36,7 +33,7 @@ Joypad::Joypad()
 
 Joypad::~Joypad()
 {
-	if (gameController!=NULL)
+	if (gameController != NULL)
 	{
 		SDL_GameControllerClose(gameController);
 	}
@@ -56,33 +53,34 @@ uint8 Joypad::readInputs(uint8 memoryInputs) //Memory inputs indicate which type
 	* Select = 0b01000000
 	* Start  = 0b10000000
 	*/
-	uint8 gameBoyInputs;
+
+	uint8 gameBoyInputs = 0;
 
 	SDL_PumpEvents();
 
-	(keystate[SDL_SCANCODE_RIGHT])
-		? gameBoyInputs = resetBit(gameBoyInputs, 0)
-		: gameBoyInputs = setBit(gameBoyInputs, 0);
-	(keystate[SDL_SCANCODE_LEFT])
-		? gameBoyInputs = resetBit(gameBoyInputs, 1)
-		: gameBoyInputs = setBit(gameBoyInputs, 1);
-	(keystate[SDL_SCANCODE_UP]) ? gameBoyInputs = resetBit(gameBoyInputs, 2) : gameBoyInputs = setBit(gameBoyInputs, 2);
-	(keystate[SDL_SCANCODE_DOWN])
-		? gameBoyInputs = resetBit(gameBoyInputs, 3)
-		: gameBoyInputs = setBit(gameBoyInputs, 3);
-	(keystate[SDL_SCANCODE_D]) ? gameBoyInputs = resetBit(gameBoyInputs, 4) : gameBoyInputs = setBit(gameBoyInputs, 4);
-	(keystate[SDL_SCANCODE_S]) ? gameBoyInputs = resetBit(gameBoyInputs, 5) : gameBoyInputs = setBit(gameBoyInputs, 5);
-	(keystate[SDL_SCANCODE_SPACE])
-		? gameBoyInputs = resetBit(gameBoyInputs, 6)
-		: gameBoyInputs = setBit(gameBoyInputs, 6);
-	(keystate[SDL_SCANCODE_RETURN])
-		? gameBoyInputs = resetBit(gameBoyInputs, 7)
-		: gameBoyInputs = setBit(gameBoyInputs, 7);
+	// Keyboard
+	gameBoyInputs |= keystate[SDL_SCANCODE_RIGHT] << 0;
+	gameBoyInputs |= keystate[SDL_SCANCODE_LEFT] << 1;
+	gameBoyInputs |= keystate[SDL_SCANCODE_UP] << 2;
+	gameBoyInputs |= keystate[SDL_SCANCODE_DOWN] << 3;
+	gameBoyInputs |= keystate[SDL_SCANCODE_D] << 4;
+	gameBoyInputs |= keystate[SDL_SCANCODE_S] << 5;
+	gameBoyInputs |= keystate[SDL_SCANCODE_SPACE] << 6;
+	gameBoyInputs |= keystate[SDL_SCANCODE_RETURN] << 7;
 
 	if (gameController)
 	{
-		
+		gameBoyInputs |= SDL_GameControllerGetButton(gameController, SDL_CONTROLLER_BUTTON_DPAD_RIGHT) << 0;
+		gameBoyInputs |= SDL_GameControllerGetButton(gameController, SDL_CONTROLLER_BUTTON_DPAD_LEFT) << 1;
+		gameBoyInputs |= SDL_GameControllerGetButton(gameController, SDL_CONTROLLER_BUTTON_DPAD_UP) << 2;
+		gameBoyInputs |= SDL_GameControllerGetButton(gameController, SDL_CONTROLLER_BUTTON_DPAD_DOWN) << 3;
+		gameBoyInputs |= SDL_GameControllerGetButton(gameController, SDL_CONTROLLER_BUTTON_B) << 4;
+		gameBoyInputs |= SDL_GameControllerGetButton(gameController, SDL_CONTROLLER_BUTTON_A) << 5;
+		gameBoyInputs |= SDL_GameControllerGetButton(gameController, SDL_CONTROLLER_BUTTON_BACK) << 6;
+		gameBoyInputs |= SDL_GameControllerGetButton(gameController, SDL_CONTROLLER_BUTTON_START) << 7;
 	}
+
+	gameBoyInputs = ~gameBoyInputs;
 
 	if (!testBit(memoryInputs, 4)) //Directions buttons
 	{
@@ -115,6 +113,7 @@ uint8 Joypad::readInputs(uint8 memoryInputs) //Memory inputs indicate which type
 void Joypad::checkInputsInterrupt(uint8 currentInputs, uint8 previousInputs)
 {
 	enableInterrupt = false;
+	// std::cout << (int)previousInputs << std::endl;
 
 	for (int i = 0; i < 4; i++)
 	{
