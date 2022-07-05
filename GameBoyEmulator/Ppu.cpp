@@ -104,9 +104,10 @@ void Ppu::displayFramerate(const int& value) const
 
 bool Ppu::windowHandling()
 {
+	// bool myexit;
 	static bool switchColorMode = false;
 	static bool switchWindowMode = false;
-	static bool switchPause = false;
+	// static bool switchPause = false;
 	SDL_PollEvent(&event);
 	if (event.type == SDL_KEYDOWN)
 	{
@@ -116,8 +117,8 @@ bool Ppu::windowHandling()
 		if (event.key.keysym.sym == SDLK_F10)
 			switchColorMode = true;
 
-		if (event.key.keysym.sym == SDLK_p)
-			switchPause = true;
+		// if (event.key.keysym.sym == SDLK_p)
+		// 	switchPause = true;
 	}
 	else if (event.type == SDL_KEYUP)
 	{
@@ -155,8 +156,14 @@ bool Ppu::windowHandling()
 		// 	while (switchPause);
 		// }
 
+		// myexit = !(event.key.keysym.sym == SDLK_ESCAPE);
+		// cout << myexit << endl;
+		// return myexit;
 		return !(event.key.keysym.sym == SDLK_ESCAPE);
 	}
+	// myexit = !(event.type == SDL_QUIT);
+	// cout << myexit << endl;
+	// return myexit;
 	return !(event.type == SDL_QUIT);
 }
 

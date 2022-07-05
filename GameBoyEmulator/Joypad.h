@@ -7,7 +7,7 @@
 class Joypad
 {
 private:
-	uint8 previousInputs;
+	// uint8 previousInputs;
 	bool enableInterrupt;
 	const uint8* keystate = nullptr;
 	SDL_GameController* gameController = nullptr;

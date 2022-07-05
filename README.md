@@ -17,10 +17,12 @@ SDL2 website:
 <https://www.libsdl.org>
 
 > **Note**
-> Note here
+> I used the SDL2.0.14 version.
 
+<!--
 > **Warning**
 > Note here
+-->
 
 ## Images
 
