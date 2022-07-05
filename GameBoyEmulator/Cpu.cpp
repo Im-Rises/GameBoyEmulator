@@ -246,7 +246,7 @@ void Cpu::doInterupt(const uint8& bitIndex)
 	memory->directWrite(INTERRUPT_FLAG_IF_ADDRESS, ifRegister);
 	writeMemory(sp - 1, (pc >> 8));
 	writeMemory(sp - 2, (pc & 0x00FF));
-	//clockCycles += 8;
+	clockCycles += 8;
 	sp -= 2;
 	halted = false;
 	switch (bitIndex + 1)

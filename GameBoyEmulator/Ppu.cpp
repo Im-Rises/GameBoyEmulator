@@ -119,10 +119,10 @@ void Ppu::displayFramerate(const int& value) const
 
 bool Ppu::windowHandling()
 {
-	// bool myexit;
+
 	static bool switchColorMode = false;
 	static bool switchWindowMode = false;
-	// static bool switchPause = false;
+	static bool switchPause = false;
 
 	SDL_PollEvent(&event);
 
@@ -134,8 +134,8 @@ bool Ppu::windowHandling()
 		if (event.key.keysym.sym == SDLK_F10)
 			switchColorMode = true;
 
-		// if (event.key.keysym.sym == SDLK_p)
-		// 	switchPause = true;
+		if (event.key.keysym.sym == SDLK_p)
+			switchPause = true;
 	}
 	else if (event.type == SDL_KEYUP)
 	{
@@ -152,30 +152,27 @@ bool Ppu::windowHandling()
 			setGameBoyColorMode(currentColorMode);
 		}
 
-		// if (event.key.keysym.sym == SDLK_p && switchPause)
-		// {
-		// 	do
-		// 	{
-		// 		SDL_WaitEvent(&event);
-		// 		string message;
-		// 		switch (event.key.keysym.sym)
-		// 		{
-		// 		case(SDLK_p):
-		// 			switchPause = false;
-		// 			break;
-		// 		case(SDLK_ESCAPE):
-		// 			return false;
-		// 		}
-		//
-		// 		if (event.type == SDL_QUIT)
-		// 			return false;
-		// 	}
-		// 	while (switchPause);
-		// }
+		if (event.key.keysym.sym == SDLK_p && switchPause)
+		{
+			do
+			{
+				SDL_WaitEvent(&event);
+				string message;
+				switch (event.key.keysym.sym)
+				{
+				case(SDLK_p):
+					switchPause = false;
+					break;
+				case(SDLK_ESCAPE):
+					return false;
+				}
+		
+				if (event.type == SDL_QUIT)
+					return false;
+			}
+			while (switchPause);
+		}
 
-		// myexit = !(event.key.keysym.sym == SDLK_ESCAPE);
-		// cout << myexit << endl;
-		// return myexit;
 		return !(event.key.keysym.sym == SDLK_ESCAPE);
 	}
 
@@ -183,9 +180,7 @@ bool Ppu::windowHandling()
 	{
 		cout << "here de merde" << endl;
 	}
-	// myexit = !(event.type == SDL_QUIT);
-	// cout << myexit << endl;
-	// return myexit;
+
 	return !(event.type == SDL_QUIT);
 }
 

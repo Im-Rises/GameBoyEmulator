@@ -7,7 +7,7 @@
 
 /*
  * To do list:
- * - Correct inputs interrupt in joypad.cpp
+ * - Correct inputs interrupt in joypad.cpp (interrupts in general)
  * - Correct PPU background aliasing
  * - Add MBC5
  * - Correct fullscreen resizing
