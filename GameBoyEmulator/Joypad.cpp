@@ -140,5 +140,6 @@ void Joypad::checkInputsInterrupt(uint8 currentInputs, uint8 previousInputs)
 
 bool Joypad::getEnableInterrupt()
 {
-	return enableInterrupt;
+	// return enableInterrupt;
+	return true;
 }

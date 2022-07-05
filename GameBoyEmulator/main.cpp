@@ -7,10 +7,12 @@
 
 /*
  * To do list:
+ * - Correct inputs interrupt in joypad.cpp
  * - Correct PPU background aliasing
  * - Add MBC5
  * - Correct fullscreen resizing
- * - Correct inputs interrupt in joypad.cpp
+ * - add .ini file
+ * - add possibility to load bootrom
  */
 
 void writeUsage(const char* appName)
@@ -68,6 +70,7 @@ int main(int argc, char* argv[])
 
 		//Passed:
 		// romPath = "../../../../Bios_Games/TestRoms/cpu_instrs/cpu_instrs.gb";
+		romPath = "../../../../Bios_Games/TestRoms/cpu_instrs/individual/02-interrupts.gb";
 		// romPath = "../../../../Bios_Games/TestRoms/instr_timing/instr_timing.gb";
 		// romPath = "../../../../Bios_Games/TestRoms/mem_timing-2/mem_timing.gb";
 		// romPath = "../../../../Bios_Games/TestRoms/mem_timing/mem_timing.gb";

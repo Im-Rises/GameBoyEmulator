@@ -24,10 +24,10 @@
 
 enum ColorMode
 {
-	grayscaleReal=0,
-	grayscaleNative=1,
-	greenscaleReal=2,
-	greenscaleNative=3
+	grayscaleNative = 0,
+	grayscaleReal=1,
+	greenscaleNative = 2,
+	greenscaleReal=3,
 };
 
 struct ColorRGB
