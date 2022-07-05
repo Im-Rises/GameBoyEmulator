@@ -11,6 +11,7 @@
  * - Correct PPU background aliasing
  * - Add MBC5
  * - Correct fullscreen resizing
+ * - Correct inputs interrupt in joypad.cpp
  */
 
 void writeUsage(const char* appName)
