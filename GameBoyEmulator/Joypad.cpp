@@ -72,7 +72,7 @@ uint8 Joypad::readInputs(uint8 memoryInputs) //Memory inputs indicate which type
 	gameBoyInputs |= keystate[SDL_SCANCODE_SPACE] << 6;
 	gameBoyInputs |= keystate[SDL_SCANCODE_RETURN] << 7;
 
-	if (gameController!= NULL)
+	if (gameController != NULL)
 	{
 		gameBoyInputs |= SDL_GameControllerGetButton(gameController, SDL_CONTROLLER_BUTTON_DPAD_RIGHT) << 0;
 		gameBoyInputs |= SDL_GameControllerGetButton(gameController, SDL_CONTROLLER_BUTTON_DPAD_LEFT) << 1;

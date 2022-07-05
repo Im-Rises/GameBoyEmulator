@@ -180,7 +180,7 @@ bool Ppu::windowHandling()
 		return !(event.key.keysym.sym == SDLK_ESCAPE);
 	}
 
-	if (event.type==SDL_CONTROLLERAXISMOTION)
+	if (event.type == SDL_CONTROLLERAXISMOTION)
 	{
 		cout << "here de merde" << endl;
 	}

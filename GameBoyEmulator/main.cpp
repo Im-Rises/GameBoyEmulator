@@ -7,7 +7,6 @@
 
 /*
  * To do list:
- * - Correct GameController that prevent from stopping prog
  * - Correct PPU background aliasing
  * - Add MBC5
  * - Correct fullscreen resizing
@@ -50,7 +49,7 @@ int main(int argc, char* argv[])
 		// romPath = "../../../../Bios_Games/Games/bgbtest.gb";
 		//romPath = "../../Bios_Games/Games/Gremlins 2.gb";
 		// romPath = "../../../../Bios_Games/Games/tetris.gb";
-		// romPath = "../../../../Bios_Games/Games/tennis.gb";
+		romPath = "../../../../Bios_Games/Games/tennis.gb";
 		// romPath = "../../../../Bios_Games/Games/Zelda Link's Awakening.gb";
 		//romPath = "../../Bios_Games/Games/Tennis.gb";
 		// romPath = "../../Bios_Games/Games/Pokemon - Version Bleue (F) [S].gb";
