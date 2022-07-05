@@ -1,4 +1,7 @@
 #include "Joypad.h"
+
+#include <iostream>
+
 #include "SDL2/include/SDL.h"
 
 Joypad::Joypad()
@@ -6,21 +9,53 @@ Joypad::Joypad()
 	keystate = SDL_GetKeyboardState(NULL); //Get pointer to the state of all keys of the keayboard
 	previousInputs = 0b11111111;
 	enableInterrupt = false;
+
+	if (SDL_Init(SDL_INIT_GAMECONTROLLER | SDL_INIT_JOYSTICK) != 0)
+	{
+		std::cerr << "Error: Cannot init GameController and Joystick handling" << SDL_GetError() << std::endl;
+	}
+
+	std::cout << "Number of connected controllers and joysticks " << SDL_NumJoysticks() << ":" << std::endl;
+	// for (int i = 0; i < SDL_NumJoysticks(); ++i)
+	// {
+	// 	std::cout << SDL_JoystickName << std::endl;
+	// }
+
+	gameController = SDL_NumJoysticks() ? SDL_GameControllerOpen(0) : NULL;
+	if (gameController != NULL)
+	{
+		std::cout << "Using controller 0: " << SDL_GameControllerName(gameController) << " 0 (" << SDL_GameControllerGetJoystick(gameController) << ")" << std::endl;
+		// SDL_GameControllerSetLED(gameController, 0xFF,0,0);//Red
+		SDL_GameControllerSetLED(gameController, 0x00, 0xFF, 0x00); //Green
+		// SDL_GameControllerSetLED(gameController, 0,0,0xFF);//Blue
+		SDL_GameControllerRumble(gameController, 0xFFFF, 0xFFFF, 100);
+	}
+	else
+		std::cout << "No controller, use keyboard" << std::endl;
 }
+
+Joypad::~Joypad()
+{
+	if (gameController!=NULL)
+	{
+		SDL_GameControllerClose(gameController);
+	}
+}
+
 
 uint8 Joypad::readInputs(uint8 memoryInputs) //Memory inputs indicate which type of input is readed
 {
 	/*
-* User inputs bits:
-* Right  = 0b00000001
-* Left   = 0b00000010
-* Up     = 0b00000100
-* Down   = 0b00001000
-* A      = 0b00010000
-* B      = 0b00100000
-* Select = 0b01000000
-* Start  = 0b10000000
-*/
+	* User inputs bits:
+	* Right  = 0b00000001
+	* Left   = 0b00000010
+	* Up     = 0b00000100
+	* Down   = 0b00001000
+	* A      = 0b00010000
+	* B      = 0b00100000
+	* Select = 0b01000000
+	* Start  = 0b10000000
+	*/
 	uint8 gameBoyInputs;
 
 	SDL_PumpEvents();
@@ -43,6 +78,11 @@ uint8 Joypad::readInputs(uint8 memoryInputs) //Memory inputs indicate which type
 	(keystate[SDL_SCANCODE_RETURN])
 		? gameBoyInputs = resetBit(gameBoyInputs, 7)
 		: gameBoyInputs = setBit(gameBoyInputs, 7);
+
+	if (gameController)
+	{
+		
+	}
 
 	if (!testBit(memoryInputs, 4)) //Directions buttons
 	{

@@ -84,7 +84,7 @@ public:
 	void toggleFullScreen();
 	void updateScreen();
 	void displayFramerate(const int& value) const;
-	bool windowIsActive();
+	bool windowHandling();
 
 	// Game Boy screen functions
 public:

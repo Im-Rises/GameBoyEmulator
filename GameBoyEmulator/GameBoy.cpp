@@ -60,7 +60,7 @@ void GameBoy::start()
 
 	if (memory.getBiosInMemeory()) //if there is a bios
 	{
-		while (ppu.windowIsActive() && cpu.getPc() < 0x100)//cpu.getPc() < 0x100 && glfwOpenglLib.windowIsActive()
+		while (ppu.windowHandling() && cpu.getPc() < 0x100)//cpu.getPc() < 0x100 && glfwOpenglLib.windowHandling()
 		{
 			doGameBoyCycle(cyclesToDo);
 		}
@@ -74,7 +74,7 @@ void GameBoy::start()
 		this->setGameBoyWithoutBios();
 	}
 
-	while (ppu.windowIsActive())// Window is active
+	while (ppu.windowHandling())// Window is active
 	{
 		doGameBoyCycle(cyclesToDo);
 	}

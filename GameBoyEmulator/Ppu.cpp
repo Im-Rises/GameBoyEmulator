@@ -102,22 +102,22 @@ void Ppu::displayFramerate(const int& value) const
 	SDL_SetWindowTitle(window, temp.c_str());
 }
 
-bool Ppu::windowIsActive()
+bool Ppu::windowHandling()
 {
 	static bool switchColorMode = false;
 	static bool switchWindowMode = false;
+	static bool switchPause = false;
 	SDL_PollEvent(&event);
 	if (event.type == SDL_KEYDOWN)
 	{
 		if (event.key.keysym.sym == SDLK_F11)
-		{
 			switchWindowMode = true;
-		}
 
 		if (event.key.keysym.sym == SDLK_F10)
-		{
 			switchColorMode = true;
-		}
+
+		if (event.key.keysym.sym == SDLK_p)
+			switchPause = true;
 	}
 	else if (event.type == SDL_KEYUP)
 	{
@@ -133,6 +133,27 @@ bool Ppu::windowIsActive()
 			currentColorMode++;
 			setGameBoyColorMode(currentColorMode);
 		}
+
+		// if (event.key.keysym.sym == SDLK_p && switchPause)
+		// {
+		// 	do
+		// 	{
+		// 		SDL_WaitEvent(&event);
+		// 		string message;
+		// 		switch (event.key.keysym.sym)
+		// 		{
+		// 		case(SDLK_p):
+		// 			switchPause = false;
+		// 			break;
+		// 		case(SDLK_ESCAPE):
+		// 			return false;
+		// 		}
+		//
+		// 		if (event.type == SDL_QUIT)
+		// 			return false;
+		// 	}
+		// 	while (switchPause);
+		// }
 
 		return !(event.key.keysym.sym == SDLK_ESCAPE);
 	}
@@ -186,9 +207,9 @@ void Ppu::setGameBoyColorMode(const int& colorMode)
 		break;
 	case(grayscaleNative):
 		GameBoyColorMode.darkest = {0x00, 0x00, 0x00};
-		GameBoyColorMode.dark = { 0x55,0x55,0x55};
-		GameBoyColorMode.light = { 0xaa,0xaa,0xaa };
-		GameBoyColorMode.lightest = { 0xff,0xff,0xff };
+		GameBoyColorMode.dark = {0x55, 0x55, 0x55};
+		GameBoyColorMode.light = {0xaa, 0xaa, 0xaa};
+		GameBoyColorMode.lightest = {0xff, 0xff, 0xff};
 		break;
 	case(greenscaleReal):
 		GameBoyColorMode.darkest = {0x0f, 0x38, 0x0f};

@@ -30,7 +30,7 @@ Cartridge::Cartridge(const string& romPath)
 	}
 	else
 	{
-		cout << "Can't open rom file" << endl;
+		cerr<< "Error: Can't open rom file" << endl;
 		exit(1);
 	}
 

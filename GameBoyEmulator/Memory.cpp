@@ -62,7 +62,7 @@ bool Memory::loadBiosInMemory(const string& biosPath)
 	}
 	else
 	{
-		cout << "Can't open bios file" << endl;
+		cerr<< "Error: Can't open bios file" << endl;
 		return false;
 	}
 }
