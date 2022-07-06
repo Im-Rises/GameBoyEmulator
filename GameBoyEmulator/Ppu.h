@@ -63,6 +63,8 @@ private:
 
 	//SDL
 	string windowTitle = "GameBoyEmulator";
+	string gameName;
+	string screenshotsPath;
 
 	SDL_Window* window = nullptr;
 	SDL_Renderer* renderer = nullptr;
@@ -82,9 +84,11 @@ public:
 public:
 	// SDL functions
 	void updateScreen();
+	void addGameNameWindow(string text);
 	void displayFramerate(const int& value) const;
 	bool windowHandling();
 	void toggleFullScreen();
+	string getDateTime();
 
 	// Game Boy screen functions
 public:

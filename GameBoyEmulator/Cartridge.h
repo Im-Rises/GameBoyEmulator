@@ -89,6 +89,8 @@ public:
 
 	//toString
 
+	string getGameName()const;
+
 	string toString() const;
 };
 

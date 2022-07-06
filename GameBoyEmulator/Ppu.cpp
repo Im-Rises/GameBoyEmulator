@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <string>
+#include <ctime>
+#include <filesystem>
 
 #include "SDL2/include/SDL.h"
 
@@ -79,6 +81,8 @@ Ppu::Ppu(Memory* memory, ColorMode colorMode)
 	SDL_EventState(SDL_MOUSEMOTION, SDL_IGNORE);
 
 	windowing = true;
+
+	srand(time(NULL));
 }
 
 Ppu::~Ppu()
@@ -111,6 +115,14 @@ void Ppu::updateScreen()
 	// SDL_UnlockTexture(texture);
 }
 
+void Ppu::addGameNameWindow(string text)
+{
+	gameName = text;
+	windowTitle += " " + gameName;
+	screenshotsPath = "./screenshots/" + gameName+ "/";
+	std::filesystem::create_directories(screenshotsPath);
+}
+
 void Ppu::displayFramerate(const int& value) const
 {
 	string temp = windowTitle + " (fps : " + std::to_string(value).c_str() + ")";
@@ -119,7 +131,6 @@ void Ppu::displayFramerate(const int& value) const
 
 bool Ppu::windowHandling()
 {
-
 	static bool switchColorMode = false;
 	static bool switchWindowMode = false;
 	static bool switchPause = false;
@@ -170,7 +181,7 @@ bool Ppu::windowHandling()
 				case(SDLK_ESCAPE):
 					return false;
 				}
-		
+
 				if (event.type == SDL_QUIT)
 					return false;
 			}
@@ -180,15 +191,10 @@ bool Ppu::windowHandling()
 		if (event.key.keysym.sym == SDLK_PRINTSCREEN && switchScreenshot)
 		{
 			switchScreenshot = false;
-			doScreenshot("test.bmp");
+			doScreenshot(screenshotsPath + gameName + " " + getDateTime() + ".bmp");
 		}
 
 		return !(event.key.keysym.sym == SDLK_ESCAPE);
-	}
-
-	if (event.type == SDL_CONTROLLERAXISMOTION)
-	{
-		cout << "here de merde" << endl;
 	}
 
 	return !(event.type == SDL_QUIT);
@@ -200,6 +206,7 @@ void Ppu::doScreenshot(string path)
 	SDL_RenderReadPixels(renderer, NULL, SDL_PIXELFORMAT_ABGR32, screenshot->pixels, screenshot->pitch);
 	SDL_SaveBMP(screenshot, path.c_str());
 	SDL_FreeSurface(screenshot);
+	cout << "Saved screenshot with name: " + path << endl;
 }
 
 void Ppu::toggleFullScreen()
@@ -216,6 +223,23 @@ void Ppu::toggleFullScreen()
 	}
 
 	windowing = !windowing;
+}
+
+string Ppu::getDateTime()
+{
+	std::time_t t = std::time(0);
+	std::tm* now = std::localtime(&t);
+	// std::cout << (now->tm_year + 1900) << '-'
+	// 	<< (now->tm_mon + 1) << '-'
+	// 	<< now->tm_mday << '-'
+	// 	<< now->tm_sec
+	// 	<< rand()
+	// 	<< "\n";
+	// path += (now->tm_year + 1900) + '-' +(now->tm_mon + 1) + '-' + now->tm_mday + '-' + now->tm_sec + '-' + rand() + ".bmp";
+	// path += std::to_string((now->tm_year + 1900));
+	// cout << path << endl;
+	return to_string(now->tm_year + 1900) + '-' + to_string(now->tm_mon + 1) + '-' + to_string(now->tm_mday) + '-' +
+		to_string(now->tm_sec) + '-' + to_string(rand());
 }
 
 

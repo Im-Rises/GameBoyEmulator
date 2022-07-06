@@ -411,6 +411,11 @@ string Cartridge::getCartridgeTypeToString() const
 }
 
 
+string Cartridge::getGameName()const
+{
+	return gameName;
+}
+
 //toString
 
 string Cartridge::toString() const

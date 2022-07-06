@@ -74,6 +74,8 @@ void GameBoy::start()
 		this->setGameBoyWithoutBios();
 	}
 
+	ppu.addGameNameWindow(cartridge->getGameName());
+
 	while (ppu.windowHandling())// Window is active
 	{
 		doGameBoyCycle(cyclesToDo);
