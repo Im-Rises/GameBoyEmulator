@@ -1,6 +1,7 @@
 #include "GameBoy.h"
 
 #include <iostream>
+#include <fstream>
 
 GameBoy* GameBoy::gameboyInstance = 0;
 
@@ -54,13 +55,14 @@ void GameBoy::start()
 {
 	// SdlLib sdlLib(EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y, DOTS_DISPLAY_X, DOTS_DISPLAY_Y, PROJECT_NAME);//Create window
 
-	const int cyclesToDo = CLOCK_FREQUENCY / SCREEN_FREQUENCY;//Calcul the number of cycles for the update of the screen
+	const int cyclesToDo = CLOCK_FREQUENCY / SCREEN_FREQUENCY;
+	//Calcul the number of cycles for the update of the screen
 
 	fpsStartTime = SDL_GetTicks();
 
 	if (memory.getBiosInMemeory()) //if there is a bios
 	{
-		while (ppu.windowHandling() && cpu.getPc() < 0x100)//cpu.getPc() < 0x100 && glfwOpenglLib.windowHandling()
+		while (ppu.windowHandling() && cpu.getPc() < 0x100) //cpu.getPc() < 0x100 && glfwOpenglLib.windowHandling()
 		{
 			doGameBoyCycle(cyclesToDo);
 		}
@@ -75,11 +77,11 @@ void GameBoy::start()
 	}
 
 	ppu.addGameNameWindow(cartridge->getGameName());
-	createSaveState();
 
-	while (ppu.windowHandling())// Window is active
+	while (ppu.windowHandling()) // Window is active
 	{
 		doGameBoyCycle(cyclesToDo);
+		createSaveState();
 	}
 }
 
@@ -119,13 +121,26 @@ void GameBoy::doGameBoyCycle(const int cyclesToDo)
 /*------------------------------------------Save states--------------------------------*/
 void GameBoy::createSaveState()
 {
-	string path=cartridge->getRomPath()+".state.bmp";
-	cout << path<<endl;
+	string path = cartridge->getRomPath() + ".state.bmp";
+	// cout << path << endl;
+
+	ppu.doScreenshot(path);
+
+	ofstream saveState;
+	saveState.open(path, std::ios_base::app | std::ios_base::binary | std::ios_base::out | std::ios_base::ate);
+
+	if (saveState)
+	{
+		saveState<< "Here's Johnny";
+	}
+	else
+		cerr << "Error: Writing data to savestate" << endl;
+
+	saveState.close();
 }
 
 void GameBoy::loadSaveState()
 {
-	
 }
 
 /*------------------------------------------GETTERS--------------------------------*/
