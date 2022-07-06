@@ -258,6 +258,7 @@ void GameBoy::createSaveState()
 		// spu.dump();
 		// ppu.dump();
 		// cartridge->dump();
+		// mmu.dump();
 		saveState << "Dump data here";
 	}
 	else

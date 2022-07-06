@@ -18,25 +18,21 @@
 
 void writeUsage(const char* appName)
 {
-	cout << "Usage:" << endl;
-	cout << appName << " <gamePath>" << endl;
+	cout << "Usage: " << appName << " <gamePath>" << endl;
 
 	cout << PROJECT_NAME << " " << VER << " " << AUTHOR << endl;
-	// cout << "GameBoy emulator" << endl;
 
-	cout << "C++ version:" << endl;
-	cout << __STDCPP_DEFAULT_NEW_ALIGNMENT__ << endl;
+	cout << "C++ version: " << __STDCPP_DEFAULT_NEW_ALIGNMENT__ << endl;
 
-	cout << "SDL version:" << endl;
 	SDL_version compiled;
 	SDL_version linked;
 	SDL_VERSION(&compiled);
 	SDL_GetVersion(&linked);
-	SDL_Log("We compiled against SDL version %u.%u.%u ...\n",
-	        compiled.major, compiled.minor, compiled.patch);
-	SDL_Log("But we are linking against SDL version %u.%u.%u.\n",
-	        linked.major, linked.minor, linked.patch);
-	cout << "Compiled the " << __TIMESTAMP__ << endl;//__DATE__
+	cout << "SDL compiled and linked version:" << endl;
+	printf("- Compiled against SDL version %u.%u.%u\n", compiled.major, compiled.minor, compiled.patch);
+	printf("- Linking against SDL version %u.%u.%u\n", linked.major, linked.minor, linked.patch);
+
+	cout << "Compiled the " << __TIMESTAMP__ << endl; //__DATE__
 }
 
 int main(int argc, char* argv[])
@@ -44,8 +40,8 @@ int main(int argc, char* argv[])
 	cout << "Nintendo GameBoy Emulator" << endl;
 
 	string biosPath;
-	string romPath;
 	bool gameBoyCanStart = false;
+	string romPath;
 
 	if (true) //Debug
 	{
@@ -81,17 +77,16 @@ int main(int argc, char* argv[])
 		// argc = 2;
 	}
 
-	GameBoy* gameBoy = GameBoy::getInstance(); //Game Boy creation
-
 	// Read .ini file
 
-	if (false) //settings.isBiosPresent()
-	{
-		gameBoy->loadBios(biosPath);
-	}
+	// if (false) //settings.isBiosPresent()
+	// {
+	// 	gameBoy->loadBios(biosPath);
+	// }
 
 	if (argc > 1) //If a game is loaded
 	{
+		GameBoy* gameBoy = GameBoy::getInstance(); //Game Boy creation
 		// romPath = argv[1];
 		Cartridge cartridge(romPath);
 		cout << cartridge.toString() << endl;
@@ -99,17 +94,18 @@ int main(int argc, char* argv[])
 		gameBoy->insertGame(&cartridge);
 		gameBoy->start();
 	}
-	else if (gameBoy->getBiosInMemory()) //If no game but bios is present
-	{
-		writeUsage(argv[0]);
-		gameBoy->start();
-	}
+	// else if (gameBoy->getBiosInMemory()) //If no game but bios is present
+	// {
+	// 	GameBoy* gameBoy = GameBoy::getInstance(); //Game Boy creation
+	// 	writeUsage(argv[0]);
+	// 	gameBoy->start();
+	// }
 	else //Write usage
 	{
 		writeUsage(argv[0]);
 	}
 
-	SDL_Quit(); //Quit if issues
+	SDL_Quit(); //Quit everything anyway
 
 	return 0;
 }

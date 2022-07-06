@@ -315,6 +315,11 @@ void Cpu::writeMemory(const uint16& address, const uint8& data)
 	}
 }
 
+// string Cpu::dump()
+// {
+// 	return A + B + C + D + E + F
+// }
+
 uint16 Cpu::getPc() const
 {
 	return pc;
