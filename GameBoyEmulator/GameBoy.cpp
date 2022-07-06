@@ -45,10 +45,11 @@ GameBoy* GameBoy::getInstance()
 
 void GameBoy::reset()
 {
-	cpu.reset();
 	memory.reset();
+	cpu.reset();
 	ppu.reset();
 	spu.reset();
+	cartridge->reset();
 }
 
 void GameBoy::setGameBoyWithoutBios()
@@ -149,6 +150,7 @@ bool GameBoy::handleInputs()
 	static bool switchVolumePlus = false;
 	static bool switchVolumeMinus = false;
 	static bool switchSaveState = false;
+	static bool switchReset = false;
 
 	SDL_PollEvent(&event);
 
@@ -174,6 +176,9 @@ bool GameBoy::handleInputs()
 
 		if (event.key.keysym.sym == SDLK_b )
 			switchSaveState = true;
+
+		if (event.key.keysym.sym == SDLK_TAB )
+			switchReset = true;
 	}
 	else if (event.type == SDL_KEYUP)
 	{
@@ -232,6 +237,12 @@ bool GameBoy::handleInputs()
 		{
 			switchSaveState = false;
 			createSaveState();
+		}
+
+		if (event.key.keysym.sym == SDLK_TAB && switchReset)
+		{
+			switchReset = false;
+			reset();
 		}
 
 		return !(event.key.keysym.sym == SDLK_ESCAPE);

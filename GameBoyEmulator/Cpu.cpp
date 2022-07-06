@@ -23,6 +23,7 @@ void Cpu::reset()
 	halted = false;
 	sp = CPU_WORK_RAM_OR_AND_STACK_END;
 	IME = false;
+	stopped = false;
 
 	if (memory->getBiosInMemeory())
 	{

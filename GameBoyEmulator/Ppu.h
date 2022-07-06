@@ -71,8 +71,8 @@ private:
 	SDL_Texture* texture;
 
 	bool windowing;
-	int windowingWidth;
-	int windowingHeigth;
+	int windowWidth;
+	int windowHeigth;
 
 
 public:
@@ -104,8 +104,9 @@ private:
 	void requestInterrupt(const uint8& bitIndex);
 	bool checkLyEqualsLyc();
 
-// public:
-// 	string getScreenshotsPath();
+	public:
+	// SDL_Rect getScreenSize();
+	// 	string getScreenshotsPath();
 };
 
 #endif

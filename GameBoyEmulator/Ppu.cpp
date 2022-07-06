@@ -87,10 +87,13 @@ Ppu::~Ppu()
 
 void Ppu::updateScreen()
 {
+	SDL_GetWindowSize(window, &windowWidth, &windowHeigth);
+
+	// int max = std::max(windowWidth, windowHeigth);
+
 	// Method 1:
 	SDL_UpdateTexture(texture, NULL, lcd, 160 * 3);
 	SDL_RenderCopy(renderer, texture, NULL, NULL);
-	// SDL_RenderCopyEx(renderer, texture, NULL, NULL,0,NULL, SDL_FLIP_NONE);
 	SDL_RenderPresent(renderer);
 
 	// // // Method 2: (https://wiki.libsdl.org/SDL_LockTexture)
@@ -112,7 +115,7 @@ void Ppu::updateFramerate(const int& value) const
 
 void Ppu::doScreenshot(string path)
 {
-	SDL_Surface* screenshot = SDL_CreateRGBSurfaceWithFormat(0, 640, 576, 32, SDL_PIXELFORMAT_ABGR32);
+	SDL_Surface* screenshot = SDL_CreateRGBSurfaceWithFormat(0, windowWidth, windowHeigth, 32, SDL_PIXELFORMAT_ABGR32);
 	SDL_RenderReadPixels(renderer, NULL, SDL_PIXELFORMAT_ABGR32, screenshot->pixels, screenshot->pitch);
 	SDL_SaveBMP(screenshot, path.c_str());
 	SDL_FreeSurface(screenshot);
@@ -128,7 +131,7 @@ void Ppu::toggleFullScreen()
 	else
 	{
 		SDL_SetWindowFullscreen(window, 0);
-		SDL_SetWindowSize(window, windowingWidth, windowingHeigth);
+		SDL_SetWindowSize(window, windowWidth, windowHeigth);
 		//This line is needed for linux to reset correctly the dimensions of the screen
 	}
 
@@ -588,6 +591,11 @@ bool Ppu::checkLyEqualsLyc()
 {
 	return (memory->read(LY_ADDRESS) == memory->read(LYC_ADDRESS));
 }
+
+// SDL_Rect Ppu::getScreenSize()
+// {
+// 	windowHeigth / 144;
+// }
 
 
 // string Ppu::getScreenshotsPath()

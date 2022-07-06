@@ -105,6 +105,12 @@ Cartridge::~Cartridge()
 	delete[] ram;
 }
 
+void Cartridge::reset()
+{
+	currentRomBank = 1;
+	currentRamBank = 0;
+}
+
 
 //Read and write
 uint8 Cartridge::readRomBank(const uint16& address) const
