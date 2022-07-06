@@ -90,6 +90,7 @@ void Ppu::updateScreen()
 	// Method 1:
 	SDL_UpdateTexture(texture, NULL, lcd, 160 * 3);
 	SDL_RenderCopy(renderer, texture, NULL, NULL);
+	// SDL_RenderCopyEx(renderer, texture, NULL, NULL,0,NULL, SDL_FLIP_NONE);
 	SDL_RenderPresent(renderer);
 
 	// // // Method 2: (https://wiki.libsdl.org/SDL_LockTexture)

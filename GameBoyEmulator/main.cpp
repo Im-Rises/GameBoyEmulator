@@ -18,13 +18,16 @@
 
 void writeUsage(const char* appName)
 {
+	cout << "Usage:" << endl;
 	cout << appName << " <gamePath>" << endl;
 
 	cout << PROJECT_NAME << " " << VER << " " << AUTHOR << endl;
+	// cout << "GameBoy emulator" << endl;
 
-	cout << "GameBoy emulator" << endl;
+	cout << "C++ version:" << endl;
+	cout << __STDCPP_DEFAULT_NEW_ALIGNMENT__ << endl;
 
-	cout << "SDL VERSION:" << endl;
+	cout << "SDL version:" << endl;
 	SDL_version compiled;
 	SDL_version linked;
 	SDL_VERSION(&compiled);
@@ -33,6 +36,7 @@ void writeUsage(const char* appName)
 	        compiled.major, compiled.minor, compiled.patch);
 	SDL_Log("But we are linking against SDL version %u.%u.%u.\n",
 	        linked.major, linked.minor, linked.patch);
+	cout << "Compiled the " << __TIMESTAMP__ << endl;//__DATE__
 }
 
 int main(int argc, char* argv[])
@@ -74,7 +78,7 @@ int main(int argc, char* argv[])
 		// romPath = "../../../../Bios_Games/TestRoms/instr_timing/instr_timing.gb";
 		// romPath = "../../../../Bios_Games/TestRoms/mem_timing-2/mem_timing.gb";
 		// romPath = "../../../../Bios_Games/TestRoms/mem_timing/mem_timing.gb";
-		argc = 2;
+		// argc = 2;
 	}
 
 	GameBoy* gameBoy = GameBoy::getInstance(); //Game Boy creation
