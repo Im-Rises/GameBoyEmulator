@@ -51,8 +51,13 @@ private:
 	/*------------------------------------------Game Boy Cycle--------------------------------*/
 	void doGameBoyCycle(const int cyclesNumberToDo);
 
-	/*------------------------------------------Screen functions--------------------------------*/
-	void updateScreen();
+	// /*------------------------------------------Screen functions--------------------------------*/
+	// void updateScreen();
+
+public:
+	/*------------------------------------------Save states--------------------------------*/
+	void createSaveState();
+	void loadSaveState();
 
 public:
 	/*------------------------------------------GETTERS--------------------------------*/

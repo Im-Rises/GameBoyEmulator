@@ -4,6 +4,8 @@
 
 Cartridge::Cartridge(const string& romPath)
 {
+	this->romPath = romPath;
+
 	destinationMap.insert(std::make_pair(0x00, "Japan"));
 	destinationMap.insert(std::make_pair(0x01, "Other"));
 
@@ -414,6 +416,11 @@ string Cartridge::getCartridgeTypeToString() const
 string Cartridge::getGameName()const
 {
 	return gameName;
+}
+
+string Cartridge::getRomPath()const
+{
+	return romPath;
 }
 
 //toString

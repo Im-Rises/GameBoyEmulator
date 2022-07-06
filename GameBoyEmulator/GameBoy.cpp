@@ -75,6 +75,7 @@ void GameBoy::start()
 	}
 
 	ppu.addGameNameWindow(cartridge->getGameName());
+	createSaveState();
 
 	while (ppu.windowHandling())// Window is active
 	{
@@ -115,6 +116,17 @@ void GameBoy::doGameBoyCycle(const int cyclesToDo)
 	}
 }
 
+/*------------------------------------------Save states--------------------------------*/
+void GameBoy::createSaveState()
+{
+	string path=cartridge->getRomPath()+".state.bmp";
+	cout << path<<endl;
+}
+
+void GameBoy::loadSaveState()
+{
+	
+}
 
 /*------------------------------------------GETTERS--------------------------------*/
 

@@ -17,7 +17,8 @@ SDL2 website:
 <https://www.libsdl.org>
 
 > **Note**
-> I used the SDL2.0.14 version.
+> C++ version 17
+> SDL2 version 2.0.14.
 
 <!--
 > **Warning**

@@ -21,7 +21,7 @@ enum CartridgeType
 class Cartridge
 {
 private:
-	//ifstream romFile;
+	string romPath;
 
 	CartridgeType cartridgeType;
 
@@ -90,6 +90,7 @@ public:
 	//toString
 
 	string getGameName()const;
+	string getRomPath()const;
 
 	string toString() const;
 };

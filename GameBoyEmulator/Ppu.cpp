@@ -693,3 +693,9 @@ bool Ppu::checkLyEqualsLyc()
 {
 	return (memory->read(LY_ADDRESS) == memory->read(LYC_ADDRESS));
 }
+
+
+// string Ppu::getScreenshotsPath()
+// {
+// 	return screenshotsPath;
+// }

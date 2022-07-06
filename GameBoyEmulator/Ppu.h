@@ -87,6 +87,7 @@ public:
 	void addGameNameWindow(string text);
 	void displayFramerate(const int& value) const;
 	bool windowHandling();
+	void doScreenshot(string path);
 	void toggleFullScreen();
 	string getDateTime();
 
@@ -105,7 +106,9 @@ private:
 	ColorRGB colorToRGB(uint8 colorGameBoy);
 	void requestInterrupt(const uint8& bitIndex);
 	bool checkLyEqualsLyc();
-	void doScreenshot(string path);
+
+// public:
+// 	string getScreenshotsPath();
 };
 
 #endif
