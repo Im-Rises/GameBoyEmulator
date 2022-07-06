@@ -27,6 +27,9 @@ private:
 	static GameBoy* gameboyInstance;
 	GameBoy();
 
+
+	SDL_Event event;
+
 	Memory memory;
 	Cpu cpu;
 	Ppu ppu;
@@ -36,6 +39,8 @@ private:
 
 	uint8 fps;
 	uint32_t fpsStartTime;
+	string gameName;
+	string screenshotsPath = "./screenshots/";
 
 public:
 	static GameBoy* getInstance();
@@ -51,8 +56,8 @@ private:
 	/*------------------------------------------Game Boy Cycle--------------------------------*/
 	void doGameBoyCycle(const int cyclesNumberToDo);
 
-	// /*------------------------------------------Screen functions--------------------------------*/
-	// void updateScreen();
+	// /*------------------------------------------Handle Emulator inputs--------------------------------*/
+	bool handleInputs();
 
 public:
 	/*------------------------------------------Save states--------------------------------*/
@@ -65,6 +70,9 @@ public:
 public:
 	/*------------------------------------------GETTERS--------------------------------*/
 	bool getBiosInMemory();
+
+	/*------------------------------------------OTHER--------------------------------*/
+	string getDateTime();
 };
 
 #endif

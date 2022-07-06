@@ -1,7 +1,9 @@
 #include "GameBoy.h"
 
+#include <filesystem>
 #include <iostream>
 #include <fstream>
+#include <string>
 
 GameBoy* GameBoy::gameboyInstance = 0;
 
@@ -9,6 +11,24 @@ GameBoy::GameBoy() : memory(&joypad, &spu), cpu(&memory, &ppu, &spu), ppu(&memor
 {
 	fps = 0;
 	fpsStartTime = 0;
+
+	// Deactivate the controller reading while pooling events to prevent program from queuing to many inputs from controller's axis resulting in blocking the app from exiting
+	// https://wiki.libsdl.org/SDL_EventState
+	// Or not working so writing one line for one deactivation
+	SDL_EventState(SDL_JOYAXISMOTION, SDL_IGNORE);
+	SDL_EventState(SDL_JOYBALLMOTION, SDL_IGNORE);
+	SDL_EventState(SDL_JOYHATMOTION, SDL_IGNORE);
+	SDL_EventState(SDL_JOYBUTTONDOWN, SDL_IGNORE);
+	SDL_EventState(SDL_JOYBUTTONUP, SDL_IGNORE);
+
+	SDL_EventState(SDL_CONTROLLERAXISMOTION, SDL_IGNORE);
+	SDL_EventState(SDL_CONTROLLERBUTTONDOWN, SDL_IGNORE);
+	SDL_EventState(SDL_CONTROLLERBUTTONUP, SDL_IGNORE);
+
+	SDL_EventState(SDL_MOUSEMOTION, SDL_IGNORE);
+
+
+	srand(time(NULL));
 }
 
 GameBoy* GameBoy::getInstance()
@@ -53,16 +73,14 @@ void GameBoy::insertGame(Cartridge* cartridge)
 
 void GameBoy::start()
 {
-	// SdlLib sdlLib(EMULATOR_SCREEN_SIZE_X, EMULATOR_SCREEN_SIZE_Y, DOTS_DISPLAY_X, DOTS_DISPLAY_Y, PROJECT_NAME);//Create window
-
-	const int cyclesToDo = CLOCK_FREQUENCY / SCREEN_FREQUENCY;
 	//Calcul the number of cycles for the update of the screen
+	const int cyclesToDo = CLOCK_FREQUENCY / SCREEN_FREQUENCY;
 
 	fpsStartTime = SDL_GetTicks();
 
 	if (memory.getBiosInMemeory()) //if there is a bios
 	{
-		while (ppu.windowHandling() && cpu.getPc() < 0x100) //cpu.getPc() < 0x100 && glfwOpenglLib.windowHandling()
+		while (handleInputs() && cpu.getPc() < 0x100) //cpu.getPc() < 0x100 && glfwOpenglLib.windowHandling()
 		{
 			doGameBoyCycle(cyclesToDo);
 		}
@@ -76,12 +94,16 @@ void GameBoy::start()
 		this->setGameBoyWithoutBios();
 	}
 
-	ppu.addGameNameWindow(cartridge->getGameName());
+	gameName = cartridge->getGameName();
 
-	while (ppu.windowHandling()) // Window is active
+	std::filesystem::create_directories(screenshotsPath + gameName + "/");
+
+	ppu.addGameNameWindow(gameName);
+
+	while (handleInputs()) // Window is active
 	{
 		doGameBoyCycle(cyclesToDo);
-		createSaveState();
+		// createSaveState();
 	}
 }
 
@@ -112,11 +134,82 @@ void GameBoy::doGameBoyCycle(const int cyclesToDo)
 
 	if (SDL_GetTicks() - fpsStartTime >= 1000)
 	{
-		ppu.displayFramerate(fps);
+		ppu.updateFramerate(fps);
 		fpsStartTime = SDL_GetTicks();
 		fps = 0;
 	}
 }
+
+bool GameBoy::handleInputs()
+{
+	static bool switchColorMode = false;
+	static bool switchWindowMode = false;
+	static bool switchPause = false;
+	static bool switchScreenshot = false;
+
+	SDL_PollEvent(&event);
+
+	if (event.type == SDL_KEYDOWN)
+	{
+		if (event.key.keysym.sym == SDLK_F11)
+			switchWindowMode = true;
+
+		if (event.key.keysym.sym == SDLK_F10)
+			switchColorMode = true;
+
+		if (event.key.keysym.sym == SDLK_p)
+			switchPause = true;
+
+		if (event.key.keysym.sym == SDLK_PRINTSCREEN)
+			switchScreenshot = true;
+	}
+	else if (event.type == SDL_KEYUP)
+	{
+		if (event.key.keysym.sym == SDLK_F11 && switchWindowMode)
+		{
+			switchWindowMode = false;
+			ppu.toggleFullScreen();
+		}
+
+		if (event.key.keysym.sym == SDLK_F10 && switchColorMode)
+		{
+			switchColorMode = false;
+			ppu.setGameBoyColorMode();
+		}
+
+		if (event.key.keysym.sym == SDLK_p && switchPause)
+		{
+			do
+			{
+				SDL_WaitEvent(&event);
+				string message;
+				switch (event.key.keysym.sym)
+				{
+				case(SDLK_p):
+					switchPause = false;
+					break;
+				case(SDLK_ESCAPE):
+					return false;
+				}
+
+				if (event.type == SDL_QUIT)
+					return false;
+			}
+			while (switchPause);
+		}
+
+		if (event.key.keysym.sym == SDLK_PRINTSCREEN && switchScreenshot)
+		{
+			switchScreenshot = false;
+			ppu.doScreenshot(screenshotsPath + gameName + "/" + gameName + " " + getDateTime() + ".bmp");
+		}
+
+		return !(event.key.keysym.sym == SDLK_ESCAPE);
+	}
+
+	return !(event.type == SDL_QUIT);
+}
+
 
 /*------------------------------------------Save states--------------------------------*/
 void GameBoy::createSaveState()
@@ -131,11 +224,11 @@ void GameBoy::createSaveState()
 
 	if (saveState)
 	{
-		cpu.dump();
-		spu.dump();
-		ppu.dump();
-		cartridge->dump();
-		saveState<< "Here's Johnny";
+		// cpu.dump();
+		// spu.dump();
+		// ppu.dump();
+		// cartridge->dump();
+		saveState << "Dump data here";
 	}
 	else
 		cerr << "Error: Writing data to savestate" << endl;
@@ -158,4 +251,24 @@ void GameBoy::setVolume(const float& volume)
 bool GameBoy::getBiosInMemory()
 {
 	return memory.getBiosInMemeory();
+}
+
+
+/*------------------------------------------OTHER--------------------------------*/
+
+string GameBoy::getDateTime()
+{
+	std::time_t t = std::time(0);
+	std::tm* now = std::localtime(&t);
+	// std::cout << (now->tm_year + 1900) << '-'
+	// 	<< (now->tm_mon + 1) << '-'
+	// 	<< now->tm_mday << '-'
+	// 	<< now->tm_sec
+	// 	<< rand()
+	// 	<< "\n";
+	// path += (now->tm_year + 1900) + '-' +(now->tm_mon + 1) + '-' + now->tm_mday + '-' + now->tm_sec + '-' + rand() + ".bmp";
+	// path += std::to_string((now->tm_year + 1900));
+	// cout << path << endl;
+	return to_string(now->tm_year + 1900) + '-' + to_string(now->tm_mon + 1) + '-' + to_string(now->tm_mday) + '-' +
+		to_string(now->tm_sec) + '-' + to_string(rand());
 }

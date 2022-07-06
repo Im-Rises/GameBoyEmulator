@@ -69,7 +69,6 @@ private:
 	SDL_Window* window = nullptr;
 	SDL_Renderer* renderer = nullptr;
 	SDL_Texture* texture;
-	SDL_Event event;
 
 	bool windowing;
 	int windowingWidth;
@@ -82,21 +81,20 @@ public:
 
 
 public:
-	// SDL functions
+	// Emulation functions
 	void updateScreen();
-	void addGameNameWindow(string text);
-	void displayFramerate(const int& value) const;
-	bool windowHandling();
+	void addGameNameWindow(const string& gameName);
+	void updateFramerate(const int& value) const;
 	void doScreenshot(string path);
 	void toggleFullScreen();
-	string getDateTime();
+	void setGameBoyColorMode();
 
-	// Game Boy screen functions
 public:
+	// Game Boy screen functions
 	void reset();
-	void setGameBoyColorMode(const int& colorMode);
 	void setPixel(const int& x, const int& y, const uint8& r, const uint8& g, const uint8& b);
 	void draw(const int& cycles);
+
 private:
 	void updateStatRegister();
 	void drawLine();
