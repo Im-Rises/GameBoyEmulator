@@ -155,6 +155,10 @@ void Spu::doSounds(const int& cycles)
 	}
 }
 
+void Spu::setVolume(const float& volume)
+{
+	this->volume = volume;
+}
 
 void Spu::doSound1(int cycles)
 {

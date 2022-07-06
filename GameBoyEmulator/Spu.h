@@ -16,6 +16,7 @@ public:
 	~Spu();
 	void reset();
 	void doSounds(const int& cycles);
+	void setVolume(const float& volume);
 
 private:
 	int samplePerSecond = 44100;

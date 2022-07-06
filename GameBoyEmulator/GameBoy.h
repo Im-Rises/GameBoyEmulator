@@ -59,6 +59,9 @@ public:
 	void createSaveState();
 	void loadSaveState();
 
+	/*------------------------------------------Set volume--------------------------------*/
+	void setVolume(const float& volume);
+
 public:
 	/*------------------------------------------GETTERS--------------------------------*/
 	bool getBiosInMemory();

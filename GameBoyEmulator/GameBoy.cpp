@@ -131,6 +131,10 @@ void GameBoy::createSaveState()
 
 	if (saveState)
 	{
+		cpu.dump();
+		spu.dump();
+		ppu.dump();
+		cartridge->dump();
 		saveState<< "Here's Johnny";
 	}
 	else
@@ -141,6 +145,12 @@ void GameBoy::createSaveState()
 
 void GameBoy::loadSaveState()
 {
+}
+
+
+void GameBoy::setVolume(const float& volume)
+{
+	spu.setVolume(volume);
 }
 
 /*------------------------------------------GETTERS--------------------------------*/
