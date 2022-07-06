@@ -10,7 +10,7 @@
 #include "Spu.h"
 #include "Joypad.h"
 
-#define VER 0.6
+#define VER 0.8
 #define AUTHOR "Im-Rises"
 #define PROJECT_NAME "GameBoyEmulator"
 
@@ -42,6 +42,8 @@ private:
 	string gameName;
 	string screenshotsPath = "./screenshots/";
 
+	float volume;
+
 public:
 	static GameBoy* getInstance();
 	void reset();
@@ -66,6 +68,7 @@ public:
 
 	/*------------------------------------------Set volume--------------------------------*/
 	void setVolume(const float& volume);
+	void incDecVolume(const float& value);
 
 public:
 	/*------------------------------------------GETTERS--------------------------------*/

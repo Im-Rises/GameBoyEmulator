@@ -9,6 +9,7 @@ GameBoy* GameBoy::gameboyInstance = 0;
 
 GameBoy::GameBoy() : memory(&joypad, &spu), cpu(&memory, &ppu, &spu), ppu(&memory), spu(&memory)
 {
+	volume = spu.getVolume();
 	fps = 0;
 	fpsStartTime = 0;
 
@@ -103,7 +104,6 @@ void GameBoy::start()
 	while (handleInputs()) // Window is active
 	{
 		doGameBoyCycle(cyclesToDo);
-		// createSaveState();
 	}
 }
 
@@ -146,6 +146,9 @@ bool GameBoy::handleInputs()
 	static bool switchWindowMode = false;
 	static bool switchPause = false;
 	static bool switchScreenshot = false;
+	static bool switchVolumePlus = false;
+	static bool switchVolumeMinus = false;
+	static bool switchSaveState = false;
 
 	SDL_PollEvent(&event);
 
@@ -160,8 +163,17 @@ bool GameBoy::handleInputs()
 		if (event.key.keysym.sym == SDLK_p)
 			switchPause = true;
 
+		if (event.key.keysym.sym == SDLK_u)
+			switchVolumePlus = true;
+
+		if (event.key.keysym.sym == SDLK_j)
+			switchVolumeMinus = true;
+
 		if (event.key.keysym.sym == SDLK_PRINTSCREEN)
 			switchScreenshot = true;
+
+		if (event.key.keysym.sym == SDLK_b )
+			switchSaveState = true;
 	}
 	else if (event.type == SDL_KEYUP)
 	{
@@ -198,10 +210,28 @@ bool GameBoy::handleInputs()
 			while (switchPause);
 		}
 
+		if (event.key.keysym.sym == SDLK_u && switchVolumePlus)
+		{
+			switchVolumePlus = false;
+			incDecVolume(0.05f);
+		}
+
+		if (event.key.keysym.sym == SDLK_j && switchVolumeMinus)
+		{
+			switchVolumeMinus = false;
+			incDecVolume(-0.05f);
+		}
+
 		if (event.key.keysym.sym == SDLK_PRINTSCREEN && switchScreenshot)
 		{
 			switchScreenshot = false;
 			ppu.doScreenshot(screenshotsPath + gameName + "/" + gameName + " " + getDateTime() + ".bmp");
+		}
+
+		if (event.key.keysym.sym == SDLK_b && switchSaveState)
+		{
+			switchSaveState = false;
+			createSaveState();
 		}
 
 		return !(event.key.keysym.sym == SDLK_ESCAPE);
@@ -244,6 +274,13 @@ void GameBoy::loadSaveState()
 void GameBoy::setVolume(const float& volume)
 {
 	spu.setVolume(volume);
+}
+
+void GameBoy::incDecVolume(const float& value)
+{
+	spu.setVolume(spu.getVolume() + value);
+	volume = spu.getVolume();
+	// cout << "Volume value: " << volume << endl;
 }
 
 /*------------------------------------------GETTERS--------------------------------*/

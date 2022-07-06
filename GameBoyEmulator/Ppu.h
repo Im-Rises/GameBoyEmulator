@@ -76,9 +76,8 @@ private:
 
 
 public:
-	Ppu(Memory* memory, ColorMode colorMode = grayscaleReal);
+	Ppu(Memory* memory, ColorMode colorMode = grayscaleNative);
 	~Ppu();
-
 
 public:
 	// Emulation functions

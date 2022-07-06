@@ -36,7 +36,7 @@ Spu::Spu(Memory* memory)
 
 	SDL_setenv("SDL_AUDIODRIVER", "directsound", 1);
 
-	if (SDL_Init(SDL_INIT_AUDIO)!=0)
+	if (SDL_Init(SDL_INIT_AUDIO) != 0)
 	{
 		std::cerr << "Error SDL audio init.\n" << SDL_GetError() << std::endl;
 		// exit(EXIT_FAILURE);
@@ -153,11 +153,6 @@ void Spu::doSounds(const int& cycles)
 		{
 		}
 	}
-}
-
-void Spu::setVolume(const float& volume)
-{
-	this->volume = volume;
 }
 
 void Spu::doSound1(int cycles)
@@ -548,4 +543,19 @@ void Spu::resetSound4(uint8 val)
 
 	if ((memory->directRead(0xff21) >> 3) == 0x0)
 		sc4Enabled = false;
+}
+
+void Spu::setVolume(const float& volume)
+{
+	this->volume = volume;
+
+	if (this->volume > VOLUME_MAX)
+		this->volume = VOLUME_MAX;
+	if (this->volume < VOLUME_MIN)
+		this->volume = VOLUME_MIN;
+}
+
+float Spu::getVolume() const
+{
+	return volume;
 }

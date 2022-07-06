@@ -7,12 +7,13 @@
 
 /*
  * To do list:
- * - Correct inputs interrupt in joypad.cpp (interrupts in general)
- * - Correct PPU background aliasing
- * - Add MBC5
- * - Correct fullscreen resizing
+ * - if no game are loaded SDL is still starting... Start window only if a bios or a game is present
  * - add .ini file
  * - add possibility to load bootrom
+ * - Correct PPU background aliasing
+ * - Correct inputs interrupt in joypad.cpp (interrupts in general)
+ * - Add MBC5
+ * - Correct fullscreen resizing
  */
 
 void writeUsage(const char* appName)
@@ -40,8 +41,7 @@ int main(int argc, char* argv[])
 
 	string biosPath;
 	string romPath;
-
-	GameBoy* gameBoy = GameBoy::getInstance(); //Game Boy creation
+	bool gameBoyCanStart = false;
 
 	if (true) //Debug
 	{
@@ -76,6 +76,8 @@ int main(int argc, char* argv[])
 		// romPath = "../../../../Bios_Games/TestRoms/mem_timing/mem_timing.gb";
 		argc = 2;
 	}
+
+	GameBoy* gameBoy = GameBoy::getInstance(); //Game Boy creation
 
 	// Read .ini file
 

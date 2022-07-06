@@ -18,7 +18,7 @@ Ppu::Ppu(Memory* memory, ColorMode colorMode)
 	//GameBoy screen
 	reset();
 
-	currentColorMode = 0;
+	currentColorMode = colorMode;
 	setGameBoyColorMode();
 
 	//SDL
@@ -140,37 +140,39 @@ void Ppu::setGameBoyColorMode()
 	switch (currentColorMode)
 	{
 	case(grayscaleNative):
-		GameBoyColorMode.darkest = { 0x00, 0x00, 0x00 };
-		GameBoyColorMode.dark = { 0x55, 0x55, 0x55 };
-		GameBoyColorMode.light = { 0xaa, 0xaa, 0xaa };
-		GameBoyColorMode.lightest = { 0xff, 0xff, 0xff };
+		GameBoyColorMode.darkest = {0x00, 0x00, 0x00};
+		GameBoyColorMode.dark = {0x55, 0x55, 0x55};
+		GameBoyColorMode.light = {0xaa, 0xaa, 0xaa};
+		GameBoyColorMode.lightest = {0xff, 0xff, 0xff};
 		break;
 	case(grayscaleReal):
-		GameBoyColorMode.darkest = { 0x00, 0x00, 0x00 };
-		GameBoyColorMode.dark = { 0x77, 0x77, 0x77 };
-		GameBoyColorMode.light = { 0xCC, 0xCC, 0xCC };
-		GameBoyColorMode.lightest = { 0xff, 0xff, 0xff };
+		GameBoyColorMode.darkest = {0x00, 0x00, 0x00};
+		GameBoyColorMode.dark = {0x77, 0x77, 0x77};
+		GameBoyColorMode.light = {0xCC, 0xCC, 0xCC};
+		GameBoyColorMode.lightest = {0xff, 0xff, 0xff};
 		break;
 	case(greenscaleNative):
-		GameBoyColorMode.darkest = { 0x40, 0x50, 0x10 };
-		GameBoyColorMode.dark = { 0x70, 0x80, 0x28 };
-		GameBoyColorMode.light = { 0xa0, 0xa8, 0x40 };
-		GameBoyColorMode.lightest = { 0xd0, 0xd0, 0x58 };
+		GameBoyColorMode.darkest = {0x40, 0x50, 0x10};
+		GameBoyColorMode.dark = {0x70, 0x80, 0x28};
+		GameBoyColorMode.light = {0xa0, 0xa8, 0x40};
+		GameBoyColorMode.lightest = {0xd0, 0xd0, 0x58};
 		break;
 	case(greenscaleReal):
-		GameBoyColorMode.darkest = { 0x0f, 0x38, 0x0f };
-		GameBoyColorMode.dark = { 0x30, 0x62, 0x30 };
-		GameBoyColorMode.light = { 0x8b, 0xac, 0x0f };
-		GameBoyColorMode.lightest = { 0x9b, 0xbc, 0x0f };
+		GameBoyColorMode.darkest = {0x0f, 0x38, 0x0f};
+		GameBoyColorMode.dark = {0x30, 0x62, 0x30};
+		GameBoyColorMode.light = {0x8b, 0xac, 0x0f};
+		GameBoyColorMode.lightest = {0x9b, 0xbc, 0x0f};
 		break;
-		// case(4): // Negative
-		// 	GameBoyColorMode.darkest = { 0xe3,0xe6,0xc9 };
-		// 	GameBoyColorMode.dark = { 0xc3,0xc4,0xa5 };
-		// 	GameBoyColorMode.light = { 0x8e,0x8b,0x61 };
-		// 	GameBoyColorMode.lightest = { 0x6c,0x6c,0x4e };
-		// 	break;
+	// case(4): // Negative
+	// 	GameBoyColorMode.darkest = { 0xe3,0xe6,0xc9 };
+	// 	GameBoyColorMode.dark = { 0xc3,0xc4,0xa5 };
+	// 	GameBoyColorMode.light = { 0x8e,0x8b,0x61 };
+	// 	GameBoyColorMode.lightest = { 0x6c,0x6c,0x4e };
+	// 	break;
 	default:
+		currentColorMode = 0;
 		setGameBoyColorMode();
+		currentColorMode--;
 		break;
 	}
 
