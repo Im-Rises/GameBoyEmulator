@@ -20,6 +20,7 @@ public:
 	IniLoader(const std::string& iniFileNamePath = "Emulator.ini");
 	void createIniFile();
 	void readingIniFile();
+	void printSettings();
 
 private:
 	std::string getStringSuroundedBy(std::string text, const char& character) const;
