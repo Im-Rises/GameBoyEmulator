@@ -113,6 +113,8 @@ sudo apt-get install libsdl2-2.0-0
 
 The repository has a GitHub Actions file to verify the good behaviour of the project before merging/pusing to the main branch with a wrong code.
 
+There is also an auto release while pushing with specific paramaeters to the main branch. To know more please check the file in the `.github/worflows/` folder named `release.yml`.
+
 ## Documentations  
 
 SDL wiki:  
@@ -148,6 +150,9 @@ Audio and sound:
 Test roms i use to debug my emulator:  
 <https://gbdev.gg8.se/files/roms/blargg-gb-tests/>  
 <https://github.com/mattcurrie/dmg-acid2>  
+
+Automatic-Releases script:  
+<https://github.com/marvinpinto/action-automatic-releases>
 
 Other docs (mostly about emulation in general):  
 <https://emudev.org>    
