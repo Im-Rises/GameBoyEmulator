@@ -2,13 +2,13 @@
 
 #include <iostream>
 #include <string>
+#include <ctime>
+#include <filesystem>
 
 #include "SDL2/include/SDL.h"
 
 Ppu::Ppu(Memory* memory, ColorMode colorMode)
 {
-	currentColorMode = 0;
-
 	int windowWidth = 640;
 	int windowHeight = 576;
 
@@ -17,7 +17,9 @@ Ppu::Ppu(Memory* memory, ColorMode colorMode)
 
 	//GameBoy screen
 	reset();
-	setGameBoyColorMode(colorMode);
+
+	currentColorMode = colorMode;
+	setGameBoyColorMode();
 
 	//SDL
 
@@ -56,6 +58,8 @@ Ppu::Ppu(Memory* memory, ColorMode colorMode)
 		std::cout << "Screen Hardware mode" << std::endl;
 	}
 
+	SDL_RenderSetLogicalSize(renderer, 160, 144);
+
 	texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, 160, 144);
 	if (texture == NULL)
 	{
@@ -81,10 +85,14 @@ Ppu::~Ppu()
 }
 
 
-/*-------------------------------------------------------------SDL window handling------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------Emulation functions------------------------------------------------------------------------------*/
 
 void Ppu::updateScreen()
 {
+	// SDL_GetWindowSize(window, &windowWidth, &windowHeigth);
+
+	// int max = std::max(windowWidth, windowHeigth);
+
 	// Method 1:
 	SDL_UpdateTexture(texture, NULL, lcd, 160 * 3);
 	SDL_RenderCopy(renderer, texture, NULL, NULL);
@@ -96,47 +104,24 @@ void Ppu::updateScreen()
 	// SDL_UnlockTexture(texture);
 }
 
-void Ppu::displayFramerate(const int& value) const
+void Ppu::addGameNameWindow(const string& gameName)
+{
+	windowTitle += " " + gameName;
+}
+
+void Ppu::updateFramerate(const int& value) const
 {
 	string temp = windowTitle + " (fps : " + std::to_string(value).c_str() + ")";
 	SDL_SetWindowTitle(window, temp.c_str());
 }
 
-bool Ppu::windowIsActive()
+void Ppu::doScreenshot(string path)
 {
-	static bool switchColorMode = false;
-	static bool switchWindowMode = false;
-	SDL_PollEvent(&event);
-	if (event.type == SDL_KEYDOWN)
-	{
-		if (event.key.keysym.sym == SDLK_F11)
-		{
-			switchWindowMode = true;
-		}
-
-		if (event.key.keysym.sym == SDLK_F10)
-		{
-			switchColorMode = true;
-		}
-	}
-	else if (event.type == SDL_KEYUP)
-	{
-		if (event.key.keysym.sym == SDLK_F11 && switchWindowMode)
-		{
-			switchWindowMode = false;
-			toggleFullScreen();
-		}
-
-		if (event.key.keysym.sym == SDLK_F10 && switchColorMode)
-		{
-			switchColorMode = false;
-			currentColorMode++;
-			setGameBoyColorMode(currentColorMode);
-		}
-
-		return !(event.key.keysym.sym == SDLK_ESCAPE);
-	}
-	return !(event.type == SDL_QUIT);
+	SDL_Surface* screenshot = SDL_CreateRGBSurfaceWithFormat(0, windowWidth, windowHeigth, 32, SDL_PIXELFORMAT_ABGR32);
+	SDL_RenderReadPixels(renderer, NULL, SDL_PIXELFORMAT_ABGR32, screenshot->pixels, screenshot->pitch);
+	SDL_SaveBMP(screenshot, path.c_str());
+	SDL_FreeSurface(screenshot);
+	cout << "Saved screenshot with name: " + path << endl;
 }
 
 void Ppu::toggleFullScreen()
@@ -148,13 +133,57 @@ void Ppu::toggleFullScreen()
 	else
 	{
 		SDL_SetWindowFullscreen(window, 0);
-		SDL_SetWindowSize(window, windowingWidth, windowingHeigth);
+		SDL_SetWindowSize(window, windowWidth, windowHeigth);
 		//This line is needed for linux to reset correctly the dimensions of the screen
 	}
 
 	windowing = !windowing;
 }
 
+void Ppu::setGameBoyColorMode()
+{
+	//GameBoy color mode
+	switch (currentColorMode)
+	{
+	case(grayscaleNative):
+		GameBoyColorMode.darkest = {0x00, 0x00, 0x00};
+		GameBoyColorMode.dark = {0x55, 0x55, 0x55};
+		GameBoyColorMode.light = {0xaa, 0xaa, 0xaa};
+		GameBoyColorMode.lightest = {0xff, 0xff, 0xff};
+		break;
+	case(grayscaleReal):
+		GameBoyColorMode.darkest = {0x00, 0x00, 0x00};
+		GameBoyColorMode.dark = {0x77, 0x77, 0x77};
+		GameBoyColorMode.light = {0xCC, 0xCC, 0xCC};
+		GameBoyColorMode.lightest = {0xff, 0xff, 0xff};
+		break;
+	case(greenscaleNative):
+		GameBoyColorMode.darkest = {0x40, 0x50, 0x10};
+		GameBoyColorMode.dark = {0x70, 0x80, 0x28};
+		GameBoyColorMode.light = {0xa0, 0xa8, 0x40};
+		GameBoyColorMode.lightest = {0xd0, 0xd0, 0x58};
+		break;
+	case(greenscaleReal):
+		GameBoyColorMode.darkest = {0x0f, 0x38, 0x0f};
+		GameBoyColorMode.dark = {0x30, 0x62, 0x30};
+		GameBoyColorMode.light = {0x8b, 0xac, 0x0f};
+		GameBoyColorMode.lightest = {0x9b, 0xbc, 0x0f};
+		break;
+	// case(4): // Negative
+	// 	GameBoyColorMode.darkest = { 0xe3,0xe6,0xc9 };
+	// 	GameBoyColorMode.dark = { 0xc3,0xc4,0xa5 };
+	// 	GameBoyColorMode.light = { 0x8e,0x8b,0x61 };
+	// 	GameBoyColorMode.lightest = { 0x6c,0x6c,0x4e };
+	// 	break;
+	default:
+		currentColorMode = 0;
+		setGameBoyColorMode();
+		currentColorMode--;
+		break;
+	}
+
+	currentColorMode++;
+}
 
 /*-------------------------------------------------------------GAMEBOY screen emulation------------------------------------------------------------------------------*/
 
@@ -171,48 +200,6 @@ void Ppu::reset()
 	}
 	scanLineCounter = 456; //Number of clock cycles to draw one scanline
 	LY = LYC = 0;
-}
-
-void Ppu::setGameBoyColorMode(const int& colorMode)
-{
-	//GameBoy color mode
-	switch (colorMode)
-	{
-	case(grayscaleReal):
-		GameBoyColorMode.darkest = {0x00, 0x00, 0x00};
-		GameBoyColorMode.dark = {0x77, 0x77, 0x77};
-		GameBoyColorMode.light = {0xCC, 0xCC, 0xCC};
-		GameBoyColorMode.lightest = {0xff, 0xff, 0xff};
-		break;
-	case(grayscaleNative):
-		GameBoyColorMode.darkest = {0x00, 0x00, 0x00};
-		GameBoyColorMode.dark = { 0x55,0x55,0x55};
-		GameBoyColorMode.light = { 0xaa,0xaa,0xaa };
-		GameBoyColorMode.lightest = { 0xff,0xff,0xff };
-		break;
-	case(greenscaleReal):
-		GameBoyColorMode.darkest = {0x0f, 0x38, 0x0f};
-		GameBoyColorMode.dark = {0x30, 0x62, 0x30};
-		GameBoyColorMode.light = {0x8b, 0xac, 0x0f};
-		GameBoyColorMode.lightest = {0x9b, 0xbc, 0x0f};
-		break;
-	case(greenscaleNative):
-		GameBoyColorMode.darkest = {0x40, 0x50, 0x10};
-		GameBoyColorMode.dark = {0x70, 0x80, 0x28};
-		GameBoyColorMode.light = {0xa0, 0xa8, 0x40};
-		GameBoyColorMode.lightest = {0xd0, 0xd0, 0x58};
-		break;
-	// case(4): // Negative
-	// 	GameBoyColorMode.darkest = { 0xe3,0xe6,0xc9 };
-	// 	GameBoyColorMode.dark = { 0xc3,0xc4,0xa5 };
-	// 	GameBoyColorMode.light = { 0x8e,0x8b,0x61 };
-	// 	GameBoyColorMode.lightest = { 0x6c,0x6c,0x4e };
-	// 	break;
-	default:
-		currentColorMode = 0;
-		setGameBoyColorMode(0);
-		break;
-	}
 }
 
 void Ppu::setPixel(const int& x, const int& y, const uint8& r, const uint8& g, const uint8& b)
@@ -606,3 +593,14 @@ bool Ppu::checkLyEqualsLyc()
 {
 	return (memory->read(LY_ADDRESS) == memory->read(LYC_ADDRESS));
 }
+
+// SDL_Rect Ppu::getScreenSize()
+// {
+// 	windowHeigth / 144;
+// }
+
+
+// string Ppu::getScreenshotsPath()
+// {
+// 	return screenshotsPath;
+// }

@@ -95,9 +95,9 @@ private:
 
 	void writeMemory(const uint16& address, const uint8& data);
 
-
-
 public:
+	// string dump();
+
 	uint16 getPc()const;
 
 private:

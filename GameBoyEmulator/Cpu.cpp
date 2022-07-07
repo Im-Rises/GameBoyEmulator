@@ -23,6 +23,7 @@ void Cpu::reset()
 	halted = false;
 	sp = CPU_WORK_RAM_OR_AND_STACK_END;
 	IME = false;
+	stopped = false;
 
 	if (memory->getBiosInMemeory())
 	{
@@ -246,7 +247,7 @@ void Cpu::doInterupt(const uint8& bitIndex)
 	memory->directWrite(INTERRUPT_FLAG_IF_ADDRESS, ifRegister);
 	writeMemory(sp - 1, (pc >> 8));
 	writeMemory(sp - 2, (pc & 0x00FF));
-	//clockCycles += 8;
+	clockCycles += 8;
 	sp -= 2;
 	halted = false;
 	switch (bitIndex + 1)
@@ -276,6 +277,11 @@ void Cpu::doInterupt(const uint8& bitIndex)
 			pc = 0x60;
 			break;
 		}
+	default:
+	{
+		cerr << "Error: Unknown interrupt" << endl;
+		exit(1);
+	}
 	}
 }
 
@@ -309,6 +315,11 @@ void Cpu::writeMemory(const uint16& address, const uint8& data)
 		memory->write(address, data);
 	}
 }
+
+// string Cpu::dump()
+// {
+// 	return A + B + C + D + E + F
+// }
 
 uint16 Cpu::getPc() const
 {

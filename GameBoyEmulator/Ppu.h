@@ -24,10 +24,10 @@
 
 enum ColorMode
 {
-	grayscaleReal=0,
-	grayscaleNative=1,
-	greenscaleReal=2,
-	greenscaleNative=3
+	grayscaleNative = 0,
+	grayscaleReal=1,
+	greenscaleNative = 2,
+	greenscaleReal=3,
 };
 
 struct ColorRGB
@@ -63,35 +63,37 @@ private:
 
 	//SDL
 	string windowTitle = "GameBoyEmulator";
+	string gameName;
+	string screenshotsPath;
 
 	SDL_Window* window = nullptr;
 	SDL_Renderer* renderer = nullptr;
 	SDL_Texture* texture;
-	SDL_Event event;
 
 	bool windowing;
-	int windowingWidth;
-	int windowingHeigth;
+	int windowWidth;
+	int windowHeigth;
 
 
 public:
-	Ppu(Memory* memory, ColorMode colorMode = grayscaleReal);
+	Ppu(Memory* memory, ColorMode colorMode = grayscaleNative);
 	~Ppu();
 
-
 public:
-	// SDL functions
-	void toggleFullScreen();
+	// Emulation functions
 	void updateScreen();
-	void displayFramerate(const int& value) const;
-	bool windowIsActive();
+	void addGameNameWindow(const string& gameName);
+	void updateFramerate(const int& value) const;
+	void doScreenshot(string path);
+	void toggleFullScreen();
+	void setGameBoyColorMode();
 
-	// Game Boy screen functions
 public:
+	// Game Boy screen functions
 	void reset();
-	void setGameBoyColorMode(const int& colorMode);
 	void setPixel(const int& x, const int& y, const uint8& r, const uint8& g, const uint8& b);
 	void draw(const int& cycles);
+
 private:
 	void updateStatRegister();
 	void drawLine();
@@ -101,6 +103,10 @@ private:
 	ColorRGB colorToRGB(uint8 colorGameBoy);
 	void requestInterrupt(const uint8& bitIndex);
 	bool checkLyEqualsLyc();
+
+	public:
+	// SDL_Rect getScreenSize();
+	// 	string getScreenshotsPath();
 };
 
 #endif

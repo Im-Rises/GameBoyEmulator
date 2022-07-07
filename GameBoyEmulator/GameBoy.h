@@ -10,7 +10,7 @@
 #include "Spu.h"
 #include "Joypad.h"
 
-#define VER 0.6
+#define VER 0.8
 #define AUTHOR "Im-Rises"
 #define PROJECT_NAME "GameBoyEmulator"
 
@@ -27,6 +27,9 @@ private:
 	static GameBoy* gameboyInstance;
 	GameBoy();
 
+
+	SDL_Event event;
+
 	Memory memory;
 	Cpu cpu;
 	Ppu ppu;
@@ -36,6 +39,10 @@ private:
 
 	uint8 fps;
 	uint32_t fpsStartTime;
+	string gameName;
+	string screenshotsPath = "./screenshots/";
+
+	float volume;
 
 public:
 	static GameBoy* getInstance();
@@ -51,12 +58,24 @@ private:
 	/*------------------------------------------Game Boy Cycle--------------------------------*/
 	void doGameBoyCycle(const int cyclesNumberToDo);
 
-	/*------------------------------------------Screen functions--------------------------------*/
-	void updateScreen();
+	// /*------------------------------------------Handle Emulator inputs--------------------------------*/
+	bool handleInputs();
+
+public:
+	/*------------------------------------------Save states--------------------------------*/
+	void createSaveState();
+	void loadSaveState();
+
+	/*------------------------------------------Set volume--------------------------------*/
+	void setVolume(const float& volume);
+	void incDecVolume(const float& value);
 
 public:
 	/*------------------------------------------GETTERS--------------------------------*/
 	bool getBiosInMemory();
+
+	/*------------------------------------------OTHER--------------------------------*/
+	string getDateTime();
 };
 
 #endif

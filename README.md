@@ -17,10 +17,13 @@ SDL2 website:
 <https://www.libsdl.org>
 
 > **Note**
-> Note here
+> C++ version 17
+> SDL2 version 2.0.14.
 
+<!--
 > **Warning**
 > Note here
+-->
 
 ## Images
 
@@ -111,6 +114,9 @@ sudo apt-get install libsdl2-2.0-0
 The repository has a GitHub Actions file to verify the good behaviour of the project before merging/pusing to the main branch with a wrong code.
 
 ## Documentations  
+
+SDL wiki:  
+<https://wiki.libsdl.org>  
 
 Video overview of the Game Boy, to understand the fundamental:  
 <https://www.youtube.com/watch?v=HyzD8pNlpwI>  
