@@ -4,7 +4,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "binaryLib.h"
+#include "binaryLib/binaryLib.h"
 
 #include "Cartridge.h"
 #include "Joypad.h"

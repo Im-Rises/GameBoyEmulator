@@ -1,9 +1,12 @@
 #ifndef DEF_SPU
 #define DEF_SPU
 
-#include "binaryLib.h"
+#include "binaryLib/binaryLib.h"
 #include "Memory.h"
 #include <queue>
+
+#define VOLUME_MIN 0
+#define VOLUME_MAX 1
 
 class Spu
 {
@@ -105,13 +108,12 @@ private:
 	uint8 sc4envelope;
 	int16 sc4Amplitude;
 	uint32 sc4timer;
-	const uint8 sc4divisor[8] = { 8, 16, 32, 48, 64, 80, 96, 112 };
+	const uint8 sc4divisor[8] = {8, 16, 32, 48, 64, 80, 96, 112};
 	uint16 sc4lfsr = 0;
 	uint8 sc4pc;
 	bool sc4EnvelopeEnabled;
 
 private:
-
 	void doSound1(int cycles);
 	void doSound2(int cycles);
 	void doSound3(int cycles);
@@ -122,6 +124,10 @@ public:
 	void resetSound2(uint8 val);
 	void resetSound3(uint8 val);
 	void resetSound4(uint8 val);
+
+public:
+	void setVolume(const float& volume);
+	float getVolume() const;
 };
 
 #endif

@@ -2,11 +2,12 @@
 
 #include "Spu.h"
 
-Memory::Memory(Joypad* joypad, Spu* spu)
+Memory::Memory(Joypad* joypad, Spu* spu):memoryArray{}
 {
 	this->spu = spu;
 	this->joypad = joypad;
-	reset();
+	biosInMemory = false;
+	gameInMemory = false;
 }
 
 Memory::~Memory()
@@ -16,18 +17,22 @@ Memory::~Memory()
 
 void Memory::reset()
 {
-	biosInMemory = false;
-	gameInMemory = false;
 	//Reset all the memory
-	for (int i = 0; i < MEMORY_SIZE; i++)
+	for (int i = 0x8000; i < 0xFF00; i++)
 	{
 		memoryArray[i] = 0;
 	}
 
-	//For bootrom black square
-	for (int i = 0x100; i < 0x150; i++)
+	// Don't reset (from 0xFF00 to 0xFF7F):
+	/*
+	 * Port/Mode Registers
+	 * Control Register
+	 * Sound Register
+	 */
+
+	for (int i = 0xFF80; i < MEMORY_SIZE; i++)
 	{
-		memoryArray[i] = 0xFF;
+		memoryArray[i] = 0;
 	}
 }
 
@@ -62,7 +67,7 @@ bool Memory::loadBiosInMemory(const string& biosPath)
 	}
 	else
 	{
-		cout << "Can't open bios file" << endl;
+		cerr<< "Error: Can't open bios file" << endl;
 		return false;
 	}
 }
