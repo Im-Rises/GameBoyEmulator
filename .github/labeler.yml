@@ -1,0 +1,26 @@
+repo:
+- '*'
+
+CMakeLists:
+- any: ['CMakeLists.txt', 'GameBoyEmulator/CMakeLists.txt']
+
+source:
+- any: ['GameBoyEmulator']
+
+main:
+- any: ['GameBoyEmulator/main.*']
+
+sdl2:
+- any: ['GameBoyEmulator/SDL2/*']
+
+binarylib:
+- any: ['GameBoyEmulator/binaryLib/*']
+
+video:
+- any: ['GameBoyEmulator/Ppu.*']
+
+audio:
+- any: ['GameBoyEmulator/Spu.*']
+
+controller:
+- any: ['GameBoyEmulator/Joypad.*']
