@@ -58,6 +58,8 @@ Ppu::Ppu(Memory* memory, ColorMode colorMode)
 		std::cout << "Screen Hardware mode" << std::endl;
 	}
 
+	SDL_RenderSetLogicalSize(renderer, 160, 144);
+
 	texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, 160, 144);
 	if (texture == NULL)
 	{
@@ -87,7 +89,7 @@ Ppu::~Ppu()
 
 void Ppu::updateScreen()
 {
-	SDL_GetWindowSize(window, &windowWidth, &windowHeigth);
+	// SDL_GetWindowSize(window, &windowWidth, &windowHeigth);
 
 	// int max = std::max(windowWidth, windowHeigth);
 
