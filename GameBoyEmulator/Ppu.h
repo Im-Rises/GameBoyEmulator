@@ -1,7 +1,7 @@
 #ifndef DEF_LCD
 #define DEF_LCD 
 
-#include "binaryLib.h"
+#include "binaryLib/binaryLib.h"
 #include "Memory.h"
 #include "SDL2/include/SDL.h"
 

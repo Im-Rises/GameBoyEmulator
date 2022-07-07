@@ -7,6 +7,7 @@
 
 /*
  * To do list:
+ * - add worflows
  * - if no game are loaded SDL is still starting... Start window only if a bios or a game is present
  * - add .ini file
  * - add possibility to load bootrom

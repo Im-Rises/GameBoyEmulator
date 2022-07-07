@@ -17,7 +17,7 @@ Joypad::Joypad()
 		cerr << "Error: Cannot init GameController and Joystick handling" << SDL_GetError() << endl;
 	}
 
-	cout << "Number of connected controllers and joysticks " << SDL_NumJoysticks() << ":" << endl;
+	cout << "Number of connected controllers and joysticks " << SDL_NumJoysticks() << ": ";
 
 	// gameController = SDL_NumJoysticks() ? SDL_GameControllerOpen(0) : NULL;
 	gameController = SDL_GameControllerOpen(0);

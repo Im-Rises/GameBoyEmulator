@@ -4,6 +4,11 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
+// #include <format> // Issue with Unix system, using my functions to format string for screesnshots name
 
 GameBoy* GameBoy::gameboyInstance = 0;
 
@@ -28,8 +33,7 @@ GameBoy::GameBoy() : memory(&joypad, &spu), cpu(&memory, &ppu, &spu), ppu(&memor
 
 	SDL_EventState(SDL_MOUSEMOTION, SDL_IGNORE);
 
-
-	srand(time(NULL));
+	// srand(time(NULL));
 }
 
 GameBoy* GameBoy::getInstance()
@@ -98,7 +102,7 @@ void GameBoy::start()
 
 	gameName = cartridge->getGameName();
 
-	std::filesystem::create_directories(screenshotsPath + gameName + "/");
+	std::filesystem::create_directories(screenshotsFolder + gameName + "/");
 
 	ppu.addGameNameWindow(gameName);
 
@@ -174,10 +178,10 @@ bool GameBoy::handleInputs()
 		if (event.key.keysym.sym == SDLK_PRINTSCREEN)
 			switchScreenshot = true;
 
-		if (event.key.keysym.sym == SDLK_b )
+		if (event.key.keysym.sym == SDLK_b)
 			switchSaveState = true;
 
-		if (event.key.keysym.sym == SDLK_TAB )
+		if (event.key.keysym.sym == SDLK_TAB)
 			switchReset = true;
 	}
 	else if (event.type == SDL_KEYUP)
@@ -230,7 +234,17 @@ bool GameBoy::handleInputs()
 		if (event.key.keysym.sym == SDLK_PRINTSCREEN && switchScreenshot)
 		{
 			switchScreenshot = false;
-			ppu.doScreenshot(screenshotsPath + gameName + "/" + gameName + " " + getDateTime() + ".bmp");
+
+			int index = 0;
+			string screenshotPath = generateScreeShotName(index);
+
+			while (fileExist(screenshotPath))
+			{
+				index++;
+				screenshotPath = generateScreeShotName(index);
+			}
+
+			ppu.doScreenshot(screenshotPath);
 		}
 
 		if (event.key.keysym.sym == SDLK_b && switchSaveState)
@@ -249,6 +263,14 @@ bool GameBoy::handleInputs()
 	}
 
 	return !(event.type == SDL_QUIT);
+}
+
+string GameBoy::generateScreeShotName(const int& index)
+{
+	string indexS = to_string(index);
+	indexS = addLeadingZero(indexS, 2);
+	return screenshotsFolder + gameName + "/" + gameName + " " + getDateTime() + "-(" + indexS
+		+ ')' + ".bmp";
 }
 
 
@@ -309,15 +331,20 @@ string GameBoy::getDateTime()
 {
 	std::time_t t = std::time(0);
 	std::tm* now = std::localtime(&t);
-	// std::cout << (now->tm_year + 1900) << '-'
-	// 	<< (now->tm_mon + 1) << '-'
-	// 	<< now->tm_mday << '-'
-	// 	<< now->tm_sec
-	// 	<< rand()
-	// 	<< "\n";
-	// path += (now->tm_year + 1900) + '-' +(now->tm_mon + 1) + '-' + now->tm_mday + '-' + now->tm_sec + '-' + rand() + ".bmp";
-	// path += std::to_string((now->tm_year + 1900));
-	// cout << path << endl;
-	return to_string(now->tm_year + 1900) + '-' + to_string(now->tm_mon + 1) + '-' + to_string(now->tm_mday) + '-' +
-		to_string(now->tm_sec) + '-' + to_string(rand());
+	return to_string(now->tm_year + 1900) + '-' + addLeadingZero(to_string(now->tm_mon + 1) ,2) + '-' + addLeadingZero(to_string(now->tm_mday),2) + '-' + addLeadingZero(to_string(now->tm_hour),2) + '-' + addLeadingZero(to_string(now->tm_sec),2);
+}
+
+bool GameBoy::fileExist(const std::string& name)
+{
+	struct stat buffer;
+	return (stat(name.c_str(), &buffer) == 0);
+}
+
+string GameBoy::addLeadingZero(string text, const int& numberOfZero)
+{
+	string result = text;
+	int stringSize = text.size();
+	for (int i = 0; i < (numberOfZero - stringSize); i++)
+		result = "0" + result;
+	return result;
 }

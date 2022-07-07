@@ -1,7 +1,7 @@
 #ifndef DEF_CPU
 #define DEF_CPU
 
-#include "binaryLib.h"
+#include "binaryLib/binaryLib.h"
 
 #define DIV 0xFF04
 

@@ -1,11 +1,12 @@
 #ifndef DEF_CARTRIDGE
 #define DEF_CARTRIDGE
 
-#include "binaryLib.h"
 
 #include <iostream>
 #include <fstream>
 #include <map>
+
+#include "binaryLib/binaryLib.h"
 
 using namespace std;
 

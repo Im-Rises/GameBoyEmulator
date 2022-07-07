@@ -1,7 +1,7 @@
 #ifndef DEF_SPU
 #define DEF_SPU
 
-#include "binaryLib.h"
+#include "binaryLib/binaryLib.h"
 #include "Memory.h"
 #include <queue>
 

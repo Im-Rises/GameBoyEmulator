@@ -1,7 +1,7 @@
 #ifndef DEF_GAMEBOY
 #define DEF_GAMEBOY
 
-#include "binaryLib.h"
+#include "binaryLib/binaryLib.h"
 
 #include "Cpu.h"
 #include "Memory.h"
@@ -40,7 +40,7 @@ private:
 	uint8 fps;
 	uint32_t fpsStartTime;
 	string gameName;
-	string screenshotsPath = "./screenshots/";
+	string screenshotsFolder = "./screenshots/";
 
 	float volume;
 
@@ -62,6 +62,9 @@ private:
 	bool handleInputs();
 
 public:
+	/*------------------------------------------Screenshots--------------------------------*/
+	string generateScreeShotName(const int& index);
+
 	/*------------------------------------------Save states--------------------------------*/
 	void createSaveState();
 	void loadSaveState();
@@ -75,7 +78,11 @@ public:
 	bool getBiosInMemory();
 
 	/*------------------------------------------OTHER--------------------------------*/
-	string getDateTime();
+	string static getDateTime();
+
+	bool static fileExist(const std::string& name);
+
+	string static addLeadingZero(string text, const int& numberOfZero );
 };
 
 #endif

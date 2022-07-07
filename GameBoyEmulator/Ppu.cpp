@@ -117,7 +117,11 @@ void Ppu::updateFramerate(const int& value) const
 
 void Ppu::doScreenshot(string path)
 {
-	SDL_Surface* screenshot = SDL_CreateRGBSurfaceWithFormat(0, windowWidth, windowHeigth, 32, SDL_PIXELFORMAT_ABGR32);
+	int width, height;
+
+	SDL_GetWindowSize(window, &width, &height);
+
+	SDL_Surface* screenshot = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, SDL_PIXELFORMAT_ABGR32);
 	SDL_RenderReadPixels(renderer, NULL, SDL_PIXELFORMAT_ABGR32, screenshot->pixels, screenshot->pitch);
 	SDL_SaveBMP(screenshot, path.c_str());
 	SDL_FreeSurface(screenshot);

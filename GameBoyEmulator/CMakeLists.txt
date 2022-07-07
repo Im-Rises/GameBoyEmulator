@@ -6,8 +6,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(SRCS main.cpp binaryLib.cpp Cartridge.cpp Cpu.cpp GameBoy.cpp Joypad.cpp Memory.cpp Ppu.cpp  Spu.cpp)
-set(HEADERS binaryLib.h Cartridge.h Cpu.h GameBoy.h Joypad.h Memory.h Ppu.h  Spu.h)
+set(SRCS main.cpp binaryLib/binaryLib.cpp Cartridge.cpp Cpu.cpp GameBoy.cpp Joypad.cpp Memory.cpp Ppu.cpp  Spu.cpp)
+set(HEADERS binaryLib/binaryLib.h Cartridge.h Cpu.h GameBoy.h Joypad.h Memory.h Ppu.h  Spu.h)
 
 add_executable(${PROJECT_NAME} ${SRCS} ${HEADERS})
 

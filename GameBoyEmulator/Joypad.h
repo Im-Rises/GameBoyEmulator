@@ -1,7 +1,7 @@
 #ifndef DEF_JOYPAD
 #define DEF_JOYPAD
 
-#include "binaryLib.h"
+#include "binaryLib/binaryLib.h"
 #include "SDL2/include/SDL.h"
 
 class Joypad
