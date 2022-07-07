@@ -9,6 +9,8 @@
 * 
 */
 
+void createInitFile();
+
 void readInitFile();
 
 /*------------------------------------------SAVESTATE AND SAVEFILE--------------------------------*/
