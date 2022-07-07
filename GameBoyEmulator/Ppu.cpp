@@ -58,7 +58,7 @@ Ppu::Ppu(Memory* memory, ColorMode colorMode)
 		std::cout << "Screen Hardware mode" << std::endl;
 	}
 
-	SDL_RenderSetLogicalSize(renderer, 160, 144);
+	SDL_RenderSetLogicalSize(renderer, 160, 144);// Keep ratio according to the width and height 160 and 144 pixels from the GameBoy
 
 	texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, 160, 144);
 	if (texture == NULL)
