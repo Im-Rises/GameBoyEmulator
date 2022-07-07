@@ -96,6 +96,8 @@ sudo apt-get install libsdl2-2.0-0
 
 - Escape button/click cross to exit emulation
 
+- Imp : Create a screenshot of the game in the folder next to tha app (screenshots/<gameName>)
+
 ### Emulator game contols
 
 |  Console buttons  | Emulator buttons   |
