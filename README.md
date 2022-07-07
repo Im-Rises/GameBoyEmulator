@@ -90,7 +90,9 @@ sudo apt-get install libsdl2-2.0-0
 
 ### Emulator interface
 
-- F11 = Switch between Fullscreen and windowed mode
+- F10 : Switch GameBoy color mode (GreenScale or Grayscale)
+
+- F11 : Switch between Fullscreen and windowed mode
 
 - Escape button/click cross to exit emulation
 
