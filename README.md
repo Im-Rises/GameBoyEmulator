@@ -39,9 +39,13 @@ SDL2 website:
 
 <https://user-images.githubusercontent.com/59691442/150530024-ac2dceee-1162-4894-bc44-334bbad2544f.mp4>
 
-## Releases/Downloads
+## Quickstart
 
+To use the emulator it depends on your system. Please follow the steps in section `Windows` or `Linux`.
+
+All the releases can be found in the link below:  
 [Source code and releases](https://github.com/Im-Rises/GameBoyEmulator/releases)
+
 
 Links :
 
