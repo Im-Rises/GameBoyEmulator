@@ -110,6 +110,8 @@ void GameBoy::start()
 	{
 		doGameBoyCycle(cyclesToDo);
 	}
+
+	cout << "Stoping Emulation please wait..." << endl;
 }
 
 
@@ -331,7 +333,9 @@ string GameBoy::getDateTime()
 {
 	std::time_t t = std::time(0);
 	std::tm* now = std::localtime(&t);
-	return to_string(now->tm_year + 1900) + '-' + addLeadingZero(to_string(now->tm_mon + 1) ,2) + '-' + addLeadingZero(to_string(now->tm_mday),2) + '-' + addLeadingZero(to_string(now->tm_hour),2) + '-' + addLeadingZero(to_string(now->tm_sec),2);
+	return to_string(now->tm_year + 1900) + '-' + addLeadingZero(to_string(now->tm_mon + 1), 2) + '-' +
+		addLeadingZero(to_string(now->tm_mday), 2) + '-' + addLeadingZero(to_string(now->tm_hour), 2) + '-' +
+		addLeadingZero(to_string(now->tm_sec), 2);
 }
 
 bool GameBoy::fileExist(const std::string& name)
@@ -342,9 +346,11 @@ bool GameBoy::fileExist(const std::string& name)
 
 string GameBoy::addLeadingZero(string text, const int& numberOfZero)
 {
-	string result = text;
-	int stringSize = text.size();
-	for (int i = 0; i < (numberOfZero - stringSize); i++)
-		result = "0" + result;
-	return result;
+	// string result = text;
+	// int stringSize = text.size();
+	// for (int i = 0; i < (numberOfZero - stringSize); i++)
+	// 	result = "0" + result;
+	// return result;
+
+	return std::string(numberOfZero - std::min(numberOfZero, static_cast<int>(text.length())), '0') + text;
 }

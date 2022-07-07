@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "IniLoader/IniLoader.h"
 #include "Cartridge.h"
 #include "GameBoy.h"
 
@@ -7,11 +8,12 @@
 
 /*
  * To do list:
- * - add .ini file
- * - add possibility to load bootrom
+ * - add .ini file (add possibility to load bootrom)
+ * - Finish savestate
  * - Correct PPU background aliasing
  * - Correct inputs interrupt in joypad.cpp (interrupts in general)
  * - Add MBC5
+ * - Add saves
  */
 
 void writeUsage(const char* appName)
@@ -37,13 +39,16 @@ int main(int argc, char* argv[])
 {
 	cout << "Nintendo GameBoy Emulator" << endl;
 
-	string biosPath;
-	bool gameBoyCanStart = false;
+	// string biosPath;
+	// bool gameBoyCanStart = false;
 	string romPath;
+
+	IniLoader iniLoader("GameBoyEmulator.ini");
+
 
 	if (true) //Debug
 	{
-		biosPath = "../../../../Bios_Games/Bios/dmg_boot.bin";
+		// biosPath = "../../../../Bios_Games/Bios/dmg_boot.bin";
 		romPath = "../../../../Bios_Games/Games/Kirby's dream land.gb";
 		//romPath = "../../../../Bios_Games/Games/MarioLand2.gb";
 		// romPath = "../../../../Bios_Games/Games/bgbtest.gb";
@@ -72,7 +77,7 @@ int main(int argc, char* argv[])
 		// romPath = "../../../../Bios_Games/TestRoms/instr_timing/instr_timing.gb";
 		// romPath = "../../../../Bios_Games/TestRoms/mem_timing-2/mem_timing.gb";
 		// romPath = "../../../../Bios_Games/TestRoms/mem_timing/mem_timing.gb";
-		argc = 2;
+		// argc = 2;
 	}
 
 	// Read .ini file
