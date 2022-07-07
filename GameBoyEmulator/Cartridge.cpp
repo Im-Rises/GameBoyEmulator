@@ -4,6 +4,8 @@
 
 Cartridge::Cartridge(const string& romPath)
 {
+	this->romPath = romPath;
+
 	destinationMap.insert(std::make_pair(0x00, "Japan"));
 	destinationMap.insert(std::make_pair(0x01, "Other"));
 
@@ -30,7 +32,7 @@ Cartridge::Cartridge(const string& romPath)
 	}
 	else
 	{
-		cout << "Can't open rom file" << endl;
+		cerr<< "Error: Can't open rom file" << endl;
 		exit(1);
 	}
 
@@ -101,6 +103,12 @@ Cartridge::~Cartridge()
 {
 	delete[] rom; //Not call if program crash
 	delete[] ram;
+}
+
+void Cartridge::reset()
+{
+	currentRomBank = 1;
+	currentRamBank = 0;
 }
 
 
@@ -410,6 +418,16 @@ string Cartridge::getCartridgeTypeToString() const
 	}
 }
 
+
+string Cartridge::getGameName()const
+{
+	return gameName;
+}
+
+string Cartridge::getRomPath()const
+{
+	return romPath;
+}
 
 //toString
 

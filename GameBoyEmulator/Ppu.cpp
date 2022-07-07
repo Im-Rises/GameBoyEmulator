@@ -2,11 +2,11 @@
 
 #include <iostream>
 #include <string>
+#include <ctime>
+#include <filesystem>
 
 #include "SDL2/include/SDL.h"
 
-
-// Ppu::Ppu(Memory* memory, int windowWidth, int windowHeight)
 Ppu::Ppu(Memory* memory, ColorMode colorMode)
 {
 	int windowWidth = 640;
@@ -17,7 +17,9 @@ Ppu::Ppu(Memory* memory, ColorMode colorMode)
 
 	//GameBoy screen
 	reset();
-	setGameBoyColorMode(colorMode);
+
+	currentColorMode = colorMode;
+	setGameBoyColorMode();
 
 	//SDL
 
@@ -28,13 +30,6 @@ Ppu::Ppu(Memory* memory, ColorMode colorMode)
 	}
 
 	SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
-
-	// if (SDL_CreateWindowAndRenderer(windowWidth, windowHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN, &window, &renderer) != 0)
-	// {
-	// 	std::cerr << "Error window creation.\n" << SDL_GetError() << std::endl;
-	// 	exit(EXIT_FAILURE);
-	// }
-	// SDL_SetWindowTitle(window, windowTitle.c_str());
 
 	window = SDL_CreateWindow(windowTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth,
 	                          windowHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN);
@@ -63,6 +58,8 @@ Ppu::Ppu(Memory* memory, ColorMode colorMode)
 		std::cout << "Screen Hardware mode" << std::endl;
 	}
 
+	SDL_RenderSetLogicalSize(renderer, 160, 144);// Keep ratio according to the width and height 160 and 144 pixels from the GameBoy
+
 	texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, 160, 144);
 	if (texture == NULL)
 	{
@@ -88,68 +85,47 @@ Ppu::~Ppu()
 }
 
 
-/*-------------------------------------------------------------SDL window handling------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------Emulation functions------------------------------------------------------------------------------*/
 
 void Ppu::updateScreen()
 {
-	// // Method 1:
-	// for (int y = 0; y < DOTS_DISPLAY_Y; y++)
-	// {
-	// 	for (int x = 0; x < DOTS_DISPLAY_X; x++)
-	// 	{
-	// 		// SDL_drawSquare(x, y, lcdScreen[x][y].colorRGB);
-	// 		SDL_drawSquare(x, y, lcd[(y * 160 * 3) + x]);
-	// 	}
-	// }
-	// SDL_RenderPresent(renderer);
+	// SDL_GetWindowSize(window, &windowWidth, &windowHeigth);
 
-	// Method 2:
+	// int max = std::max(windowWidth, windowHeigth);
+
+	// Method 1:
 	SDL_UpdateTexture(texture, NULL, lcd, 160 * 3);
 	SDL_RenderCopy(renderer, texture, NULL, NULL);
 	SDL_RenderPresent(renderer);
 
-	// // // Method 3: (https://wiki.libsdl.org/SDL_LockTexture)
+	// // // Method 2: (https://wiki.libsdl.org/SDL_LockTexture)
 	// int pitch = 160 * sizeof(uint8) * 3;
 	// SDL_LockTexture(texture, NULL, (void**)&lcd, &pitch);
 	// SDL_UnlockTexture(texture);
 }
 
-// void Ppu::SDL_drawSquare(const int& x, const int& y, const int& color)
-// {
-// 	SDL_Rect rect = {0 + x * 1, 0 + y * 1, 1, 1};
-//
-// 	SDL_SetRenderDrawColor(renderer, color, color, color, SDL_ALPHA_OPAQUE);
-//
-// 	SDL_RenderFillRect(renderer, &rect);
-// }
+void Ppu::addGameNameWindow(const string& gameName)
+{
+	windowTitle += " " + gameName;
+}
 
-void Ppu::displayFramerate(const int& value) const
+void Ppu::updateFramerate(const int& value) const
 {
 	string temp = windowTitle + " (fps : " + std::to_string(value).c_str() + ")";
 	SDL_SetWindowTitle(window, temp.c_str());
 }
 
-bool Ppu::windowIsActive()
+void Ppu::doScreenshot(string path)
 {
-	SDL_PollEvent(&event);
-	if (event.type == SDL_KEYDOWN)
-	{
-		if (event.key.keysym.sym == SDLK_F11)
-			toggleFullScreen();
+	int width, height;
 
-		// if (event.key.keysym.sym == SDLK_F10)
-		// {
-		// 	if (currentColorMode == greenscale)
-		// 		setGameBoyColorMode(grayscale);
-		// 	else
-		// 		setGameBoyColorMode(greenscale);
-		// }
-	}
-	else if (event.type == SDL_KEYUP)
-	{
-		return !(event.key.keysym.sym == SDLK_ESCAPE);
-	}
-	return !(event.type == SDL_QUIT);
+	SDL_GetWindowSize(window, &width, &height);
+
+	SDL_Surface* screenshot = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, SDL_PIXELFORMAT_ABGR32);
+	SDL_RenderReadPixels(renderer, NULL, SDL_PIXELFORMAT_ABGR32, screenshot->pixels, screenshot->pitch);
+	SDL_SaveBMP(screenshot, path.c_str());
+	SDL_FreeSurface(screenshot);
+	cout << "Saved screenshot with name: " + path << endl;
 }
 
 void Ppu::toggleFullScreen()
@@ -161,13 +137,57 @@ void Ppu::toggleFullScreen()
 	else
 	{
 		SDL_SetWindowFullscreen(window, 0);
-		SDL_SetWindowSize(window, windowingWidth, windowingHeigth);
+		SDL_SetWindowSize(window, windowWidth, windowHeigth);
 		//This line is needed for linux to reset correctly the dimensions of the screen
 	}
 
 	windowing = !windowing;
 }
 
+void Ppu::setGameBoyColorMode()
+{
+	//GameBoy color mode
+	switch (currentColorMode)
+	{
+	case(grayscaleNative):
+		GameBoyColorMode.darkest = {0x00, 0x00, 0x00};
+		GameBoyColorMode.dark = {0x55, 0x55, 0x55};
+		GameBoyColorMode.light = {0xaa, 0xaa, 0xaa};
+		GameBoyColorMode.lightest = {0xff, 0xff, 0xff};
+		break;
+	case(grayscaleReal):
+		GameBoyColorMode.darkest = {0x00, 0x00, 0x00};
+		GameBoyColorMode.dark = {0x77, 0x77, 0x77};
+		GameBoyColorMode.light = {0xCC, 0xCC, 0xCC};
+		GameBoyColorMode.lightest = {0xff, 0xff, 0xff};
+		break;
+	case(greenscaleNative):
+		GameBoyColorMode.darkest = {0x40, 0x50, 0x10};
+		GameBoyColorMode.dark = {0x70, 0x80, 0x28};
+		GameBoyColorMode.light = {0xa0, 0xa8, 0x40};
+		GameBoyColorMode.lightest = {0xd0, 0xd0, 0x58};
+		break;
+	case(greenscaleReal):
+		GameBoyColorMode.darkest = {0x0f, 0x38, 0x0f};
+		GameBoyColorMode.dark = {0x30, 0x62, 0x30};
+		GameBoyColorMode.light = {0x8b, 0xac, 0x0f};
+		GameBoyColorMode.lightest = {0x9b, 0xbc, 0x0f};
+		break;
+	// case(4): // Negative
+	// 	GameBoyColorMode.darkest = { 0xe3,0xe6,0xc9 };
+	// 	GameBoyColorMode.dark = { 0xc3,0xc4,0xa5 };
+	// 	GameBoyColorMode.light = { 0x8e,0x8b,0x61 };
+	// 	GameBoyColorMode.lightest = { 0x6c,0x6c,0x4e };
+	// 	break;
+	default:
+		currentColorMode = 0;
+		setGameBoyColorMode();
+		currentColorMode--;
+		break;
+	}
+
+	currentColorMode++;
+}
 
 /*-------------------------------------------------------------GAMEBOY screen emulation------------------------------------------------------------------------------*/
 
@@ -177,12 +197,6 @@ void Ppu::reset()
 	{
 		for (int i = 0; i < DOTS_DISPLAY_X; i++)
 		{
-			// lcdScreen[i][j].colorRGB = 0xFF;
-			// lcdScreen[i][j].backgroundTransparent = false;
-
-			// lcd[(j * 160 * 3) + i * 3] = 0xFF;
-			// lcd[(j * 160 * 3) + i * 3 + 1] = 0xFF;
-			// lcd[(j * 160 * 3) + i * 3 + 2] = 0xFF;
 			setPixel(i, j, 0xFF, 0xFF, 0xFF);
 
 			lcdTransparent[(j * 160 * 3) + i] = false;
@@ -190,83 +204,6 @@ void Ppu::reset()
 	}
 	scanLineCounter = 456; //Number of clock cycles to draw one scanline
 	LY = LYC = 0;
-}
-
-void Ppu::setGameBoyColorMode(const ColorMode& colorMode)
-{
-	// Grayscale
-	// Black
-	// Hex : #000000
-	// RGB : 0, 0, 0
-	// Gray 1
-	// Hex : #777777
-	// RGB: 119, 119, 119
-	// Gray 2
-	// Hex : #CCCCCC
-	// RGB : 204, 204, 204
-	// Black
-	// Hex : #FFFFFF
-	// RGB : 255, 255, 255
-
-	// Greenscale
-	// Darkest Green
-	// Hex : #0f380f
-	// RGB : 15, 56, 15
-	// Dark Green
-	// Hex : #306230
-	// RGB: 48, 98, 48
-	// Light Green
-	// Hex : #8bac0f
-	// RGB : 139, 172, 15
-	// Lightest Green
-	// Hex : #9bbc0f
-	// RGB : 155, 188, 15
-
-	currentColorMode = colorMode;
-
-	//GameBoy color mode
-	switch (colorMode)
-	{
-	case(grayscale):
-		GameBoyColorMode.black.r = 0x00;
-		GameBoyColorMode.black.g = 0x00;
-		GameBoyColorMode.black.b = 0x00;
-
-		GameBoyColorMode.gray1.r = 0x77;
-		GameBoyColorMode.gray1.g = 0x77;
-		GameBoyColorMode.gray1.b = 0x77;
-
-		GameBoyColorMode.gray2.r = 0xCC;
-		GameBoyColorMode.gray2.g = 0xCC;
-		GameBoyColorMode.gray2.b = 0xCC;
-
-		GameBoyColorMode.white.r = 0xFF;
-		GameBoyColorMode.white.g = 0xFF;
-		GameBoyColorMode.white.b = 0xFF;
-
-		break;
-	case(greenscale):
-		GameBoyColorMode.black.r = 0x0f;
-		GameBoyColorMode.black.g = 0x38;
-		GameBoyColorMode.black.b = 0x0f;
-		
-		GameBoyColorMode.gray1.r = 0x30;
-		GameBoyColorMode.gray1.g = 0x62;
-		GameBoyColorMode.gray1.b = 0x30;
-
-		GameBoyColorMode.gray2.r = 0x8b;
-		GameBoyColorMode.gray2.g = 0xac;
-		GameBoyColorMode.gray2.b = 0x0f;
-
-		GameBoyColorMode.white.r = 0x9b;
-		GameBoyColorMode.white.g = 0xbc;
-		GameBoyColorMode.white.b = 0x0f;
-
-		break;
-	default:
-		std::cerr << "Error unknown color mode.\n" << std::endl;
-		break;
-	}
 }
 
 void Ppu::setPixel(const int& x, const int& y, const uint8& r, const uint8& g, const uint8& b)
@@ -409,7 +346,6 @@ void Ppu::drawBackgroundLine(const uint8& lcdc)
 	uint8 scx = memory->read(SCX_ADDRESS);
 	uint8 scy = memory->read(SCY_ADDRESS);
 	uint8 wx = memory->read(WX_ADDRESS) - 7;
-	//Why 7 because : With WX = 7, the window is displayed from the left edge of the LCD screen. Values of 0-6 should not be specified for WX.
 	uint8 wy = memory->read(WY_ADDRESS);
 
 	uint8 ly = memory->read(LY_ADDRESS);
@@ -492,12 +428,7 @@ void Ppu::drawBackgroundLine(const uint8& lcdc)
 
 		if (testBit(lcdc, 0))
 		{
-			// lcdScreen[pixel][ly].colorRGB = colorToRGB(color);
-			// lcdScreen[pixel][ly].backgroundTransparent = (colorCode == 0);
 			auto colorRgb = colorToRGB(color);
-			// lcd[(ly * 160 * 3) + pixel * 3] = colorRgb;
-			// lcd[(ly * 160 * 3) + pixel * 3 + 1] = colorRgb;
-			// lcd[(ly * 160 * 3) + pixel * 3 + 2] = colorRgb;
 			setPixel(pixel, ly, colorRgb.r, colorRgb.g, colorRgb.b);
 
 			lcdTransparent[(ly * 160 * 3) + pixel] = (colorCode == 0);
@@ -508,15 +439,7 @@ void Ppu::drawBackgroundLine(const uint8& lcdc)
 
 			for (int pixel = 0; pixel < DOTS_DISPLAY_X; pixel++)
 			{
-				// lcdScreen[pixel][memory->read(LY_ADDRESS)].colorRGB = colorToRGB(color);
-				// lcdScreen[pixel][ly].backgroundTransparent = true;
-
-				// lcd[(ly * 160 * 3) + pixel] = colorToRGB(color);
-
 				auto colorRgb = colorToRGB(color);
-				// lcd[(ly * 160 * 3) + pixel * 3] = colorRgb;
-				// lcd[(ly * 160 * 3) + pixel * 3 + 1] = colorRgb;
-				// lcd[(ly * 160 * 3) + pixel * 3 + 2] = colorRgb;
 				setPixel(pixel, ly, colorRgb.r, colorRgb.g, colorRgb.b);
 				lcdTransparent[(ly * 160 * 3) + pixel] = true;
 			}
@@ -596,13 +519,7 @@ void Ppu::drawSpritesLine(const uint8& lcdc)
 							else
 								color = transformDotDataToColor(colorCode, OPB1_PALETTE_DATA);
 
-							// lcdScreen[x][ly].colorRGB = colorToRGB(color);
-							// lcd[(ly * 160 * 3) + x] = colorToRGB(color);
-
 							auto colorRgb = colorToRGB(color);
-							// lcd[(ly * 160 * 3) + x * 3] = colorRgb;
-							// lcd[(ly * 160 * 3) + x * 3 + 1] = colorRgb;
-							// lcd[(ly * 160 * 3) + x * 3 + 2] = colorRgb;
 							setPixel(x, ly, colorRgb.r, colorRgb.g, colorRgb.b);
 						}
 						// else //Display BG' pixel
@@ -649,23 +566,19 @@ ColorRGB Ppu::colorToRGB(uint8 colorGameBoy)
 	{
 	case (0b00):
 		{
-			return GameBoyColorMode.white;
-			// return 0xFF;
+			return GameBoyColorMode.lightest;
 		}
 	case (0b01):
 		{
-			return GameBoyColorMode.gray2;
-			// return 0xCC;
+			return GameBoyColorMode.light;
 		}
 	case (0b10):
 		{
-			return GameBoyColorMode.gray1;
-			// return 0x77;
+			return GameBoyColorMode.dark;
 		}
 	case (0b11):
 		{
-			return GameBoyColorMode.black;
-			// return 0x00;
+			return GameBoyColorMode.darkest;
 		}
 	default:
 		cerr << "Error wrong data color";
@@ -684,3 +597,14 @@ bool Ppu::checkLyEqualsLyc()
 {
 	return (memory->read(LY_ADDRESS) == memory->read(LYC_ADDRESS));
 }
+
+// SDL_Rect Ppu::getScreenSize()
+// {
+// 	windowHeigth / 144;
+// }
+
+
+// string Ppu::getScreenshotsPath()
+// {
+// 	return screenshotsPath;
+// }

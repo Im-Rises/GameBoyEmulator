@@ -1,10 +1,9 @@
 #ifndef DEF_LCD
 #define DEF_LCD 
 
-#include "binaryLib.h"
+#include "binaryLib/binaryLib.h"
 #include "Memory.h"
 #include "SDL2/include/SDL.h"
-// #include "GameBoy.h"
 
 #define DOTS_DISPLAY_X 160
 #define DOTS_DISPLAY_Y 144
@@ -25,8 +24,10 @@
 
 enum ColorMode
 {
-	grayscale,
-	greenscale
+	grayscaleNative = 0,
+	grayscaleReal=1,
+	greenscaleNative = 2,
+	greenscaleReal=3,
 };
 
 struct ColorRGB
@@ -42,20 +43,14 @@ private:
 	//GameBoy
 	Memory* memory = nullptr;
 
-	// struct Screen
-	// {
-	// 	uint8 colorRGB;
-	// 	bool backgroundTransparent;
-	// } lcdScreen[DOTS_DISPLAY_X][DOTS_DISPLAY_Y];
+	int currentColorMode;
 
-
-	ColorMode currentColorMode;
 	struct ColorModePalette
 	{
-		ColorRGB black;
-		ColorRGB gray1;
-		ColorRGB gray2;
-		ColorRGB white;
+		ColorRGB darkest;
+		ColorRGB dark;
+		ColorRGB light;
+		ColorRGB lightest;
 	} GameBoyColorMode;
 
 	uint8 lcd[160 * 144 * 3];
@@ -68,37 +63,37 @@ private:
 
 	//SDL
 	string windowTitle = "GameBoyEmulator";
+	string gameName;
+	string screenshotsPath;
 
 	SDL_Window* window = nullptr;
 	SDL_Renderer* renderer = nullptr;
 	SDL_Texture* texture;
-	SDL_Event event;
 
 	bool windowing;
-	int windowingWidth;
-	int windowingHeigth;
+	int windowWidth;
+	int windowHeigth;
 
 
 public:
-	Ppu(Memory* memory, ColorMode colorMode = greenscale);
-	// Ppu(Memory* memory, int windowWidth = 640, int windowHeight = 576);
+	Ppu(Memory* memory, ColorMode colorMode = grayscaleNative);
 	~Ppu();
 
-
 public:
-	// SDL functions
-	void toggleFullScreen();
+	// Emulation functions
 	void updateScreen();
-	// void SDL_drawSquare(const int& x, const int& y, const int& color);
-	void displayFramerate(const int& value) const;
-	bool windowIsActive();
+	void addGameNameWindow(const string& gameName);
+	void updateFramerate(const int& value) const;
+	void doScreenshot(string path);
+	void toggleFullScreen();
+	void setGameBoyColorMode();
 
-	// Game Boy screen functions
 public:
+	// Game Boy screen functions
 	void reset();
-	void setGameBoyColorMode(const ColorMode& colorMode);
 	void setPixel(const int& x, const int& y, const uint8& r, const uint8& g, const uint8& b);
 	void draw(const int& cycles);
+
 private:
 	void updateStatRegister();
 	void drawLine();
@@ -108,6 +103,10 @@ private:
 	ColorRGB colorToRGB(uint8 colorGameBoy);
 	void requestInterrupt(const uint8& bitIndex);
 	bool checkLyEqualsLyc();
+
+	public:
+	// SDL_Rect getScreenSize();
+	// 	string getScreenshotsPath();
 };
 
 #endif

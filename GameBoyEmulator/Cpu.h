@@ -1,7 +1,7 @@
 #ifndef DEF_CPU
 #define DEF_CPU
 
-#include "binaryLib.h"
+#include "binaryLib/binaryLib.h"
 
 #define DIV 0xFF04
 
@@ -95,9 +95,9 @@ private:
 
 	void writeMemory(const uint16& address, const uint8& data);
 
-
-
 public:
+	// string dump();
+
 	uint16 getPc()const;
 
 private:
