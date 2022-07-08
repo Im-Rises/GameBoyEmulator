@@ -2,6 +2,11 @@
 
 #include <string>
 
+Cartridge::Cartridge()
+{
+
+}
+
 Cartridge::Cartridge(const string& romPath)
 {
 	this->romPath = romPath;
@@ -121,6 +126,12 @@ void Cartridge::reset()
 //Read and write
 uint8 Cartridge::readRomBank(const uint16& address) const
 {
+	// int temp = address - 0x4000 + currentRomBank * 0x4000 > 0x200000;
+	// int temp2 = currentRomBank;
+	// if (address - 0x4000 + currentRomBank * 0x4000 > 0x200000)
+	// 	exit(1);
+	// return rom[0];
+
 	return rom[address - 0x4000 + currentRomBank * 0x4000];
 }
 

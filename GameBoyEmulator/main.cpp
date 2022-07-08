@@ -82,16 +82,16 @@ int main(int argc, char* argv[])
 	{
 		gameBoy = GameBoy::getInstance(); //Game Boy creation
 
-		// iniLoader.setGameBoyParams(gameBoy);
+		iniLoader.setGameBoyParams(gameBoy);
 
-		if (argc > 1) //If a game is loaded
-		{
+		// if (argc > 1) //If a game is loaded
+		// {
 			// romPath = argv[1];
 			Cartridge cartridge(romPath);
 			cout << cartridge.toString() << endl;
 
 			gameBoy->insertGame(&cartridge);
-		}
+		// }
 
 		gameBoy->start();
 	}

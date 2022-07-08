@@ -50,6 +50,7 @@ private:
 
 public:
 	//Constructor and destructor
+	Cartridge();
 	Cartridge(const string& romPath);
 	~Cartridge();
 	void reset();

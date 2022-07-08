@@ -73,6 +73,12 @@ void GameBoy::loadBios(const string& biosPath)
 
 void GameBoy::insertGame(Cartridge* cartridge)
 {
+	if (cartridge == nullptr)
+	{
+		cerr << "Error: Cartridge is empty, the path may be wrong." << endl;
+		exit(1);
+	}
+
 	this->cartridge = cartridge;
 	memory.connectCartridge(cartridge);
 }
