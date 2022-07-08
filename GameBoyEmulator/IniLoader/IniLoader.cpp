@@ -48,23 +48,33 @@ void IniLoader::readingIniFile()
 
 	while (getline(myfile, line))
 	{
-		string label = getStringHeaderLine(line, '=');
-		string value = getStringSuroundedBy(line, '\'');
-
-		if (label == "startBios")
+		string label, value;
+		try
 		{
-			biosAvailable = true;
-			biosPath = value;
+			label = getStringHeaderLine(line, '=');
+			value = getStringSuroundedBy(line, "'");
+
+			if (label == "startBios")
+			{
+				biosAvailable = true;
+			}
+
+			if (label == "biosPath")
+				biosPath = value;
+
+			if (label == "width")
+				width = stoi(value);
+
+			if (label == "height")
+				height = stoi(value);
+
+			if (label == "colorMode")
+				colorModeCode = stoi(value);
 		}
-
-		if (label == "width")
-			width = stoi(value);
-
-		if (label == "height")
-			height = stoi(value);
-
-		if (label == "colorMode")
-			colorModeCode = stoi(value);
+		catch (exception e)
+		{
+			cerr << "Error settings: " << label << " with value: " << value << " is not set correctly" << endl;
+		}
 	}
 
 	myfile.close();
@@ -102,7 +112,9 @@ std::string IniLoader::getStringHeaderLine(std::string text, const char& endChar
 }
 
 
-std::string IniLoader::getStringSuroundedBy(std::string text, const char& character) const
+std::string IniLoader::getStringSuroundedBy(std::string text, string delimiter) const
 {
-	return text.substr(text.find_first_of(character), text.find_last_of(character));
+	int first = text.find(delimiter);
+	int last = text.find_last_of(delimiter);
+	return text.substr(first+1, last - first-1);
 }

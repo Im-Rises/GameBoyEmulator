@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
 {
 	cout << "Nintendo GameBoy Emulator" << endl;
 
-	// IniLoader iniLoader("GameBoyEmulator.ini");
+	IniLoader iniLoader("GameBoyEmulator.ini");
 	GameBoy* gameBoy;
 	string romPath;
 
@@ -77,12 +77,12 @@ int main(int argc, char* argv[])
 		argc = 2;
 	}
 
-	if (true || argc > 1)
-	// if (iniLoader.getBiosAvailable() || argc > 1)
+	// if (true || argc > 1)
+	if (iniLoader.getBiosAvailable() || argc > 1)
 	{
 		gameBoy = GameBoy::getInstance(); //Game Boy creation
 
-		// iniLoader.setGameBoyParams(gameBoy);
+		iniLoader.setGameBoyParams(gameBoy);
 
 		if (argc > 1) //If a game is loaded
 		{

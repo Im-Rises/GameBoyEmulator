@@ -444,6 +444,11 @@ string Cartridge::getCartridgeTypeToString() const
 	}
 }
 
+bool Cartridge::getCartridgeIsEmpty() const
+{
+	return cartridgeEmpty;
+}
+
 
 string Cartridge::getGameName() const
 {

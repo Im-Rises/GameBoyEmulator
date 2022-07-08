@@ -92,6 +92,8 @@ public:
 
 	string getCartridgeTypeToString() const;
 
+	bool getCartridgeIsEmpty()const;
+
 	//toString
 
 	string getGameName()const;

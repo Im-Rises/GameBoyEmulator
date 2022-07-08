@@ -26,6 +26,7 @@ class GameBoy
 private:
 	static GameBoy* gameboyInstance;
 	GameBoy();
+	~GameBoy();
 
 
 	SDL_Event event;
@@ -43,7 +44,7 @@ private:
 	string screenshotsFolder = "./screenshots/";
 
 	float volume;
-	int currentColorMode;
+	int currentColorMode = 0;
 
 public:
 	static GameBoy* getInstance();
@@ -59,7 +60,7 @@ private:
 	/*------------------------------------------Game Boy Cycle--------------------------------*/
 	void doGameBoyCycle(const int cyclesNumberToDo);
 
-	// /*------------------------------------------Handle Emulator inputs--------------------------------*/
+	// /*------------------------------------Handle Emulator inputs--------------------------------*/
 	bool handleInputs();
 
 public:
@@ -88,7 +89,7 @@ public:
 
 	bool static fileExist(const std::string& name);
 
-	string static addLeadingZero(string text, const int& numberOfZero );
+	string static addLeadingZero(string text, const int& numberOfZero);
 };
 
 #endif

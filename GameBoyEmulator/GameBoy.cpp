@@ -36,6 +36,10 @@ GameBoy::GameBoy() : memory(&joypad, &spu), cpu(&memory, &ppu, &spu), ppu(&memor
 	// srand(time(NULL));
 }
 
+GameBoy::~GameBoy()
+{
+}
+
 GameBoy* GameBoy::getInstance()
 {
 	if (gameboyInstance == nullptr)
@@ -74,7 +78,6 @@ void GameBoy::loadBios(const string& biosPath)
 void GameBoy::insertGame(const string& rompath)
 {
 	cartridge.writeRomInCartridge(rompath);
-	memory.connectCartridge(&cartridge);
 }
 
 void GameBoy::start()
@@ -84,7 +87,7 @@ void GameBoy::start()
 	//Calcul the number of cycles for the update of the screen
 	const int cyclesToDo = CLOCK_FREQUENCY / SCREEN_FREQUENCY;
 
-	fpsStartTime = SDL_GetTicks();
+	memory.connectCartridge(&cartridge);
 
 	if (memory.getBiosInMemeory()) //if there is a bios
 	{
@@ -93,7 +96,6 @@ void GameBoy::start()
 			doGameBoyCycle(cyclesToDo);
 		}
 
-		//Load temporary array in memory
 		memory.loadRomBeginning();
 	}
 	else
@@ -108,9 +110,12 @@ void GameBoy::start()
 
 	ppu.addGameNameWindow(gameName);
 
-	while (handleInputs()) // Window is active
+	if (!cartridge.getCartridgeIsEmpty())
 	{
-		doGameBoyCycle(cyclesToDo);
+		while (handleInputs()) // Window is active
+		{
+			doGameBoyCycle(cyclesToDo);
+		}
 	}
 
 	cout << "Stoping Emulation please wait..." << endl;
@@ -199,9 +204,9 @@ bool GameBoy::handleInputs()
 		if (event.key.keysym.sym == SDLK_F10 && switchColorMode)
 		{
 			switchColorMode = false;
-			ppu.setGameBoyColorMode(currentColorMode);
 			currentColorMode++;
-			if (currentColorMode > 4)
+			ppu.setGameBoyColorMode(currentColorMode);
+			if (currentColorMode > 3)
 				currentColorMode = 0;
 		}
 
@@ -342,6 +347,7 @@ void GameBoy::setWidthHeight(const int& width, const int& height)
 void GameBoy::setColorMode(const int& colorModeCode)
 {
 	ppu.setGameBoyColorMode(colorModeCode);
+	currentColorMode = colorModeCode;
 }
 
 

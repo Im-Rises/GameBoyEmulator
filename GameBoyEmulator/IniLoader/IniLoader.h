@@ -30,7 +30,7 @@ public:
 
 private:
 	std::string getStringHeaderLine(std::string text, const char& endCharacter) const;
-	std::string getStringSuroundedBy(std::string text, const char& character) const;
+	std::string getStringSuroundedBy(std::string text, std::string delimiter) const;
 };
 
 #endif
