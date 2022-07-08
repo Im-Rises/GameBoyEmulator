@@ -79,6 +79,8 @@ void GameBoy::insertGame(Cartridge* cartridge)
 
 void GameBoy::start()
 {
+	ppu.powerOnScreen();
+
 	//Calcul the number of cycles for the update of the screen
 	const int cyclesToDo = CLOCK_FREQUENCY / SCREEN_FREQUENCY;
 
@@ -197,7 +199,10 @@ bool GameBoy::handleInputs()
 		if (event.key.keysym.sym == SDLK_F10 && switchColorMode)
 		{
 			switchColorMode = false;
-			ppu.setGameBoyColorMode();
+			ppu.setGameBoyColorMode(currentColorMode);
+			currentColorMode++;
+			if (currentColorMode > sizeof(ColorMode))
+				currentColorMode = 0;
 		}
 
 		if (event.key.keysym.sym == SDLK_p && switchPause)
@@ -324,6 +329,19 @@ void GameBoy::incDecVolume(const float& value)
 bool GameBoy::getBiosInMemory()
 {
 	return memory.getBiosInMemeory();
+}
+
+
+/*------------------------------------------SETTERS-------------------------------*/
+
+void GameBoy::setWidthHeight(const int& width, const int& height)
+{
+	ppu.setWidthHeight(width, height);
+}
+
+void GameBoy::setColorMode(const int& colorModeCode)
+{
+	ppu.setGameBoyColorMode(colorModeCode);
 }
 
 

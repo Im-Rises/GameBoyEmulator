@@ -43,6 +43,7 @@ private:
 	string screenshotsFolder = "./screenshots/";
 
 	float volume;
+	int currentColorMode;
 
 public:
 	static GameBoy* getInstance();
@@ -76,6 +77,11 @@ public:
 public:
 	/*------------------------------------------GETTERS--------------------------------*/
 	bool getBiosInMemory();
+
+	/*------------------------------------------SETTERS-------------------------------*/
+	void setWidthHeight(const int& width, const int& height);
+
+	void setColorMode(const int& colorModeCode);
 
 	/*------------------------------------------OTHER--------------------------------*/
 	string static getDateTime();

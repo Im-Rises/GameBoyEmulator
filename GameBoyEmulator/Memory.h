@@ -75,7 +75,7 @@ public:
 
 	void connectCartridge(Cartridge* cartridge);
 
-	void loadRomInMemory();
+	// void loadRomInMemory();
 	void loadRomBeginning();
 	void setMemoryWithoutBios();
 

@@ -8,6 +8,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#include "../GameBoy.h"
+
 using namespace std;
 
 IniLoader::IniLoader(const std::string& iniFileNamePath)
@@ -19,7 +21,7 @@ IniLoader::IniLoader(const std::string& iniFileNamePath)
 	else
 		createIniFile();
 
-	printSettings();
+	// printSettings();
 }
 
 void IniLoader::createIniFile()
@@ -73,6 +75,21 @@ void IniLoader::printSettings()
 		<< "width=" << width << endl
 		<< "height=" << height << endl
 		<< "colorCode=" << colorModeCode << endl;
+}
+
+bool IniLoader::getBiosAvailable() const
+{
+	return biosAvailable;
+}
+
+void IniLoader::setGameBoyParams(GameBoy* gameBoy)
+{
+	if (biosAvailable)
+		gameBoy->loadBios(biosPath);
+
+	gameBoy->setWidthHeight(width, height);
+
+	gameBoy->setColorMode(colorModeCode);
 }
 
 std::string IniLoader::getStringSuroundedBy(std::string text, const char& character) const

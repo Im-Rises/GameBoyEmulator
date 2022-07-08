@@ -22,4 +22,3 @@ void writeSaveState();
 void loadSaveState();
 
 #endif
-

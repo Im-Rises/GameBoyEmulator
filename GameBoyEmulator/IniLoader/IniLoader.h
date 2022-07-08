@@ -3,6 +3,8 @@
 
 #include <string>
 
+class GameBoy;
+
 class IniLoader
 {
 private:
@@ -21,6 +23,10 @@ public:
 	void createIniFile();
 	void readingIniFile();
 	void printSettings();
+
+	bool getBiosAvailable()const;
+
+	void setGameBoyParams(GameBoy* gameBoy);
 
 private:
 	std::string getStringSuroundedBy(std::string text, const char& character) const;

@@ -72,20 +72,20 @@ bool Memory::loadBiosInMemory(const string& biosPath)
 	}
 }
 
-void Memory::loadRomInMemory()
-{
-	//Load rom from cartridge
-	int startIndex = 0;
-
-	if (biosInMemory)
-		startIndex = 0x100;
-
-
-	for (int i = startIndex; i < RAM_CHARACTER_DATA_BANK_0_DMG; i++)
-	{
-		memoryArray[i] = cartridge->readRomBank(i);
-	}
-}
+// void Memory::loadRomInMemory()
+// {
+// 	//Load rom from cartridge
+// 	int startIndex = 0;
+//
+// 	if (biosInMemory)
+// 		startIndex = 0x100;
+//
+//
+// 	for (int i = startIndex; i < RAM_CHARACTER_DATA_BANK_0_DMG; i++)
+// 	{
+// 		memoryArray[i] = cartridge->readRomBank(i);
+// 	}
+// }
 
 
 void Memory::loadRomBeginning()

@@ -13,6 +13,12 @@ Cartridge::Cartridge(const string& romPath)
 	rom = new uint8[0x200000];
 	ram = new uint8[0x8000];
 
+	if (rom == nullptr || ram == nullptr)
+	{
+		cerr << "Error: cannot dynamically allocate memory" << endl;
+		exit(1);
+	}
+
 	for (int i = 0; i < 0x200000; i++)
 	{
 		rom[i] = 0;
@@ -32,7 +38,7 @@ Cartridge::Cartridge(const string& romPath)
 	}
 	else
 	{
-		cerr<< "Error: Can't open rom file" << endl;
+		cerr << "Error: Can't open rom file" << endl;
 		exit(1);
 	}
 
@@ -393,25 +399,25 @@ string Cartridge::getCartridgeTypeToString() const
 	switch (this->cartridgeType)
 	{
 	case(ROM):
-	{
-		return "ROM";
-	}
+		{
+			return "ROM";
+		}
 	case(MBC1):
-	{
-		return "MBC1";
-	}
+		{
+			return "MBC1";
+		}
 	case(MBC2):
-	{
-		return "MBC2";
-	}
+		{
+			return "MBC2";
+		}
 	case(MBC3):
-	{
-		return "MBC3";
-	}
+		{
+			return "MBC3";
+		}
 	case(MBC5):
-	{
-		return "MBC5";
-	}
+		{
+			return "MBC5";
+		}
 	default:
 		cerr << "Error: Unknown cartridge name." << endl;
 		exit(1);
@@ -419,12 +425,12 @@ string Cartridge::getCartridgeTypeToString() const
 }
 
 
-string Cartridge::getGameName()const
+string Cartridge::getGameName() const
 {
 	return gameName;
 }
 
-string Cartridge::getRomPath()const
+string Cartridge::getRomPath() const
 {
 	return romPath;
 }
@@ -433,6 +439,7 @@ string Cartridge::getRomPath()const
 
 string Cartridge::toString() const
 {
-	return "Game name: " + gameName + "\nCartridge type: " + getCartridgeTypeToString() + "\nDestination: " + destinationText + " " +
+	return "Game name: " + gameName + "\nCartridge type: " + getCartridgeTypeToString() + "\nDestination: " +
+		destinationText + " " +
 		std::to_string(destinationCode);
 }
