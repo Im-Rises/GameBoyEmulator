@@ -53,7 +53,7 @@ void GameBoy::reset()
 	cpu.reset();
 	ppu.reset();
 	spu.reset();
-	cartridge->reset();
+	cartridge.reset();
 }
 
 void GameBoy::setGameBoyWithoutBios()
@@ -71,16 +71,10 @@ void GameBoy::loadBios(const string& biosPath)
 	cpu.setCpuWithBios();
 }
 
-void GameBoy::insertGame(Cartridge* cartridge)
+void GameBoy::insertGame(const string& rompath)
 {
-	if (cartridge == nullptr)
-	{
-		cerr << "Error: Cartridge is empty, the path may be wrong." << endl;
-		exit(1);
-	}
-
-	this->cartridge = cartridge;
-	memory.connectCartridge(cartridge);
+	cartridge.writeRomInCartridge(rompath);
+	memory.connectCartridge(&cartridge);
 }
 
 void GameBoy::start()
@@ -108,7 +102,7 @@ void GameBoy::start()
 		this->setGameBoyWithoutBios();
 	}
 
-	gameName = cartridge->getGameName();
+	gameName = cartridge.getGameName();
 
 	std::filesystem::create_directories(screenshotsFolder + gameName + "/");
 
@@ -207,7 +201,7 @@ bool GameBoy::handleInputs()
 			switchColorMode = false;
 			ppu.setGameBoyColorMode(currentColorMode);
 			currentColorMode++;
-			if (currentColorMode > sizeof(ColorMode))
+			if (currentColorMode > 4)
 				currentColorMode = 0;
 		}
 
@@ -290,7 +284,7 @@ string GameBoy::generateScreeShotName(const int& index)
 /*------------------------------------------Save states--------------------------------*/
 void GameBoy::createSaveState()
 {
-	string path = cartridge->getRomPath() + ".state.bmp";
+	string path = cartridge.getRomPath() + ".state.bmp";
 	// cout << path << endl;
 
 	ppu.doScreenshot(path);
@@ -303,7 +297,7 @@ void GameBoy::createSaveState()
 		// cpu.dump();
 		// spu.dump();
 		// ppu.dump();
-		// cartridge->dump();
+		// cartridge.dump();
 		// mmu.dump();
 		saveState << "Dump data here";
 	}

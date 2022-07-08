@@ -24,11 +24,12 @@ public:
 	void readingIniFile();
 	void printSettings();
 
-	bool getBiosAvailable()const;
+	bool getBiosAvailable() const;
 
 	void setGameBoyParams(GameBoy* gameBoy);
 
 private:
+	std::string getStringHeaderLine(std::string text, const char& endCharacter) const;
 	std::string getStringSuroundedBy(std::string text, const char& character) const;
 };
 

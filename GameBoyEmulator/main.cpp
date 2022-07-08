@@ -1,7 +1,6 @@
 #include <iostream>
 
 #include "IniLoader/IniLoader.h"
-#include "Cartridge.h"
 #include "GameBoy.h"
 
 #include "SDL2/include/SDL.h"
@@ -39,7 +38,7 @@ int main(int argc, char* argv[])
 {
 	cout << "Nintendo GameBoy Emulator" << endl;
 
-	IniLoader iniLoader("GameBoyEmulator.ini");
+	// IniLoader iniLoader("GameBoyEmulator.ini");
 	GameBoy* gameBoy;
 	string romPath;
 
@@ -77,21 +76,19 @@ int main(int argc, char* argv[])
 		// romPath = "../../../../Bios_Games/TestRoms/mem_timing/mem_timing.gb";
 		argc = 2;
 	}
-	
-	if(iniLoader.getBiosAvailable() || argc > 1)
+
+	if (true || argc > 1)
+	// if (iniLoader.getBiosAvailable() || argc > 1)
 	{
 		gameBoy = GameBoy::getInstance(); //Game Boy creation
 
-		iniLoader.setGameBoyParams(gameBoy);
+		// iniLoader.setGameBoyParams(gameBoy);
 
-		// if (argc > 1) //If a game is loaded
-		// {
+		if (argc > 1) //If a game is loaded
+		{
 			// romPath = argv[1];
-			Cartridge cartridge(romPath);
-			cout << cartridge.toString() << endl;
-
-			gameBoy->insertGame(&cartridge);
-		// }
+			gameBoy->insertGame(romPath);
+		}
 
 		gameBoy->start();
 	}

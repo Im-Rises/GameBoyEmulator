@@ -21,7 +21,7 @@ IniLoader::IniLoader(const std::string& iniFileNamePath)
 	else
 		createIniFile();
 
-	// printSettings();
+	printSettings();
 }
 
 void IniLoader::createIniFile()
@@ -48,20 +48,23 @@ void IniLoader::readingIniFile()
 
 	while (getline(myfile, line))
 	{
-		if (line == "startBios")
+		string label = getStringHeaderLine(line, '=');
+		string value = getStringSuroundedBy(line, '\'');
+
+		if (label == "startBios")
 		{
 			biosAvailable = true;
-			biosPath = getStringSuroundedBy(line, '\'');
+			biosPath = value;
 		}
 
-		if (line == "width")
-			width = stoi(getStringSuroundedBy(line, '\''));
+		if (label == "width")
+			width = stoi(value);
 
-		if (line == "height")
-			height = stoi(getStringSuroundedBy(line, '\''));
+		if (label == "height")
+			height = stoi(value);
 
-		if (line == "colorMode")
-			colorModeCode = stoi(getStringSuroundedBy(line, '\''));
+		if (label == "colorMode")
+			colorModeCode = stoi(value);
 	}
 
 	myfile.close();
@@ -91,6 +94,13 @@ void IniLoader::setGameBoyParams(GameBoy* gameBoy)
 
 	gameBoy->setColorMode(colorModeCode);
 }
+
+
+std::string IniLoader::getStringHeaderLine(std::string text, const char& endCharacter) const
+{
+	return text.substr(0, text.find_last_of(endCharacter));
+}
+
 
 std::string IniLoader::getStringSuroundedBy(std::string text, const char& character) const
 {

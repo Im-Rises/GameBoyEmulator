@@ -4,19 +4,36 @@
 
 Cartridge::Cartridge()
 {
-
-}
-
-Cartridge::Cartridge(const string& romPath)
-{
-	this->romPath = romPath;
-
 	destinationMap.insert(std::make_pair(0x00, "Japan"));
 	destinationMap.insert(std::make_pair(0x01, "Other"));
 
 	//Instead of loading all the rom to the ram of the computer, perhaps i should open the file and read it 
 	rom = new uint8[0x200000];
 	ram = new uint8[0x8000];
+
+	cartridgeEmpty = true;
+}
+
+// Cartridge::Cartridge(const string& romPath)
+// {
+//
+// }
+
+Cartridge::~Cartridge()
+{
+	delete[] rom; //Not call if program crash
+	delete[] ram;
+}
+
+void Cartridge::reset()
+{
+	currentRomBank = 1;
+	currentRamBank = 0;
+}
+
+void Cartridge::writeRomInCartridge(const string& romPath)
+{
+	this->romPath = romPath;
 
 	if (rom == nullptr || ram == nullptr)
 	{
@@ -68,35 +85,35 @@ Cartridge::Cartridge(const string& romPath)
 	switch (rom[0x147])
 	{
 	case(0):
-		{
-			cartridgeType = ROM;
-			break;
-		}
+	{
+		cartridgeType = ROM;
+		break;
+	}
 	case(1):
-		{
-			cartridgeType = MBC1;
-			break;
-		}
+	{
+		cartridgeType = MBC1;
+		break;
+	}
 	case(2):
-		{
-			cartridgeType = MBC1;
-			break;
-		}
+	{
+		cartridgeType = MBC1;
+		break;
+	}
 	case(3):
-		{
-			cartridgeType = MBC1;
-			break;
-		}
+	{
+		cartridgeType = MBC1;
+		break;
+	}
 	case(5):
-		{
-			cartridgeType = MBC2;
-			break;
-		}
+	{
+		cartridgeType = MBC2;
+		break;
+	}
 	case(6):
-		{
-			cartridgeType = MBC2;
-			break;
-		}
+	{
+		cartridgeType = MBC2;
+		break;
+	}
 	default:
 		cerr << "Error: Cartridge type not recognized" << endl;
 		exit(1);
@@ -108,18 +125,10 @@ Cartridge::Cartridge(const string& romPath)
 
 	destinationCode = rom[0x014A];
 	destinationText = destinationMap[destinationCode];
-}
 
-Cartridge::~Cartridge()
-{
-	delete[] rom; //Not call if program crash
-	delete[] ram;
-}
+	cartridgeEmpty = false;
 
-void Cartridge::reset()
-{
-	currentRomBank = 1;
-	currentRamBank = 0;
+	cout << this->toString() << endl;
 }
 
 

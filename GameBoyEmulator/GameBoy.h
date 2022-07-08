@@ -35,7 +35,7 @@ private:
 	Ppu ppu;
 	Joypad joypad;
 	Spu spu;
-	Cartridge* cartridge = nullptr;
+	Cartridge cartridge;
 
 	uint8 fps;
 	uint32_t fpsStartTime;
@@ -51,7 +51,7 @@ public:
 	void setGameBoyWithoutBios();
 
 	void loadBios(const string& biosPath);
-	void insertGame(Cartridge* cartridge);
+	void insertGame(const string& rompath);
 
 	void start();
 
