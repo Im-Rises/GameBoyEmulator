@@ -36,6 +36,10 @@ GameBoy::GameBoy() : memory(&joypad, &spu), cpu(&memory, &ppu, &spu), ppu(&memor
 	// srand(time(NULL));
 }
 
+GameBoy::~GameBoy()
+{
+}
+
 GameBoy* GameBoy::getInstance()
 {
 	if (gameboyInstance == nullptr)
@@ -53,7 +57,7 @@ void GameBoy::reset()
 	cpu.reset();
 	ppu.reset();
 	spu.reset();
-	cartridge->reset();
+	cartridge.reset();
 }
 
 void GameBoy::setGameBoyWithoutBios()
@@ -71,18 +75,19 @@ void GameBoy::loadBios(const string& biosPath)
 	cpu.setCpuWithBios();
 }
 
-void GameBoy::insertGame(Cartridge* cartridge)
+void GameBoy::insertGame(const string& rompath)
 {
-	this->cartridge = cartridge;
-	memory.connectCartridge(cartridge);
+	cartridge.writeRomInCartridge(rompath);
 }
 
 void GameBoy::start()
 {
+	ppu.powerOnScreen();
+
 	//Calcul the number of cycles for the update of the screen
 	const int cyclesToDo = CLOCK_FREQUENCY / SCREEN_FREQUENCY;
 
-	fpsStartTime = SDL_GetTicks();
+	memory.connectCartridge(&cartridge);
 
 	if (memory.getBiosInMemeory()) //if there is a bios
 	{
@@ -91,7 +96,6 @@ void GameBoy::start()
 			doGameBoyCycle(cyclesToDo);
 		}
 
-		//Load temporary array in memory
 		memory.loadRomBeginning();
 	}
 	else
@@ -100,15 +104,18 @@ void GameBoy::start()
 		this->setGameBoyWithoutBios();
 	}
 
-	gameName = cartridge->getGameName();
+	gameName = cartridge.getGameName();
 
 	std::filesystem::create_directories(screenshotsFolder + gameName + "/");
 
 	ppu.addGameNameWindow(gameName);
 
-	while (handleInputs()) // Window is active
+	if (!cartridge.getCartridgeIsEmpty())
 	{
-		doGameBoyCycle(cyclesToDo);
+		while (handleInputs()) // Window is active
+		{
+			doGameBoyCycle(cyclesToDo);
+		}
 	}
 
 	cout << "Stoping Emulation please wait..." << endl;
@@ -197,7 +204,10 @@ bool GameBoy::handleInputs()
 		if (event.key.keysym.sym == SDLK_F10 && switchColorMode)
 		{
 			switchColorMode = false;
-			ppu.setGameBoyColorMode();
+			currentColorMode++;
+			ppu.setGameBoyColorMode(currentColorMode);
+			if (currentColorMode > 3)
+				currentColorMode = 0;
 		}
 
 		if (event.key.keysym.sym == SDLK_p && switchPause)
@@ -279,7 +289,7 @@ string GameBoy::generateScreeShotName(const int& index)
 /*------------------------------------------Save states--------------------------------*/
 void GameBoy::createSaveState()
 {
-	string path = cartridge->getRomPath() + ".state.bmp";
+	string path = cartridge.getRomPath() + ".state.bmp";
 	// cout << path << endl;
 
 	ppu.doScreenshot(path);
@@ -292,7 +302,7 @@ void GameBoy::createSaveState()
 		// cpu.dump();
 		// spu.dump();
 		// ppu.dump();
-		// cartridge->dump();
+		// cartridge.dump();
 		// mmu.dump();
 		saveState << "Dump data here";
 	}
@@ -324,6 +334,20 @@ void GameBoy::incDecVolume(const float& value)
 bool GameBoy::getBiosInMemory()
 {
 	return memory.getBiosInMemeory();
+}
+
+
+/*------------------------------------------SETTERS-------------------------------*/
+
+void GameBoy::setWidthHeight(const int& width, const int& height)
+{
+	ppu.setWidthHeight(width, height);
+}
+
+void GameBoy::setColorMode(const int& colorModeCode)
+{
+	ppu.setGameBoyColorMode(colorModeCode);
+	currentColorMode = colorModeCode;
 }
 
 

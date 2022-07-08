@@ -2,7 +2,7 @@
 
 #include "Spu.h"
 
-Memory::Memory(Joypad* joypad, Spu* spu):memoryArray{}
+Memory::Memory(Joypad* joypad, Spu* spu): memoryArray{}
 {
 	this->spu = spu;
 	this->joypad = joypad;
@@ -44,9 +44,12 @@ void Memory::connectCartridge(Cartridge* cartridge)
 	if (biosInMemory)
 		index = 0x100;
 
-	for (int i = index; i < 0x8000; i++)
+	if (!cartridge->getCartridgeIsEmpty())
 	{
-		memoryArray[i] = cartridge->getRomFromIndex(i);
+		for (int i = index; i < 0x8000; i++)
+		{
+			memoryArray[i] = cartridge->getRomFromIndex(i);
+		}
 	}
 }
 
@@ -67,32 +70,35 @@ bool Memory::loadBiosInMemory(const string& biosPath)
 	}
 	else
 	{
-		cerr<< "Error: Can't open bios file" << endl;
+		cerr << "Error: Can't open bios file" << endl;
 		return false;
 	}
 }
 
-void Memory::loadRomInMemory()
-{
-	//Load rom from cartridge
-	int startIndex = 0;
-
-	if (biosInMemory)
-		startIndex = 0x100;
-
-
-	for (int i = startIndex; i < RAM_CHARACTER_DATA_BANK_0_DMG; i++)
-	{
-		memoryArray[i] = cartridge->readRomBank(i);
-	}
-}
+// void Memory::loadRomInMemory()
+// {
+// 	//Load rom from cartridge
+// 	int startIndex = 0;
+//
+// 	if (biosInMemory)
+// 		startIndex = 0x100;
+//
+//
+// 	for (int i = startIndex; i < RAM_CHARACTER_DATA_BANK_0_DMG; i++)
+// 	{
+// 		memoryArray[i] = cartridge->readRomBank(i);
+// 	}
+// }
 
 
 void Memory::loadRomBeginning()
 {
-	for (int i = 0; i < 0x100; i++)
+	if (!cartridge->getCartridgeIsEmpty())
 	{
-		memoryArray[i] = cartridge->getRomFromIndex(i);
+		for (int i = 0; i < 0x100; i++)
+		{
+			memoryArray[i] = cartridge->getRomFromIndex(i);
+		}
 	}
 }
 

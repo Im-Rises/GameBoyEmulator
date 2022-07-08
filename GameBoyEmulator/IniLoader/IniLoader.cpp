@@ -8,6 +8,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#include "../GameBoy.h"
+
 using namespace std;
 
 IniLoader::IniLoader(const std::string& iniFileNamePath)
@@ -46,20 +48,33 @@ void IniLoader::readingIniFile()
 
 	while (getline(myfile, line))
 	{
-		if (line == "startBios")
+		string label, value;
+		try
 		{
-			biosAvailable = true;
-			biosPath = getStringSuroundedBy(line, '\'');
+			label = getStringHeaderLine(line, '=');
+			value = getStringSuroundedBy(line, "'");
+
+			if (label == "startBios")
+			{
+				biosAvailable = true;
+			}
+
+			if (label == "biosPath")
+				biosPath = value;
+
+			if (label == "width")
+				width = stoi(value);
+
+			if (label == "height")
+				height = stoi(value);
+
+			if (label == "colorMode")
+				colorModeCode = stoi(value);
 		}
-
-		if (line == "width")
-			width = stoi(getStringSuroundedBy(line, '\''));
-
-		if (line == "height")
-			height = stoi(getStringSuroundedBy(line, '\''));
-
-		if (line == "colorMode")
-			colorModeCode = stoi(getStringSuroundedBy(line, '\''));
+		catch (exception e)
+		{
+			cerr << "Error settings: " << label << " with value: " << value << " is not set correctly" << endl;
+		}
 	}
 
 	myfile.close();
@@ -75,7 +90,31 @@ void IniLoader::printSettings()
 		<< "colorCode=" << colorModeCode << endl;
 }
 
-std::string IniLoader::getStringSuroundedBy(std::string text, const char& character) const
+bool IniLoader::getBiosAvailable() const
 {
-	return text.substr(text.find_first_of(character), text.find_last_of(character));
+	return biosAvailable;
+}
+
+void IniLoader::setGameBoyParams(GameBoy* gameBoy)
+{
+	if (biosAvailable)
+		gameBoy->loadBios(biosPath);
+
+	gameBoy->setWidthHeight(width, height);
+
+	gameBoy->setColorMode(colorModeCode);
+}
+
+
+std::string IniLoader::getStringHeaderLine(std::string text, const char& endCharacter) const
+{
+	return text.substr(0, text.find_last_of(endCharacter));
+}
+
+
+std::string IniLoader::getStringSuroundedBy(std::string text, string delimiter) const
+{
+	int first = text.find(delimiter);
+	int last = text.find_last_of(delimiter);
+	return text.substr(first+1, last - first-1);
 }

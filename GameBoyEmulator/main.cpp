@@ -1,7 +1,6 @@
 #include <iostream>
 
 #include "IniLoader/IniLoader.h"
-#include "Cartridge.h"
 #include "GameBoy.h"
 
 #include "SDL2/include/SDL.h"
@@ -39,20 +38,18 @@ int main(int argc, char* argv[])
 {
 	cout << "Nintendo GameBoy Emulator" << endl;
 
-	// string biosPath;
-	// bool gameBoyCanStart = false;
-	string romPath;
-
 	IniLoader iniLoader("GameBoyEmulator.ini");
+	GameBoy* gameBoy;
+	string romPath;
 
 
 	if (true) //Debug
 	{
 		// biosPath = "../../../../Bios_Games/Bios/dmg_boot.bin";
 		romPath = "../../../../Bios_Games/Games/Kirby's dream land.gb";
-		//romPath = "../../../../Bios_Games/Games/MarioLand2.gb";
+		// romPath = "../../../../Bios_Games/Games/MarioLand2.gb";
 		// romPath = "../../../../Bios_Games/Games/bgbtest.gb";
-		//romPath = "../../Bios_Games/Games/Gremlins 2.gb";
+		// romPath = "../../../../Bios_Games/Games/Gremlins 2.gb";
 		// romPath = "../../../../Bios_Games/Games/tetris.gb";
 		// romPath = "../../../../Bios_Games/Games/tennis.gb";
 		// romPath = "../../../../Bios_Games/Games/Zelda Link's Awakening.gb";
@@ -80,29 +77,21 @@ int main(int argc, char* argv[])
 		argc = 2;
 	}
 
-	// Read .ini file
-
-	// if (false) //settings.isBiosPresent()
-	// {
-	// 	gameBoy->loadBios(biosPath);
-	// }
-
-	if (argc > 1) //If a game is loaded
+	// if (true || argc > 1)
+	if (iniLoader.getBiosAvailable() || argc > 1)
 	{
-		GameBoy* gameBoy = GameBoy::getInstance(); //Game Boy creation
-		// romPath = argv[1];
-		Cartridge cartridge(romPath);
-		cout << cartridge.toString() << endl;
+		gameBoy = GameBoy::getInstance(); //Game Boy creation
 
-		gameBoy->insertGame(&cartridge);
+		iniLoader.setGameBoyParams(gameBoy);
+
+		if (argc > 1) //If a game is loaded
+		{
+			// romPath = argv[1];
+			gameBoy->insertGame(romPath);
+		}
+
 		gameBoy->start();
 	}
-	// else if (gameBoy->getBiosInMemory()) //If no game but bios is present
-	// {
-	// 	GameBoy* gameBoy = GameBoy::getInstance(); //Game Boy creation
-	// 	writeUsage(argv[0]);
-	// 	gameBoy->start();
-	// }
 	else //Write usage
 	{
 		writeUsage(argv[0]);

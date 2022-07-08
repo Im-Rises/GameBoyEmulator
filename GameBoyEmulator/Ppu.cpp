@@ -7,10 +7,10 @@
 
 #include "SDL2/include/SDL.h"
 
-Ppu::Ppu(Memory* memory, ColorMode colorMode)
+Ppu::Ppu(Memory* memory, ColorMode colorMode, int width, int height)
 {
-	int windowWidth = 640;
-	int windowHeight = 576;
+	int windowWidth = width;
+	int windowHeight = height;
 
 	// Connection to memory
 	this->memory = memory;
@@ -18,8 +18,8 @@ Ppu::Ppu(Memory* memory, ColorMode colorMode)
 	//GameBoy screen
 	reset();
 
-	currentColorMode = colorMode;
-	setGameBoyColorMode();
+	// currentColorMode = colorMode;
+	setGameBoyColorMode(colorMode);
 
 	//SDL
 
@@ -31,8 +31,8 @@ Ppu::Ppu(Memory* memory, ColorMode colorMode)
 
 	SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
 
-	window = SDL_CreateWindow(windowTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth,
-	                          windowHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN);
+	// window = SDL_CreateWindow(windowTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth,windowHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN);
+	window = SDL_CreateWindow(windowTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth,windowHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN);
 	if (window == NULL)
 	{
 		std::cerr << "Error window creation.\n" << SDL_GetError() << std::endl;
@@ -58,7 +58,8 @@ Ppu::Ppu(Memory* memory, ColorMode colorMode)
 		std::cout << "Screen Hardware mode" << std::endl;
 	}
 
-	SDL_RenderSetLogicalSize(renderer, 160, 144);// Keep ratio according to the width and height 160 and 144 pixels from the GameBoy
+	SDL_RenderSetLogicalSize(renderer, 160, 144);
+	// Keep ratio according to the width and height 160 and 144 pixels from the GameBoy
 
 	texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, 160, 144);
 	if (texture == NULL)
@@ -82,6 +83,11 @@ Ppu::~Ppu()
 		SDL_DestroyTexture(texture);
 
 	SDL_Quit();
+}
+
+void Ppu::powerOnScreen()
+{
+	SDL_ShowWindow(window);
 }
 
 
@@ -144,10 +150,10 @@ void Ppu::toggleFullScreen()
 	windowing = !windowing;
 }
 
-void Ppu::setGameBoyColorMode()
+void Ppu::setGameBoyColorMode(const int& colorModeCode)
 {
 	//GameBoy color mode
-	switch (currentColorMode)
+	switch (colorModeCode)
 	{
 	case(grayscaleNative):
 		GameBoyColorMode.darkest = {0x00, 0x00, 0x00};
@@ -180,13 +186,16 @@ void Ppu::setGameBoyColorMode()
 	// 	GameBoyColorMode.lightest = { 0x6c,0x6c,0x4e };
 	// 	break;
 	default:
-		currentColorMode = 0;
-		setGameBoyColorMode();
-		currentColorMode--;
+		setGameBoyColorMode(0);
 		break;
 	}
+}
 
-	currentColorMode++;
+void Ppu::setWidthHeight(const int& width, const int& height)
+{
+	this->windowWidth = width;
+	this->windowHeigth = height;
+	SDL_SetWindowSize(window, width, height);
 }
 
 /*-------------------------------------------------------------GAMEBOY screen emulation------------------------------------------------------------------------------*/

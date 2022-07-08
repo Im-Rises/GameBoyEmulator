@@ -26,6 +26,7 @@ class GameBoy
 private:
 	static GameBoy* gameboyInstance;
 	GameBoy();
+	~GameBoy();
 
 
 	SDL_Event event;
@@ -35,7 +36,7 @@ private:
 	Ppu ppu;
 	Joypad joypad;
 	Spu spu;
-	Cartridge* cartridge = nullptr;
+	Cartridge cartridge;
 
 	uint8 fps;
 	uint32_t fpsStartTime;
@@ -43,6 +44,7 @@ private:
 	string screenshotsFolder = "./screenshots/";
 
 	float volume;
+	int currentColorMode = 0;
 
 public:
 	static GameBoy* getInstance();
@@ -50,7 +52,7 @@ public:
 	void setGameBoyWithoutBios();
 
 	void loadBios(const string& biosPath);
-	void insertGame(Cartridge* cartridge);
+	void insertGame(const string& rompath);
 
 	void start();
 
@@ -58,7 +60,7 @@ private:
 	/*------------------------------------------Game Boy Cycle--------------------------------*/
 	void doGameBoyCycle(const int cyclesNumberToDo);
 
-	// /*------------------------------------------Handle Emulator inputs--------------------------------*/
+	// /*------------------------------------Handle Emulator inputs--------------------------------*/
 	bool handleInputs();
 
 public:
@@ -77,12 +79,17 @@ public:
 	/*------------------------------------------GETTERS--------------------------------*/
 	bool getBiosInMemory();
 
+	/*------------------------------------------SETTERS-------------------------------*/
+	void setWidthHeight(const int& width, const int& height);
+
+	void setColorMode(const int& colorModeCode);
+
 	/*------------------------------------------OTHER--------------------------------*/
 	string static getDateTime();
 
 	bool static fileExist(const std::string& name);
 
-	string static addLeadingZero(string text, const int& numberOfZero );
+	string static addLeadingZero(string text, const int& numberOfZero);
 };
 
 #endif
