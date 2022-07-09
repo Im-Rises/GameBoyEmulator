@@ -294,22 +294,22 @@ void GameBoy::createSaveState()
 
 	ppu.doScreenshot(path);
 
-	ofstream saveState;
-	saveState.open(path, std::ios_base::app | std::ios_base::binary | std::ios_base::out | std::ios_base::ate);
+	// ofstream saveState;
+	// saveState.open(path, std::ios_base::app | std::ios_base::binary | std::ios_base::out | std::ios_base::ate);
 
-	if (saveState)
-	{
-		// cpu.dump();
-		// spu.dump();
-		// ppu.dump();
+	// if (saveState)
+	// {
+		cpu.dump(path);
+		// // spu.dump();
+		// // ppu.dump();
 		// cartridge.dump();
 		// mmu.dump();
-		saveState << "Dump data here";
-	}
-	else
-		cerr << "Error: Writing data to savestate" << endl;
+		// saveState << "Dump data here";
+	// }
+	// else
+	// 	cerr << "Error: Writing data to savestate" << endl;
 
-	saveState.close();
+	// saveState.close();
 }
 
 void GameBoy::loadSaveState()

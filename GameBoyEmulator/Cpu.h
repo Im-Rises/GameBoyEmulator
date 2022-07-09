@@ -78,6 +78,8 @@ public:
 
 	int doCycle();					//Do cpu cycle
 
+	void dump(const string& filePath);
+
 private:
 	void executeOpcode(uint8 opcode);			//Execute an opcode
 	void executeOpcodeFollowingCB();			//Execute an opcode on two bytes (following the CB opcode) 

@@ -1,6 +1,7 @@
 #include "Cpu.h"
 
 #include <iostream>
+#include <fstream>
 
 Cpu::Cpu(Memory* memory, Ppu* ppu, Spu* spu)
 {
@@ -34,7 +35,7 @@ void Cpu::reset()
 		setCpuWithoutBios();
 	}
 	timerFrequency = 1024;
-	previousInputs = 0b11111111;
+	// previousInputs = 0b11111111;
 	timerCounter = 0;
 }
 
@@ -68,7 +69,7 @@ void Cpu::setCpuWithoutBios()
 
 	H = 0x01;
 	L = 0x4D;
-	previousInputs = 0b11111111;
+	// previousInputs = 0b11111111;
 }
 
 int Cpu::doCycle()
@@ -119,6 +120,37 @@ int Cpu::doCycle()
 	handleInterupt();
 
 	return (clockCycles + clockCycleDuringOpcode);
+}
+
+void Cpu::dump(const string& filePath)
+{
+	uint8 regs[7] = {
+		A, B, C, D, E, H, L
+	};
+
+	uint16 pcsp[2] = {
+		pc, sp
+	};
+
+	int intVariables[4] = {
+		clockCycles, clockCycleDuringOpcode, timerCounter, timerFrequency
+	};
+
+	bool boolVariables[7] = {
+		halted, stopped, IME, F.Z, F.N, F.H, F.CY
+	};
+
+	cout << "Dumping CPU ..." << endl;
+
+	ofstream myfile;
+	myfile.open(filePath, ios::out | ios::app | ios::ate| ios::binary);
+	myfile.write((char*)regs, sizeof(regs));
+	// myfile.write((char*)regs, sizeof(regs));
+	// myfile.write((char*)regs, sizeof(regs));
+	// myfile.write((char*)regs, sizeof(regs));
+	// myfile << "startBios='" << biosAvailable << "'" << endl;
+	// myfile << "biosPath='" << biosPath << "'" << endl;
+	myfile.close();
 }
 
 
@@ -278,10 +310,10 @@ void Cpu::doInterupt(const uint8& bitIndex)
 			break;
 		}
 	default:
-	{
-		cerr << "Error: Unknown interrupt" << endl;
-		exit(1);
-	}
+		{
+			cerr << "Error: Unknown interrupt" << endl;
+			exit(1);
+		}
 	}
 }
 
@@ -1558,7 +1590,8 @@ void Cpu::executeOpcode(uint8 opcode)
 		}
 	default:
 		{
-			cerr << "Error op-code 0x" << hex << static_cast<int>(opcode) << " unknown at pc = 0x" << hex << static_cast<int>(pc) << endl;
+			cerr << "Error op-code 0x" << hex << static_cast<int>(opcode) << " unknown at pc = 0x" << hex << static_cast
+				<int>(pc) << endl;
 			exit(1);
 		}
 	}

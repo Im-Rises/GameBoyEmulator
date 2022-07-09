@@ -75,7 +75,6 @@ public:
 	void setVolume(const float& volume);
 	void incDecVolume(const float& value);
 
-public:
 	/*------------------------------------------GETTERS--------------------------------*/
 	bool getBiosInMemory();
 

@@ -7,12 +7,11 @@
 
 /*
  * To do list:
- * - add .ini file (add possibility to load bootrom)
  * - Finish savestate
- * - Correct PPU background aliasing
- * - Correct inputs interrupt in joypad.cpp (interrupts in general)
  * - Add MBC5
  * - Add saves
+ * - Correct PPU background aliasing
+ * - Correct inputs interrupt in joypad.cpp (interrupts in general)
  */
 
 void writeUsage(const char* appName)
@@ -74,7 +73,7 @@ int main(int argc, char* argv[])
 		// romPath = "../../../../Bios_Games/TestRoms/instr_timing/instr_timing.gb";
 		// romPath = "../../../../Bios_Games/TestRoms/mem_timing-2/mem_timing.gb";
 		// romPath = "../../../../Bios_Games/TestRoms/mem_timing/mem_timing.gb";
-		argc = 2;
+		// argc = 2;
 	}
 
 	// if (true || argc > 1)

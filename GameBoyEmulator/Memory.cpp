@@ -2,12 +2,21 @@
 
 #include "Spu.h"
 
-Memory::Memory(Joypad* joypad, Spu* spu): memoryArray{}
+Memory::Memory(Joypad* joypad, Spu* spu)//memoryArray{}
 {
 	this->spu = spu;
 	this->joypad = joypad;
 	biosInMemory = false;
 	gameInMemory = false;
+
+	for (uint8& i : memoryArray)
+		i = 0x0;
+
+	// To print the black rectangle when starting the game boy without games
+	for (int i = 0x100; i< 0x8000;i++)
+	{
+		memoryArray[i] = 0xFF;
+	}
 }
 
 Memory::~Memory()
