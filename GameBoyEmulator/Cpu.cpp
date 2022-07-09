@@ -145,11 +145,9 @@ void Cpu::dump(const string& filePath)
 	ofstream myfile;
 	myfile.open(filePath, ios::out | ios::app | ios::ate| ios::binary);
 	myfile.write((char*)regs, sizeof(regs));
-	// myfile.write((char*)regs, sizeof(regs));
-	// myfile.write((char*)regs, sizeof(regs));
-	// myfile.write((char*)regs, sizeof(regs));
-	// myfile << "startBios='" << biosAvailable << "'" << endl;
-	// myfile << "biosPath='" << biosPath << "'" << endl;
+	myfile.write((char*)pcsp, sizeof(pcsp));
+	myfile.write((char*)intVariables, sizeof(intVariables));
+	myfile.write((char*)boolVariables, sizeof(boolVariables));
 	myfile.close();
 }
 
