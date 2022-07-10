@@ -69,6 +69,7 @@ void GameBoy::setGameBoyWithoutBios()
 
 void GameBoy::loadBios(const string& biosPath)
 {
+	this->biosPath = biosPath;
 	if (memory.loadBiosInMemory(biosPath) == false)
 		exit(1);
 
@@ -89,13 +90,22 @@ void GameBoy::start()
 
 	memory.connectCartridge(&cartridge);
 
+	gameName = cartridge.getGameName();
+
+	if (getBiosInMemory())
+	{
+		biosName = biosPath.substr(biosPath.find_last_of('/'));
+		biosName.erase(remove(biosName.begin(), biosName.end(), '/'), biosName.end());
+	}
+
 	if (memory.getBiosInMemeory()) //if there is a bios
 	{
+		processingBios = true;
 		while (handleInputs() && cpu.getPc() < 0x100) //cpu.getPc() < 0x100 && glfwOpenglLib.windowHandling()
 		{
 			doGameBoyCycle(cyclesToDo);
 		}
-
+		processingBios = false;
 		memory.loadRomBeginning();
 	}
 	else
@@ -104,9 +114,10 @@ void GameBoy::start()
 		this->setGameBoyWithoutBios();
 	}
 
-	gameName = cartridge.getGameName();
-
-	std::filesystem::create_directories(screenshotsFolder + gameName + "/");
+	if (gameName.empty())
+		std::filesystem::create_directories(screenshotsFolder + biosName + "/");
+	else
+		std::filesystem::create_directories(screenshotsFolder + gameName + "/");
 
 	ppu.addGameNameWindow(gameName);
 
@@ -281,6 +292,13 @@ string GameBoy::generateScreeShotName(const int& index)
 {
 	string indexS = to_string(index);
 	indexS = addLeadingZero(indexS, 2);
+
+	if (gameName.empty() || processingBios)
+	{
+		return screenshotsFolder + biosName + "/" + biosName + " " + getDateTime() + "-(" + indexS
+			+ ')' + ".bmp";
+	}
+
 	return screenshotsFolder + gameName + "/" + gameName + " " + getDateTime() + "-(" + indexS
 		+ ')' + ".bmp";
 }
@@ -290,6 +308,7 @@ string GameBoy::generateScreeShotName(const int& index)
 void GameBoy::createSaveState()
 {
 	string path = cartridge.getRomPath() + ".state.bmp";
+	(path == ".state.bmp") ? path = biosPath + path : path;
 	// cout << path << endl;
 
 	ppu.doScreenshot(path);
@@ -299,12 +318,12 @@ void GameBoy::createSaveState()
 
 	// if (saveState)
 	// {
-		cpu.dump(path);
-		// // spu.dump();
-		// // ppu.dump();
-		// cartridge.dump();
-		// mmu.dump();
-		// saveState << "Dump data here";
+	cpu.dump(path);
+	// // spu.dump();
+	// // ppu.dump();
+	// cartridge.dump();
+	// mmu.dump();
+	// saveState << "Dump data here";
 	// }
 	// else
 	// 	cerr << "Error: Writing data to savestate" << endl;

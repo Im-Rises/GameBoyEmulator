@@ -43,8 +43,11 @@ private:
 	string gameName;
 	string screenshotsFolder = "./screenshots/";
 
+	bool processingBios = false;
 	float volume;
 	int currentColorMode = 0;
+	string biosPath;
+	string biosName;
 
 public:
 	static GameBoy* getInstance();

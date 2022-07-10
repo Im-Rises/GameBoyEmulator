@@ -56,7 +56,7 @@ void IniLoader::readingIniFile()
 
 			if (label == "startBios")
 			{
-				biosAvailable = true;
+				biosAvailable = stoi(value);
 			}
 
 			if (label == "biosPath")
