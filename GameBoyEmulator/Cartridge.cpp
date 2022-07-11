@@ -31,6 +31,26 @@ void Cartridge::reset()
 	currentRamBank = 0;
 }
 
+void Cartridge::dump(const string& filePath)
+{
+	uint8 currentRomRamBanks[2] = {
+		currentRomBank, currentRamBank
+	};
+
+	bool romRamBanksEnabled[2] = {
+		romBankingEnable, ramBankingEnable
+	};
+
+
+	cout << "Dumping Cartridge infos..." << endl;
+
+	ofstream myfile;
+	myfile.open(filePath, ios::out | ios::app | ios::ate | ios::binary);
+	myfile.write((char*)currentRomRamBanks, sizeof(currentRomRamBanks));
+	myfile.write((char*)romRamBanksEnabled, sizeof(romRamBanksEnabled));
+	myfile.close();
+}
+
 void Cartridge::writeRomInCartridge(const string& romPath)
 {
 	this->romPath = romPath;
@@ -85,35 +105,35 @@ void Cartridge::writeRomInCartridge(const string& romPath)
 	switch (rom[0x147])
 	{
 	case(0):
-	{
-		cartridgeType = ROM;
-		break;
-	}
+		{
+			cartridgeType = ROM;
+			break;
+		}
 	case(1):
-	{
-		cartridgeType = MBC1;
-		break;
-	}
+		{
+			cartridgeType = MBC1;
+			break;
+		}
 	case(2):
-	{
-		cartridgeType = MBC1;
-		break;
-	}
+		{
+			cartridgeType = MBC1;
+			break;
+		}
 	case(3):
-	{
-		cartridgeType = MBC1;
-		break;
-	}
+		{
+			cartridgeType = MBC1;
+			break;
+		}
 	case(5):
-	{
-		cartridgeType = MBC2;
-		break;
-	}
+		{
+			cartridgeType = MBC2;
+			break;
+		}
 	case(6):
-	{
-		cartridgeType = MBC2;
-		break;
-	}
+		{
+			cartridgeType = MBC2;
+			break;
+		}
 	default:
 		cerr << "Error: Cartridge type not recognized" << endl;
 		exit(1);

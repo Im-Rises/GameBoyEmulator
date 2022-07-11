@@ -71,6 +71,8 @@ public:
 	~Memory();
 	void reset();
 
+	void dump(const string& filePath);
+
 	bool loadBiosInMemory(const string& biosPath);
 
 	void connectCartridge(Cartridge* cartridge);

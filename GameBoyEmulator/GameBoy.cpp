@@ -132,7 +132,6 @@ void GameBoy::start()
 	cout << "Stoping Emulation please wait..." << endl;
 }
 
-
 void GameBoy::doGameBoyCycle(const int cyclesToDo)
 {
 	uint32_t startTime = SDL_GetTicks();
@@ -174,6 +173,7 @@ bool GameBoy::handleInputs()
 	static bool switchVolumePlus = false;
 	static bool switchVolumeMinus = false;
 	static bool switchSaveState = false;
+	static bool switchLoadState = false;
 	static bool switchReset = false;
 
 	SDL_PollEvent(&event);
@@ -200,6 +200,9 @@ bool GameBoy::handleInputs()
 
 		if (event.key.keysym.sym == SDLK_b)
 			switchSaveState = true;
+
+		if (event.key.keysym.sym == SDLK_n)
+			switchLoadState = true;
 
 		if (event.key.keysym.sym == SDLK_TAB)
 			switchReset = true;
@@ -276,6 +279,12 @@ bool GameBoy::handleInputs()
 			createSaveState();
 		}
 
+		if (event.key.keysym.sym == SDLK_n && switchLoadState)
+		{
+			switchLoadState = false;
+			loadSaveState();
+		}
+
 		if (event.key.keysym.sym == SDLK_TAB && switchReset)
 		{
 			switchReset = false;
@@ -321,8 +330,8 @@ void GameBoy::createSaveState()
 	cpu.dump(path);
 	// // spu.dump();
 	// // ppu.dump();
-	// cartridge.dump();
-	// mmu.dump();
+	cartridge.dump(path);
+	memory.dump(path);
 	// saveState << "Dump data here";
 	// }
 	// else

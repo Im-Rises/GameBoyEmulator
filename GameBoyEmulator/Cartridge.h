@@ -55,6 +55,7 @@ public:
 	// Cartridge(const string& romPath);
 	~Cartridge();
 	void reset();
+	void dump(const string& filePath);
 
 	void writeRomInCartridge(const string& romPath);
 
