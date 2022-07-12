@@ -53,6 +53,7 @@ GameBoy* GameBoy::getInstance()
 
 void GameBoy::reset()
 {
+	// if (!processingBios && memory.getBiosInMemeory())
 	memory.reset();
 	cpu.reset();
 	ppu.reset();
