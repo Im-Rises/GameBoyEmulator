@@ -100,6 +100,7 @@ void GameBoy::start()
 
 	if (memory.getBiosInMemeory()) //if there is a bios
 	{
+		std::filesystem::create_directories(screenshotsFolder + biosName + "/");
 		processingBios = true;
 		while (handleInputs() && cpu.getPc() < 0x100) //cpu.getPc() < 0x100 && glfwOpenglLib.windowHandling()
 		{
@@ -114,12 +115,11 @@ void GameBoy::start()
 		this->setGameBoyWithoutBios();
 	}
 
-	if (gameName.empty())
-		std::filesystem::create_directories(screenshotsFolder + biosName + "/");
-	else
+	if (!gameName.empty())
+	{
 		std::filesystem::create_directories(screenshotsFolder + gameName + "/");
-
-	ppu.addGameNameWindow(gameName);
+		ppu.addGameNameWindow(gameName);
+	}
 
 	if (!cartridge.getCartridgeIsEmpty())
 	{
@@ -262,12 +262,12 @@ bool GameBoy::handleInputs()
 			switchScreenshot = false;
 
 			int index = 0;
-			string screenshotPath = generateScreeShotName(index);
+			string screenshotPath = generateScreenshotName(index);
 
 			while (fileExist(screenshotPath))
 			{
 				index++;
-				screenshotPath = generateScreeShotName(index);
+				screenshotPath = generateScreenshotName(index);
 			}
 
 			ppu.doScreenshot(screenshotPath);
@@ -297,7 +297,7 @@ bool GameBoy::handleInputs()
 	return !(event.type == SDL_QUIT);
 }
 
-string GameBoy::generateScreeShotName(const int& index)
+string GameBoy::generateScreenshotName(const int& index)
 {
 	string indexS = to_string(index);
 	indexS = addLeadingZero(indexS, 2);
@@ -312,12 +312,26 @@ string GameBoy::generateScreeShotName(const int& index)
 		+ ')' + ".bmp";
 }
 
+string GameBoy::generateSavestateName()
+{
+	string path = ".state.bmp";
+
+	if (gameName.empty() || processingBios)
+	{
+		(path == ".state.bmp") ? path = biosPath + path : path;
+	}
+	else
+	{
+		path = cartridge.getRomPath() + path;
+	}
+	return path;
+}
+
 
 /*------------------------------------------Save states--------------------------------*/
 void GameBoy::createSaveState()
 {
-	string path = cartridge.getRomPath() + ".state.bmp";
-	(path == ".state.bmp") ? path = biosPath + path : path;
+	string path = generateSavestateName();
 
 	ppu.doScreenshot(path);
 
@@ -338,8 +352,11 @@ void GameBoy::createSaveState()
 
 void GameBoy::loadSaveState()
 {
-	string path = cartridge.getRomPath() + ".state.bmp";
-	(path == ".state.bmp") ? path = biosPath + path : path;
+	string path = generateSavestateName();
+	cout << "Loading savestate : " << path << endl;
+
+	// string path = cartridge.getRomPath() + ".state.bmp";
+	// (path == ".state.bmp") ? path = biosPath + path : path;
 	ifstream savestateFile(path, ios::in | ios::ate | ios::binary);
 
 	// Get position of the savestate in the image bmp save state
@@ -349,7 +366,6 @@ void GameBoy::loadSaveState()
 	savestateFile.seekg(pos);
 
 	// Load savestate data into CPU, MMU and Cartridge
-
 	cpu.loadDumpedData(savestateFile);
 	cartridge.loadDumpedData(savestateFile);
 	memory.loadDumpedData(savestateFile);

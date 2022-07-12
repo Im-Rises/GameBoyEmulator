@@ -68,7 +68,8 @@ private:
 
 public:
 	/*------------------------------------------Screenshots--------------------------------*/
-	string generateScreeShotName(const int& index);
+	string generateScreenshotName(const int& index);
+	string generateSavestateName();
 
 	/*------------------------------------------Save states--------------------------------*/
 	void createSaveState();
