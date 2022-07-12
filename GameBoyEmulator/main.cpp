@@ -7,7 +7,6 @@
 
 /*
  * To do list:
- * - Finish savestate
  * - Add MBC5
  * - Add saves
  * - Correct PPU background aliasing
