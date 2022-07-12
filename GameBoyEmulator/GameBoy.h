@@ -43,8 +43,11 @@ private:
 	string gameName;
 	string screenshotsFolder = "./screenshots/";
 
+	bool processingBios = false;
 	float volume;
 	int currentColorMode = 0;
+	string biosPath;
+	string biosName;
 
 public:
 	static GameBoy* getInstance();
@@ -58,14 +61,15 @@ public:
 
 private:
 	/*------------------------------------------Game Boy Cycle--------------------------------*/
-	void doGameBoyCycle(const int cyclesNumberToDo);
+	void doGameBoyCycle(const int& cyclesToDo);
 
 	// /*------------------------------------Handle Emulator inputs--------------------------------*/
 	bool handleInputs();
 
 public:
 	/*------------------------------------------Screenshots--------------------------------*/
-	string generateScreeShotName(const int& index);
+	string generateScreenshotName(const int& index);
+	string generateSavestateName();
 
 	/*------------------------------------------Save states--------------------------------*/
 	void createSaveState();
@@ -75,7 +79,6 @@ public:
 	void setVolume(const float& volume);
 	void incDecVolume(const float& value);
 
-public:
 	/*------------------------------------------GETTERS--------------------------------*/
 	bool getBiosInMemory();
 

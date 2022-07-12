@@ -2,12 +2,21 @@
 
 #include "Spu.h"
 
-Memory::Memory(Joypad* joypad, Spu* spu): memoryArray{}
+Memory::Memory(Joypad* joypad, Spu* spu)//memoryArray{}
 {
 	this->spu = spu;
 	this->joypad = joypad;
 	biosInMemory = false;
 	gameInMemory = false;
+
+	for (uint8& i : memoryArray)
+		i = 0x0;
+
+	// To print the black rectangle when starting the game boy without games
+	for (int i = 0x100; i< 0x8000;i++)
+	{
+		memoryArray[i] = 0xFF;
+	}
 }
 
 Memory::~Memory()
@@ -34,6 +43,20 @@ void Memory::reset()
 	{
 		memoryArray[i] = 0;
 	}
+}
+
+void Memory::dump(ofstream& savestateFile)
+{
+	// Dump memory from 0x8000 to 0xFFFF
+
+	cout << "Dumping MMU ..." << endl;
+
+	savestateFile.write(((char*)memoryArray)+0x8000, sizeof(memoryArray) - 0x8000);
+}
+
+void Memory::loadDumpedData(ifstream& savestateFile)
+{
+	savestateFile.read(((char*)memoryArray) + 0x8000, sizeof(memoryArray) - 0x8000);
 }
 
 void Memory::connectCartridge(Cartridge* cartridge)

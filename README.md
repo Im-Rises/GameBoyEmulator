@@ -102,6 +102,18 @@ sudo apt-get install libsdl2-2.0-0
 
 - Imp : Create a screenshot of the game in the folder next to tha app (screenshots/<gameName>)
 
+- P : Pause emulation
+
+- U : Increase emulator audio volume
+
+- J : Decrease emulator audio volume
+
+- B : create savestate
+
+- N : load savestate
+
+- Tab : restart game/emulator
+
 ### Emulator game contols
 
 You can play games with your keyboard and also with Xbox or Playstation controller.

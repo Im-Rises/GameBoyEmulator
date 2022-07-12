@@ -7,12 +7,10 @@
 
 /*
  * To do list:
- * - add .ini file (add possibility to load bootrom)
- * - Finish savestate
- * - Correct PPU background aliasing
- * - Correct inputs interrupt in joypad.cpp (interrupts in general)
  * - Add MBC5
  * - Add saves
+ * - Correct PPU background aliasing
+ * - Correct inputs interrupt in joypad.cpp (interrupts in general)
  */
 
 void writeUsage(const char* appName)

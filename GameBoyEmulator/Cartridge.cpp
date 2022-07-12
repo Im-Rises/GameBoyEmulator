@@ -31,6 +31,32 @@ void Cartridge::reset()
 	currentRamBank = 0;
 }
 
+void Cartridge::dump(ofstream& savestateFile)
+{
+	uint8 currentRomRamBanks[2] = {
+		currentRomBank, currentRamBank
+	};
+
+	bool romRamBanksEnabled[2] = {
+		romBankingEnable, ramBankingEnable
+	};
+
+
+	cout << "Dumping Cartridge infos..." << endl;
+
+	savestateFile.write((char*)currentRomRamBanks, sizeof(currentRomRamBanks));
+	savestateFile.write((char*)romRamBanksEnabled, sizeof(romRamBanksEnabled));
+}
+
+void Cartridge::loadDumpedData(ifstream& savestateFile)
+{
+	savestateFile.read((char*)&currentRomBank, sizeof(currentRomBank));
+	savestateFile.read((char*)&currentRamBank, sizeof(currentRamBank));
+
+	savestateFile.read((char*)&romBankingEnable, sizeof(romBankingEnable));
+	savestateFile.read((char*)&ramBankingEnable, sizeof(ramBankingEnable));
+}
+
 void Cartridge::writeRomInCartridge(const string& romPath)
 {
 	this->romPath = romPath;
@@ -85,35 +111,35 @@ void Cartridge::writeRomInCartridge(const string& romPath)
 	switch (rom[0x147])
 	{
 	case(0):
-	{
-		cartridgeType = ROM;
-		break;
-	}
+		{
+			cartridgeType = ROM;
+			break;
+		}
 	case(1):
-	{
-		cartridgeType = MBC1;
-		break;
-	}
+		{
+			cartridgeType = MBC1;
+			break;
+		}
 	case(2):
-	{
-		cartridgeType = MBC1;
-		break;
-	}
+		{
+			cartridgeType = MBC1;
+			break;
+		}
 	case(3):
-	{
-		cartridgeType = MBC1;
-		break;
-	}
+		{
+			cartridgeType = MBC1;
+			break;
+		}
 	case(5):
-	{
-		cartridgeType = MBC2;
-		break;
-	}
+		{
+			cartridgeType = MBC2;
+			break;
+		}
 	case(6):
-	{
-		cartridgeType = MBC2;
-		break;
-	}
+		{
+			cartridgeType = MBC2;
+			break;
+		}
 	default:
 		cerr << "Error: Cartridge type not recognized" << endl;
 		exit(1);

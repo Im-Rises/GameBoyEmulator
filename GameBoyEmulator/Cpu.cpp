@@ -1,6 +1,7 @@
 #include "Cpu.h"
 
 #include <iostream>
+#include <fstream>
 
 Cpu::Cpu(Memory* memory, Ppu* ppu, Spu* spu)
 {
@@ -34,7 +35,7 @@ void Cpu::reset()
 		setCpuWithoutBios();
 	}
 	timerFrequency = 1024;
-	previousInputs = 0b11111111;
+	// previousInputs = 0b11111111;
 	timerCounter = 0;
 }
 
@@ -68,7 +69,7 @@ void Cpu::setCpuWithoutBios()
 
 	H = 0x01;
 	L = 0x4D;
-	previousInputs = 0b11111111;
+	// previousInputs = 0b11111111;
 }
 
 int Cpu::doCycle()
@@ -119,6 +120,60 @@ int Cpu::doCycle()
 	handleInterupt();
 
 	return (clockCycles + clockCycleDuringOpcode);
+}
+
+void Cpu::dump(ofstream& savestateFile)
+{
+	uint8 regs[7] = {
+		A, B, C, D, E, H, L
+	};
+
+	uint16 pcsp[2] = {
+		pc, sp
+	};
+
+	int intVariables[4] = {
+		clockCycles, clockCycleDuringOpcode, timerCounter, timerFrequency
+	};
+
+	bool boolVariables[7] = {
+		halted, stopped, IME, F.Z, F.N, F.H, F.CY
+	};
+
+	cout << "Dumping CPU ..." << endl;
+	
+	savestateFile.write((char*)regs, sizeof(regs));
+	savestateFile.write((char*)pcsp, sizeof(pcsp));
+	savestateFile.write((char*)intVariables, sizeof(intVariables));
+	savestateFile.write((char*)boolVariables, sizeof(boolVariables));
+}
+
+void Cpu::loadDumpedData(ifstream& savestateFile)
+{
+	savestateFile.read((char*)&A, sizeof(A));
+	savestateFile.read((char*)&B, sizeof(B));
+	savestateFile.read((char*)&C, sizeof(C));
+	savestateFile.read((char*)&D, sizeof(D));
+	savestateFile.read((char*)&E, sizeof(E));
+	savestateFile.read((char*)&H, sizeof(H));
+	savestateFile.read((char*)&L, sizeof(L));
+
+	savestateFile.read((char*)&pc, sizeof(pc));
+	savestateFile.read((char*)&sp, sizeof(sp));
+
+	savestateFile.read((char*)&clockCycles, sizeof(clockCycles));
+	savestateFile.read((char*)&clockCycleDuringOpcode, sizeof(clockCycleDuringOpcode));
+	savestateFile.read((char*)&timerCounter, sizeof(timerCounter));
+	savestateFile.read((char*)&timerFrequency, sizeof(timerFrequency));
+
+	savestateFile.read((char*)&halted, sizeof(halted));
+	savestateFile.read((char*)&stopped, sizeof(stopped));
+	savestateFile.read((char*)&IME, sizeof(IME));
+
+	savestateFile.read((char*)&F.Z, sizeof(F.Z));
+	savestateFile.read((char*)&F.N, sizeof(F.N));
+	savestateFile.read((char*)&F.H, sizeof(F.H));
+	savestateFile.read((char*)&F.CY, sizeof(F.CY));
 }
 
 
@@ -278,10 +333,10 @@ void Cpu::doInterupt(const uint8& bitIndex)
 			break;
 		}
 	default:
-	{
-		cerr << "Error: Unknown interrupt" << endl;
-		exit(1);
-	}
+		{
+			cerr << "Error: Unknown interrupt" << endl;
+			exit(1);
+		}
 	}
 }
 
@@ -1558,7 +1613,8 @@ void Cpu::executeOpcode(uint8 opcode)
 		}
 	default:
 		{
-			cerr << "Error op-code 0x" << hex << static_cast<int>(opcode) << " unknown at pc = 0x" << hex << static_cast<int>(pc) << endl;
+			cerr << "Error op-code 0x" << hex << static_cast<int>(opcode) << " unknown at pc = 0x" << hex << static_cast
+				<int>(pc) << endl;
 			exit(1);
 		}
 	}

@@ -55,6 +55,8 @@ public:
 	// Cartridge(const string& romPath);
 	~Cartridge();
 	void reset();
+	void dump(ofstream& savestateFile);
+	void loadDumpedData(ifstream& savestateFile);
 
 	void writeRomInCartridge(const string& romPath);
 
