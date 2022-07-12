@@ -122,7 +122,7 @@ int Cpu::doCycle()
 	return (clockCycles + clockCycleDuringOpcode);
 }
 
-void Cpu::dump(const string& filePath)
+void Cpu::dump(ofstream& savestateFile)
 {
 	uint8 regs[7] = {
 		A, B, C, D, E, H, L
@@ -141,14 +141,39 @@ void Cpu::dump(const string& filePath)
 	};
 
 	cout << "Dumping CPU ..." << endl;
+	
+	savestateFile.write((char*)regs, sizeof(regs));
+	savestateFile.write((char*)pcsp, sizeof(pcsp));
+	savestateFile.write((char*)intVariables, sizeof(intVariables));
+	savestateFile.write((char*)boolVariables, sizeof(boolVariables));
+}
 
-	ofstream myfile;
-	myfile.open(filePath, ios::out | ios::app | ios::ate| ios::binary);
-	myfile.write((char*)regs, sizeof(regs));
-	myfile.write((char*)pcsp, sizeof(pcsp));
-	myfile.write((char*)intVariables, sizeof(intVariables));
-	myfile.write((char*)boolVariables, sizeof(boolVariables));
-	myfile.close();
+void Cpu::loadDumpedData(ifstream& savestateFile)
+{
+	savestateFile.read((char*)&A, sizeof(A));
+	savestateFile.read((char*)&B, sizeof(B));
+	savestateFile.read((char*)&C, sizeof(C));
+	savestateFile.read((char*)&D, sizeof(D));
+	savestateFile.read((char*)&E, sizeof(E));
+	savestateFile.read((char*)&H, sizeof(H));
+	savestateFile.read((char*)&L, sizeof(L));
+
+	savestateFile.read((char*)&pc, sizeof(pc));
+	savestateFile.read((char*)&sp, sizeof(sp));
+
+	savestateFile.read((char*)&clockCycles, sizeof(clockCycles));
+	savestateFile.read((char*)&clockCycleDuringOpcode, sizeof(clockCycleDuringOpcode));
+	savestateFile.read((char*)&timerCounter, sizeof(timerCounter));
+	savestateFile.read((char*)&timerFrequency, sizeof(timerFrequency));
+
+	savestateFile.read((char*)&halted, sizeof(halted));
+	savestateFile.read((char*)&stopped, sizeof(stopped));
+	savestateFile.read((char*)&IME, sizeof(IME));
+
+	savestateFile.read((char*)&F.Z, sizeof(F.Z));
+	savestateFile.read((char*)&F.N, sizeof(F.N));
+	savestateFile.read((char*)&F.H, sizeof(F.H));
+	savestateFile.read((char*)&F.CY, sizeof(F.CY));
 }
 
 

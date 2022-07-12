@@ -132,7 +132,7 @@ void GameBoy::start()
 	cout << "Stoping Emulation please wait..." << endl;
 }
 
-void GameBoy::doGameBoyCycle(const int cyclesToDo)
+void GameBoy::doGameBoyCycle(const int& cyclesToDo)
 {
 	uint32_t startTime = SDL_GetTicks();
 
@@ -318,30 +318,43 @@ void GameBoy::createSaveState()
 {
 	string path = cartridge.getRomPath() + ".state.bmp";
 	(path == ".state.bmp") ? path = biosPath + path : path;
-	// cout << path << endl;
 
 	ppu.doScreenshot(path);
 
-	// ofstream saveState;
-	// saveState.open(path, std::ios_base::app | std::ios_base::binary | std::ios_base::out | std::ios_base::ate);
+	ofstream savestateFile(path, ios::out | ios::app | ios::ate | ios::binary);
 
-	// if (saveState)
-	// {
-	cpu.dump(path);
+	long pos = savestateFile.tellp();
+
+	cpu.dump(savestateFile);
 	// // spu.dump();
 	// // ppu.dump();
-	cartridge.dump(path);
-	memory.dump(path);
-	// saveState << "Dump data here";
-	// }
-	// else
-	// 	cerr << "Error: Writing data to savestate" << endl;
+	cartridge.dump(savestateFile);
+	memory.dump(savestateFile);
 
-	// saveState.close();
+	savestateFile.write((char*)&pos, sizeof(pos));
+
+	savestateFile.close();
 }
 
 void GameBoy::loadSaveState()
 {
+	string path = cartridge.getRomPath() + ".state.bmp";
+	(path == ".state.bmp") ? path = biosPath + path : path;
+	ifstream savestateFile(path, ios::in | ios::ate | ios::binary);
+
+	// Get position of the savestate in the image bmp save state
+	long pos = 0;
+	savestateFile.seekg(-(sizeof(pos)), ios::end);
+	savestateFile.read((char*)&pos, sizeof(pos));
+	savestateFile.seekg(pos);
+
+	// Load savestate data into CPU, MMU and Cartridge
+
+	cpu.loadDumpedData(savestateFile);
+	cartridge.loadDumpedData(savestateFile);
+	memory.loadDumpedData(savestateFile);
+
+	savestateFile.close();
 }
 
 

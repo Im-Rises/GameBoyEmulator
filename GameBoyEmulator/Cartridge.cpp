@@ -31,7 +31,7 @@ void Cartridge::reset()
 	currentRamBank = 0;
 }
 
-void Cartridge::dump(const string& filePath)
+void Cartridge::dump(ofstream& savestateFile)
 {
 	uint8 currentRomRamBanks[2] = {
 		currentRomBank, currentRamBank
@@ -44,11 +44,17 @@ void Cartridge::dump(const string& filePath)
 
 	cout << "Dumping Cartridge infos..." << endl;
 
-	ofstream myfile;
-	myfile.open(filePath, ios::out | ios::app | ios::ate | ios::binary);
-	myfile.write((char*)currentRomRamBanks, sizeof(currentRomRamBanks));
-	myfile.write((char*)romRamBanksEnabled, sizeof(romRamBanksEnabled));
-	myfile.close();
+	savestateFile.write((char*)currentRomRamBanks, sizeof(currentRomRamBanks));
+	savestateFile.write((char*)romRamBanksEnabled, sizeof(romRamBanksEnabled));
+}
+
+void Cartridge::loadDumpedData(ifstream& savestateFile)
+{
+	savestateFile.read((char*)&currentRomBank, sizeof(currentRomBank));
+	savestateFile.read((char*)&currentRamBank, sizeof(currentRamBank));
+
+	savestateFile.read((char*)&romBankingEnable, sizeof(romBankingEnable));
+	savestateFile.read((char*)&ramBankingEnable, sizeof(ramBankingEnable));
 }
 
 void Cartridge::writeRomInCartridge(const string& romPath)

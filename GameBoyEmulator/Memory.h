@@ -71,7 +71,8 @@ public:
 	~Memory();
 	void reset();
 
-	void dump(const string& filePath);
+	void dump(ofstream& savestateFile);
+	void loadDumpedData(ifstream& savestateFile);
 
 	bool loadBiosInMemory(const string& biosPath);
 

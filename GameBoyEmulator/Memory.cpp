@@ -45,16 +45,18 @@ void Memory::reset()
 	}
 }
 
-void Memory::dump(const string& filePath)
+void Memory::dump(ofstream& savestateFile)
 {
 	// Dump memory from 0x8000 to 0xFFFF
 
 	cout << "Dumping MMU ..." << endl;
 
-	ofstream myfile;
-	myfile.open(filePath, ios::out | ios::app | ios::ate | ios::binary);
-	myfile.write(((char*)memoryArray)+0x8000, sizeof(memoryArray) - 0x8000);
-	myfile.close();
+	savestateFile.write(((char*)memoryArray)+0x8000, sizeof(memoryArray) - 0x8000);
+}
+
+void Memory::loadDumpedData(ifstream& savestateFile)
+{
+	savestateFile.read(((char*)memoryArray) + 0x8000, sizeof(memoryArray) - 0x8000);
 }
 
 void Memory::connectCartridge(Cartridge* cartridge)

@@ -61,7 +61,7 @@ public:
 
 private:
 	/*------------------------------------------Game Boy Cycle--------------------------------*/
-	void doGameBoyCycle(const int cyclesNumberToDo);
+	void doGameBoyCycle(const int& cyclesToDo);
 
 	// /*------------------------------------Handle Emulator inputs--------------------------------*/
 	bool handleInputs();

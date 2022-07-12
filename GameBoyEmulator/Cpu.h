@@ -78,7 +78,8 @@ public:
 
 	int doCycle();					//Do cpu cycle
 
-	void dump(const string& filePath);
+	void dump(ofstream& savestateFile);
+	void loadDumpedData(ifstream& savestateFile);
 
 private:
 	void executeOpcode(uint8 opcode);			//Execute an opcode
