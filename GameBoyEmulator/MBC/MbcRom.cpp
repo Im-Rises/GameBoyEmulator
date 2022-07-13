@@ -1,6 +1,6 @@
 #include "MbcRom.h"
 
-MbcRom::MbcRom(int nbrRomBanks, int nbrRamBanks):Mbc(nbrRomBanks,nbrRamBanks)
+MbcRom::MbcRom():Mbc()
 {
 
 }

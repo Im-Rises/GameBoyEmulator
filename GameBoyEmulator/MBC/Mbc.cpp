@@ -2,7 +2,7 @@
 
 #include <string>
 
-Mbc::Mbc(int nbrRomBanks, int nbrRamBanks)
+Mbc::Mbc()
 {
 }
 

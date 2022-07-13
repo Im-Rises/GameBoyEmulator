@@ -78,7 +78,6 @@ public:
 
 	void connectCartridge(shared_ptr<Cartridge>& cartridge);
 
-	// void loadRomInMemory();
 	void loadRomBeginning();
 	void setMemoryWithoutBios();
 
@@ -89,8 +88,6 @@ public:
 	void directWrite(const uint16& address, const uint8& value);
 
 	void requestInterrupt(uint8 bitIndex);
-	//void increment(const uint16& address);
-	//void decrement(const uint16& address);
 
 	void setResetBitMemory(const uint16& address, const bool bit, const int bitIndex);
 

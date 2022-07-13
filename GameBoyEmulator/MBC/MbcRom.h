@@ -8,7 +8,7 @@
 class MbcRom : public Mbc
 {
 public:
-	MbcRom(int nbrRomBanks, int nbrRamBanks);
+	MbcRom();
 
 	uint32 getReadRomAddress(const uint16& address) const override;
 	uint16 getReadRamAddress(const uint16& address) const override;

@@ -100,22 +100,6 @@ bool Memory::loadBiosInMemory(const string& biosPath)
 	}
 }
 
-// void Memory::loadRomInMemory()
-// {
-// 	//Load rom from cartridge
-// 	int startIndex = 0;
-//
-// 	if (biosInMemory)
-// 		startIndex = 0x100;
-//
-//
-// 	for (int i = startIndex; i < RAM_CHARACTER_DATA_BANK_0_DMG; i++)
-// 	{
-// 		memoryArray[i] = cartridge->readRomBank(i);
-// 	}
-// }
-
-
 void Memory::loadRomBeginning()
 {
 	if (cartridgePtr)
@@ -203,7 +187,6 @@ void Memory::write(const uint16& address, const uint8 value)
 	else if (address >= 0xA000 && address < 0xC000) //External expension ram wrtting
 	{
 		cartridgePtr->writeRam(address, value);
-
 	}
 	else if (address >= 0xE000 && address < 0xFE00)
 	{

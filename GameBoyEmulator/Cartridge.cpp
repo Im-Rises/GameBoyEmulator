@@ -68,7 +68,7 @@ Cartridge::Cartridge(const std::string& romPath)
 	switch (header.cartridgeType)
 	{
 	case(0x00):
-		mbcPtr = std::make_shared<MbcRom>(nbrRomBanks, nbrRamBanks);
+		mbcPtr = std::make_shared<MbcRom>();
 		break;
 	// case(0x01):
 	default:

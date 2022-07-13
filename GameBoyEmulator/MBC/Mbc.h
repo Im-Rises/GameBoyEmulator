@@ -14,7 +14,7 @@ protected:
 
 public:
 	/*---------------Constructor and Destructor-----------------------*/
-	Mbc(int nbrRomBanks, int nbrRamBanks);
+	Mbc();
 	~Mbc();
 
 	/*---------------Read and write methods-----------------------*/

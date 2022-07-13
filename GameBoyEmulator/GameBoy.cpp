@@ -4,9 +4,9 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-// #include <fcntl.h>
-// #include <sys/types.h>
-// #include <sys/stat.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 // #include <format> // Issue with Unix system, using my functions to format string for screesnshots name
 
@@ -95,7 +95,7 @@ void GameBoy::start()
 	if (memory.getBiosInMemeory()) //if there is a bios
 	{
 		biosName = biosPath.substr(biosPath.find_last_of('/'));
-		// biosName.erase(remove(biosName.begin(), biosName.end(), '/'), biosName.end());
+		biosName.erase(remove(biosName.begin(), biosName.end(), '/'), biosName.end());
 		std::filesystem::create_directories(screenshotsFolder + biosName + "/");
 		processingBios = true;
 		while (handleInputs() && cpu.getPc() < 0x100)
