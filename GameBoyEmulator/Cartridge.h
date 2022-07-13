@@ -5,7 +5,8 @@
 #include <map>
 
 #include "binaryLib/binaryLib.h"
-#include "Mbc.h"
+#include "MBC/Mbc.h"
+#include "MBC/Rom.h"
 
 // Thanks to https://gbdev.io/pandocs/The_Cartridge_Header.html
 
@@ -13,7 +14,13 @@ class Cartridge
 {
 private:
 	/*----------------------------Dictionaries for cartridge info---------------------------*/
-	const std::map<uint8, std::string> oldLicenseeCodeMap = {
+
+	const std::map<char, std::string> manufacturerCodeMap = {
+		{0x80, "Game supports CGB functions"},
+		{0xC0, "Game works on CGB only"},
+	};
+
+	const std::map<char, std::string> oldLicenseeCodeMap = {
 		{0x00, "none"},
 		{0x01, "nintendo"},
 		{0x08, "capcom"},
@@ -163,7 +170,7 @@ private:
 		{0xFF, "ljn"},
 	};
 
-	const std::map<uint8, std::string> newLicenseeCodeMap = {
+	const std::map<char, std::string> newLicenseeCodeMap = {
 		{0x00, "None"},
 		{0x01, "Nintendo R & D1"},
 		{0x08, "Capcom"},
@@ -227,7 +234,7 @@ private:
 		{0xA4, "Konami(Yu - Gi - Oh!)"}
 	};
 
-	std::map<uint8, std::string> cartridgeTypeMap = {
+	std::map<char, std::string> cartridgeTypeMap = {
 		{0x00, "ROM ONLY"},
 		{0x01, "MBC1"},
 		{0x02, "MBC1 + RAM"},
@@ -258,7 +265,7 @@ private:
 		{0xFF, "HuC1 + RAM + BATTERY"},
 	};
 
-	const std::map<uint8, int> romSizeCodeBankMap = {
+	const std::map<char, int> romSizeCodeBankMap = {
 		{0x00, 2},
 		{0x01, 4},
 		{0x02, 8},
@@ -273,7 +280,7 @@ private:
 		{0x54, 96},
 	};
 
-	const std::map<uint8, int> ramSizeCodeBankMap = {
+	const std::map<char, int> ramSizeCodeBankMap = {
 		{0x00, 0},
 		{0x01, 0},
 		{0x02, 1},
@@ -282,31 +289,10 @@ private:
 		{0x05, 8},
 	};
 
-	const std::map<uint8, std::string> destinationMap = {
+	const std::map<char, std::string> destinationMap = {
 		{0x00, "Japan"},
 		{0x01, "Other"}
 	};
-
-	/*-----------------------Header----------------------*/
-	struct
-	{
-		char title[11];
-		char manufacturerCode[4];
-		char cgbFlag;
-		char newLicenseeCode[2];
-		char sgbFlag;
-		char cartridgeType;
-		char romSize;
-		char ramSize;
-		char destinationCode;
-		char oldLicenseeCode;
-		char maskRomVersionNumber;
-		char headerChecksum;
-		char globalChecksum[2];
-	} header;
-
-	std::shared_ptr<Mbc> mapperPtr;
-
 
 	/*-----------------------String variables----------------------*/
 	std::string gameTitle;
@@ -321,26 +307,26 @@ private:
 	std::string headerChecksum;
 	std::string globalChecksum;
 
-	int romSize;
-	int ramSize;
+	int nbrRomBanks;
+	int nbrRamBanks;
+
+	std::shared_ptr<Mbc> mbcPtr;
 
 public:
 	/*----------------------------Constructor/Desctructor/Reset---------------------------*/
 	Cartridge();
 	~Cartridge();
-
+	
 	void loadRom(std::string romPath);
 
-	uint8 readRom()const;
-	uint8 readRam()const;
+	uint8 readRom(const uint16& address) const;
+	uint8 readRam(const uint16& address) const;
 
 	void writeRom(const uint8& data, const uint16& address);
 	void writeRam(const uint8& data, const uint16& address);
 
 
 	/*----------------------------Getters and Setters---------------------------*/
-
-
 };
 
 #endif
