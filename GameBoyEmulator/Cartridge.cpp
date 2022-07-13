@@ -5,9 +5,6 @@
 
 Cartridge::Cartridge()
 {
-	destinationMap.insert(std::make_pair(0x00, "Japan"));
-	destinationMap.insert(std::make_pair(0x01, "Other"));
-
 	//Instead of loading all the rom to the ram of the computer, perhaps i should open the file and read it 
 	rom = new uint8[0x200000];
 	ram = new uint8[0x8000];
