@@ -1,11 +1,16 @@
 #include "Rom.h"
 
-Rom::Rom(std::string rompath, int nbrRomBanks, int nbrRamBanks):Mbc(rompath, nbrRomBanks,nbrRamBanks)
+Rom::Rom(int nbrRomBanks, int nbrRamBanks):Mbc(nbrRomBanks,nbrRamBanks)
 {
 
 }
 
-uint8 Rom::readRom(const uint16& address) const
+uint32 Rom::getReadRomAddress(const uint16& address) const
 {
-	return rom[address];
+	return address;
+}
+
+uint16 Rom::getReadRamAddress(const uint16& address) const
+{
+	return address;
 }

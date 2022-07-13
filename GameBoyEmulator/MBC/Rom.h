@@ -10,10 +10,10 @@ class Mbc;
 class Rom : public Mbc
 {
 public:
-	Rom(std::string rompath, int nbrRomBanks, int nbrRamBanks);
+	Rom(int nbrRomBanks, int nbrRamBanks);
 
-	uint8 readRom(const uint16& address) const;
-	uint8 readRam(const uint16& address) const;
+	uint32 getReadRomAddress(const uint16& address) const override;
+	uint16 getReadRamAddress(const uint16& address) const override;
 };
 
 #endif // !DEF_ROM

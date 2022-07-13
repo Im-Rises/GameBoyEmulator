@@ -307,16 +307,17 @@ private:
 	std::string headerChecksum;
 	std::string globalChecksum;
 
-	int nbrRomBanks;
-	int nbrRamBanks;
 
+	/*-----------------------Cartridge rom, ram and MBC----------------------*/
 	std::shared_ptr<Mbc> mbcPtr;
+	// int nbrRomBanks, nbrRamBanks;
+	std::vector<uint8> rom, ram;
 
 public:
 	/*----------------------------Constructor/Desctructor/Reset---------------------------*/
-	Cartridge();
+	Cartridge(std::string romPath);
 	~Cartridge();
-	
+
 	void loadRom(std::string romPath);
 
 	uint8 readRom(const uint16& address) const;
@@ -327,6 +328,7 @@ public:
 
 
 	/*----------------------------Getters and Setters---------------------------*/
+	std::string getGameName()const;
 };
 
 #endif

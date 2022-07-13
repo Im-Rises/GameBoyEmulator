@@ -61,7 +61,7 @@ void Memory::loadDumpedData(ifstream& savestateFile)
 
 void Memory::connectCartridge(Cartridge* cartridge)
 {
-	this->cartridge = cartridge;
+	this->cartridgePtr = cartridge;
 	int index = 0;
 
 	if (biosInMemory)
@@ -116,11 +116,11 @@ bool Memory::loadBiosInMemory(const string& biosPath)
 
 void Memory::loadRomBeginning()
 {
-	if (!cartridge->getCartridgeIsEmpty())
+	if (cartridgePtr)
 	{
 		for (int i = 0; i < 0x100; i++)
 		{
-			memoryArray[i] = cartridge->readRom(i);
+			memoryArray[i] = cartridgePtr->readRom(i);
 		}
 		biosInMemory = false;
 	}
@@ -169,12 +169,12 @@ uint8 Memory::read(const uint16 address) //OK
 {
 	if ((address >= 0x4000) && (address <= 0x7FFF)) //Read in rom bank area (Cartridge)
 	{
-		return cartridge->readRomBank(address);
+		return cartridgePtr->readRomBank(address);
 	}
 	else if ((address >= 0xA000) && (address <= 0xBFFF))
 	//Read in ram bank also known as External Expansion Working RAM (Cartridge)
 	{
-		return cartridge->readRamBank(address);
+		return cartridgePtr->readRamBank(address);
 	}
 	else if (address == 0xFF00) //Trap input's read
 	{
@@ -193,13 +193,13 @@ void Memory::write(const uint16& address, const uint8 value)
 {
 	if (address < 0x8000) //Writting in this area change the used banks in the cartridge
 	{
-		cartridge->handleBanking(address, value);
+		cartridgePtr->handleBanking(address, value);
 	}
 	else if (address >= 0xA000 && address < 0xC000) //External expension ram wrtting
 	{
-		if (cartridge->getRamBankingEnable())
+		if (cartridgePtr->getRamBankingEnable())
 		{
-			cartridge->writeRamBank(address, value);
+			cartridgePtr->writeRamBank(address, value);
 		}
 	}
 	else if (address >= 0xE000 && address < 0xFE00)

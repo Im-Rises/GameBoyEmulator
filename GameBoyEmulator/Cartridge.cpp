@@ -5,15 +5,7 @@
 
 using namespace std;
 
-Cartridge::Cartridge()
-{
-}
-
-Cartridge::~Cartridge()
-{
-}
-
-void Cartridge::loadRom(std::string romPath)
+Cartridge::Cartridge(string romPath)
 {
 	struct
 	{
@@ -41,7 +33,6 @@ void Cartridge::loadRom(std::string romPath)
 
 	input.seekg(0x0134);
 	input.read(reinterpret_cast<char*>(&header), sizeof(header));
-	input.close();
 
 	gameTitle = header.title;
 	manufacturerCode = header.manufacturerCode;
@@ -57,8 +48,8 @@ void Cartridge::loadRom(std::string romPath)
 
 	cartridgeType = header.cartridgeType;
 
-	nbrRomBanks = romSizeCodeBankMap.at(header.nbrRomBanks);
-	nbrRamBanks = ramSizeCodeBankMap.at(header.nbrRamBanks);
+	char nbrRomBanks = romSizeCodeBankMap.at(header.nbrRomBanks);
+	char nbrRamBanks = ramSizeCodeBankMap.at(header.nbrRamBanks);
 
 	destination = destinationMap.at(header.destinationCode);
 
@@ -74,31 +65,51 @@ void Cartridge::loadRom(std::string romPath)
 	switch (header.cartridgeType)
 	{
 	case(0x00):
-		mbcPtr = std::make_shared<Rom>(header.nbrRomBanks, header.nbrRamBanks);
+		mbcPtr = std::make_shared<Rom>(nbrRomBanks, nbrRamBanks);
 		break;
-	// case(0x01):
+		// case(0x01):
 	default:
 		cerr << "Error unknown Cartridge type : " << header.cartridgeType << endl;
 		exit(2);
 	}
+
+
+	/*-------Resize rom and ram----------*/
+	rom.resize(nbrRomBanks * 0x4000);
+	ram.resize(nbrRamBanks * 0x2000);
+
+	/*-------Load complete rom----------*/
+	input.seekg(0, ios::beg);
+	input.read(reinterpret_cast<char*>(rom.data()), rom.size());
+
+	input.close();
+}
+
+Cartridge::~Cartridge()
+{
 }
 
 uint8 Cartridge::readRom(const uint16& address) const
 {
-	return mbcPtr->readRom(address);
+	return rom[mbcPtr->getReadRomAddress(address)];
 }
 
 uint8 Cartridge::readRam(const uint16& address) const
 {
-	return mbcPtr->readRam(address);
+	return ram[mbcPtr->getReadRamAddress(address)];
 }
 
 void Cartridge::writeRom(const uint8& data, const uint16& address)
 {
-	return mbcPtr->writeRom(address, address);
+	mbcPtr->writeRom(address, data);
 }
 
 void Cartridge::writeRam(const uint8& data, const uint16& address)
 {
-	return mbcPtr->writeRam(address, address);
+	mbcPtr->writeRam(address, data);
+}
+
+std::string Cartridge::getGameName() const
+{
+	return gameTitle;
 }

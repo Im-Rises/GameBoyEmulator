@@ -8,6 +8,7 @@
 /*
  * To do list:
  * - Add MBC5 and saves
+ * - Change the cartridge as a sharedpointer for instantiation matter
  * - Correct PPU background aliasing
  * - Correct inputs interrupt in joypad.cpp (interrupts in general)
  */

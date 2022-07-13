@@ -58,7 +58,7 @@ void GameBoy::reset()
 	cpu.reset();
 	ppu.reset();
 	spu.reset();
-	cartridge.reset();
+	cartridgePtr.reset();
 }
 
 void GameBoy::setGameBoyWithoutBios()
@@ -79,7 +79,8 @@ void GameBoy::loadBios(const string& biosPath)
 
 void GameBoy::insertGame(const string& rompath)
 {
-	cartridge.writeRomInCartridge(rompath);
+	// cartridgePtr.writeRomInCartridge(rompath);
+	cartridgePtr = std::make_shared<Cartridge>(rompath);
 }
 
 void GameBoy::start()
@@ -88,10 +89,6 @@ void GameBoy::start()
 
 	//Calcul the number of cycles for the update of the screen
 	const int cyclesToDo = CLOCK_FREQUENCY / SCREEN_FREQUENCY;
-
-	memory.connectCartridge(&cartridge);
-
-	gameName = cartridge.getGameName();
 
 	if (getBiosInMemory())
 	{
@@ -122,8 +119,11 @@ void GameBoy::start()
 		ppu.addGameNameWindow(gameName);
 	}
 
-	if (!cartridge.getCartridgeIsEmpty())
+	if (cartridgePtr)
 	{
+		gameName = cartridgePtr->getGameName();
+		memory.connectCartridge(&cartridgePtr);
+
 		while (handleInputs()) // Window is active
 		{
 			doGameBoyCycle(cyclesToDo);
@@ -323,7 +323,7 @@ string GameBoy::generateSavestateName()
 	}
 	else
 	{
-		path = cartridge.getRomPath() + path;
+		path = cartridgePtr.getRomPath() + path;
 	}
 	return path;
 }
@@ -343,7 +343,7 @@ void GameBoy::createSaveState()
 	cpu.dump(savestateFile);
 	// // spu.dump();
 	// // ppu.dump();
-	cartridge.dump(savestateFile);
+	cartridgePtr.dump(savestateFile);
 	memory.dump(savestateFile);
 
 	savestateFile.write((char*)&pos, sizeof(pos));
@@ -368,7 +368,7 @@ void GameBoy::loadSaveState()
 
 	// Load savestate data into CPU, MMU and Cartridge
 	cpu.loadDumpedData(savestateFile);
-	cartridge.loadDumpedData(savestateFile);
+	cartridgePtr.loadDumpedData(savestateFile);
 	memory.loadDumpedData(savestateFile);
 
 	savestateFile.close();
