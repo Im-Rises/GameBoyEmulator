@@ -1,5 +1,7 @@
 #include "Memory.h"
 
+#include <iostream>
+
 #include "Spu.h"
 
 Memory::Memory(Joypad* joypad, Spu* spu) //memoryArray{}
@@ -59,21 +61,21 @@ void Memory::loadDumpedData(ifstream& savestateFile)
 	savestateFile.read(((char*)memoryArray) + 0x8000, sizeof(memoryArray) - 0x8000);
 }
 
-void Memory::connectCartridge(Cartridge* cartridge)
+void Memory::connectCartridge(shared_ptr<Cartridge>& cartridge)
 {
 	this->cartridgePtr = cartridge;
-	int index = 0;
 
+	int index = 0;
 	if (biosInMemory)
 		index = 0x100;
 
-	if (!cartridge->getCartridgeIsEmpty())
+	// if (cartridge)
+	// {
+	for (int i = index; i < 0x8000; i++)
 	{
-		for (int i = index; i < 0x8000; i++)
-		{
-			memoryArray[i] = cartridge->readRom(i);
-		}
+		memoryArray[i] = cartridge->readRom(i);
 	}
+	// }
 }
 
 
@@ -165,16 +167,16 @@ void Memory::setMemoryWithoutBios()
 }
 
 
-uint8 Memory::read(const uint16 address) //OK
+uint8 Memory::read(const uint16 address)
 {
 	if ((address >= 0x4000) && (address <= 0x7FFF)) //Read in rom bank area (Cartridge)
 	{
-		return cartridgePtr->readRomBank(address);
+		return cartridgePtr->readRom(address);
 	}
 	else if ((address >= 0xA000) && (address <= 0xBFFF))
 	//Read in ram bank also known as External Expansion Working RAM (Cartridge)
 	{
-		return cartridgePtr->readRamBank(address);
+		return cartridgePtr->readRam(address);
 	}
 	else if (address == 0xFF00) //Trap input's read
 	{
@@ -193,14 +195,16 @@ void Memory::write(const uint16& address, const uint8 value)
 {
 	if (address < 0x8000) //Writting in this area change the used banks in the cartridge
 	{
-		cartridgePtr->handleBanking(address, value);
+		cartridgePtr->writeRom(address, value);
+		// cartridgePtr->handleBanking(address, value);
 	}
 	else if (address >= 0xA000 && address < 0xC000) //External expension ram wrtting
 	{
-		if (cartridgePtr->getRamBankingEnable())
-		{
-			cartridgePtr->writeRamBank(address, value);
-		}
+		cartridgePtr->writeRam(address, value);
+		// if (cartridgePtr->getRamBankingEnable())
+		// {
+		// 	cartridgePtr->writeRamBank(address, value);
+		// }
 	}
 	else if (address >= 0xE000 && address < 0xFE00)
 	{

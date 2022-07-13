@@ -6,7 +6,7 @@
 
 #include "binaryLib/binaryLib.h"
 #include "MBC/Mbc.h"
-#include "MBC/Rom.h"
+#include "MBC/MbcRom.h"
 
 // Thanks to https://gbdev.io/pandocs/The_Cartridge_Header.html
 
@@ -295,6 +295,8 @@ private:
 	};
 
 	/*-----------------------String variables----------------------*/
+	std::string romPath;
+
 	std::string gameTitle;
 	std::string manufacturerCode;
 	std::string cGBFlag;
@@ -315,7 +317,7 @@ private:
 
 public:
 	/*----------------------------Constructor/Desctructor/Reset---------------------------*/
-	Cartridge(std::string romPath);
+	Cartridge(const std::string& romPath);
 	~Cartridge();
 
 	void loadRom(std::string romPath);
@@ -328,7 +330,13 @@ public:
 
 
 	/*----------------------------Getters and Setters---------------------------*/
-	std::string getGameName()const;
+	void dump(std::ofstream& savestateFile);
+	void loadDumpedData(std::ifstream& savestateFile);
+
+	/*----------------------------Getters and Setters---------------------------*/
+	std::string getGameName() const;
+
+	std::string getRomPath() const;
 };
 
 #endif

@@ -54,8 +54,8 @@ class Spu;
 
 using namespace std;
 
-class Memory {
-
+class Memory
+{
 private:
 	//uint8* memoryArray = new uint8[MEMORY_SIZE];
 	uint8 memoryArray[MEMORY_SIZE];
@@ -75,7 +75,7 @@ public:
 
 	bool loadBiosInMemory(const string& biosPath);
 
-	void connectCartridge(Cartridge* cartridge);
+	void connectCartridge(shared_ptr<Cartridge>& cartridge);
 
 	// void loadRomInMemory();
 	void loadRomBeginning();
@@ -84,7 +84,7 @@ public:
 	//Read and write to cartridge or memory
 	uint8 read(const uint16 address);
 	void write(const uint16& address, const uint8 value);
-	uint8 directRead(const uint16& address)const;
+	uint8 directRead(const uint16& address) const;
 	void directWrite(const uint16& address, const uint8& value);
 
 	void requestInterrupt(uint8 bitIndex);
@@ -93,8 +93,7 @@ public:
 
 	void setResetBitMemory(const uint16& address, const bool bit, const int bitIndex);
 
-	bool getBiosInMemeory()const;
-
+	bool getBiosInMemeory() const;
 };
 
 #endif

@@ -5,8 +5,10 @@
 
 using namespace std;
 
-Cartridge::Cartridge(string romPath)
+Cartridge::Cartridge(const std::string& romPath)
 {
+	this->romPath = romPath;
+
 	struct
 	{
 		char title[11];
@@ -65,9 +67,9 @@ Cartridge::Cartridge(string romPath)
 	switch (header.cartridgeType)
 	{
 	case(0x00):
-		mbcPtr = std::make_shared<Rom>(nbrRomBanks, nbrRamBanks);
+		mbcPtr = std::make_shared<MbcRom>(nbrRomBanks, nbrRamBanks);
 		break;
-		// case(0x01):
+	// case(0x01):
 	default:
 		cerr << "Error unknown Cartridge type : " << header.cartridgeType << endl;
 		exit(2);
@@ -101,15 +103,52 @@ uint8 Cartridge::readRam(const uint16& address) const
 
 void Cartridge::writeRom(const uint8& data, const uint16& address)
 {
-	mbcPtr->writeRom(address, data);
+	mbcPtr->writeRomSetRomBank(address, data);
 }
 
 void Cartridge::writeRam(const uint8& data, const uint16& address)
 {
-	mbcPtr->writeRam(address, data);
+	mbcPtr->writeRamSetBankRam(address, data);
+}
+
+void Cartridge::dump(ofstream& savestateFile)
+{
+	cout << "Dumping Cartridge savestate data..." << endl;
+
+	uint8 currentRomRamBanks[2] = {
+		mbcPtr->getCurrentRomBank(), mbcPtr->getCurrentRamBank()
+	};
+
+	bool romRamBanksEnabled[2] = {
+		mbcPtr->getRomBankingEnabled(), mbcPtr->getRamBankingEnabled()
+	};
+
+	savestateFile.write((char*)currentRomRamBanks, sizeof(currentRomRamBanks));
+	savestateFile.write((char*)romRamBanksEnabled, sizeof(romRamBanksEnabled));
+}
+
+void Cartridge::loadDumpedData(ifstream& savestateFile)
+{
+	uint8 currentRomBank=0, currentRamBank = 0;
+	bool romBankingEnabled = 0, ramBankingEnabled = 0;
+
+	savestateFile.read((char*)&currentRomBank, sizeof(currentRomBank));
+	mbcPtr->setCurrentRomBank(currentRomBank);
+	savestateFile.read((char*)&currentRamBank, sizeof(currentRamBank));
+	mbcPtr->setCurrentRamBank(currentRamBank);
+
+	savestateFile.read((char*)&romBankingEnabled, sizeof(romBankingEnabled));
+	mbcPtr->setRomBankingEnabled(romBankingEnabled);
+	savestateFile.read((char*)&ramBankingEnabled, sizeof(ramBankingEnabled));
+	mbcPtr->setRamBankingEnabled(ramBankingEnabled);
 }
 
 std::string Cartridge::getGameName() const
 {
 	return gameTitle;
+}
+
+std::string Cartridge::getRomPath() const
+{
+	return romPath;
 }

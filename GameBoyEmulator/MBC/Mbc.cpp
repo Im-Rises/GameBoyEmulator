@@ -4,20 +4,50 @@
 
 Mbc::Mbc(int nbrRomBanks, int nbrRamBanks)
 {
-	// this->nbrRomBanks = nbrRomBanks;
-	// this->nbrRamBanks = nbrRamBanks;
-	// rom.resize(nbrRomBanks * 0x4000);
-	// ram.resize(nbrRamBanks * 0x2000);
-
-
-	// rom = new uint8[0x200000];
-	// ram = new uint8[0x8000];
-	//
-	// cartridgeEmpty = true;
 }
 
 Mbc::~Mbc()
 {
-	// delete[] rom;
-	// delete[] ram;
 }
+
+uint8 Mbc::getCurrentRomBank() const
+{
+	return currentRomBank;
+}
+
+void Mbc::setCurrentRomBank(const int& currentRomBank)
+{
+	this->currentRomBank= currentRomBank;
+}
+
+uint8 Mbc::getCurrentRamBank() const
+{
+	return currentRamBank;
+}
+
+void Mbc::setCurrentRamBank(const int& currentRamBank)
+{
+	this->currentRamBank = currentRamBank;
+}
+
+
+bool Mbc::getRomBankingEnabled() const
+{
+	return romBankingEnabled;
+}
+
+void Mbc::setRomBankingEnabled(const bool& romBankingEnabled)
+{
+	this->romBankingEnabled = romBankingEnabled;
+}
+
+bool Mbc::getRamBankingEnabled() const
+{
+	return ramBankingEnabled;
+}
+
+void Mbc::setRamBankingEnabled(const bool& ramBankingEnabled)
+{
+	this->ramBankingEnabled = ramBankingEnabled;
+}
+

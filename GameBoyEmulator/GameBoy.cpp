@@ -122,7 +122,7 @@ void GameBoy::start()
 	if (cartridgePtr)
 	{
 		gameName = cartridgePtr->getGameName();
-		memory.connectCartridge(&cartridgePtr);
+		memory.connectCartridge(cartridgePtr);
 
 		while (handleInputs()) // Window is active
 		{
@@ -323,7 +323,7 @@ string GameBoy::generateSavestateName()
 	}
 	else
 	{
-		path = cartridgePtr.getRomPath() + path;
+		path = cartridgePtr->getRomPath() + path;
 	}
 	return path;
 }
@@ -343,7 +343,7 @@ void GameBoy::createSaveState()
 	cpu.dump(savestateFile);
 	// // spu.dump();
 	// // ppu.dump();
-	cartridgePtr.dump(savestateFile);
+	cartridgePtr->dump(savestateFile);
 	memory.dump(savestateFile);
 
 	savestateFile.write((char*)&pos, sizeof(pos));
@@ -368,7 +368,7 @@ void GameBoy::loadSaveState()
 
 	// Load savestate data into CPU, MMU and Cartridge
 	cpu.loadDumpedData(savestateFile);
-	cartridgePtr.loadDumpedData(savestateFile);
+	cartridgePtr->loadDumpedData(savestateFile);
 	memory.loadDumpedData(savestateFile);
 
 	savestateFile.close();
