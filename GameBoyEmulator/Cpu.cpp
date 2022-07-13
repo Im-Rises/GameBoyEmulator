@@ -141,7 +141,8 @@ void Cpu::dump(ofstream& savestateFile)
 	};
 
 	cout << "Dumping CPU ..." << endl;
-	
+
+	// need to update this code...
 	savestateFile.write((char*)regs, sizeof(regs));
 	savestateFile.write((char*)pcsp, sizeof(pcsp));
 	savestateFile.write((char*)intVariables, sizeof(intVariables));
@@ -150,6 +151,7 @@ void Cpu::dump(ofstream& savestateFile)
 
 void Cpu::loadDumpedData(ifstream& savestateFile)
 {
+	// in particular this one
 	savestateFile.read((char*)&A, sizeof(A));
 	savestateFile.read((char*)&B, sizeof(B));
 	savestateFile.read((char*)&C, sizeof(C));

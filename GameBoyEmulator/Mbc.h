@@ -3,7 +3,12 @@
 
 class Mbc
 {
-	
+private:
+
+
+public:
+	Mbc(int romSize, int ramSize);
+	~Mbc();
 };
 
 #endif
