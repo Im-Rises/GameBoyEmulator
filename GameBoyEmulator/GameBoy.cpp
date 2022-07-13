@@ -76,13 +76,18 @@ void GameBoy::loadBios(const string& biosPath)
 
 void GameBoy::insertGame(const string& rompath)
 {
-	// cartridgePtr.writeRomInCartridge(rompath);
 	cartridgePtr = std::make_shared<Cartridge>(rompath);
 }
 
 void GameBoy::start()
 {
 	ppu.powerOnScreen();
+
+	if (cartridgePtr)
+	{
+		gameName = cartridgePtr->getGameName();
+		memory.connectCartridge(cartridgePtr);
+	}
 
 	//Calcul the number of cycles for the update of the screen
 	const int cyclesToDo = CLOCK_FREQUENCY / SCREEN_FREQUENCY;
@@ -110,8 +115,6 @@ void GameBoy::start()
 	{
 		std::filesystem::create_directories(screenshotsFolder + gameName + "/");
 		ppu.addGameNameWindow(gameName);
-		gameName = cartridgePtr->getGameName();
-		memory.connectCartridge(cartridgePtr);
 
 		while (handleInputs()) // Window is active
 		{
@@ -403,17 +406,11 @@ string GameBoy::getDateTime()
 
 bool GameBoy::fileExist(const std::string& name)
 {
-	// struct stat buffer;
-	// return (stat(name.c_str(), &buffer) == 0);
+	struct stat buffer;
+	return (stat(name.c_str(), &buffer) == 0);
 }
 
 string GameBoy::addLeadingZero(string text, const int& numberOfZero)
 {
-	// string result = text;
-	// int stringSize = text.size();
-	// for (int i = 0; i < (numberOfZero - stringSize); i++)
-	// 	result = "0" + result;
-	// return result;
-
 	return std::string(numberOfZero - std::min(numberOfZero, static_cast<int>(text.length())), '0') + text;
 }

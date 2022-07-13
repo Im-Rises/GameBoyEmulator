@@ -169,6 +169,9 @@ void Memory::setMemoryWithoutBios()
 
 uint8 Memory::read(const uint16 address)
 {
+	// if (address == 0x0104)
+	// 	cerr << "here" << endl;
+
 	if ((address >= 0x4000) && (address <= 0x7FFF)) //Read in rom bank area (Cartridge)
 	{
 		return cartridgePtr->readRom(address);
