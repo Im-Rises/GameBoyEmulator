@@ -196,15 +196,11 @@ void Memory::write(const uint16& address, const uint8 value)
 	if (address < 0x8000) //Writting in this area change the used banks in the cartridge
 	{
 		cartridgePtr->writeRom(address, value);
-		// cartridgePtr->handleBanking(address, value);
 	}
 	else if (address >= 0xA000 && address < 0xC000) //External expension ram wrtting
 	{
 		cartridgePtr->writeRam(address, value);
-		// if (cartridgePtr->getRamBankingEnable())
-		// {
-		// 	cartridgePtr->writeRamBank(address, value);
-		// }
+
 	}
 	else if (address >= 0xE000 && address < 0xFE00)
 	{
@@ -264,8 +260,6 @@ void Memory::write(const uint16& address, const uint8 value)
 	{
 		memoryArray[address] = value;
 	}
-
-	//Trap the sound trigger here
 }
 
 uint8 Memory::directRead(const uint16& address) const

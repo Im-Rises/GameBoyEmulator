@@ -3,10 +3,10 @@
 
 #include <fstream>
 #include <map>
+#include <memory>
 
 #include "binaryLib/binaryLib.h"
 #include "MBC/Mbc.h"
-#include "MBC/MbcRom.h"
 
 // Thanks to https://gbdev.io/pandocs/The_Cartridge_Header.html
 

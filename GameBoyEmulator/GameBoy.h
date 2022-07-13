@@ -80,7 +80,7 @@ public:
 	void incDecVolume(const float& value);
 
 	/*------------------------------------------GETTERS--------------------------------*/
-	bool getBiosInMemory();
+
 
 	/*------------------------------------------SETTERS-------------------------------*/
 	void setWidthHeight(const int& width, const int& height);

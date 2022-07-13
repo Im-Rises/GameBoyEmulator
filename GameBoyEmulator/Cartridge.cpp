@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include "MBC/MbcRom.h"
 
 using namespace std;
 

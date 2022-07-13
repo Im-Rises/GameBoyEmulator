@@ -4,9 +4,9 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
+// #include <fcntl.h>
+// #include <sys/types.h>
+// #include <sys/stat.h>
 
 // #include <format> // Issue with Unix system, using my functions to format string for screesnshots name
 
@@ -32,8 +32,6 @@ GameBoy::GameBoy() : memory(&joypad, &spu), cpu(&memory, &ppu, &spu), ppu(&memor
 	SDL_EventState(SDL_CONTROLLERBUTTONUP, SDL_IGNORE);
 
 	SDL_EventState(SDL_MOUSEMOTION, SDL_IGNORE);
-
-	// srand(time(NULL));
 }
 
 GameBoy::~GameBoy()
@@ -53,7 +51,6 @@ GameBoy* GameBoy::getInstance()
 
 void GameBoy::reset()
 {
-	// if (!processingBios && memory.getBiosInMemeory())
 	memory.reset();
 	cpu.reset();
 	ppu.reset();
@@ -90,17 +87,13 @@ void GameBoy::start()
 	//Calcul the number of cycles for the update of the screen
 	const int cyclesToDo = CLOCK_FREQUENCY / SCREEN_FREQUENCY;
 
-	if (getBiosInMemory())
-	{
-		biosName = biosPath.substr(biosPath.find_last_of('/'));
-		biosName.erase(remove(biosName.begin(), biosName.end(), '/'), biosName.end());
-	}
-
 	if (memory.getBiosInMemeory()) //if there is a bios
 	{
+		biosName = biosPath.substr(biosPath.find_last_of('/'));
+		// biosName.erase(remove(biosName.begin(), biosName.end(), '/'), biosName.end());
 		std::filesystem::create_directories(screenshotsFolder + biosName + "/");
 		processingBios = true;
-		while (handleInputs() && cpu.getPc() < 0x100) //cpu.getPc() < 0x100 && glfwOpenglLib.windowHandling()
+		while (handleInputs() && cpu.getPc() < 0x100)
 		{
 			doGameBoyCycle(cyclesToDo);
 		}
@@ -113,14 +106,10 @@ void GameBoy::start()
 		this->setGameBoyWithoutBios();
 	}
 
-	if (!gameName.empty())
+	if (cartridgePtr)
 	{
 		std::filesystem::create_directories(screenshotsFolder + gameName + "/");
 		ppu.addGameNameWindow(gameName);
-	}
-
-	if (cartridgePtr)
-	{
 		gameName = cartridgePtr->getGameName();
 		memory.connectCartridge(cartridgePtr);
 
@@ -333,21 +322,18 @@ string GameBoy::generateSavestateName()
 void GameBoy::createSaveState()
 {
 	string path = generateSavestateName();
-
 	ppu.doScreenshot(path);
 
 	ofstream savestateFile(path, ios::out | ios::app | ios::ate | ios::binary);
-
 	long pos = savestateFile.tellp();
 
 	cpu.dump(savestateFile);
-	// // spu.dump();
-	// // ppu.dump();
+	// spu.dump();
+	// ppu.dump();
 	cartridgePtr->dump(savestateFile);
 	memory.dump(savestateFile);
 
 	savestateFile.write((char*)&pos, sizeof(pos));
-
 	savestateFile.close();
 }
 
@@ -389,11 +375,6 @@ void GameBoy::incDecVolume(const float& value)
 
 /*------------------------------------------GETTERS--------------------------------*/
 
-bool GameBoy::getBiosInMemory()
-{
-	return memory.getBiosInMemeory();
-}
-
 
 /*------------------------------------------SETTERS-------------------------------*/
 
@@ -422,8 +403,8 @@ string GameBoy::getDateTime()
 
 bool GameBoy::fileExist(const std::string& name)
 {
-	struct stat buffer;
-	return (stat(name.c_str(), &buffer) == 0);
+	// struct stat buffer;
+	// return (stat(name.c_str(), &buffer) == 0);
 }
 
 string GameBoy::addLeadingZero(string text, const int& numberOfZero)

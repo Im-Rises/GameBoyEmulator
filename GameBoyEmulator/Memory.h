@@ -2,6 +2,7 @@
 #define DEF_MEMORY 
 
 #include <fstream>
+#include <memory>
 
 #include "binaryLib/binaryLib.h"
 
@@ -61,7 +62,7 @@ private:
 	uint8 memoryArray[MEMORY_SIZE];
 	bool biosInMemory;
 	bool gameInMemory;
-	std::shared_ptr<Cartridge> cartridgePtr = nullptr;
+	shared_ptr<Cartridge> cartridgePtr = nullptr;
 	Joypad* joypad = nullptr;
 	Spu* spu = nullptr;
 
