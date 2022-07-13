@@ -1,8 +1,6 @@
 #ifndef DEF_CARTRIDGE
 #define DEF_CARTRIDGE
 
-
-#include <iostream>
 #include <fstream>
 #include <map>
 
@@ -38,6 +36,7 @@ private:
 	bool ramBankingEnable;
 
 
+	/*----------------------------Cartridge info---------------------------*/
 	//Other data p299
 	string gameName;
 	string gameCode;
@@ -46,39 +45,37 @@ private:
 	uint8 externalRamSize;
 	uint8 destinationCode;
 	string destinationText;
-
 	map<uint8, string> destinationMap;
 
 public:
-	//Constructor and destructor
+	/*----------------------------Constructor/Desctructor/Reset---------------------------*/
 	Cartridge();
-	// Cartridge(const string& romPath);
 	~Cartridge();
 	void reset();
-	void dump(ofstream& savestateFile);
-	void loadDumpedData(ifstream& savestateFile);
 
+	/*----------------------------Load rom in cartridge---------------------------*/
 	void writeRomInCartridge(const string& romPath);
 
-	//Read and write
+	/*----------------------------Read and write---------------------------*/
+	uint8 readRom(int address) const;
 	uint8 readRomBank(const uint16& address) const;
-
-
 	uint8 readRamBank(const uint16& address) const;
 	void writeRamBank(const uint16& address, const uint8& data);
-
 	void handleBanking(const uint16& address, const uint8& data);
 
 private:
-	//Handle rom and ram banking
+	/*----------------------------Handle rom and ram banking---------------------------*/
 	void mbcRegister0(const uint16& address, const uint8& data);
 	void mbcRegister1(const uint16& address, const uint8& data);
 	void mbcRegister2(const uint16& address, const uint8& data);
 	void mbcRegister3(const uint16& address, const uint8& data);
 
 public:
-	//Getters and setters
+	/*----------------------------Savestate---------------------------*/
+	void dump(ofstream& savestateFile);
+	void loadDumpedData(ifstream& savestateFile);
 
+	/*----------------------------Getters and setters---------------------------*/
 	CartridgeType getCartridgeType();
 
 	uint8 getCurrentRamBank() const;
@@ -90,17 +87,13 @@ public:
 	bool getRamBankingEnable() const;
 	void setRamBankingEnable(bool state);
 
-	uint8 getRomFromIndex(int index) const;
-
 	string getCartridgeTypeToString() const;
-
 	bool getCartridgeIsEmpty()const;
-
-	//toString
 
 	string getGameName()const;
 	string getRomPath()const;
 
+	/*----------------------------ToString---------------------------*/
 	string toString() const;
 };
 

@@ -1,5 +1,6 @@
 #include "Cartridge.h"
 
+#include <iostream>
 #include <string>
 
 Cartridge::Cartridge()
@@ -14,14 +15,9 @@ Cartridge::Cartridge()
 	cartridgeEmpty = true;
 }
 
-// Cartridge::Cartridge(const string& romPath)
-// {
-//
-// }
-
 Cartridge::~Cartridge()
 {
-	delete[] rom; //Not call if program crash
+	delete[] rom;
 	delete[] ram;
 }
 
@@ -29,32 +25,6 @@ void Cartridge::reset()
 {
 	currentRomBank = 1;
 	currentRamBank = 0;
-}
-
-void Cartridge::dump(ofstream& savestateFile)
-{
-	uint8 currentRomRamBanks[2] = {
-		currentRomBank, currentRamBank
-	};
-
-	bool romRamBanksEnabled[2] = {
-		romBankingEnable, ramBankingEnable
-	};
-
-
-	cout << "Dumping Cartridge infos..." << endl;
-
-	savestateFile.write((char*)currentRomRamBanks, sizeof(currentRomRamBanks));
-	savestateFile.write((char*)romRamBanksEnabled, sizeof(romRamBanksEnabled));
-}
-
-void Cartridge::loadDumpedData(ifstream& savestateFile)
-{
-	savestateFile.read((char*)&currentRomBank, sizeof(currentRomBank));
-	savestateFile.read((char*)&currentRamBank, sizeof(currentRamBank));
-
-	savestateFile.read((char*)&romBankingEnable, sizeof(romBankingEnable));
-	savestateFile.read((char*)&ramBankingEnable, sizeof(ramBankingEnable));
 }
 
 void Cartridge::writeRomInCartridge(const string& romPath)
@@ -157,6 +127,11 @@ void Cartridge::writeRomInCartridge(const string& romPath)
 	cout << this->toString() << endl;
 }
 
+
+uint8 Cartridge::readRom(int address) const
+{
+	return rom[address];
+}
 
 //Read and write
 uint8 Cartridge::readRomBank(const uint16& address) const
@@ -394,6 +369,32 @@ void Cartridge::mbcRegister3(const uint16& address, const uint8& data)
 }
 
 
+void Cartridge::dump(ofstream& savestateFile)
+{
+	uint8 currentRomRamBanks[2] = {
+		currentRomBank, currentRamBank
+	};
+
+	bool romRamBanksEnabled[2] = {
+		romBankingEnable, ramBankingEnable
+	};
+
+
+	cout << "Dumping Cartridge infos..." << endl;
+
+	savestateFile.write((char*)currentRomRamBanks, sizeof(currentRomRamBanks));
+	savestateFile.write((char*)romRamBanksEnabled, sizeof(romRamBanksEnabled));
+}
+
+void Cartridge::loadDumpedData(ifstream& savestateFile)
+{
+	savestateFile.read((char*)&currentRomBank, sizeof(currentRomBank));
+	savestateFile.read((char*)&currentRamBank, sizeof(currentRamBank));
+
+	savestateFile.read((char*)&romBankingEnable, sizeof(romBankingEnable));
+	savestateFile.read((char*)&ramBankingEnable, sizeof(ramBankingEnable));
+}
+
 //Getters and setters
 
 CartridgeType Cartridge::getCartridgeType()
@@ -432,12 +433,6 @@ bool Cartridge::getRamBankingEnable() const
 void Cartridge::setRamBankingEnable(bool state)
 {
 	ramBankingEnable = state;
-}
-
-
-uint8 Cartridge::getRomFromIndex(int index) const
-{
-	return rom[index];
 }
 
 string Cartridge::getCartridgeTypeToString() const
@@ -485,8 +480,6 @@ string Cartridge::getRomPath() const
 {
 	return romPath;
 }
-
-//toString
 
 string Cartridge::toString() const
 {

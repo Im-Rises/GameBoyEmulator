@@ -71,7 +71,7 @@ void Memory::connectCartridge(Cartridge* cartridge)
 	{
 		for (int i = index; i < 0x8000; i++)
 		{
-			memoryArray[i] = cartridge->getRomFromIndex(i);
+			memoryArray[i] = cartridge->readRom(i);
 		}
 	}
 }
@@ -120,7 +120,7 @@ void Memory::loadRomBeginning()
 	{
 		for (int i = 0; i < 0x100; i++)
 		{
-			memoryArray[i] = cartridge->getRomFromIndex(i);
+			memoryArray[i] = cartridge->readRom(i);
 		}
 		biosInMemory = false;
 	}
