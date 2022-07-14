@@ -120,6 +120,7 @@ Cartridge::Cartridge(const std::string& romPath)
 
 Cartridge::~Cartridge()
 {
+
 }
 
 void Cartridge::writeRom(const uint16& address, const uint8& data)

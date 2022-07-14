@@ -2,6 +2,8 @@
 
 Mbc1::Mbc1(): Mbc()
 {
+	romBankingEnabled = true;
+	ramAccessEnabled = true;
 }
 
 void Mbc1::handleBanking(const uint16& address, const uint8& data)
