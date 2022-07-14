@@ -1,48 +1,162 @@
 #include "Cartridge.h"
 
+#include <iostream>
 #include <string>
 
-Cartridge::Cartridge()
+#include "MBC/Mbc1.h"
+#include "MBC/Mbc2.h"
+#include "MBC/Mbc3.h"
+#include "MBC/Mbc5.h"
+#include "MBC/MbcRom.h"
+
+using namespace std;
+
+Cartridge::Cartridge(const std::string& romPath)
 {
-	destinationMap.insert(std::make_pair(0x00, "Japan"));
-	destinationMap.insert(std::make_pair(0x01, "Other"));
+	this->romPath = romPath;
 
-	//Instead of loading all the rom to the ram of the computer, perhaps i should open the file and read it 
-	rom = new uint8[0x200000];
-	ram = new uint8[0x8000];
+	struct
+	{
+		char title[11];
+		char manufacturerCode[4];
+		char cgbFlag;
+		char newLicenseeCode[2];
+		char sgbFlag;
+		char cartridgeType;
+		char nbrRomBanks;
+		char nbrRamBanks;
+		char destinationCode;
+		char oldLicenseeCode;
+		char maskRomVersionNumber;
+		char headerChecksum;
+		char globalChecksum[2];
+	} header{};
 
-	cartridgeEmpty = true;
+	ifstream input(romPath, std::ios::binary);
+	if (!input)
+	{
+		cerr << "Error: Can't open rom file" << endl;
+		exit(1);
+	}
+
+	input.seekg(0x0134);
+	input.read(reinterpret_cast<char*>(&header), sizeof(header));
+
+	gameTitle = header.title;
+	manufacturerCode = header.manufacturerCode;
+	cGBFlag = header.cgbFlag;
+
+	if (header.oldLicenseeCode == 0x33)
+		// May have issue here, no licensee code exceed 1 byte but it is still written with two bytes
+		licensee = newLicenseeCodeMap.at(header.newLicenseeCode[0]);
+	else
+		licensee = oldLicenseeCodeMap.at(header.oldLicenseeCode);
+
+	sGBFlag = header.sgbFlag;
+
+	cartridgeType = cartridgeTypeMap.at(header.cartridgeType);
+
+	char nbrRomBanks = romSizeCodeBankMap.at(header.nbrRomBanks);
+	char nbrRamBanks = ramSizeCodeBankMap.at(header.nbrRamBanks);
+
+	destination = destinationMap.at(header.destinationCode);
+
+	maskRomVersion = header.maskRomVersionNumber;
+
+	headerChecksum = header.headerChecksum;
+
+	globalChecksum = header.globalChecksum;
+
+
+	/*-------Handle MBC type----------*/
+
+	switch (header.cartridgeType)
+	{
+	case(0x00):
+	case(0x08):
+	case(0x09):
+		mbcPtr = std::make_shared<MbcRom>();
+		break;
+	case(0x01):
+	case(0x02):
+	case(0x03):
+		mbcPtr = std::make_shared<Mbc1>();
+		break;
+	case(0x05):
+	case(0x06):
+		mbcPtr = std::make_shared<Mbc2>();
+		break;
+	case(0x0F):
+	case(0x10):
+	case(0x11):
+	case(0x12):
+	case(0x13):
+		mbcPtr = std::make_shared<Mbc3>();
+		break;
+	case(0x19):
+	case(0x1A):
+	case(0x1B):
+	case(0x1C):
+	case(0x1D):
+	case(0x1E):
+		mbcPtr = std::make_shared<Mbc5>();
+		break;
+	default:
+		cerr << "Error unknown Cartridge type : " << cartridgeType << endl;
+		exit(2);
+	}
+
+
+	/*-------Resize rom and ram----------*/
+	rom.resize(nbrRomBanks * 0x4000);
+	ram.resize(nbrRamBanks * 0x2000);
+
+	/*-------Load complete rom----------*/
+	input.seekg(0, ios::beg);
+	input.read(reinterpret_cast<char*>(rom.data()), rom.size());
+
+	input.close();
 }
-
-// Cartridge::Cartridge(const string& romPath)
-// {
-//
-// }
 
 Cartridge::~Cartridge()
 {
-	delete[] rom; //Not call if program crash
-	delete[] ram;
+
 }
 
-void Cartridge::reset()
+void Cartridge::writeRom(const uint16& address, const uint8& data)
 {
-	currentRomBank = 1;
-	currentRamBank = 0;
+	mbcPtr->handleBanking(address, data); //Write to rom to handle rom and ram banking
+}
+
+uint8 Cartridge::readRom(const uint16& address) const
+{
+	if (address < 0x4000)
+		return rom[address]; //Read rom bank 0
+
+	return rom[mbcPtr->getReadRomAddress(address)]; //Read rom bank 1 or higher
+}
+
+void Cartridge::writeRam(const uint16& address, const uint8& data)
+{
+	ram[mbcPtr->getReadWriteRamAddress(address)] = data; //Write to ram
+}
+
+uint8 Cartridge::readRam(const uint16& address) const
+{
+	return ram[mbcPtr->getReadWriteRamAddress(address)]; //Read ram bank 0 to higher
 }
 
 void Cartridge::dump(ofstream& savestateFile)
 {
+	cout << "Dumping Cartridge savestate data..." << endl;
+
 	uint8 currentRomRamBanks[2] = {
-		currentRomBank, currentRamBank
+		mbcPtr->getCurrentRomBank(), mbcPtr->getCurrentRamBank()
 	};
 
 	bool romRamBanksEnabled[2] = {
-		romBankingEnable, ramBankingEnable
+		mbcPtr->getRomBankingEnabled(), mbcPtr->getRamBankingEnabled()
 	};
-
-
-	cout << "Dumping Cartridge infos..." << endl;
 
 	savestateFile.write((char*)currentRomRamBanks, sizeof(currentRomRamBanks));
 	savestateFile.write((char*)romRamBanksEnabled, sizeof(romRamBanksEnabled));
@@ -50,447 +164,31 @@ void Cartridge::dump(ofstream& savestateFile)
 
 void Cartridge::loadDumpedData(ifstream& savestateFile)
 {
+	uint8 currentRomBank = 0, currentRamBank = 0;
+	bool romBankingEnabled = 0, ramBankingEnabled = 0;
+
 	savestateFile.read((char*)&currentRomBank, sizeof(currentRomBank));
+	mbcPtr->setCurrentRomBank(currentRomBank);
 	savestateFile.read((char*)&currentRamBank, sizeof(currentRamBank));
+	mbcPtr->setCurrentRamBank(currentRamBank);
 
-	savestateFile.read((char*)&romBankingEnable, sizeof(romBankingEnable));
-	savestateFile.read((char*)&ramBankingEnable, sizeof(ramBankingEnable));
+	savestateFile.read((char*)&romBankingEnabled, sizeof(romBankingEnabled));
+	mbcPtr->setRomBankingEnabled(romBankingEnabled);
+	savestateFile.read((char*)&ramBankingEnabled, sizeof(ramBankingEnabled));
+	mbcPtr->setRamBankingEnabled(ramBankingEnabled);
 }
 
-void Cartridge::writeRomInCartridge(const string& romPath)
+std::string Cartridge::getGameName() const
 {
-	this->romPath = romPath;
-
-	if (rom == nullptr || ram == nullptr)
-	{
-		cerr << "Error: cannot dynamically allocate memory" << endl;
-		exit(1);
-	}
-
-	for (int i = 0; i < 0x200000; i++)
-	{
-		rom[i] = 0;
-	}
-
-	ifstream input(romPath, std::ios::binary);
-	if (input)
-	{
-		input.seekg(0, ios::end);
-		int romSize = input.tellg();
-		input.seekg(0, ios::beg);
-		for (int i = 0; (i < romSize) && (i < 0x100000); i++)
-		{
-			rom[i] = input.get();
-		}
-		input.close();
-	}
-	else
-	{
-		cerr << "Error: Can't open rom file" << endl;
-		exit(1);
-	}
-
-	currentRomBank = 1;
-	currentRamBank = 0;
-
-	ramBankingEnable = false;
-
-
-	for (int i = 0; i < 11; i++)
-	{
-		gameName += (char)rom[0x134 + i];
-	}
-
-	for (int i = 0; i < 4; i++)
-	{
-		gameCode += (char)rom[0x13F + i];
-	}
-
-	cgbSupport = rom[0x143];
-
-	switch (rom[0x147])
-	{
-	case(0):
-		{
-			cartridgeType = ROM;
-			break;
-		}
-	case(1):
-		{
-			cartridgeType = MBC1;
-			break;
-		}
-	case(2):
-		{
-			cartridgeType = MBC1;
-			break;
-		}
-	case(3):
-		{
-			cartridgeType = MBC1;
-			break;
-		}
-	case(5):
-		{
-			cartridgeType = MBC2;
-			break;
-		}
-	case(6):
-		{
-			cartridgeType = MBC2;
-			break;
-		}
-	default:
-		cerr << "Error: Cartridge type not recognized" << endl;
-		exit(1);
-	}
-
-	romSize = rom[0x148];
-
-	externalRamSize = rom[0x149];
-
-	destinationCode = rom[0x014A];
-	destinationText = destinationMap[destinationCode];
-
-	cartridgeEmpty = false;
-
-	cout << this->toString() << endl;
+	return gameTitle;
 }
 
-
-//Read and write
-uint8 Cartridge::readRomBank(const uint16& address) const
-{
-	// int temp = address - 0x4000 + currentRomBank * 0x4000 > 0x200000;
-	// int temp2 = currentRomBank;
-	// if (address - 0x4000 + currentRomBank * 0x4000 > 0x200000)
-	// 	exit(1);
-	// return rom[0];
-
-	return rom[address - 0x4000 + currentRomBank * 0x4000];
-}
-
-uint8 Cartridge::readRamBank(const uint16& address) const
-{
-	return ram[address - 0xA000 + currentRamBank * 0x2000];
-}
-
-void Cartridge::writeRamBank(const uint16& address, const uint8& data)
-{
-	ram[address - 0xA000 + currentRamBank * 0x2000] = data;
-}
-
-
-void Cartridge::handleBanking(const uint16& address, const uint8& data)
-{
-	//Developper guide p215
-	if (cartridgeType != ROM)
-	{
-		if (address < 0x2000)
-		{
-			mbcRegister0(address, data);
-		}
-		else if ((address >= 0x2000) && (address < 0x4000))
-		{
-			mbcRegister1(address, data);
-		}
-		else if ((address >= 0x4000) && (address < 0x6000))
-		{
-			mbcRegister2(address, data);
-		}
-		else if ((address >= 0x6000) && (address < 0x8000))
-		{
-			mbcRegister3(address, data);
-		}
-	}
-}
-
-
-void Cartridge::mbcRegister0(const uint16& address, const uint8& data)
-{
-	//Register 0
-
-	switch (cartridgeType)
-	{
-	case(ROM):
-		{
-			cerr << "Error: Error enabling/disactivating ram bank, ROM cartridge type ." << endl;
-			exit(1);
-		}
-	case(MBC1):
-		{
-			if ((data & 0x0F) == 0x0A)
-				ramBankingEnable = true;
-			else
-				ramBankingEnable = false;
-			break;
-		}
-	case(MBC2):
-		{
-			if (address <= 0x0FFF)
-			{
-				if ((data & 0x0F) == 0x0A)
-					ramBankingEnable = true;
-				else
-					ramBankingEnable = false;
-			}
-			break;
-		}
-	case(MBC3):
-		{
-			if ((data & 0x0F) == 0x0A)
-				ramBankingEnable = true;
-			else
-				ramBankingEnable = false;
-			break;
-		}
-	case(MBC5):
-		{
-			cerr << "Error: Error enabling/deactivating ram bank, MBC5 cartridge type not implemented." << endl;
-			exit(1);
-		}
-	default:
-		cerr << "Error: Error enabling/deactivating ram bank, cartridge type not recognized." << endl;
-		exit(1);
-	}
-}
-
-void Cartridge::mbcRegister1(const uint16& address, const uint8& data)
-{
-	//Register 1
-
-	switch (cartridgeType)
-	{
-	case(ROM):
-		{
-			cerr << "Error: Error chaning rom bank low address, ROM cartridge type." << endl;
-			exit(1);
-		}
-	case(MBC1):
-		{
-			currentRomBank &= 0b11100000; //Reset lower bits
-			currentRomBank |= (data & 0b00011111); //Change the bits from 0 to 4
-			break;
-		}
-	case(MBC2):
-		{
-			if (address >= 0x2100 && address <= 0x21FF)
-			{
-				currentRomBank = data & 0x0F;
-			}
-			break;
-		}
-	case(MBC3):
-		{
-			currentRomBank &= 0b10000000; //Reset lower bits
-			currentRomBank |= (data & 0b01111111); //Change the bits from 0 to 6
-			break;
-		}
-	case(MBC5):
-		{
-			cerr << "Error: Error changing rom bank low address, MBC5 cartridge not implemented." << endl;
-			exit(1);
-		}
-	default:
-		cerr << "Error: Error changing rom bank low address, cartridge type not recognized." << endl;
-		exit(1);
-	}
-
-	(currentRomBank == 0) ? currentRomBank++ : currentRomBank;
-	//If romBank equals 0 thant add 1 (don't know if it is a necessity)
-}
-
-
-void Cartridge::mbcRegister2(const uint16& address, const uint8& data)
-{
-	//Register 2
-
-	switch (cartridgeType)
-	{
-	case(ROM):
-		{
-			cerr << "Error: Error chaning rom bank high address, ROM cartridge type." << endl;
-			exit(1);
-			break;
-		}
-	case(MBC1):
-		{
-			if (romBankingEnable)
-			{
-				currentRomBank &= 0b00011111; //Reset high bits (5 to 7)
-				//currentRomBank |= ((data << 5) & 0b01100000);//Add the bits 5 and 6 (no data shifting needed)
-				currentRomBank |= (data & 0b01100000); //Add the bits 5 and 6
-			}
-			else
-			{
-				currentRamBank = data & 0x3;
-			}
-			break;
-		}
-	case(MBC2):
-		{
-			//Do nothing
-			break;
-		}
-	case(MBC3):
-		{
-			cerr << "Error: Error changing rom bank high address, MBC3 cartridge not implemented." << endl;
-			exit(1);
-		}
-	case(MBC5):
-		{
-			cerr << "Error: Error changing rom bank high address, MBC5 cartridge not implemented." << endl;
-			exit(1);
-		}
-	default:
-		cerr << "Error: Error changing rom bank high address, cartridge type not recognized." << endl;
-		exit(1);
-	}
-
-	(currentRomBank == 0) ? currentRomBank++ : currentRomBank;
-	//If romBank equals 0 thant add 1 (don't know if it is a necessity)
-}
-
-
-void Cartridge::mbcRegister3(const uint16& address, const uint8& data)
-{
-	switch (cartridgeType)
-	{
-	case(ROM):
-		{
-			cerr << "Error: Error changing changeRomRam mode, ROM cartridge type." << endl;
-			exit(1);
-			break;
-		}
-	case(MBC1):
-		{
-			romBankingEnable = (data == 1);
-			if (romBankingEnable)
-				currentRamBank = 0;
-			break;
-		}
-	case(MBC2):
-		{
-			//Do nothing
-			break;
-		}
-	case(MBC3):
-		{
-			cerr << "Error: Error changing changeRomRam mode, MBC3 cartridge type." << endl;
-			exit(1);
-			break;
-		}
-	case(MBC5):
-		{
-			cerr << "Error: Error changing changeRomRam mode, MBC5 cartridge type." << endl;
-			exit(1);
-			break;
-		}
-	default:
-		cerr << "Error: Error changing changeRomRam mode, cartridge type not recognized." << endl;
-		exit(1);
-		break;
-	}
-}
-
-
-//Getters and setters
-
-CartridgeType Cartridge::getCartridgeType()
-{
-	return cartridgeType;
-}
-
-
-uint8 Cartridge::getCurrentRamBank() const
-{
-	return currentRamBank;
-}
-
-void Cartridge::setCurrentRamBank(uint8 value)
-{
-	currentRamBank = value;
-}
-
-
-uint8 Cartridge::getCurrentRomBank() const
-{
-	return currentRomBank;
-}
-
-void Cartridge::setCurrentRomBank(uint8 value)
-{
-	currentRomBank = value;
-}
-
-
-bool Cartridge::getRamBankingEnable() const
-{
-	return ramBankingEnable;
-}
-
-void Cartridge::setRamBankingEnable(bool state)
-{
-	ramBankingEnable = state;
-}
-
-
-uint8 Cartridge::getRomFromIndex(int index) const
-{
-	return rom[index];
-}
-
-string Cartridge::getCartridgeTypeToString() const
-{
-	switch (this->cartridgeType)
-	{
-	case(ROM):
-		{
-			return "ROM";
-		}
-	case(MBC1):
-		{
-			return "MBC1";
-		}
-	case(MBC2):
-		{
-			return "MBC2";
-		}
-	case(MBC3):
-		{
-			return "MBC3";
-		}
-	case(MBC5):
-		{
-			return "MBC5";
-		}
-	default:
-		cerr << "Error: Unknown cartridge name." << endl;
-		exit(1);
-	}
-}
-
-bool Cartridge::getCartridgeIsEmpty() const
-{
-	return cartridgeEmpty;
-}
-
-
-string Cartridge::getGameName() const
-{
-	return gameName;
-}
-
-string Cartridge::getRomPath() const
+std::string Cartridge::getRomPath() const
 {
 	return romPath;
 }
 
-//toString
-
-string Cartridge::toString() const
+std::string Cartridge::toString()
 {
-	return "Game name: " + gameName + "\nCartridge type: " + getCartridgeTypeToString() + "\nDestination: " +
-		destinationText + " " +
-		std::to_string(destinationCode);
+	return gameTitle + '\n' + cartridgeType;
 }

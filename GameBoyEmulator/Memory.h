@@ -1,8 +1,8 @@
 #ifndef DEF_MEMORY
 #define DEF_MEMORY 
 
-#include <iostream>
 #include <fstream>
+#include <memory>
 
 #include "binaryLib/binaryLib.h"
 
@@ -55,14 +55,14 @@ class Spu;
 
 using namespace std;
 
-class Memory {
-
+class Memory
+{
 private:
 	//uint8* memoryArray = new uint8[MEMORY_SIZE];
 	uint8 memoryArray[MEMORY_SIZE];
 	bool biosInMemory;
 	bool gameInMemory;
-	Cartridge* cartridge = nullptr;
+	shared_ptr<Cartridge> cartridgePtr = nullptr;
 	Joypad* joypad = nullptr;
 	Spu* spu = nullptr;
 
@@ -76,31 +76,22 @@ public:
 
 	bool loadBiosInMemory(const string& biosPath);
 
-	void connectCartridge(Cartridge* cartridge);
+	void connectCartridge(shared_ptr<Cartridge>& cartridge);
 
-	// void loadRomInMemory();
 	void loadRomBeginning();
 	void setMemoryWithoutBios();
 
 	//Read and write to cartridge or memory
 	uint8 read(const uint16 address);
 	void write(const uint16& address, const uint8 value);
-	uint8 directRead(const uint16& address)const;
+	uint8 directRead(const uint16& address) const;
 	void directWrite(const uint16& address, const uint8& value);
 
 	void requestInterrupt(uint8 bitIndex);
-	//void increment(const uint16& address);
-	//void decrement(const uint16& address);
-
-
-
-
-
 
 	void setResetBitMemory(const uint16& address, const bool bit, const int bitIndex);
 
-	bool getBiosInMemeory()const;
-
+	bool getBiosInMemeory() const;
 };
 
 #endif

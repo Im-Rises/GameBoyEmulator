@@ -7,8 +7,7 @@
 
 /*
  * To do list:
- * - Add MBC5
- * - Add saves
+ * - Add MBC5 and saves
  * - Correct PPU background aliasing
  * - Correct inputs interrupt in joypad.cpp (interrupts in general)
  */
@@ -51,8 +50,10 @@ int main(int argc, char* argv[])
 		// romPath = "../../../../Bios_Games/Games/tetris.gb";
 		// romPath = "../../../../Bios_Games/Games/tennis.gb";
 		// romPath = "../../../../Bios_Games/Games/Zelda Link's Awakening.gb";
-		//romPath = "../../Bios_Games/Games/Tennis.gb";
-		// romPath = "../../Bios_Games/Games/Pokemon - Version Bleue (F) [S].gb";
+		// romPath = "../../../../Bios_Games/Games/Tennis.gb";
+		// romPath = "../../../../Bios_Games/Games/Pokemon - Version Bleue (F) [S].gb";
+		// romPath = "../../../../Bios_Games/Games/Pokemon - Version Jaune.gb";
+		// romPath = "../../../../Bios_Games/Games/Pokemon - Version Rouge (F) [S].gb";
 
 
 		//Failed:

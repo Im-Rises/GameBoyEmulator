@@ -1,8 +1,10 @@
 #include "Memory.h"
 
+#include <iostream>
+
 #include "Spu.h"
 
-Memory::Memory(Joypad* joypad, Spu* spu)//memoryArray{}
+Memory::Memory(Joypad* joypad, Spu* spu) //memoryArray{}
 {
 	this->spu = spu;
 	this->joypad = joypad;
@@ -13,7 +15,7 @@ Memory::Memory(Joypad* joypad, Spu* spu)//memoryArray{}
 		i = 0x0;
 
 	// To print the black rectangle when starting the game boy without games
-	for (int i = 0x100; i< 0x8000;i++)
+	for (int i = 0x100; i < 0x8000; i++)
 	{
 		memoryArray[i] = 0xFF;
 	}
@@ -51,7 +53,7 @@ void Memory::dump(ofstream& savestateFile)
 
 	cout << "Dumping MMU ..." << endl;
 
-	savestateFile.write(((char*)memoryArray)+0x8000, sizeof(memoryArray) - 0x8000);
+	savestateFile.write(((char*)memoryArray) + 0x8000, sizeof(memoryArray) - 0x8000);
 }
 
 void Memory::loadDumpedData(ifstream& savestateFile)
@@ -59,21 +61,21 @@ void Memory::loadDumpedData(ifstream& savestateFile)
 	savestateFile.read(((char*)memoryArray) + 0x8000, sizeof(memoryArray) - 0x8000);
 }
 
-void Memory::connectCartridge(Cartridge* cartridge)
+void Memory::connectCartridge(shared_ptr<Cartridge>& cartridge)
 {
-	this->cartridge = cartridge;
-	int index = 0;
+	this->cartridgePtr = cartridge;
 
-	if (biosInMemory)
-		index = 0x100;
-
-	if (!cartridge->getCartridgeIsEmpty())
-	{
-		for (int i = index; i < 0x8000; i++)
-		{
-			memoryArray[i] = cartridge->getRomFromIndex(i);
-		}
-	}
+	// int index = 0;
+	// if (biosInMemory)
+	// 	index = 0x100;
+	//
+	// // if (cartridge)
+	// // {
+	// for (int i = index; i < 0x8000; i++)
+	// {
+	// 	memoryArray[i] = cartridgePtr->readRom(i);
+	// }
+	// // }
 }
 
 
@@ -98,31 +100,16 @@ bool Memory::loadBiosInMemory(const string& biosPath)
 	}
 }
 
-// void Memory::loadRomInMemory()
-// {
-// 	//Load rom from cartridge
-// 	int startIndex = 0;
-//
-// 	if (biosInMemory)
-// 		startIndex = 0x100;
-//
-//
-// 	for (int i = startIndex; i < RAM_CHARACTER_DATA_BANK_0_DMG; i++)
-// 	{
-// 		memoryArray[i] = cartridge->readRomBank(i);
-// 	}
-// }
-
-
 void Memory::loadRomBeginning()
 {
-	if (!cartridge->getCartridgeIsEmpty())
-	{
-		for (int i = 0; i < 0x100; i++)
-		{
-			memoryArray[i] = cartridge->getRomFromIndex(i);
-		}
-	}
+	// if (cartridgePtr)
+	// {
+	// 	for (int i = 0; i < 0x100; i++)
+	// 	{
+	// 		memoryArray[i] = cartridgePtr->readRom(i);
+	// 	}
+	// 	biosInMemory = false;
+	// }
 }
 
 
@@ -164,16 +151,16 @@ void Memory::setMemoryWithoutBios()
 }
 
 
-uint8 Memory::read(const uint16 address) //OK
+uint8 Memory::read(const uint16 address)
 {
-	if ((address >= 0x4000) && (address <= 0x7FFF)) //Read in rom bank area (Cartridge)
+	if (address < 0x8000) //Read in rom bank area (Cartridge)
 	{
-		return cartridge->readRomBank(address);
+		return cartridgePtr->readRom(address);
 	}
 	else if ((address >= 0xA000) && (address <= 0xBFFF))
 	//Read in ram bank also known as External Expansion Working RAM (Cartridge)
 	{
-		return cartridge->readRamBank(address);
+		return cartridgePtr->readRam(address);
 	}
 	else if (address == 0xFF00) //Trap input's read
 	{
@@ -192,14 +179,11 @@ void Memory::write(const uint16& address, const uint8 value)
 {
 	if (address < 0x8000) //Writting in this area change the used banks in the cartridge
 	{
-		cartridge->handleBanking(address, value);
+		cartridgePtr->writeRom(address, value);
 	}
-	else if (address >= 0xA000 && address < 0xC000) //External expension ram wrtting
+	else if (address >= 0xA000 && address < 0xC000) //External expansion ram writing
 	{
-		if (cartridge->getRamBankingEnable())
-		{
-			cartridge->writeRamBank(address, value);
-		}
+		cartridgePtr->writeRam(address, value);
 	}
 	else if (address >= 0xE000 && address < 0xFE00)
 	{
@@ -259,8 +243,6 @@ void Memory::write(const uint16& address, const uint8 value)
 	{
 		memoryArray[address] = value;
 	}
-
-	//Trap the sound trigger here
 }
 
 uint8 Memory::directRead(const uint16& address) const

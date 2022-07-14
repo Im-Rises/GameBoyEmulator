@@ -1,5 +1,7 @@
 #include "Spu.h"
 
+#include <iostream>
+
 #include "SDL2/include/SDL.h"
 
 /*
