@@ -4,6 +4,7 @@
 #include <string>
 
 #include "MBC/Mbc1.h"
+#include "MBC/Mbc2.h"
 #include "MBC/MbcRom.h"
 
 using namespace std;
@@ -78,6 +79,10 @@ Cartridge::Cartridge(const std::string& romPath)
 	case(0x02):
 	case(0x03):
 		mbcPtr = std::make_shared<Mbc1>();
+		break;
+	case(0x05):
+	case(0x06):
+		mbcPtr = std::make_shared<Mbc2>();
 		break;
 	default:
 		cerr << "Error unknown Cartridge type : " << cartridgeType << endl;

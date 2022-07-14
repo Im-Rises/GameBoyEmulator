@@ -43,15 +43,15 @@ int main(int argc, char* argv[])
 	if (true) //Debug
 	{
 		// biosPath = "../../../../Bios_Games/Bios/dmg_boot.bin";
-		// romPath = "../../../../Bios_Games/Games/Kirby's dream land.gb";
+		romPath = "../../../../Bios_Games/Games/Kirby's dream land.gb";
 		// romPath = "../../../../Bios_Games/Games/MarioLand2.gb";
 		// romPath = "../../../../Bios_Games/Games/bgbtest.gb";
 		// romPath = "../../../../Bios_Games/Games/Gremlins 2.gb";
 		// romPath = "../../../../Bios_Games/Games/tetris.gb";
 		// romPath = "../../../../Bios_Games/Games/tennis.gb";
-		romPath = "../../../../Bios_Games/Games/Zelda Link's Awakening.gb";
-		//romPath = "../../Bios_Games/Games/Tennis.gb";
-		// romPath = "../../Bios_Games/Games/Pokemon - Version Bleue (F) [S].gb";
+		// romPath = "../../../../Bios_Games/Games/Zelda Link's Awakening.gb";
+		// romPath = "../../../../Bios_Games/Games/Tennis.gb";
+		// romPath = "../../../../Bios_Games/Games/Pokemon - Version Bleue (F) [S].gb";
 
 
 		//Failed:

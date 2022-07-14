@@ -6,8 +6,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(SRCS main.cpp binaryLib/binaryLib.cpp IniLoader/IniLoader.cpp Cartridge.cpp Cpu.cpp GameBoy.cpp Joypad.cpp Memory.cpp Ppu.cpp Spu.cpp MBC/Mbc.cpp MBC/MbcRom.cpp MBC/Mbc1.cpp)
-set(HEADERS binaryLib/binaryLib.h IniLoader/IniLoader.h Cartridge.h Cpu.h GameBoy.h Joypad.h Memory.h Ppu.h  Spu.h MBC/Mbc.h MBC/MbcRom.h MBC/Mbc1.h)
+set(SRCS main.cpp binaryLib/binaryLib.cpp IniLoader/IniLoader.cpp Cartridge.cpp Cpu.cpp GameBoy.cpp Joypad.cpp Memory.cpp Ppu.cpp Spu.cpp MBC/Mbc.cpp MBC/MbcRom.cpp MBC/Mbc1.cpp MBC/Mbc2.cpp)
+set(HEADERS binaryLib/binaryLib.h IniLoader/IniLoader.h Cartridge.h Cpu.h GameBoy.h Joypad.h Memory.h Ppu.h  Spu.h MBC/Mbc.h MBC/MbcRom.h MBC/Mbc1.h MBC/Mbc2.cpp)
 
 add_executable(${PROJECT_NAME} ${SRCS} ${HEADERS})
 
