@@ -9,6 +9,8 @@
 * 
 */
 
+void createInitFile();
+
 void readInitFile();
 
 /*------------------------------------------SAVESTATE AND SAVEFILE--------------------------------*/
@@ -20,4 +22,3 @@ void writeSaveState();
 void loadSaveState();
 
 #endif
-

@@ -71,11 +71,14 @@ public:
 	~Memory();
 	void reset();
 
+	void dump(ofstream& savestateFile);
+	void loadDumpedData(ifstream& savestateFile);
+
 	bool loadBiosInMemory(const string& biosPath);
 
 	void connectCartridge(Cartridge* cartridge);
 
-	void loadRomInMemory();
+	// void loadRomInMemory();
 	void loadRomBeginning();
 	void setMemoryWithoutBios();
 

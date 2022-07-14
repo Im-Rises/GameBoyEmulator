@@ -1,19 +1,16 @@
 #include <iostream>
 
-#include "Cartridge.h"
+#include "IniLoader/IniLoader.h"
 #include "GameBoy.h"
 
 #include "SDL2/include/SDL.h"
 
 /*
  * To do list:
- * - add worflows
- * - if no game are loaded SDL is still starting... Start window only if a bios or a game is present
- * - add .ini file
- * - add possibility to load bootrom
+ * - Add MBC5
+ * - Add saves
  * - Correct PPU background aliasing
  * - Correct inputs interrupt in joypad.cpp (interrupts in general)
- * - Add MBC5
  */
 
 void writeUsage(const char* appName)
@@ -39,17 +36,18 @@ int main(int argc, char* argv[])
 {
 	cout << "Nintendo GameBoy Emulator" << endl;
 
-	string biosPath;
-	bool gameBoyCanStart = false;
+	IniLoader iniLoader("GameBoyEmulator.ini");
+	GameBoy* gameBoy;
 	string romPath;
+
 
 	if (true) //Debug
 	{
-		biosPath = "../../../../Bios_Games/Bios/dmg_boot.bin";
+		// biosPath = "../../../../Bios_Games/Bios/dmg_boot.bin";
 		romPath = "../../../../Bios_Games/Games/Kirby's dream land.gb";
-		//romPath = "../../../../Bios_Games/Games/MarioLand2.gb";
+		// romPath = "../../../../Bios_Games/Games/MarioLand2.gb";
 		// romPath = "../../../../Bios_Games/Games/bgbtest.gb";
-		//romPath = "../../Bios_Games/Games/Gremlins 2.gb";
+		// romPath = "../../../../Bios_Games/Games/Gremlins 2.gb";
 		// romPath = "../../../../Bios_Games/Games/tetris.gb";
 		// romPath = "../../../../Bios_Games/Games/tennis.gb";
 		// romPath = "../../../../Bios_Games/Games/Zelda Link's Awakening.gb";
@@ -77,29 +75,21 @@ int main(int argc, char* argv[])
 		argc = 2;
 	}
 
-	// Read .ini file
-
-	// if (false) //settings.isBiosPresent()
-	// {
-	// 	gameBoy->loadBios(biosPath);
-	// }
-
-	if (argc > 1) //If a game is loaded
+	// if (true || argc > 1)
+	if (iniLoader.getBiosAvailable() || argc > 1)
 	{
-		GameBoy* gameBoy = GameBoy::getInstance(); //Game Boy creation
-		// romPath = argv[1];
-		Cartridge cartridge(romPath);
-		cout << cartridge.toString() << endl;
+		gameBoy = GameBoy::getInstance(); //Game Boy creation
 
-		gameBoy->insertGame(&cartridge);
+		iniLoader.setGameBoyParams(gameBoy);
+
+		if (argc > 1) //If a game is loaded
+		{
+			// romPath = argv[1];
+			gameBoy->insertGame(romPath);
+		}
+
 		gameBoy->start();
 	}
-	// else if (gameBoy->getBiosInMemory()) //If no game but bios is present
-	// {
-	// 	GameBoy* gameBoy = GameBoy::getInstance(); //Game Boy creation
-	// 	writeUsage(argv[0]);
-	// 	gameBoy->start();
-	// }
 	else //Write usage
 	{
 		writeUsage(argv[0]);

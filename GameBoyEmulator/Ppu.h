@@ -43,8 +43,6 @@ private:
 	//GameBoy
 	Memory* memory = nullptr;
 
-	int currentColorMode;
-
 	struct ColorModePalette
 	{
 		ColorRGB darkest;
@@ -76,8 +74,9 @@ private:
 
 
 public:
-	Ppu(Memory* memory, ColorMode colorMode = grayscaleNative);
+	Ppu(Memory* memory, ColorMode colorMode = grayscaleNative, int width = 640, int height = 576);
 	~Ppu();
+	void powerOnScreen();
 
 public:
 	// Emulation functions
@@ -86,7 +85,8 @@ public:
 	void updateFramerate(const int& value) const;
 	void doScreenshot(string path);
 	void toggleFullScreen();
-	void setGameBoyColorMode();
+	void setGameBoyColorMode(const int& colorModeCode);
+	void setWidthHeight(const int& width, const int& height);
 
 public:
 	// Game Boy screen functions

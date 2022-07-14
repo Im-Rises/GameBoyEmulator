@@ -102,26 +102,40 @@ sudo apt-get install libsdl2-2.0-0
 
 - Imp : Create a screenshot of the game in the folder next to tha app (screenshots/<gameName>)
 
+- P : Pause emulation
+
+- U : Increase emulator audio volume
+
+- J : Decrease emulator audio volume
+
+- B : create savestate
+
+- N : load savestate
+
+- Tab : restart game/emulator
+
 ### Emulator game contols
 
-|  Console buttons  | Emulator buttons   |
-|--- |--- |
-| A  | D  |
-| B  | S  |
-| Start   | Enter |
-| Select  | Space |
-| ←  | ←  |
-| →  | →  |
-| ↓  | ↓  |
-| ↑  | ↑  |
+You can play games with your keyboard and also with Xbox or Playstation controller.
+
+The controller must be connected before you start the emulator. The selected controller will Rumble for yout to know which controller has been selected (for playsatation user the controller's led will be green).
+
+|  Console buttons  | Emulator buttons   | Xbox Controller | Playstation Controller
+|---|---|---|---|
+| A  | D  | B | |
+| B  | S  | A| |
+| Start   | Enter | start| |
+| Select  | Space | select | |
+| ←  | ←  | arrow/joystick| |
+| →  | →  |arrow/joystick| |
+| ↓  | ↓  |arrow/joystick| |
+| ↑  | ↑  |arrow/joystick| |
 
 ## GitHub Actions
 
 [![CMake](https://github.com/Im-Rises/GameBoyEmulator/actions/workflows/cmake.yml/badge.svg?branch=main)](https://github.com/Im-Rises/GameBoyEmulator/actions/workflows/cmake.yml)
 
 The repository has a GitHub Actions file to verify the good behaviour of the project before merging/pusing to the main branch with a wrong code.
-
-There is also an auto release while pushing with specific paramaeters to the main branch. To know more please check the file in the `.github/worflows/` folder named `release.yml`.
 
 ## Documentations  
 
