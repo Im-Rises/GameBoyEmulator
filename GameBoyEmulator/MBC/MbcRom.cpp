@@ -1,13 +1,12 @@
 #include "MbcRom.h"
 
-MbcRom::MbcRom():Mbc()
+MbcRom::MbcRom(): Mbc()
 {
-
 }
 
 uint32 MbcRom::getReadRomAddress(const uint16& address) const
 {
-	return address;
+	return address + 0x4000 * currentRomBank;
 }
 
 uint16 MbcRom::getReadRamAddress(const uint16& address) const
@@ -17,10 +16,10 @@ uint16 MbcRom::getReadRamAddress(const uint16& address) const
 
 void MbcRom::writeRomSetRomBank(const uint16& address, const uint8& data)
 {
-	//Do nothing (no bank switching)
+	currentRomBank = data;
 }
 
 void MbcRom::writeRamSetBankRam(const uint16& address, const uint8& data)
 {
-	//Do nothing (no bank switching)
+	currentRamBank = data;
 }
