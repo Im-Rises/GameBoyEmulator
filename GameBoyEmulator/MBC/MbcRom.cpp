@@ -15,12 +15,12 @@ uint16 MbcRom::getReadRamAddress(const uint16& address) const
 	return address;
 }
 
-void MbcRom::writeRomSetRomBank(const uint8& data, const uint16& address)
+void MbcRom::writeRomSetRomBank(const uint16& address, const uint8& data)
 {
 	//Do nothing (no bank switching)
 }
 
-void MbcRom::writeRamSetBankRam(const uint8& data, const uint16& address)
+void MbcRom::writeRamSetBankRam(const uint16& address, const uint8& data)
 {
 	//Do nothing (no bank switching)
 }

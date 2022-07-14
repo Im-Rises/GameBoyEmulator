@@ -234,7 +234,7 @@ private:
 		{0xA4, "Konami(Yu - Gi - Oh!)"}
 	};
 
-	std::map<char, std::string> cartridgeTypeMap = {
+	const std::map<char, std::string> cartridgeTypeMap = {
 		{0x00, "ROM ONLY"},
 		{0x01, "MBC1"},
 		{0x02, "MBC1 + RAM"},
@@ -325,8 +325,8 @@ public:
 	uint8 readRom(const uint16& address) const;
 	uint8 readRam(const uint16& address) const;
 
-	void writeRom(const uint8& data, const uint16& address);
-	void writeRam(const uint8& data, const uint16& address);
+	void writeRom(const uint16& address, const uint8& data);
+	void writeRam(const uint16& address, const uint8& data);
 
 
 	/*----------------------------Getters and Setters---------------------------*/

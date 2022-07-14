@@ -49,7 +49,7 @@ Cartridge::Cartridge(const std::string& romPath)
 
 	sGBFlag = header.sgbFlag;
 
-	cartridgeType = header.cartridgeType;
+	cartridgeType = cartridgeTypeMap.at(header.cartridgeType);
 
 	char nbrRomBanks = romSizeCodeBankMap.at(header.nbrRomBanks);
 	char nbrRamBanks = ramSizeCodeBankMap.at(header.nbrRamBanks);
@@ -102,12 +102,12 @@ uint8 Cartridge::readRam(const uint16& address) const
 	return ram[mbcPtr->getReadRamAddress(address)];
 }
 
-void Cartridge::writeRom(const uint8& data, const uint16& address)
+void Cartridge::writeRom(const uint16& address, const uint8& data)
 {
 	mbcPtr->writeRomSetRomBank(address, data);
 }
 
-void Cartridge::writeRam(const uint8& data, const uint16& address)
+void Cartridge::writeRam(const uint16& address, const uint8& data)
 {
 	mbcPtr->writeRamSetBankRam(address, data);
 }

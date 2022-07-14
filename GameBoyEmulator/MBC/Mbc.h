@@ -21,8 +21,8 @@ public:
 	virtual uint32 getReadRomAddress(const uint16& address) const = 0;
 	virtual uint16 getReadRamAddress(const uint16& address) const = 0;
 
-	virtual void writeRomSetRomBank(const uint8& data, const uint16& address) = 0;
-	virtual void writeRamSetBankRam(const uint8& data, const uint16& address) = 0;
+	virtual void writeRomSetRomBank(const uint16& address, const uint8& data) = 0;
+	virtual void writeRamSetBankRam(const uint16& address, const uint8& data) = 0;
 
 
 	/*---------------Getters and setters-----------------------*/

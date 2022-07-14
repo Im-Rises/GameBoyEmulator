@@ -122,7 +122,7 @@ void GameBoy::start()
 		}
 	}
 
-	cout << "Stoping Emulation please wait..." << endl;
+	cout << "Stopping Emulation please wait..." << endl;
 }
 
 void GameBoy::doGameBoyCycle(const int& cyclesToDo)
