@@ -10,6 +10,16 @@ Mbc::~Mbc()
 {
 }
 
+uint32 Mbc::getReadRomAddress(const uint16& address) const
+{
+	return address -0x4000 + 0x4000 * currentRomBank;
+}
+
+uint16 Mbc::getReadRamAddress(const uint16& address) const
+{
+	return address - 0xA000 + 0x2000 * currentRamBank;
+}
+
 uint8 Mbc::getCurrentRomBank() const
 {
 	return currentRomBank;
@@ -17,7 +27,7 @@ uint8 Mbc::getCurrentRomBank() const
 
 void Mbc::setCurrentRomBank(const int& currentRomBank)
 {
-	this->currentRomBank= currentRomBank;
+	this->currentRomBank = currentRomBank;
 }
 
 uint8 Mbc::getCurrentRamBank() const
@@ -50,4 +60,3 @@ void Mbc::setRamBankingEnabled(const bool& ramBankingEnabled)
 {
 	this->ramBankingEnabled = ramBankingEnabled;
 }
-

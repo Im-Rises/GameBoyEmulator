@@ -94,7 +94,10 @@ Cartridge::~Cartridge()
 
 uint8 Cartridge::readRom(const uint16& address) const
 {
-	return rom[mbcPtr->getReadRomAddress(address)];
+	if (address < 0x4000)
+		return rom[address];
+	else
+		return rom[mbcPtr->getReadRomAddress(address)];
 }
 
 uint8 Cartridge::readRam(const uint16& address) const
