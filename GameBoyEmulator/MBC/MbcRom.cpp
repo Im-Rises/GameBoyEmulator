@@ -8,11 +8,10 @@ MbcRom::MbcRom(): Mbc()
 
 void MbcRom::writeRomSetRomBank(const uint16& address, const uint8& data)
 {
-	// if (address >= 0x4000)
-	// 	currentRomBank = data;
+	currentRomBank = data;
 }
 
 void MbcRom::writeRamSetBankRam(const uint16& address, const uint8& data)
 {
-	// currentRamBank = data;
+	currentRamBank = data;
 }
