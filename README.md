@@ -9,9 +9,8 @@
 ## Description
 
 GameBoy Emulator developped in C++ using SDL2.  
-You can compile the program using CMake.
-As of now there is no audio implemented.  
-Games like pokemon aren't working due to the lack of MBC3/MBC5 cartridges implementation.  
+You can compile the program using CMake.  
+Games like Pokémon aren't working due to the lack of MBC3/MBC5 cartridges implementation.  
 
 SDL2 website:
 <https://www.libsdl.org>
@@ -20,10 +19,14 @@ SDL2 website:
 > C++ version 17
 > SDL2 version 2.0.14.
 
-<!--
-> **Warning**
-> Note here
--->
+## Features
+
+The Emulator features :
+- Savestate
+- Screenshots
+- Different color modes
+- Audio
+- Xbox/PLaystaion controller
 
 ## Images
 
@@ -46,48 +49,55 @@ To use the emulator it depends on your system. Please follow the steps in sectio
 All the releases can be found in the link below:  
 [Source code and releases](https://github.com/Im-Rises/GameBoyEmulator/releases)
 
-
-Links :
+You can download the emulator using clicking to the links below depending on your operating system. 
 
 ### Windows
 
-<a href="https://github.com/Im-Rises/GameBoyEmulator/files/7921719/GameBoyEmulator-0.6-windows.zip"><img src="https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="cmakeLogo" style="height:40px;"/></a>
+<a href="https://github.com/Im-Rises/GameBoyEmulator/releases/download/v0.8/GameBoyEmulator-0.8-windows.zip"><img src="https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="cmakeLogo" style="height:40px;"/></a>
+
+Once download make sure you have the sdl2.dll file next to the emulator .exe file), you can start the emulator by doing a drag and drop of a rom to the .exe file, it will automaticaly start the game. You can also start the emulator by typing the following command in your terminal.
+
+```bash
+./GameBoyEmulator.exe <romPath>
+```
 
 ### Linux
 
-<a href="https://github.com/Im-Rises/GameBoyEmulator/files/7921720/GameBoyEmulator-0.6-linux.zip"><img src="https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black" alt="cmakeLogo" style="height:40px;"/></a>
+<a href="https://github.com/Im-Rises/GameBoyEmulator/releases/download/v0.8/GameBoyEmulator-0.8-linux.zip"><img src="https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black" alt="cmakeLogo" style="height:40px;"/></a>
+
+Once download you'll need to install the SDL2 library by typing one of the the following commands :
+
+```shell
+sudo apt-get install libsdl2-dev
+```
+
+or
+
+```shell
+sudo apt-get install libsdl2-2.0-0  
+```
+
+> **Warning**
+> Depending on your Linux distribution the command to install SDL2 may change.
+
+Once its done, you can start the emulator by doing a drag and drop of a rom on the emulator file, or you can type the following command :
+
+```bash
+./GameBoyEmulator.exe <romPath>
+```
 
 ## Compilation  
 
 Emulator is supported under Linux and Windows.  
 The source code provide a CMakeList.txt file to compile the emulator.  
 
-- For windows users, you just need the SDL2.dll to run the program once it is compiled. You can find it in the release files or you can donwload it on the official SDL2 website.
+You can download Cmake here:  
+<https://cmake.org>
 
-- For linux users, you need to install the SDL2 package to run the emulator. You can install it by writting the following command.  
-
-```shell
-sudo apt-get install libsdl2-dev
-```
-
-## Start the emulator
-
-To launch a game on Linux or Windows, you need to use a console and write the following command:
-
-- GameBoyEmulator \<gameFilePath\>
-
-You can also proceed by doing a drag and drop of the game file to the emulator executable.
-
-On Linux you need SDL2 to start the emulator. You can install it by writing one of the two commands below:
-
-Be carefull, **depending of your Linux distribution, the name of library can vary!**  
+Linux users need to install the developer verison of SDL2 to compile the Emulator. To install it type the following command in  your terminal:
 
 ```shell
 sudo apt-get install libsdl2-dev
-```
-
-```shell
-sudo apt-get install libsdl2-2.0-0  
 ```
 
 ## Emulator controls
