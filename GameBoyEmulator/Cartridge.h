@@ -22,6 +22,7 @@ enum CartridgeType
 class Cartridge
 {
 private:
+	bool cartridgeEmpty;
 	string romPath;
 
 	CartridgeType cartridgeType;
@@ -50,9 +51,14 @@ private:
 
 public:
 	//Constructor and destructor
-	Cartridge(const string& romPath);
+	Cartridge();
+	// Cartridge(const string& romPath);
 	~Cartridge();
 	void reset();
+	void dump(ofstream& savestateFile);
+	void loadDumpedData(ifstream& savestateFile);
+
+	void writeRomInCartridge(const string& romPath);
 
 	//Read and write
 	uint8 readRomBank(const uint16& address) const;
@@ -87,6 +93,8 @@ public:
 	uint8 getRomFromIndex(int index) const;
 
 	string getCartridgeTypeToString() const;
+
+	bool getCartridgeIsEmpty()const;
 
 	//toString
 

@@ -2,16 +2,70 @@
 
 #include <string>
 
-Cartridge::Cartridge(const string& romPath)
+Cartridge::Cartridge()
 {
-	this->romPath = romPath;
-
 	destinationMap.insert(std::make_pair(0x00, "Japan"));
 	destinationMap.insert(std::make_pair(0x01, "Other"));
 
 	//Instead of loading all the rom to the ram of the computer, perhaps i should open the file and read it 
 	rom = new uint8[0x200000];
 	ram = new uint8[0x8000];
+
+	cartridgeEmpty = true;
+}
+
+// Cartridge::Cartridge(const string& romPath)
+// {
+//
+// }
+
+Cartridge::~Cartridge()
+{
+	delete[] rom; //Not call if program crash
+	delete[] ram;
+}
+
+void Cartridge::reset()
+{
+	currentRomBank = 1;
+	currentRamBank = 0;
+}
+
+void Cartridge::dump(ofstream& savestateFile)
+{
+	uint8 currentRomRamBanks[2] = {
+		currentRomBank, currentRamBank
+	};
+
+	bool romRamBanksEnabled[2] = {
+		romBankingEnable, ramBankingEnable
+	};
+
+
+	cout << "Dumping Cartridge infos..." << endl;
+
+	savestateFile.write((char*)currentRomRamBanks, sizeof(currentRomRamBanks));
+	savestateFile.write((char*)romRamBanksEnabled, sizeof(romRamBanksEnabled));
+}
+
+void Cartridge::loadDumpedData(ifstream& savestateFile)
+{
+	savestateFile.read((char*)&currentRomBank, sizeof(currentRomBank));
+	savestateFile.read((char*)&currentRamBank, sizeof(currentRamBank));
+
+	savestateFile.read((char*)&romBankingEnable, sizeof(romBankingEnable));
+	savestateFile.read((char*)&ramBankingEnable, sizeof(ramBankingEnable));
+}
+
+void Cartridge::writeRomInCartridge(const string& romPath)
+{
+	this->romPath = romPath;
+
+	if (rom == nullptr || ram == nullptr)
+	{
+		cerr << "Error: cannot dynamically allocate memory" << endl;
+		exit(1);
+	}
 
 	for (int i = 0; i < 0x200000; i++)
 	{
@@ -32,7 +86,7 @@ Cartridge::Cartridge(const string& romPath)
 	}
 	else
 	{
-		cerr<< "Error: Can't open rom file" << endl;
+		cerr << "Error: Can't open rom file" << endl;
 		exit(1);
 	}
 
@@ -97,24 +151,22 @@ Cartridge::Cartridge(const string& romPath)
 
 	destinationCode = rom[0x014A];
 	destinationText = destinationMap[destinationCode];
-}
 
-Cartridge::~Cartridge()
-{
-	delete[] rom; //Not call if program crash
-	delete[] ram;
-}
+	cartridgeEmpty = false;
 
-void Cartridge::reset()
-{
-	currentRomBank = 1;
-	currentRamBank = 0;
+	cout << this->toString() << endl;
 }
 
 
 //Read and write
 uint8 Cartridge::readRomBank(const uint16& address) const
 {
+	// int temp = address - 0x4000 + currentRomBank * 0x4000 > 0x200000;
+	// int temp2 = currentRomBank;
+	// if (address - 0x4000 + currentRomBank * 0x4000 > 0x200000)
+	// 	exit(1);
+	// return rom[0];
+
 	return rom[address - 0x4000 + currentRomBank * 0x4000];
 }
 
@@ -393,38 +445,43 @@ string Cartridge::getCartridgeTypeToString() const
 	switch (this->cartridgeType)
 	{
 	case(ROM):
-	{
-		return "ROM";
-	}
+		{
+			return "ROM";
+		}
 	case(MBC1):
-	{
-		return "MBC1";
-	}
+		{
+			return "MBC1";
+		}
 	case(MBC2):
-	{
-		return "MBC2";
-	}
+		{
+			return "MBC2";
+		}
 	case(MBC3):
-	{
-		return "MBC3";
-	}
+		{
+			return "MBC3";
+		}
 	case(MBC5):
-	{
-		return "MBC5";
-	}
+		{
+			return "MBC5";
+		}
 	default:
 		cerr << "Error: Unknown cartridge name." << endl;
 		exit(1);
 	}
 }
 
+bool Cartridge::getCartridgeIsEmpty() const
+{
+	return cartridgeEmpty;
+}
 
-string Cartridge::getGameName()const
+
+string Cartridge::getGameName() const
 {
 	return gameName;
 }
 
-string Cartridge::getRomPath()const
+string Cartridge::getRomPath() const
 {
 	return romPath;
 }
@@ -433,6 +490,7 @@ string Cartridge::getRomPath()const
 
 string Cartridge::toString() const
 {
-	return "Game name: " + gameName + "\nCartridge type: " + getCartridgeTypeToString() + "\nDestination: " + destinationText + " " +
+	return "Game name: " + gameName + "\nCartridge type: " + getCartridgeTypeToString() + "\nDestination: " +
+		destinationText + " " +
 		std::to_string(destinationCode);
 }

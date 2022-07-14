@@ -36,19 +36,16 @@ out/
 *.pch
 
 # Libraries
-#*.lib
 *.a
 *.la
 *.lo
 
 # Shared objects (inc. Windows DLLs)
-#*.dll
 *.so
 *.so.*
 *.dylib
 
 # Executables
-#*.exe
 *.out
 *.app
 *.i*86
@@ -218,8 +215,6 @@ mono_crash.*
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/
-x64/
-x86/
 [Ww][Ii][Nn]32/
 [Aa][Rr][Mm]/
 [Aa][Rr][Mm]64/

@@ -36,6 +36,10 @@ GameBoy::GameBoy() : memory(&joypad, &spu), cpu(&memory, &ppu, &spu), ppu(&memor
 	// srand(time(NULL));
 }
 
+GameBoy::~GameBoy()
+{
+}
+
 GameBoy* GameBoy::getInstance()
 {
 	if (gameboyInstance == nullptr)
@@ -53,7 +57,7 @@ void GameBoy::reset()
 	cpu.reset();
 	ppu.reset();
 	spu.reset();
-	cartridge->reset();
+	cartridge.reset();
 }
 
 void GameBoy::setGameBoyWithoutBios()
@@ -65,33 +69,44 @@ void GameBoy::setGameBoyWithoutBios()
 
 void GameBoy::loadBios(const string& biosPath)
 {
+	this->biosPath = biosPath;
 	if (memory.loadBiosInMemory(biosPath) == false)
 		exit(1);
 
 	cpu.setCpuWithBios();
 }
 
-void GameBoy::insertGame(Cartridge* cartridge)
+void GameBoy::insertGame(const string& rompath)
 {
-	this->cartridge = cartridge;
-	memory.connectCartridge(cartridge);
+	cartridge.writeRomInCartridge(rompath);
 }
 
 void GameBoy::start()
 {
+	ppu.powerOnScreen();
+
 	//Calcul the number of cycles for the update of the screen
 	const int cyclesToDo = CLOCK_FREQUENCY / SCREEN_FREQUENCY;
 
-	fpsStartTime = SDL_GetTicks();
+	memory.connectCartridge(&cartridge);
+
+	gameName = cartridge.getGameName();
+
+	if (getBiosInMemory())
+	{
+		biosName = biosPath.substr(biosPath.find_last_of('/'));
+		biosName.erase(remove(biosName.begin(), biosName.end(), '/'), biosName.end());
+	}
 
 	if (memory.getBiosInMemeory()) //if there is a bios
 	{
+		std::filesystem::create_directories(screenshotsFolder + biosName + "/");
+		processingBios = true;
 		while (handleInputs() && cpu.getPc() < 0x100) //cpu.getPc() < 0x100 && glfwOpenglLib.windowHandling()
 		{
 			doGameBoyCycle(cyclesToDo);
 		}
-
-		//Load temporary array in memory
+		processingBios = false;
 		memory.loadRomBeginning();
 	}
 	else
@@ -100,20 +115,24 @@ void GameBoy::start()
 		this->setGameBoyWithoutBios();
 	}
 
-	gameName = cartridge->getGameName();
-
-	std::filesystem::create_directories(screenshotsFolder + gameName + "/");
-
-	ppu.addGameNameWindow(gameName);
-
-	while (handleInputs()) // Window is active
+	if (!gameName.empty())
 	{
-		doGameBoyCycle(cyclesToDo);
+		std::filesystem::create_directories(screenshotsFolder + gameName + "/");
+		ppu.addGameNameWindow(gameName);
 	}
+
+	if (!cartridge.getCartridgeIsEmpty())
+	{
+		while (handleInputs()) // Window is active
+		{
+			doGameBoyCycle(cyclesToDo);
+		}
+	}
+
+	cout << "Stoping Emulation please wait..." << endl;
 }
 
-
-void GameBoy::doGameBoyCycle(const int cyclesToDo)
+void GameBoy::doGameBoyCycle(const int& cyclesToDo)
 {
 	uint32_t startTime = SDL_GetTicks();
 
@@ -154,6 +173,7 @@ bool GameBoy::handleInputs()
 	static bool switchVolumePlus = false;
 	static bool switchVolumeMinus = false;
 	static bool switchSaveState = false;
+	static bool switchLoadState = false;
 	static bool switchReset = false;
 
 	SDL_PollEvent(&event);
@@ -181,6 +201,9 @@ bool GameBoy::handleInputs()
 		if (event.key.keysym.sym == SDLK_b)
 			switchSaveState = true;
 
+		if (event.key.keysym.sym == SDLK_n)
+			switchLoadState = true;
+
 		if (event.key.keysym.sym == SDLK_TAB)
 			switchReset = true;
 	}
@@ -195,7 +218,10 @@ bool GameBoy::handleInputs()
 		if (event.key.keysym.sym == SDLK_F10 && switchColorMode)
 		{
 			switchColorMode = false;
-			ppu.setGameBoyColorMode();
+			currentColorMode++;
+			ppu.setGameBoyColorMode(currentColorMode);
+			if (currentColorMode > 3)
+				currentColorMode = 0;
 		}
 
 		if (event.key.keysym.sym == SDLK_p && switchPause)
@@ -236,12 +262,12 @@ bool GameBoy::handleInputs()
 			switchScreenshot = false;
 
 			int index = 0;
-			string screenshotPath = generateScreeShotName(index);
+			string screenshotPath = generateScreenshotName(index);
 
 			while (fileExist(screenshotPath))
 			{
 				index++;
-				screenshotPath = generateScreeShotName(index);
+				screenshotPath = generateScreenshotName(index);
 			}
 
 			ppu.doScreenshot(screenshotPath);
@@ -251,6 +277,12 @@ bool GameBoy::handleInputs()
 		{
 			switchSaveState = false;
 			createSaveState();
+		}
+
+		if (event.key.keysym.sym == SDLK_n && switchLoadState)
+		{
+			switchLoadState = false;
+			loadSaveState();
 		}
 
 		if (event.key.keysym.sym == SDLK_TAB && switchReset)
@@ -265,43 +297,80 @@ bool GameBoy::handleInputs()
 	return !(event.type == SDL_QUIT);
 }
 
-string GameBoy::generateScreeShotName(const int& index)
+string GameBoy::generateScreenshotName(const int& index)
 {
 	string indexS = to_string(index);
 	indexS = addLeadingZero(indexS, 2);
+
+	if (gameName.empty() || processingBios)
+	{
+		return screenshotsFolder + biosName + "/" + biosName + " " + getDateTime() + "-(" + indexS
+			+ ')' + ".bmp";
+	}
+
 	return screenshotsFolder + gameName + "/" + gameName + " " + getDateTime() + "-(" + indexS
 		+ ')' + ".bmp";
+}
+
+string GameBoy::generateSavestateName()
+{
+	string path = ".state.bmp";
+
+	if (gameName.empty() || processingBios)
+	{
+		(path == ".state.bmp") ? path = biosPath + path : path;
+	}
+	else
+	{
+		path = cartridge.getRomPath() + path;
+	}
+	return path;
 }
 
 
 /*------------------------------------------Save states--------------------------------*/
 void GameBoy::createSaveState()
 {
-	string path = cartridge->getRomPath() + ".state.bmp";
-	// cout << path << endl;
+	string path = generateSavestateName();
 
 	ppu.doScreenshot(path);
 
-	ofstream saveState;
-	saveState.open(path, std::ios_base::app | std::ios_base::binary | std::ios_base::out | std::ios_base::ate);
+	ofstream savestateFile(path, ios::out | ios::app | ios::ate | ios::binary);
 
-	if (saveState)
-	{
-		// cpu.dump();
-		// spu.dump();
-		// ppu.dump();
-		// cartridge->dump();
-		// mmu.dump();
-		saveState << "Dump data here";
-	}
-	else
-		cerr << "Error: Writing data to savestate" << endl;
+	long pos = savestateFile.tellp();
 
-	saveState.close();
+	cpu.dump(savestateFile);
+	// // spu.dump();
+	// // ppu.dump();
+	cartridge.dump(savestateFile);
+	memory.dump(savestateFile);
+
+	savestateFile.write((char*)&pos, sizeof(pos));
+
+	savestateFile.close();
 }
 
 void GameBoy::loadSaveState()
 {
+	string path = generateSavestateName();
+	cout << "Loading savestate : " << path << endl;
+
+	// string path = cartridge.getRomPath() + ".state.bmp";
+	// (path == ".state.bmp") ? path = biosPath + path : path;
+	ifstream savestateFile(path, ios::in | ios::ate | ios::binary);
+
+	// Get position of the savestate in the image bmp save state
+	long pos = 0;
+	savestateFile.seekg(-(sizeof(pos)), ios::end);
+	savestateFile.read((char*)&pos, sizeof(pos));
+	savestateFile.seekg(pos);
+
+	// Load savestate data into CPU, MMU and Cartridge
+	cpu.loadDumpedData(savestateFile);
+	cartridge.loadDumpedData(savestateFile);
+	memory.loadDumpedData(savestateFile);
+
+	savestateFile.close();
 }
 
 
@@ -325,13 +394,29 @@ bool GameBoy::getBiosInMemory()
 }
 
 
+/*------------------------------------------SETTERS-------------------------------*/
+
+void GameBoy::setWidthHeight(const int& width, const int& height)
+{
+	ppu.setWidthHeight(width, height);
+}
+
+void GameBoy::setColorMode(const int& colorModeCode)
+{
+	ppu.setGameBoyColorMode(colorModeCode);
+	currentColorMode = colorModeCode;
+}
+
+
 /*------------------------------------------OTHER--------------------------------*/
 
 string GameBoy::getDateTime()
 {
 	std::time_t t = std::time(0);
 	std::tm* now = std::localtime(&t);
-	return to_string(now->tm_year + 1900) + '-' + addLeadingZero(to_string(now->tm_mon + 1) ,2) + '-' + addLeadingZero(to_string(now->tm_mday),2) + '-' + addLeadingZero(to_string(now->tm_hour),2) + '-' + addLeadingZero(to_string(now->tm_sec),2);
+	return to_string(now->tm_year + 1900) + '-' + addLeadingZero(to_string(now->tm_mon + 1), 2) + '-' +
+		addLeadingZero(to_string(now->tm_mday), 2) + '-' + addLeadingZero(to_string(now->tm_hour), 2) + '-' +
+		addLeadingZero(to_string(now->tm_sec), 2);
 }
 
 bool GameBoy::fileExist(const std::string& name)
@@ -342,9 +427,11 @@ bool GameBoy::fileExist(const std::string& name)
 
 string GameBoy::addLeadingZero(string text, const int& numberOfZero)
 {
-	string result = text;
-	int stringSize = text.size();
-	for (int i = 0; i < (numberOfZero - stringSize); i++)
-		result = "0" + result;
-	return result;
+	// string result = text;
+	// int stringSize = text.size();
+	// for (int i = 0; i < (numberOfZero - stringSize); i++)
+	// 	result = "0" + result;
+	// return result;
+
+	return std::string(numberOfZero - std::min(numberOfZero, static_cast<int>(text.length())), '0') + text;
 }
