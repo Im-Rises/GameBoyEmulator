@@ -4,6 +4,8 @@
 
 Mbc::Mbc()
 {
+	currentRomBank = 1;
+	currentRamBank = 0;
 }
 
 Mbc::~Mbc()
@@ -12,7 +14,7 @@ Mbc::~Mbc()
 
 uint32 Mbc::getReadRomAddress(const uint16& address) const
 {
-	return address -0x4000 + 0x4000 * currentRomBank;
+	return address - 0x4000 + 0x4000 * currentRomBank;
 }
 
 uint16 Mbc::getReadRamAddress(const uint16& address) const
