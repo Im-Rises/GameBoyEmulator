@@ -351,9 +351,6 @@ void Cpu::requestInterrupt(const uint8& bitIndex)
 
 void Cpu::writeMemory(const uint16& address, const uint8& data)
 {
-	if (address == 0x3696)
-		cout << "here"<<endl;
-
 	if (address == TAC)
 	{
 		uint8 currentTimerFrequency = memory->read(TAC) & 0b00000011; //Get current frequency

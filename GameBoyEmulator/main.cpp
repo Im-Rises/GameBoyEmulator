@@ -52,6 +52,9 @@ int main(int argc, char* argv[])
 		// romPath = "../../../../Bios_Games/Games/Zelda Link's Awakening.gb";
 		// romPath = "../../../../Bios_Games/Games/Tennis.gb";
 		// romPath = "../../../../Bios_Games/Games/Pokemon - Version Bleue (F) [S].gb";
+		romPath = "../../../../Bios_Games/Games/Pokemon - Version Jaune.gb";
+		romPath = "../../../../Bios_Games/Games/Pokemon - Version Rouge (F) [S].gb";
+		romPath = "../../../../Bios_Games/Games/pokemon cristal FR.gbc";
 
 
 		//Failed:

@@ -9,7 +9,7 @@
 class Mbc
 {
 protected:
-	uint8 currentRomBank, currentRamBank;
+	uint16 currentRomBank, currentRamBank;
 	bool romBankingEnabled;
 	bool ramAccessEnabled;
 	bool battery;
