@@ -106,7 +106,6 @@ Cartridge::Cartridge(const std::string& romPath)
 		exit(2);
 	}
 
-
 	/*-------Resize rom and ram----------*/
 	rom.resize(nbrRomBanks * 0x4000);
 	ram.resize(nbrRamBanks * 0x2000);
