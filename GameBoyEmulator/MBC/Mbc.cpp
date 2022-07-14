@@ -10,6 +10,7 @@ Mbc::Mbc()
 
 Mbc::~Mbc()
 {
+
 }
 
 uint32 Mbc::getReadRomAddress(const uint16& address) const

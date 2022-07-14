@@ -181,7 +181,7 @@ void Memory::write(const uint16& address, const uint8 value)
 	{
 		cartridgePtr->writeRom(address, value);
 	}
-	else if (address >= 0xA000 && address < 0xC000) //External expension ram wrtting
+	else if (address >= 0xA000 && address < 0xC000) //External expansion ram writing
 	{
 		cartridgePtr->writeRam(address, value);
 	}
