@@ -7,6 +7,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include<algorithm>
 
 // #include <format> // Issue with Unix system, using my functions to format string for screesnshots name
 
