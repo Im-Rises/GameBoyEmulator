@@ -77,6 +77,7 @@ void GameBoy::loadBios(const string& biosPath)
 void GameBoy::insertGame(const string& rompath)
 {
 	cartridgePtr = std::make_shared<Cartridge>(rompath);
+	cout << cartridgePtr->toString() << endl;
 }
 
 void GameBoy::start()

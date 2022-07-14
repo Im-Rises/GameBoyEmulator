@@ -5,9 +5,11 @@
 
 using namespace std;
 
-Mbc::Mbc()
+Mbc::Mbc(bool battery)
 {
-	romBankingEnabled = ramBankingEnabled = false;
+	this->battery = battery;
+	romBankingEnabled = ramAccessEnabled = false;
+	ramAccessEnabled = false;
 	currentRomBank = 0;
 	currentRamBank = 0;
 }
@@ -27,9 +29,9 @@ uint32 Mbc::getReadRomAddress(const uint16& address) const
 	}
 }
 
-uint16 Mbc::getReadRamAddress(const uint16& address) const
+uint16 Mbc::getReadWriteRamAddress(const uint16& address) const
 {
-	if (ramBankingEnabled)
+	if (ramAccessEnabled)
 		return address - 0xA000 + 0x2000 * currentRamBank;
 	else
 	{
@@ -71,10 +73,10 @@ void Mbc::setRomBankingEnabled(const bool& romBankingEnabled)
 
 bool Mbc::getRamBankingEnabled() const
 {
-	return ramBankingEnabled;
+	return ramAccessEnabled;
 }
 
 void Mbc::setRamBankingEnabled(const bool& ramBankingEnabled)
 {
-	this->ramBankingEnabled = ramBankingEnabled;
+	this->ramAccessEnabled = ramBankingEnabled;
 }

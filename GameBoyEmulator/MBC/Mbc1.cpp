@@ -4,7 +4,7 @@ Mbc1::Mbc1(): Mbc()
 {
 }
 
-void Mbc1::writeRomSetRomRamBank(const uint16& address, const uint8& data)
+void Mbc1::handleBanking(const uint16& address, const uint8& data)
 {
 	if (address < 0x2000)
 		register0(data);
@@ -16,32 +16,36 @@ void Mbc1::writeRomSetRomRamBank(const uint16& address, const uint8& data)
 		register3(data);
 }
 
-void Mbc1::writeRam(const uint16& address, const uint8& data)
-{
-}
-
 void Mbc1::register0(const uint8& data)
 {
-	ramBankingEnabled = data == 0x0A;
+	ramAccessEnabled = (data & 0x0F) == 0x0A;
 }
 
 void Mbc1::register1(const uint8& data)
 {
-	romBankingEnabled = 0x01 <= data && data <= 0x1F;
+	currentRomBank &= 0b11100000; //Reset the lower 5 bits
+	currentRomBank |= (data & 0b00011111); //Change the bits from 0 to 4
+	if (currentRomBank == 0) currentRomBank++;
+	romBankingEnabled = true;
 }
 
 void Mbc1::register2(const uint8& data)
 {
 	if (romBankingEnabled)
 	{
-		
+		currentRomBank &= 0b00011111; //Reset high bits (5 to 7)
+		//currentRomBank |= ((data << 5) & 0b01100000);//Add the bits 5 and 6 (no data shifting needed)
+		currentRomBank |= (data & 0b01100000); //Add the bits 5 and 6
 	}
-	if (ramBankingEnabled)
+	else
 	{
-		
+		currentRamBank = data & 0x3;
 	}
 }
 
 void Mbc1::register3(const uint8& data)
 {
+	romBankingEnabled = (data == 1);
+	if (romBankingEnabled)
+		currentRamBank = 0;
 }

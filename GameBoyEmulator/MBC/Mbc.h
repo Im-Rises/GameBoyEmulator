@@ -10,19 +10,22 @@ class Mbc
 {
 protected:
 	uint8 currentRomBank, currentRamBank;
-	bool romBankingEnabled, ramBankingEnabled;
+	bool romBankingEnabled;
+	bool ramAccessEnabled;
+	bool battery;
 
 public:
 	/*---------------Constructor and Destructor-----------------------*/
-	Mbc();
+	Mbc(bool battery = false);
 	~Mbc();
 
 	/*---------------Read and write methods-----------------------*/
-	uint32 getReadRomAddress(const uint16& address) const;
-	uint16 getReadRamAddress(const uint16& address) const;
+	virtual void handleBanking(const uint16& address, const uint8& data) = 0;
 
-	virtual void writeRomSetRomRamBank(const uint16& address, const uint8& data) = 0;
-	virtual void writeRam(const uint16& address, const uint8& data) = 0;
+	uint32 getReadRomAddress(const uint16& address) const;
+	uint16 getReadWriteRamAddress(const uint16& address) const;
+
+	// virtual void writeRam(const uint16& address, const uint8& data) = 0;
 
 	// virtual void register0();
 	// virtual void register1();

@@ -322,11 +322,11 @@ public:
 
 	void loadRom(std::string romPath);
 
-	uint8 readRom(const uint16& address) const;
-	uint8 readRam(const uint16& address) const;
-
 	void writeRom(const uint16& address, const uint8& data);
+	uint8 readRom(const uint16& address) const;
+
 	void writeRam(const uint16& address, const uint8& data);
+	uint8 readRam(const uint16& address) const;
 
 
 	/*----------------------------Getters and Setters---------------------------*/
@@ -337,6 +337,9 @@ public:
 	std::string getGameName() const;
 
 	std::string getRomPath() const;
+
+	/*----------------------------ToString---------------------------*/
+	std::string toString();
 };
 
 #endif

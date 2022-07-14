@@ -78,8 +78,9 @@ Cartridge::Cartridge(const std::string& romPath)
 	case(0x02):
 	case(0x03):
 		mbcPtr = std::make_shared<Mbc1>();
+		break;
 	default:
-		cerr << "Error unknown Cartridge type : " << header.cartridgeType << endl;
+		cerr << "Error unknown Cartridge type : " << cartridgeType << endl;
 		exit(2);
 	}
 
@@ -99,27 +100,27 @@ Cartridge::~Cartridge()
 {
 }
 
+void Cartridge::writeRom(const uint16& address, const uint8& data)
+{
+	mbcPtr->handleBanking(address, data); //Write to rom to handle rom and ram banking
+}
+
 uint8 Cartridge::readRom(const uint16& address) const
 {
 	if (address < 0x4000)
-		return rom[address];//Read rom bank 0
-	else
-		return rom[mbcPtr->getReadRomAddress(address)];//Read rom bank 1 or other
-}
+		return rom[address]; //Read rom bank 0
 
-uint8 Cartridge::readRam(const uint16& address) const
-{
-	return ram[mbcPtr->getReadRamAddress(address)];
-}
-
-void Cartridge::writeRom(const uint16& address, const uint8& data)
-{
-	mbcPtr->writeRomSetRomRamBank(address, data);
+	return rom[mbcPtr->getReadRomAddress(address)]; //Read rom bank 1 or higher
 }
 
 void Cartridge::writeRam(const uint16& address, const uint8& data)
 {
-	mbcPtr->writeRam(address, data);
+	ram[mbcPtr->getReadWriteRamAddress(address)] = data; //Write to ram
+}
+
+uint8 Cartridge::readRam(const uint16& address) const
+{
+	return ram[mbcPtr->getReadWriteRamAddress(address)]; //Read ram bank 0 to higher
 }
 
 void Cartridge::dump(ofstream& savestateFile)
@@ -140,7 +141,7 @@ void Cartridge::dump(ofstream& savestateFile)
 
 void Cartridge::loadDumpedData(ifstream& savestateFile)
 {
-	uint8 currentRomBank=0, currentRamBank = 0;
+	uint8 currentRomBank = 0, currentRamBank = 0;
 	bool romBankingEnabled = 0, ramBankingEnabled = 0;
 
 	savestateFile.read((char*)&currentRomBank, sizeof(currentRomBank));
@@ -162,4 +163,9 @@ std::string Cartridge::getGameName() const
 std::string Cartridge::getRomPath() const
 {
 	return romPath;
+}
+
+std::string Cartridge::toString()
+{
+	return gameTitle + '\n' + cartridgeType;
 }

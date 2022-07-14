@@ -10,8 +10,7 @@ class Mbc1 : public Mbc
 public:
 	Mbc1();
 
-	void writeRomSetRomRamBank(const uint16& address, const uint8& data) override;
-	void writeRam(const uint16& address, const uint8& data) override;
+	void handleBanking(const uint16& address, const uint8& data) override;
 
 	void register0(const uint8& data);
 	void register1(const uint8& data);

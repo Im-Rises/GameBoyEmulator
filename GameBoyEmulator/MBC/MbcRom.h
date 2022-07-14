@@ -10,11 +10,7 @@ class MbcRom : public Mbc
 public:
 	MbcRom();
 
-	// uint32 getReadRomAddress(const uint16& address) const override;
-	// uint16 getReadRamAddress(const uint16& address) const override;
-
-	void writeRomSetRomRamBank(const uint16& address, const uint8& data) override;
-	void writeRam(const uint16& address, const uint8& data) override;
+	void handleBanking(const uint16& address, const uint8& data) override;
 };
 
 #endif // !DEF_ROM
