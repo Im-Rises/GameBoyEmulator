@@ -64,7 +64,7 @@ typing the following command in your terminal.
 ./GameBoyEmulator.exe <romPath>
 ```
 
-### Linux~~~~
+### Linux
 
 <a href="https://github.com/Im-Rises/GameBoyEmulator/releases/download/v0.8/GameBoyEmulator-0.8-linux.zip"><img src="https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black" alt="cmakeLogo" style="height:40px;"/></a>
 
@@ -173,7 +173,7 @@ colorMode='0'
 
 | Zelda Link's Awakening in grayscale | Zelda Link's Awakening in greenscale |
 |-------------------------------------|--------------------------------------|
-|                                     |                                      |
+|![zelda_grayscale](https://user-images.githubusercontent.com/59691442/179115301-a6d756c2-f519-459a-ab73-5dd16173e470.png)|![zelda_greenscale](https://user-images.githubusercontent.com/59691442/179115353-5f27ad9a-29df-45f9-82e4-feab011a58b4.png)|
 
 ## Compilation
 
