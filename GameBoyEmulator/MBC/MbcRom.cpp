@@ -2,16 +2,18 @@
 
 MbcRom::MbcRom(): Mbc()
 {
+	romBankingEnabled = true;
+	ramBankingEnabled = true;
 	currentRomBank = 1;
 	currentRamBank = 0;
 }
 
-void MbcRom::writeRomSetRomBank(const uint16& address, const uint8& data)
+void MbcRom::writeRomSetRomRamBank(const uint16& address, const uint8& data)
 {
 	currentRomBank = data;
 }
 
-void MbcRom::writeRamSetBankRam(const uint16& address, const uint8& data)
+void MbcRom::writeRam(const uint16& address, const uint8& data)
 {
 	currentRamBank = data;
 }

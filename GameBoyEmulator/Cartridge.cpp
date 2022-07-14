@@ -114,12 +114,12 @@ uint8 Cartridge::readRam(const uint16& address) const
 
 void Cartridge::writeRom(const uint16& address, const uint8& data)
 {
-	mbcPtr->writeRomSetRomBank(address, data);
+	mbcPtr->writeRomSetRomRamBank(address, data);
 }
 
 void Cartridge::writeRam(const uint16& address, const uint8& data)
 {
-	mbcPtr->writeRamSetBankRam(address, data);
+	mbcPtr->writeRam(address, data);
 }
 
 void Cartridge::dump(ofstream& savestateFile)
