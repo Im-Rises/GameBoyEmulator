@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
 	string romPath;
 
 
-	if (false) //Debug
+	if (true) //Debug
 	{
 		// biosPath = "../../../../Bios_Games/Bios/dmg_boot.bin";
 		// romPath = "../../../../Bios_Games/Games/Kirby's dream land.gb";
@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
 
 		if (argc > 1) //If a game is loaded
 		{
-			// romPath = argv[1];
+			romPath = argv[1];
 			gameBoy->insertGame(romPath);
 		}
 
