@@ -10,7 +10,7 @@
 #include "Spu.h"
 #include "Joypad.h"
 
-#define VER 0.8
+#define VER 0.9
 #define AUTHOR "Im-Rises"
 #define PROJECT_NAME "GameBoyEmulator"
 
@@ -36,7 +36,7 @@ private:
 	Ppu ppu;
 	Joypad joypad;
 	Spu spu;
-	Cartridge cartridge;
+	std::shared_ptr<Cartridge> cartridgePtr = nullptr;
 
 	uint8 fps;
 	uint32_t fpsStartTime;
@@ -80,7 +80,7 @@ public:
 	void incDecVolume(const float& value);
 
 	/*------------------------------------------GETTERS--------------------------------*/
-	bool getBiosInMemory();
+
 
 	/*------------------------------------------SETTERS-------------------------------*/
 	void setWidthHeight(const int& width, const int& height);

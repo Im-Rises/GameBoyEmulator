@@ -7,7 +7,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <algorithm>
+#include<algorithm>
 
 // #include <format> // Issue with Unix system, using my functions to format string for screesnshots name
 
@@ -33,8 +33,6 @@ GameBoy::GameBoy() : memory(&joypad, &spu), cpu(&memory, &ppu, &spu), ppu(&memor
 	SDL_EventState(SDL_CONTROLLERBUTTONUP, SDL_IGNORE);
 
 	SDL_EventState(SDL_MOUSEMOTION, SDL_IGNORE);
-
-	// srand(time(NULL));
 }
 
 GameBoy::~GameBoy()
@@ -58,7 +56,7 @@ void GameBoy::reset()
 	cpu.reset();
 	ppu.reset();
 	spu.reset();
-	cartridge.reset();
+	cartridgePtr.reset();
 }
 
 void GameBoy::setGameBoyWithoutBios()
@@ -79,31 +77,30 @@ void GameBoy::loadBios(const string& biosPath)
 
 void GameBoy::insertGame(const string& rompath)
 {
-	cartridge.writeRomInCartridge(rompath);
+	cartridgePtr = std::make_shared<Cartridge>(rompath);
+	cout << cartridgePtr->toString() << endl;
 }
 
 void GameBoy::start()
 {
 	ppu.powerOnScreen();
 
+	if (cartridgePtr)
+	{
+		gameName = cartridgePtr->getGameName();
+		memory.connectCartridge(cartridgePtr);
+	}
+
 	//Calcul the number of cycles for the update of the screen
 	const int cyclesToDo = CLOCK_FREQUENCY / SCREEN_FREQUENCY;
 
-	memory.connectCartridge(&cartridge);
-
-	gameName = cartridge.getGameName();
-
-	if (getBiosInMemory())
+	if (memory.getBiosInMemeory()) //if there is a bios
 	{
 		biosName = biosPath.substr(biosPath.find_last_of('/'));
 		biosName.erase(remove(biosName.begin(), biosName.end(), '/'), biosName.end());
-	}
-
-	if (memory.getBiosInMemeory()) //if there is a bios
-	{
 		std::filesystem::create_directories(screenshotsFolder + biosName + "/");
 		processingBios = true;
-		while (handleInputs() && cpu.getPc() < 0x100) //cpu.getPc() < 0x100 && glfwOpenglLib.windowHandling()
+		while (handleInputs() && cpu.getPc() < 0x100)
 		{
 			doGameBoyCycle(cyclesToDo);
 		}
@@ -116,21 +113,18 @@ void GameBoy::start()
 		this->setGameBoyWithoutBios();
 	}
 
-	if (!gameName.empty())
+	if (cartridgePtr)
 	{
 		std::filesystem::create_directories(screenshotsFolder + gameName + "/");
 		ppu.addGameNameWindow(gameName);
-	}
 
-	if (!cartridge.getCartridgeIsEmpty())
-	{
 		while (handleInputs()) // Window is active
 		{
 			doGameBoyCycle(cyclesToDo);
 		}
 	}
 
-	cout << "Stoping Emulation please wait..." << endl;
+	cout << "Stopping Emulation please wait..." << endl;
 }
 
 void GameBoy::doGameBoyCycle(const int& cyclesToDo)
@@ -196,7 +190,7 @@ bool GameBoy::handleInputs()
 		if (event.key.keysym.sym == SDLK_j)
 			switchVolumeMinus = true;
 
-		if (event.key.keysym.sym == SDLK_PRINTSCREEN)
+		if (event.key.keysym.sym == SDLK_o)
 			switchScreenshot = true;
 
 		if (event.key.keysym.sym == SDLK_b)
@@ -258,7 +252,7 @@ bool GameBoy::handleInputs()
 			incDecVolume(-0.05f);
 		}
 
-		if (event.key.keysym.sym == SDLK_PRINTSCREEN && switchScreenshot)
+		if (event.key.keysym.sym == SDLK_o && switchScreenshot)
 		{
 			switchScreenshot = false;
 
@@ -323,7 +317,7 @@ string GameBoy::generateSavestateName()
 	}
 	else
 	{
-		path = cartridge.getRomPath() + path;
+		path = cartridgePtr->getRomPath() + path;
 	}
 	return path;
 }
@@ -333,45 +327,49 @@ string GameBoy::generateSavestateName()
 void GameBoy::createSaveState()
 {
 	string path = generateSavestateName();
-
 	ppu.doScreenshot(path);
 
 	ofstream savestateFile(path, ios::out | ios::app | ios::ate | ios::binary);
-
 	long pos = savestateFile.tellp();
 
 	cpu.dump(savestateFile);
-	// // spu.dump();
-	// // ppu.dump();
-	cartridge.dump(savestateFile);
+	// spu.dump();
+	// ppu.dump();
+	cartridgePtr->dump(savestateFile);
 	memory.dump(savestateFile);
 
 	savestateFile.write((char*)&pos, sizeof(pos));
-
 	savestateFile.close();
 }
 
 void GameBoy::loadSaveState()
 {
 	string path = generateSavestateName();
-	cout << "Loading savestate : " << path << endl;
 
-	// string path = cartridge.getRomPath() + ".state.bmp";
-	// (path == ".state.bmp") ? path = biosPath + path : path;
-	ifstream savestateFile(path, ios::in | ios::ate | ios::binary);
+	if (fileExist(path))
+	{
+		cout << "Loading savestate : " << path << endl;
+		// string path = cartridge.getRomPath() + ".state.bmp";
+		// (path == ".state.bmp") ? path = biosPath + path : path;
+		ifstream savestateFile(path, ios::in | ios::ate | ios::binary);
 
-	// Get position of the savestate in the image bmp save state
-	long pos = 0;
-	savestateFile.seekg(-(sizeof(pos)), ios::end);
-	savestateFile.read((char*)&pos, sizeof(pos));
-	savestateFile.seekg(pos);
+		// Get position of the savestate in the image bmp save state
+		long pos = 0;
+		savestateFile.seekg(-(sizeof(pos)), ios::end);
+		savestateFile.read((char*)&pos, sizeof(pos));
+		savestateFile.seekg(pos);
 
-	// Load savestate data into CPU, MMU and Cartridge
-	cpu.loadDumpedData(savestateFile);
-	cartridge.loadDumpedData(savestateFile);
-	memory.loadDumpedData(savestateFile);
+		// Load savestate data into CPU, MMU and Cartridge
+		cpu.loadDumpedData(savestateFile);
+		cartridgePtr->loadDumpedData(savestateFile);
+		memory.loadDumpedData(savestateFile);
 
-	savestateFile.close();
+		savestateFile.close();
+	}
+	else
+	{
+		cout << "No savestate : " << path << endl;
+	}
 }
 
 
@@ -388,11 +386,6 @@ void GameBoy::incDecVolume(const float& value)
 }
 
 /*------------------------------------------GETTERS--------------------------------*/
-
-bool GameBoy::getBiosInMemory()
-{
-	return memory.getBiosInMemeory();
-}
 
 
 /*------------------------------------------SETTERS-------------------------------*/
@@ -428,11 +421,5 @@ bool GameBoy::fileExist(const std::string& name)
 
 string GameBoy::addLeadingZero(string text, const int& numberOfZero)
 {
-	// string result = text;
-	// int stringSize = text.size();
-	// for (int i = 0; i < (numberOfZero - stringSize); i++)
-	// 	result = "0" + result;
-	// return result;
-
 	return std::string(numberOfZero - std::min(numberOfZero, static_cast<int>(text.length())), '0') + text;
 }
