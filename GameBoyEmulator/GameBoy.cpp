@@ -190,7 +190,7 @@ bool GameBoy::handleInputs()
 		if (event.key.keysym.sym == SDLK_j)
 			switchVolumeMinus = true;
 
-		if (event.key.keysym.sym == SDLK_PRINTSCREEN)
+		if (event.key.keysym.sym == SDLK_o)
 			switchScreenshot = true;
 
 		if (event.key.keysym.sym == SDLK_b)
@@ -252,7 +252,7 @@ bool GameBoy::handleInputs()
 			incDecVolume(-0.05f);
 		}
 
-		if (event.key.keysym.sym == SDLK_PRINTSCREEN && switchScreenshot)
+		if (event.key.keysym.sym == SDLK_o && switchScreenshot)
 		{
 			switchScreenshot = false;
 
