@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
 	if (true) //Debug
 	{
 		// biosPath = "../../../../Bios_Games/Bios/dmg_boot.bin";
-		romPath = "../../../../Bios_Games/Games/Kirby's dream land.gb";
+		// romPath = "../../../../Bios_Games/Games/Kirby's dream land.gb";
 		// romPath = "../../../../Bios_Games/Games/MarioLand2.gb";
 		// romPath = "../../../../Bios_Games/Games/bgbtest.gb";
 		// romPath = "../../../../Bios_Games/Games/Gremlins 2.gb";
@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
 		// romPath = "../../../../Bios_Games/TestRoms/instr_timing/instr_timing.gb";
 		// romPath = "../../../../Bios_Games/TestRoms/mem_timing-2/mem_timing.gb";
 		// romPath = "../../../../Bios_Games/TestRoms/mem_timing/mem_timing.gb";
-		argc = 2;
+		// argc = 2;
 	}
 
 	// if (true || argc > 1)
@@ -85,7 +85,7 @@ int main(int argc, char* argv[])
 
 		if (argc > 1) //If a game is loaded
 		{
-			// romPath = argv[1];
+			romPath = argv[1];
 			gameBoy->insertGame(romPath);
 		}
 
