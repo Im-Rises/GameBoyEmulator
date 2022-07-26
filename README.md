@@ -115,7 +115,7 @@ sudo apt-get install libsdl2-dev
 
 - Escape button/click cross to exit emulation
 
-- Imp : Create a screenshot of the game in the folder next to tha app (screenshots/<gameName>)
+- O : Create a screenshot of the game in the folder next to tha app (screenshots/<gameName>)
 
 - P : Pause emulation
 
