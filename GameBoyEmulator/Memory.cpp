@@ -65,17 +65,17 @@ void Memory::connectCartridge(shared_ptr<Cartridge>& cartridge)
 {
 	this->cartridgePtr = cartridge;
 
-	// int index = 0;
-	// if (biosInMemory)
-	// 	index = 0x100;
-	//
-	// // if (cartridge)
-	// // {
-	// for (int i = index; i < 0x8000; i++)
-	// {
-	// 	memoryArray[i] = cartridgePtr->readRom(i);
-	// }
-	// // }
+	int index = 0;
+	if (biosInMemory)
+		index = 0x100;
+
+	if (cartridge)
+	{
+		for (int i = index; i < 0x8000; i++)
+		{
+			memoryArray[i] = cartridgePtr->readRom(i);
+		}
+	}
 }
 
 
@@ -102,14 +102,14 @@ bool Memory::loadBiosInMemory(const string& biosPath)
 
 void Memory::loadRomBeginning()
 {
-	// if (cartridgePtr)
-	// {
-	// 	for (int i = 0; i < 0x100; i++)
-	// 	{
-	// 		memoryArray[i] = cartridgePtr->readRom(i);
-	// 	}
-	// 	biosInMemory = false;
-	// }
+	if (cartridgePtr)
+	{
+		for (int i = 0; i < 0x100; i++)
+		{
+			memoryArray[i] = cartridgePtr->readRom(i);
+		}
+		biosInMemory = false;
+	}
 }
 
 
@@ -153,7 +153,11 @@ void Memory::setMemoryWithoutBios()
 
 uint8 Memory::read(const uint16 address)
 {
-	if (address < 0x8000) //Read in rom bank area (Cartridge)
+	if (address < 0x4000)
+	{
+		return memoryArray[address];
+	}
+	else if (address < 0x8000) //Read in rom bank area (Cartridge)
 	{
 		return cartridgePtr->readRom(address);
 	}
