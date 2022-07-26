@@ -86,21 +86,21 @@ Cartridge::Cartridge(const std::string& romPath)
 	case(0x06):
 		mbcPtr = std::make_shared<Mbc2>();
 		break;
-	case(0x0F):
-	case(0x10):
-	case(0x11):
-	case(0x12):
-	case(0x13):
-		mbcPtr = std::make_shared<Mbc3>();
-		break;
-	case(0x19):
-	case(0x1A):
-	case(0x1B):
-	case(0x1C):
-	case(0x1D):
-	case(0x1E):
-		mbcPtr = std::make_shared<Mbc5>();
-		break;
+	// case(0x0F):
+	// case(0x10):
+	// case(0x11):
+	// case(0x12):
+	// case(0x13):
+	// 	mbcPtr = std::make_shared<Mbc3>();
+	// 	break;
+	// case(0x19):
+	// case(0x1A):
+	// case(0x1B):
+	// case(0x1C):
+	// case(0x1D):
+	// case(0x1E):
+	// 	mbcPtr = std::make_shared<Mbc5>();
+	// 	break;
 	default:
 		cerr << "Error unknown Cartridge type : " << cartridgeType << endl;
 		exit(2);
@@ -119,7 +119,6 @@ Cartridge::Cartridge(const std::string& romPath)
 
 Cartridge::~Cartridge()
 {
-
 }
 
 void Cartridge::writeRom(const uint16& address, const uint8& data)

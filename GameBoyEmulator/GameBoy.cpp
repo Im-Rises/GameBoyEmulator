@@ -345,24 +345,31 @@ void GameBoy::createSaveState()
 void GameBoy::loadSaveState()
 {
 	string path = generateSavestateName();
-	cout << "Loading savestate : " << path << endl;
 
-	// string path = cartridge.getRomPath() + ".state.bmp";
-	// (path == ".state.bmp") ? path = biosPath + path : path;
-	ifstream savestateFile(path, ios::in | ios::ate | ios::binary);
+	if (fileExist(path))
+	{
+		cout << "Loading savestate : " << path << endl;
+		// string path = cartridge.getRomPath() + ".state.bmp";
+		// (path == ".state.bmp") ? path = biosPath + path : path;
+		ifstream savestateFile(path, ios::in | ios::ate | ios::binary);
 
-	// Get position of the savestate in the image bmp save state
-	long pos = 0;
-	savestateFile.seekg(-(sizeof(pos)), ios::end);
-	savestateFile.read((char*)&pos, sizeof(pos));
-	savestateFile.seekg(pos);
+		// Get position of the savestate in the image bmp save state
+		long pos = 0;
+		savestateFile.seekg(-(sizeof(pos)), ios::end);
+		savestateFile.read((char*)&pos, sizeof(pos));
+		savestateFile.seekg(pos);
 
-	// Load savestate data into CPU, MMU and Cartridge
-	cpu.loadDumpedData(savestateFile);
-	cartridgePtr->loadDumpedData(savestateFile);
-	memory.loadDumpedData(savestateFile);
+		// Load savestate data into CPU, MMU and Cartridge
+		cpu.loadDumpedData(savestateFile);
+		cartridgePtr->loadDumpedData(savestateFile);
+		memory.loadDumpedData(savestateFile);
 
-	savestateFile.close();
+		savestateFile.close();
+	}
+	else
+	{
+		cout << "No savestate : " << path << endl;
+	}
 }
 
 
