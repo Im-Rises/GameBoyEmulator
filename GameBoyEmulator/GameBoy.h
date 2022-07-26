@@ -10,7 +10,7 @@
 #include "Spu.h"
 #include "Joypad.h"
 
-#define VER 0.8
+#define VER 0.9
 #define AUTHOR "Im-Rises"
 #define PROJECT_NAME "GameBoyEmulator"
 
