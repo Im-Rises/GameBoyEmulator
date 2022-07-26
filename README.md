@@ -8,15 +8,9 @@
 
 ## Description
 
-<<<<<<< HEAD
-GameBoy Emulator developped in C++ using SDL2.  
-You can compile the program using CMake.
-Games like pokemon aren't working due to the lack of MBC3/MBC5 cartridges implementation.  
-=======
 Game Boy Emulator developed in C++ using SDL2.  
 You can compile the program using CMake.  
 Games like Pokémon aren't working due to the lack of MBC3/MBC5 cartridges implementation.
->>>>>>> main
 
 SDL2 website:
 <https://www.libsdl.org>
@@ -56,13 +50,13 @@ To use the emulator it depends on your system. Please follow the steps in sectio
 All the releases can be found in the link below:  
 [Source code and releases](https://github.com/Im-Rises/GameBoyEmulator/releases)
 
-You can download the emulator using clicking to the links below depending on your operating system.
+You can download the emulator by clicking on one of the Windows or Linux images, depending on your operating system.
 
 ### Windows
 
 <a href="https://github.com/Im-Rises/GameBoyEmulator/releases/download/v0.8/GameBoyEmulator-0.8-windows.zip"><img src="https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="cmakeLogo" style="height:40px;"/></a>
 
-Once download make sure you have the sdl2.dll file next to the emulator .exe file), you can start the emulator by doing
+Once download make sure you have the `sdl2.dll` file next to the emulator .exe file, you can start the emulator by doing
 a drag and drop of a rom to the .exe file, it will automatically start the game. You can also start the emulator by
 typing the following command in your terminal.
 
@@ -96,11 +90,26 @@ following command:
 ./GameBoyEmulator.exe <romPath>
 ```
 
+## Compilation
+
+Emulator is supported under Linux and Windows.  
+The source code provide a `CMakeList.txt` file to compile the emulator.
+
+You can download CMake here:  
+<https://cmake.org>
+
+Linux's users need to install the developer version of SDL2 to compile the Emulator. To install it type the following
+command in your terminal:
+
+```shell
+sudo apt-get install libsdl2-dev
+```
+
 ## Emulator controls
 
 ### Emulator interface
 
-- F10 : Switch GameBoy color mode (GreenScale or Grayscale)
+- F10 : Switch Game Boy's color mode (GreenScale or Grayscale)
 
 - F11 : Switch between Fullscreen and windowed mode
 
@@ -177,35 +186,20 @@ colorMode='0'
 
 ## Emulation color modes
 
-| Zelda Link's Awakening in grayscale | Zelda Link's Awakening in greenscale |
+| Zelda Link's Awakening in grayscale | Zelda Link's Awakening in green-scale |
 |-------------------------------------|--------------------------------------|
 |![zelda_grayscale](https://user-images.githubusercontent.com/59691442/179115301-a6d756c2-f519-459a-ab73-5dd16173e470.png)|![zelda_greenscale](https://user-images.githubusercontent.com/59691442/179115353-5f27ad9a-29df-45f9-82e4-feab011a58b4.png)|
-
-## Compilation
-
-Emulator is supported under Linux and Windows.  
-The source code provide a CMakeList.txt file to compile the emulator.
-
-You can download Cmake here:  
-<https://cmake.org>
-
-Linux's users need to install the developer version of SDL2 to compile the Emulator. To install it type the following
-command in your terminal:
-
-```shell
-sudo apt-get install libsdl2-dev
-```
 
 ## GitHub Actions
 
 [![CMake](https://github.com/Im-Rises/GameBoyEmulator/actions/workflows/cmake.yml/badge.svg?branch=main)](https://github.com/Im-Rises/GameBoyEmulator/actions/workflows/cmake.yml)
 
-The repository has a GitHub Actions file to verify the good behaviour of the project before merging/pusing to the main
+The repository has a GitHub Actions file to verify the good behaviour of the project before merging/pushing to the main
 branch with a wrong code.
 
 ## Documentations
 
-Cmake:  
+CMake:  
 <https://cmake.org>
 
 SDL wiki:  
@@ -230,20 +224,17 @@ Rom/Ram banking:
 PPU:  
 <https://hacktixme.ga/GBEDG/ppu/>
 
+Audio and sound:  
+<https://xiph.org/video/vid1.shtml>
+
 SPU:  
 <https://nightshade256.github.io/2021/03/27/gb-sound-emulation.html>  
 <https://emudev.de>  
 <https://www.youtube.com/watch?v=a52p6ji1WZs>
 
-Audio and sound:  
-<https://xiph.org/video/vid1.shtml>
-
-Test roms i use to debug my emulator:  
+Test roms I used to debug my emulator:  
 <https://gbdev.gg8.se/files/roms/blargg-gb-tests/>  
 <https://github.com/mattcurrie/dmg-acid2>
-
-Automatic-Releases script:  
-<https://github.com/marvinpinto/action-automatic-releases>
 
 Other docs (mostly about emulation in general):  
 <https://emudev.org>    
