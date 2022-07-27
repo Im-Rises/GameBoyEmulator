@@ -54,7 +54,7 @@ You can download the emulator by clicking on one of the Windows or Linux images,
 
 ### Windows
 
-<a href="https://github.com/Im-Rises/GameBoyEmulator/releases/download/v0.8/GameBoyEmulator-0.8-windows.zip"><img src="https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="cmakeLogo" style="height:40px;"/></a>
+<a href="github.com/Im-Rises/GameBoyEmulator/releases/latest"><img src="https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="cmakeLogo" style="height:40px;"/></a>
 
 Once download make sure you have the `sdl2.dll` file next to the emulator .exe file, you can start the emulator by doing
 a drag and drop of a rom to the .exe file, it will automatically start the game. You can also start the emulator by
@@ -66,7 +66,7 @@ typing the following command in your terminal.
 
 ### Linux
 
-<a href="https://github.com/Im-Rises/GameBoyEmulator/releases/download/v0.8/GameBoyEmulator-0.8-linux.zip"><img src="https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black" alt="cmakeLogo" style="height:40px;"/></a>
+<a href="github.com/Im-Rises/GameBoyEmulator/releases/latest"><img src="https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black" alt="cmakeLogo" style="height:40px;"/></a>
 
 Once download you'll need to install the `SDL2 library` by typing one of the following commands :
 
