@@ -98,7 +98,7 @@ The source code provide a `CMakeList.txt` file to compile the emulator.
 You can download CMake here:  
 <https://cmake.org>
 
-Linux's users need to install the developer version of SDL2 to compile the Emulator. To install it type the following
+Linux's users need to install the developer version of SDL2 to compile the Emulator. To install it types the following
 command in your terminal:
 
 ```shell
@@ -161,7 +161,7 @@ which controller has been selected (for PlayStation user the controller's led wi
 
 ## Ini file
 
-When you download/start the emulator you will get a GameBoyEmulator.ini file. This file allow you to change some
+When you download/start the emulator you will get a GameBoyEmulator.ini file. This file allows you to change some
 parameters about the emulator.
 
 | Ini file setting | Description                     |
@@ -188,7 +188,7 @@ colorMode='0'
 
 | Zelda Link's Awakening in grayscale | Zelda Link's Awakening in green-scale |
 |-------------------------------------|--------------------------------------|
-|![zelda_grayscale](https://user-images.githubusercontent.com/59691442/179115301-a6d756c2-f519-459a-ab73-5dd16173e470.png)|![zelda_greenscale](https://user-images.githubusercontent.com/59691442/179115353-5f27ad9a-29df-45f9-82e4-feab011a58b4.png)|
+|![zelda_grayscale](https://user-images.githubusercontent.com/59691442/179115301-a6d756c2-f519-459a-ab73-5dd16173e470.png)|![zelda_green-scale](https://user-images.githubusercontent.com/59691442/179115353-5f27ad9a-29df-45f9-82e4-feab011a58b4.png)|
 
 ## GitHub Actions
 
