@@ -1,10 +1,4 @@
-﻿# CMakeList.txt : CMake project for GameBoyEmulator
-
-cmake_minimum_required (VERSION 3.8)
-
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+﻿include_directories(${CMAKE_SOURCE_DIR}/dependencies)
 
 set(SRCS main.cpp binaryLib/binaryLib.cpp IniLoader/IniLoader.cpp Cartridge.cpp Cpu.cpp GameBoy.cpp Joypad.cpp Memory.cpp Ppu.cpp Spu.cpp MBC/Mbc.cpp MBC/MbcRom.cpp MBC/Mbc1.cpp MBC/Mbc2.cpp MBC/Mbc3.cpp MBC/Mbc5.cpp)
 set(HEADERS binaryLib/binaryLib.h IniLoader/IniLoader.h Cartridge.h Cpu.h GameBoy.h Joypad.h Memory.h Ppu.h  Spu.h MBC/Mbc.h MBC/MbcRom.h MBC/Mbc1.h MBC/Mbc2.h MBC/Mbc3.h MBC/Mbc5.h)
@@ -12,7 +6,7 @@ set(HEADERS binaryLib/binaryLib.h IniLoader/IniLoader.h Cartridge.h Cpu.h GameBo
 add_executable(${PROJECT_NAME} ${SRCS} ${HEADERS})
 
 if(WIN32)
-	set(SDL2PATH ${CMAKE_CURRENT_SOURCE_DIR}/SDL2/lib/)
+	set(SDL2PATH ${CMAKE_SOURCE_DIR}/dependencies/SDL2/lib/)
 	if(CMAKE_SIZEOF_VOID_P EQUAL 8)
 		target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2PATH}x64/SDL2.lib)
 		target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2PATH}x64/SDL2main.lib)
