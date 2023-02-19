@@ -1,3 +1,6 @@
+.vs/
+.idea/
+
 # Ignore Bios and Games
 *.gb
 *.GB
